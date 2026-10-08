@@ -311,8 +311,8 @@ def front_end():
     p.add("dark", hull(box(-6, 6, -72, 72, -6, 6).rotate((0, -40, 0)).translate(tuple(dash_c + np.array([-8, 0, 46]))),
                        box(-6, 6, -60, 60, -6, 6).rotate((0, -40, 0)).translate(tuple(dash_c + np.array([20, 0, 76])))))
 
-    # 2025 face: angular black mask, two slim "eye" position lights, a centre
-    # "forehead" light and the LED projector recessed below them
+    # 2025 face: angular black mask with a central LED flanked by two "eye"
+    # DRLs, and a small "forehead" position light above
     hl = fork_point(625) + np.array([95, 0, 0])
     mask = blob([hl + np.array([-60, -88, -30]), hl + np.array([-60, 88, -30]),
                  hl + np.array([-45, -95, 65]), hl + np.array([-45, 95, 65]),
@@ -320,12 +320,12 @@ def front_end():
                  hl + np.array([45, -72, 5]), hl + np.array([45, 72, 5]),
                  hl + np.array([38, -30, -78]), hl + np.array([38, 30, -78]),
                  hl + np.array([-30, 0, -95])], 9)
-    socket = cyl_between(hl + np.array([0, 0, -38]), hl + np.array([90, 0, -38]), 34, 32)
+    socket = cyl_between(hl + np.array([0, 0, 14]), hl + np.array([90, 0, 14]), 28, 32)
     p.add("dark", mask - socket)
-    p.add("light", cyl_between(hl + np.array([0, 0, -38]), hl + np.array([46, 0, -38]), 34, 32))  # projector lens
+    p.add("light", cyl_between(hl + np.array([0, 0, 14]), hl + np.array([44, 0, 14]), 28, 32))  # central LED
     for s in (-1, 1):
-        p.add("light", blob([hl + np.array([40, 22 * s, 38]), hl + np.array([47, 70 * s, 18]),
-                             hl + np.array([40, 64 * s, 6])], 8))  # eyes
+        p.add("light", blob([hl + np.array([40, 38 * s, 34]), hl + np.array([47, 76 * s, 16]),
+                             hl + np.array([42, 70 * s, -2]), hl + np.array([38, 40 * s, 8])], 7))  # eye DRLs
     p.add("light", blob([hl + np.array([30, -18, 64]), hl + np.array([30, 18, 64])], 7))  # forehead
     p.add("dark", blob([hl + np.array([-60, -60, 0]), hl + np.array([-60, 60, 0]),
                         fork_point(600) + HEAD_OFF], 25))
@@ -420,6 +420,7 @@ def exhaust():
         d = (pts[1] - pts[0]) / np.linalg.norm(pts[1] - pts[0])
         p.add("metal", cyl_between(pts[0] + d * 10, pts[0] + d * 35, 34, 32))  # port flange
     p.add("metal", chain([(880, 15, 172), (700, 60, 172), (560, 120, 180)], 32))
+    p.add("metal", blob([(955, 10, 200), (875, 18, 182)], 44))  # catalytic converter at the collector
     can = blob([(570, 95, 168), (570, 190, 172), (580, 110, 300), (575, 185, 300),
                 (380, 110, 215), (380, 185, 220), (390, 110, 300), (390, 185, 305)], 18)
     p.add("dark", can)
@@ -453,15 +454,16 @@ def frame_and_rear():
         p.add("dark", capsule((380, y * 1.2, 520), (450, y * 1.13, 614), 13))
     p.add("metal", ycyl(SWINGARM_PIVOT, 26, 290))
 
-    # aluminium swingarm, banana profile, braced ahead of the tyre
+    # new asymmetric steel swingarm with slim lines, braced ahead of the tyre
     for s in (-1, 1):
         y = ARM_Y * s
-        arm = hull(box(540, 610, y - 18, y + 18, 395, 490),
-                   box(330, 360, y - 16, y + 16, 335, 425),
-                   ycyl((10, y, 315), 34, 30))
-        recess = blob([(510, y + s * 18, 430), (400, y + s * 18, 400), (180, y + s * 18, 350),
-                       (180, y + s * 18, 375), (400, y + s * 18, 430), (510, y + s * 18, 460)], 9)
-        p.add("dark", arm - recess)
+        pivot = box(545, 605, y - 15, y + 15, 400, 480)
+        end = ycyl((10, y, 315), 32, 28)
+        if s > 0:  # right arm arches up to clear the under-slung silencer
+            mid = box(300, 330, y - 14, y + 14, 380, 440)
+            p.add("dark", hull(pivot, mid), hull(mid, end))
+        else:      # left arm runs straight to the axle
+            p.add("dark", hull(pivot, box(330, 360, y - 14, y + 14, 345, 410), end))
         p.add("metal", box(-45, 40, y - 22, y + 22, 300, 330))  # chain adjuster
     p.add("dark", box(380, 450, -ARM_Y, ARM_Y, 370, 440))
     p.add("metal", capsule((0, -ARM_Y - 32, 315), (0, ARM_Y + 32, 315), 15))  # axle
@@ -484,7 +486,7 @@ def frame_and_rear():
 def bodywork():
     p = Parts()
     # fuel tank with a sharp crease and recess for the rider's knees
-    tank = blob([(700, -118, 820), (700, 118, 820), (720, -100, 900), (720, 100, 900),
+    tank = blob([(700, -92, 820), (700, 92, 820), (720, -85, 900), (720, 85, 900),
                  (930, -138, 950), (930, 138, 950), (1080, -112, 950), (1080, 112, 950),
                  (1110, -100, 840), (1110, 100, 840), (900, -148, 800), (900, 148, 800),
                  (1000, 0, 978), (800, 0, 945)], 22)
@@ -503,14 +505,12 @@ def bodywork():
     p.add("dark", *grilles)
     p.add("metal", blob([(1060, -18, 962), (1060, 18, 962), (1035, -18, 966), (1035, 18, 966)], 8))  # filler cap
     for s in (-1, 1):
-        # angular air-intake shrouds with an inlet pocket
+        # angular side covers flowing down from the tank (MT-09 lines)
         sh = blob([(870, s * 150, 920), (1150, s * 140, 930), (1210, s * 185, 860),
                    (1170, s * 215, 760), (1070, s * 220, 640), (960, s * 205, 600),
                    (870, s * 170, 680), (920, s * 210, 820),
                    (900, s * 120, 700), (1120, s * 120, 700)], 9)
-        vent = blob([(1120, s * 230, 820), (1180, s * 230, 790), (1110, s * 230, 700),
-                     (1080, s * 205, 760)], 8)
-        p.add("paint", sh - vent)
+        p.add("paint", sh)  # 2025: no side intake vents behind the forks
         p.add("dark", blob([(980, s * 150, 610), (1080, s * 165, 600), (1150, s * 180, 700),
                             (1120, s * 200, 800), (1000, s * 190, 720)], 8))  # inner layer
         p.add("dark", blob([(1010, s * 140, 560), (1060, s * 150, 450), (1000, s * 145, 430),
@@ -534,9 +534,10 @@ def bodywork():
     p.add("paint", blob([(200, -100, 870), (200, 100, 870), (-55, -45, 900), (-55, 45, 900),
                          (-75, -35, 870), (-75, 35, 870), (200, -95, 790), (-20, -40, 830),
                          (200, 95, 790), (-20, 40, 830)], 10))
-    p.add("light", blob([(-80, -42, 885), (-80, 42, 885), (-95, -28, 875), (-95, 28, 875)], 9))
+    p.add("light", blob([(-80, -12, 902), (-80, 12, 902), (-84, -9, 848), (-84, 9, 848)], 7))  # vertical LED line
     # licence plate hugger arm, plate and indicators
-    p.add("dark", capsule((120, 0, 800), (-235, 0, 650), 22))
+    p.add("dark", blob([(120, -55, 800), (120, 55, 800), (60, -45, 770), (60, 45, 770),
+                        (-230, -90, 690), (-230, 90, 690), (-230, -80, 660), (-230, 80, 660)], 10))  # rear fender
     p.add("light", box(-12, 12, -90, 90, -65, 65).rotate((0, 25, 0)).translate((-260, 0, 620)))
     for s in (-1, 1):
         p.add("light", capsule((-240, s * 50, 665), (-255, s * 115, 675), 12))

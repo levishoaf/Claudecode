@@ -67,11 +67,13 @@ All geometry uses Yamaha's published 2025 figures: 2065 × 780 × 1110 mm overal
 805 mm seat height, 140 mm ground clearance, 24.3° rake with 94 mm trail, 120/70-17 and 180/55-17 tyres,
 twin 298 mm front discs and a 245 mm rear disc.
 
-2025-specific details modelled: the twin-eye LED face with a centre "forehead" light and a projector below,
-the narrower 14 L tank cover with four acoustic-amplifier vents, layered intake shrouds,
-the 41 mm upside-down fork with radially mounted 4-piston calipers, the 5" TFT under a short visor,
-the wider and lower handlebar, thicker backbone frame tubes, a swingarm with side recesses, and the
-short under-engine exhaust with its heat shield and end cap. The spoke pattern of the new SpinForged
-wheels is approximate. Pin holes, axle holes and mirror pegs
+2025-specific details modelled: the LED face with a central light flanked by two eye-shaped DRLs and a
+small "forehead" light above; the narrower 14 L tank cover (slimmest where it meets the two-piece seat)
+with four mesh acoustic vents and no side intake vents behind the forks; side covers following MT-09 lines;
+the 41 mm upside-down fork with radially mounted 4-piston calipers; the 5" TFT under a short visor; the
+wider, lower handlebar; thicker backbone frame tubes; the new asymmetric steel swingarm; the 2-into-1
+exhaust with its catalytic converter near the headers; the slim vertical LED tail light; and the factory
+rear fender carrying the plate. The spoke pattern of the new SpinForged wheels isn't published, so the
+wheels are approximate. Pin holes, axle holes and mirror pegs
 are sized in printed millimetres, so they stay correct at any scale. Small parts such as
 brake discs, levers and footpegs are thickened so they survive printing at 1:18.
