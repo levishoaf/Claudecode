@@ -6,7 +6,8 @@ All geometry is authored in real-world millimetres (rear axle at x=0,
 ground at z=0, +x toward the front, +y to the rider's right) and scaled
 down at export time. Real dimensions used as reference:
   wheelbase 1395 mm, length ~2065 mm, seat height 805 mm,
-  120/70-17 front and 180/55-17 rear tyres, 24.8 deg rake.
+  120/70-17 front and 180/55-17 rear tyres, 24.3 deg rake, 94 mm trail,
+  298 mm front discs, 245 mm rear disc, 140 mm ground clearance.
 Small parts are thickened so they survive printing at 1:18.
 
 Every part is tagged with a colour group (paint, dark, metal, light) so the
@@ -26,7 +27,7 @@ import math
 import os
 
 import numpy as np
-from manifold3d import CrossSection, Manifold, OpType
+from manifold3d import CrossSection, Manifold, Mesh, OpType
 
 SEG = 64
 SCALE = 18.0  # scale denominator; set from the command line before building
@@ -149,8 +150,11 @@ class Parts:
 
 REAR_AXLE = np.array([0.0, 0.0, 315.0])
 FRONT_AXLE = np.array([1395.0, 0.0, 300.0])
-RAKE = math.radians(24.8)
+RAKE = math.radians(24.3)  # Yamaha spec: 24.3 deg rake, 94 mm trail
 FORK_DIR = np.array([-math.sin(RAKE), 0.0, math.cos(RAKE)])
+FORK_OFFSET = 300 * math.sin(RAKE) - 94 * math.cos(RAKE)  # gives the 94 mm trail
+HEAD_OFF = -FORK_OFFSET * np.array([math.cos(RAKE), 0.0, math.sin(RAKE)])  # fork plane -> steering axis
+LOWER_CLAMP, TOP_CLAMP = 560.0, 720.0
 SWINGARM_PIVOT = np.array([575.0, 0.0, 440.0])
 FORK_Y = 112.0  # fork leg centre lines
 ARM_Y = 118.0   # swingarm arm centre lines
@@ -211,7 +215,11 @@ def rotors(spec):
             disc = yspan((0, 0, 0), r, sgn * y0, sgn * y1)
             holes = [ycyl((math.cos(t) * (r - 30), 0, math.sin(t) * (r - 30)), 9, 400, 12)
                      for t in np.linspace(0, 2 * math.pi, 12, endpoint=False)]
-            disc = disc - union(holes)
+            # floating-disc look: six windows through the inner carrier
+            win = union([blob([(math.cos(t + d) * rr, 0, math.sin(t + d) * rr)
+                               for d in (-0.22, 0.22) for rr in (r * 0.52, r * 0.74)], 9, 12)
+                         .scale((1, 40, 1)) for t in np.linspace(0, 2 * math.pi, 6, endpoint=False)])
+            disc = disc - union(holes) - win
             collar = yspan((0, 0, 0), 28, sgn * y1, sgn * spec["collar"], 32)
             p.add("metal", disc, collar)
     if spec["sprocket"]:
@@ -229,67 +237,98 @@ def wheel(spec):
     return wheel_core(spec).merge(rotors(spec)).map(lambda m: m.translate(tuple(spec["center"])))
 
 
+def bar_points(s):
+    """Handlebar centre line on side s (-1 left, +1 right): clamp, perch, bar end.
+    The 2025 bar is wider, lower and further back than before."""
+    top = fork_point(TOP_CLAMP) + HEAD_OFF
+    clamp = top + np.array([-15, 0, 35])
+    return [clamp + np.array([0, 30 * s, 0]),
+            clamp + np.array([-25, 230 * s, 12]),
+            clamp + np.array([-60, 375 * s, 28])]
+
+
+def mirror_mount(s):
+    """Top centre of the mirror boss on the handlebar perch (side s = -1 left, +1 right)."""
+    return bar_points(s)[1] + np.array([15, 40 * s, 60])
+
+
 def front_end():
     p = Parts()
-    lower_clamp_len, top_clamp_len = 560.0, 720.0
     for s in (-1, 1):
         y = FORK_Y * s
-        # upside-down fork: thin inner tube at the bottom, fat outer up top
+        # 41 mm KYB upside-down fork: slim inner tube below, fat outer tube above
         p.add("metal", cyl_between(fork_point(-10, y), fork_point(330, y), 22, 32))
-        p.add("dark", cyl_between(fork_point(300, y), fork_point(top_clamp_len + 20, y), 30, 32))
-        p.add("dark", blob([fork_point(-25, y), fork_point(40, y)], 30))  # axle lug
-        # radial caliper hugging the outside of the disc
-        c = FRONT_AXLE + np.array([-108, 0, 92])
-        p.add("dark", blob([(c[0] - 35, 80 * s, c[2] - 40), (c[0] + 30, 80 * s, c[2] + 45)], 22),
-              capsule((c[0], 90 * s, c[2]), fork_point(120, y), 16))
+        p.add("dark", cyl_between(fork_point(300, y), fork_point(TOP_CLAMP + 20, y), 30, 32),
+              cyl_between(fork_point(296, y), fork_point(320, y), 33, 32))  # dust seal ring
+        p.add("metal", cyl_between(fork_point(TOP_CLAMP + 12, y), fork_point(TOP_CLAMP + 38, y), 22, 24))  # cap, sunk into the tube
+        # axle clamp with pinch-bolt slot, and a small fork guard
+        lug = blob([fork_point(-25, y), fork_point(40, y)], 30)
+        p.add("dark", lug - box(-30, 30, y + s * 26 - 4, y + s * 26 + 4, -60, -30).translate(tuple(FRONT_AXLE)))
+        p.add("dark", blob([fork_point(60, y) + np.array([28, 0, 0]), fork_point(220, y) + np.array([30, 0, 0])], 10))
+        # radial four-piston caliper behind the leg, bolted on two in-line ears
+        c = FRONT_AXLE + np.array([-112, 0, 96])
+        body = blob([(c[0] - 38, 80 * s, c[2] - 46), (c[0] + 32, 80 * s, c[2] + 50),
+                     (c[0] - 10, 80 * s, c[2] - 55), (c[0] + 12, 80 * s, c[2] + 58)], 20)
+        pistons = [ycyl((c[0] - 18 + 32 * k, 96 * s, c[2] - 22 + 40 * k), 16, 10, 16) for k in (0, 1)]
+        ears = [capsule((c[0] - 22 + 50 * k, 92 * s, c[2] - 30 + 60 * k), fork_point(70 + 85 * k, y), 13)
+                for k in (0, 1)]
+        p.add("dark", body, *ears)
+        p.add("metal", *pistons)
+        p.add("dark", chain([(c[0] + 10, 80 * s, c[2] + 60), fork_point(260, y) + np.array([-35, 0, 0])], 7))  # brake line
     p.add("metal", capsule(fork_point(0, -FORK_Y - 28), fork_point(0, FORK_Y + 28), 14))  # axle
 
     # triple clamps and steering head
-    for L, h in ((lower_clamp_len, 30), (top_clamp_len, 26)):
+    for L, h in ((LOWER_CLAMP, 30), (TOP_CLAMP, 26)):
         a, b = fork_point(L, -145), fork_point(L, 145)
-        p.add("dark", blob([a, b, a + np.array([-60, 0, 0]), b + np.array([-60, 0, 0])], h / 2 + 4))
-    head_off = np.array([-55.0, 0, 0])
-    p.add("dark", cyl_between(fork_point(lower_clamp_len - 40) + head_off,
-                              fork_point(top_clamp_len) + head_off, 34))
+        p.add("dark", blob([a, b, a + HEAD_OFF * 1.4, b + HEAD_OFF * 1.4], h / 2 + 4))
+    p.add("dark", cyl_between(fork_point(LOWER_CLAMP - 40) + HEAD_OFF,
+                              fork_point(TOP_CLAMP) + HEAD_OFF, 34))
+    p.add("metal", cyl_between(fork_point(TOP_CLAMP) + HEAD_OFF, fork_point(TOP_CLAMP + 12) + HEAD_OFF, 20, 24))
 
-    # handlebar, risers, grips, switchgear, mirror mounts, TFT dash
-    top = fork_point(top_clamp_len) + head_off
-    clamp = top + np.array([-10, 0, 45])
+    # handlebar, risers, grips, switchgear, levers, mirror mounts
     holes = []
+    top = fork_point(TOP_CLAMP) + HEAD_OFF
     for s in (-1, 1):
-        p.add("dark", capsule(top + np.array([0, 30 * s, 0]), clamp + np.array([0, 30 * s, 0]), 16))
-        bar = [clamp + np.array([0, 30 * s, 0]),
-               clamp + np.array([-15, 220 * s, 20]),
-               clamp + np.array([-45, 360 * s, 40])]
+        bar = bar_points(s)
+        p.add("dark", capsule(top + np.array([0, 30 * s, 0]), bar[0], 16))
         p.add("dark", chain(bar, 13))
-        p.add("dark", capsule(bar[-1] + np.array([0, -60 * s, 0]),
-                              bar[-1] + np.array([-5, 40 * s, 3]), 19))  # grip
-        p.add("dark", blob([bar[1] + np.array([0, 20 * s, 5]),
-                            bar[1] + np.array([30, 70 * s, 10])], 18))  # switchgear / perch
-        p.add("metal", capsule(bar[1] + np.array([40, 60 * s, 5]),
-                               bar[2] + np.array([90, 15 * s, 0]), 12))  # lever
+        p.add("dark", capsule(bar[2] + np.array([5, -75 * s, -5]), bar[2] + np.array([0, 25 * s, 2]), 19))  # grip
+        p.add("metal", sphere(bar[2] + np.array([0, 32 * s, 2]), 18))  # bar-end weight
+        p.add("dark", blob([bar[1] + np.array([-5, 15 * s, 0]), bar[1] + np.array([25, 75 * s, 10]),
+                            bar[1] + np.array([-20, 60 * s, -15])], 18))  # switch cube / perch
+        p.add("metal", capsule(bar[1] + np.array([40, 70 * s, 5]), bar[2] + np.array([75, 10 * s, 0]), 11))  # lever
+        if s > 0:
+            p.add("dark", blob([bar[1] + np.array([10, 40, 50]), bar[1] + np.array([30, 40, 70])], 22))  # brake reservoir
         boss = mirror_mount(s)
         p.add("dark", cyl_between(boss - np.array([0, 0, 45]), boss, pm(1.6), 32))
-        holes.append(cyl_between(boss - np.array([0, 0, pm(2.6)]), boss + np.array([0, 0, 5]),
-                                 pm(0.85), 24))
-    p.add("dark", capsule(clamp + np.array([0, -60, 0]), clamp + np.array([0, 60, 0]), 18))
-    dash_c = top + np.array([60, 0, 85])
-    p.add("dark", hull(box(-18, 12, -75, 75, -45, 45).rotate((0, -25, 0)).translate(tuple(dash_c)),
-                       sphere(top + np.array([20, 0, 20]), 30)))
+        holes.append(cyl_between(boss - np.array([0, 0, pm(2.6)]), boss + np.array([0, 0, 5]), pm(0.85), 24))
+    p.add("dark", capsule(bar_points(-1)[0], bar_points(1)[0], 18))
 
-    # front face: compact LED projector under a sharp nacelle
-    hl = fork_point(640) + np.array([90, 0, 0])
-    p.add("dark", blob([hl + np.array([-60, -95, -40]), hl + np.array([-60, 95, -40]),
-                        hl + np.array([-50, -110, 70]), hl + np.array([-50, 110, 70]),
-                        hl + np.array([25, -55, 70]), hl + np.array([25, 55, 70]),
-                        hl + np.array([45, -70, -10]), hl + np.array([45, 70, -10]),
-                        hl + np.array([30, 0, -85])], 10))
-    p.add("light", blob([hl + np.array([50, -45, -15]), hl + np.array([50, 45, -15]),
-                         hl + np.array([40, 0, -60])], 14))
+    # 5-inch TFT on a stalk, under a short tinted visor
+    dash_c = top + np.array([75, 0, 80])
+    tft = box(-15, 15, -68, 68, -42, 42).rotate((0, -28, 0)).translate(tuple(dash_c))
+    p.add("dark", hull(tft, sphere(top + np.array([30, 0, 15]), 25)))
+    p.add("dark", hull(box(-6, 6, -72, 72, -6, 6).rotate((0, -40, 0)).translate(tuple(dash_c + np.array([-8, 0, 46]))),
+                       box(-6, 6, -60, 60, -6, 6).rotate((0, -40, 0)).translate(tuple(dash_c + np.array([20, 0, 76])))))
+
+    # 2025 face: angular black mask, two slim "eye" position lights, a centre
+    # "forehead" light and the LED projector recessed below them
+    hl = fork_point(625) + np.array([95, 0, 0])
+    mask = blob([hl + np.array([-60, -88, -30]), hl + np.array([-60, 88, -30]),
+                 hl + np.array([-45, -95, 65]), hl + np.array([-45, 95, 65]),
+                 hl + np.array([30, -45, 72]), hl + np.array([30, 45, 72]),
+                 hl + np.array([45, -72, 5]), hl + np.array([45, 72, 5]),
+                 hl + np.array([38, -30, -78]), hl + np.array([38, 30, -78]),
+                 hl + np.array([-30, 0, -95])], 9)
+    socket = cyl_between(hl + np.array([0, 0, -38]), hl + np.array([90, 0, -38]), 34, 32)
+    p.add("dark", mask - socket)
+    p.add("light", cyl_between(hl + np.array([0, 0, -38]), hl + np.array([46, 0, -38]), 34, 32))  # projector lens
     for s in (-1, 1):
-        p.add("light", capsule(hl + np.array([30, 35 * s, 55]), hl + np.array([45, 80 * s, 10]), 11))
+        p.add("light", blob([hl + np.array([40, 22 * s, 38]), hl + np.array([47, 70 * s, 18]),
+                             hl + np.array([40, 64 * s, 6])], 8))  # eyes
+    p.add("light", blob([hl + np.array([30, -18, 64]), hl + np.array([30, 18, 64])], 7))  # forehead
     p.add("dark", blob([hl + np.array([-60, -60, 0]), hl + np.array([-60, 60, 0]),
-                        fork_point(600) + head_off], 25))
+                        fork_point(600) + HEAD_OFF], 25))
 
     # front fender (short, sporty) on stays bolted to the fork legs
     prof = CrossSection.square((30, 180), center=True).translate((322, 0))
@@ -301,21 +340,13 @@ def front_end():
     return p, holes
 
 
-def mirror_mount(s):
-    """Top centre of the mirror boss on the handlebar perch (side s = -1 left, +1 right)."""
-    top = fork_point(720.0) + np.array([-55.0, 0, 0])
-    clamp = top + np.array([-10, 0, 45])
-    perch = clamp + np.array([-15, 220 * s, 20])
-    return perch + np.array([15, 45 * s, 60])
-
-
 def engine():
     p = Parts()
     # CP2 crankcase and gearbox
     p.add("dark", blob([(560, -130, 190), (560, 130, 190), (880, -120, 175), (880, 120, 175),
                         (540, -145, 420), (540, 145, 420), (870, -160, 430), (870, 160, 430),
-                        (700, -120, 150), (700, 120, 150)], 25))
-    p.add("dark", blob([(620, -100, 150), (620, 100, 150), (900, -90, 170), (900, 90, 170)], 20))
+                        (700, -120, 172), (700, 120, 172)], 25))
+    p.add("dark", blob([(620, -100, 168), (620, 100, 168), (900, -90, 180), (900, 90, 180)], 20))
     # crankcase parting line
     p.add("metal", blob([(545, -150, 300), (545, 150, 300), (900, -150, 300), (900, 150, 300)], 7)
           - box(600, 860, -140, 140, 200, 400))
@@ -368,8 +399,12 @@ def engine():
     # radiator behind the front wheel, raked like the forks
     rad_bot = np.array([985.0, 0, 420])
     rad_top = rad_bot + FORK_DIR * 330
-    p.add("dark", hull(box(rad_bot[0] - 25, rad_bot[0] + 25, -165, 125, rad_bot[2], rad_bot[2] + 5),
-                       box(rad_top[0] - 25, rad_top[0] + 25, -165, 125, rad_top[2] - 5, rad_top[2])))
+    rad = hull(box(rad_bot[0] - 25, rad_bot[0] + 25, -165, 125, rad_bot[2], rad_bot[2] + 5),
+               box(rad_top[0] - 25, rad_top[0] + 25, -165, 125, rad_top[2] - 5, rad_top[2]))
+    fins = union([capsule(rad_bot + FORK_DIR * t + np.array([30, -140, 0]),
+                          rad_bot + FORK_DIR * t + np.array([30, 100, 0]), 6, 8)
+                  for t in np.arange(30, 320, 26)])
+    p.add("dark", rad - fins)
     p.add("dark", capsule(rad_bot + np.array([0, -60, 40]), (870, -100, 420), 22))
     return p
 
@@ -380,27 +415,33 @@ def exhaust():
     for s in (-1, 1):
         y = 55 * s
         pts = [port + np.array([0, y, 0]), np.array((1040, y * 1.1, 520)), (1060, y * 1.0, 330),
-               (1000, y * 0.6, 190), (880, 15, 120)]
+               (1000, y * 0.6, 200), (880, 15, 172)]
         p.add("metal", chain(pts, 23))
         d = (pts[1] - pts[0]) / np.linalg.norm(pts[1] - pts[0])
         p.add("metal", cyl_between(pts[0] + d * 10, pts[0] + d * 35, 34, 32))  # port flange
-    p.add("metal", chain([(880, 15, 120), (700, 60, 115), (560, 120, 150)], 32))
-    p.add("dark", blob([(570, 95, 160), (570, 190, 170), (580, 110, 300), (575, 185, 300),
-                        (360, 110, 210), (360, 185, 215), (380, 110, 300), (380, 185, 305)], 18))
-    p.add("metal", ycyl((350, 145, 255), 30, 70), cyl_between((340, 145, 255), (320, 145, 262), 26))
+    p.add("metal", chain([(880, 15, 172), (700, 60, 172), (560, 120, 180)], 32))
+    can = blob([(570, 95, 168), (570, 190, 172), (580, 110, 300), (575, 185, 300),
+                (380, 110, 215), (380, 185, 220), (390, 110, 300), (390, 185, 305)], 18)
+    p.add("dark", can)
+    p.add("dark", blob([(560, 205, 195), (560, 205, 285), (420, 205, 230), (420, 205, 290)], 8)
+          - union([capsule((540 - 35 * k, 215, 215), (540 - 35 * k, 215, 275), 7, 12) for k in range(4)]))  # shield
+    p.add("metal", blob([(375, 105, 222), (375, 190, 226), (375, 110, 300), (375, 190, 303),
+                         (345, 125, 240), (345, 175, 240), (345, 125, 285), (345, 175, 285)], 12))  # end cap
+    for z in (250, 280):
+        p.add("dark", cyl_between((350, 150, z), (320, 150, z + 4), 13, 16))  # outlets
     return p
 
 
 def frame_and_rear():
     p = Parts()
-    head = fork_point(600) + np.array([-55, 0, 0])
+    head = fork_point(600) + HEAD_OFF
     # steel backbone: twin spars from the steering head over the engine
     for s in (-1, 1):
         y = 95 * s
         p.add("dark", chain([head + np.array([0, y * 0.5, 30]), (900, y, 780),
-                             (690, y * 1.2, 700), (600, y * 1.35, 560)], 24))
+                             (690, y * 1.2, 700), (600, y * 1.35, 560)], 28))
         p.add("dark", chain([head + np.array([0, y * 0.5, -60]), (940, y * 1.05, 640),
-                             (920, y * 1.05, 560)], 20))  # engine hanger
+                             (920, y * 1.05, 560)], 23))  # engine hanger
         p.add("dark", blob([(540, y * 1.35, 380), (630, y * 1.35, 380),
                             (560, y * 1.35, 640), (650, y * 1.35, 640)], 14))  # pivot plate
         p.add("dark", chain([(620, y * 1.25, 640), (350, y * 0.9, 770), (120, y * 0.6, 820)], 15))
@@ -415,9 +456,12 @@ def frame_and_rear():
     # aluminium swingarm, banana profile, braced ahead of the tyre
     for s in (-1, 1):
         y = ARM_Y * s
-        p.add("dark", hull(box(540, 610, y - 18, y + 18, 395, 490),
-                           box(330, 360, y - 16, y + 16, 335, 425),
-                           ycyl((10, y, 315), 34, 30)))
+        arm = hull(box(540, 610, y - 18, y + 18, 395, 490),
+                   box(330, 360, y - 16, y + 16, 335, 425),
+                   ycyl((10, y, 315), 34, 30))
+        recess = blob([(510, y + s * 18, 430), (400, y + s * 18, 400), (180, y + s * 18, 350),
+                       (180, y + s * 18, 375), (400, y + s * 18, 430), (510, y + s * 18, 460)], 9)
+        p.add("dark", arm - recess)
         p.add("metal", box(-45, 40, y - 22, y + 22, 300, 330))  # chain adjuster
     p.add("dark", box(380, 450, -ARM_Y, ARM_Y, 370, 440))
     p.add("metal", capsule((0, -ARM_Y - 32, 315), (0, ARM_Y + 32, 315), 15))  # axle
@@ -430,6 +474,8 @@ def frame_and_rear():
     # chain run (left) and rear caliper with its bracket (right)
     p.add("dark", capsule((0, -87, 420), (600, -150, 335), 9),
           capsule((0, -87, 210), (600, -150, 265), 9))
+    p.add("dark", blob([(120, -95, 440), (480, -125, 400), (480, -150, 400), (120, -112, 440),
+                        (300, -110, 445)], 6))  # chain guard
     p.add("dark", blob([(-60, 92, 210), (40, 92, 205)], 20),
           capsule((-10, 104, 215), (10, 112, 300), 14))
     return p
@@ -438,9 +484,24 @@ def frame_and_rear():
 def bodywork():
     p = Parts()
     # fuel tank with a sharp crease and recess for the rider's knees
-    p.add("paint", blob([(700, -125, 820), (700, 125, 820), (720, -110, 900), (720, 110, 900),
-                         (930, -150, 955), (930, 150, 955), (1080, -120, 950), (1080, 120, 950),
-                         (1110, -110, 840), (1110, 110, 840), (900, -160, 800), (900, 160, 800)], 22))
+    tank = blob([(700, -118, 820), (700, 118, 820), (720, -100, 900), (720, 100, 900),
+                 (930, -138, 950), (930, 138, 950), (1080, -112, 950), (1080, 112, 950),
+                 (1110, -100, 840), (1110, 100, 840), (900, -148, 800), (900, 148, 800),
+                 (1000, 0, 978), (800, 0, 945)], 22)
+    def tank_top(x):
+        return 922 + (x - 720) * 50 / 210  # flat crown line of the tank cover
+
+    vents, grilles = [], []
+    for x in (750, 820):  # four acoustic-amplifier vents, two each side of the crease
+        for s in (-1, 1):
+            pts = [(xx, s * yy, 0) for xx in (x, x + 50) for yy in (30, 58)]
+            z = tank_top(x + 25)
+            vents.append(union([blob([(px, py, z - 18) for px, py, _ in pts], 8),
+                                blob([(px, py, z + 40) for px, py, _ in pts], 8)]).hull())
+            grilles.append(blob([(px, py, z - 24) for px, py, _ in pts], 6))  # sits on the vent floor
+    p.add("paint", tank - union(vents))
+    p.add("dark", *grilles)
+    p.add("metal", blob([(1060, -18, 962), (1060, 18, 962), (1035, -18, 966), (1035, 18, 966)], 8))  # filler cap
     for s in (-1, 1):
         # angular air-intake shrouds with an inlet pocket
         sh = blob([(870, s * 150, 920), (1150, s * 140, 930), (1210, s * 185, 860),
@@ -450,6 +511,10 @@ def bodywork():
         vent = blob([(1120, s * 230, 820), (1180, s * 230, 790), (1110, s * 230, 700),
                      (1080, s * 205, 760)], 8)
         p.add("paint", sh - vent)
+        p.add("dark", blob([(980, s * 150, 610), (1080, s * 165, 600), (1150, s * 180, 700),
+                            (1120, s * 200, 800), (1000, s * 190, 720)], 8))  # inner layer
+        p.add("dark", blob([(1010, s * 140, 560), (1060, s * 150, 450), (1000, s * 145, 430),
+                            (960, s * 135, 560)], 8))  # radiator side cover
         # side panel / airbox cover sweeping from the tank back under the seat
         p.add("dark", blob([(730, s * 150, 810), (740, s * 140, 640), (620, s * 128, 610),
                             (470, s * 140, 700), (430, s * 145, 770), (600, s * 155, 790),
@@ -476,7 +541,7 @@ def bodywork():
     for s in (-1, 1):
         p.add("light", capsule((-240, s * 50, 665), (-255, s * 115, 675), 12))
     # belly pan / engine skid
-    p.add("dark", blob([(620, -110, 150), (620, 110, 150), (960, -80, 200), (960, 80, 200)], 10))
+    p.add("dark", blob([(640, -110, 205), (640, 110, 205), (960, -80, 215), (960, 80, 215)], 10))
     return p
 
 
@@ -493,8 +558,8 @@ def wheel_envelope(spec):
     """Space a wheel and its rotors sweep, plus running clearance, for the kit body."""
     c = tuple(spec["center"])
     disc_r = max(d[1] for d in spec["discs"])
-    return (ycyl(c, spec["outer_r"] + 8, spec["tyre_w"] + 12)
-            + ycyl(c, disc_r + 8, 2 * spec["collar"] + 4))
+    return (ycyl(c, spec["outer_r"] + 8.5, spec["tyre_w"] + 13)
+            + ycyl(c, disc_r + 8.5, 2 * spec["collar"] + 4.5))
 
 
 def axle_hole(spec):
@@ -605,8 +670,17 @@ def drop_to_bed(m):
     return m.translate((-(x0 + x1) / 2, -(y0 + y1) / 2, -z0))
 
 
-def write_stl(m, path):
+def float32_clean(m):
+    """Snap vertices to float32 (as STL stores them) and let manifold3d rebuild the
+    mesh, so sub-micron slivers collapse cleanly instead of leaving bad edges."""
     mesh = m.to_mesh()
+    v = np.asarray(mesh.vert_properties)[:, :3].astype(np.float32)
+    snapped = Manifold(Mesh(vert_properties=v, tri_verts=np.asarray(mesh.tri_verts, np.uint32)))
+    return snapped if snapped.status().name == "NoError" and not snapped.is_empty() else m
+
+
+def write_stl(m, path):
+    mesh = float32_clean(m).to_mesh()
     v = np.asarray(mesh.vert_properties)[:, :3].astype(np.float32)
     f = np.asarray(mesh.tri_verts)
     tri = v[f]

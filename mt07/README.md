@@ -63,7 +63,15 @@ pip install manifold3d numpy matplotlib
 python3 mt07.py --scale 12 --preview   # 1:12 (about 177 mm long)
 ```
 
-All geometry uses real dimensions (1395 mm wheelbase, 805 mm seat height,
-120/70-17 and 180/55-17 tyres, 24.8° rake). Pin holes, axle holes and mirror pegs
+All geometry uses Yamaha's published 2025 figures: 2065 × 780 × 1110 mm overall, 1395 mm wheelbase,
+805 mm seat height, 140 mm ground clearance, 24.3° rake with 94 mm trail, 120/70-17 and 180/55-17 tyres,
+twin 298 mm front discs and a 245 mm rear disc.
+
+2025-specific details modelled: the twin-eye LED face with a centre "forehead" light and a projector below,
+the narrower 14 L tank cover with four acoustic-amplifier vents, layered intake shrouds,
+the 41 mm upside-down fork with radially mounted 4-piston calipers, the 5" TFT under a short visor,
+the wider and lower handlebar, thicker backbone frame tubes, a swingarm with side recesses, and the
+short under-engine exhaust with its heat shield and end cap. The spoke pattern of the new SpinForged
+wheels is approximate. Pin holes, axle holes and mirror pegs
 are sized in printed millimetres, so they stay correct at any scale. Small parts such as
 brake discs, levers and footpegs are thickened so they survive printing at 1:18.
