@@ -9,7 +9,7 @@ A stylized 1:18 model of the 2025 Yamaha MT-07, generated in Python with
 
 | File | Size at 1:18 | How to print |
 |---|---|---|
-| `stl/mt07_full.stl` | 118 × 47 × 63 mm | One piece on a display base. Print upright with tree/organic supports. |
+| `stl/mt07_full.stl` | 118 × 47 × 63 mm | One piece on a display base with raised “MT-07” lettering. Print upright with tree/organic supports. |
 | `stl/mt07_half_left.stl` + `stl/mt07_half_right.stl` | 112 × 60 × 23 mm each | Cut face down, **no supports**. Glue the halves together. |
 
 For the halves, push 3.5 mm pieces of 1.75 mm filament into the two 2.1 mm holes

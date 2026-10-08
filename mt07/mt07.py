@@ -346,20 +346,26 @@ def bodywork():
         vent = blob([(1120, s * 230, 820), (1180, s * 230, 790), (1110, s * 230, 700),
                      (1080, s * 205, 760)], 8)
         parts[-1] = parts[-1] - vent
-        # side panel / airbox cover between tank and seat
-        parts.append(blob([(560, s * 125, 650), (720, s * 140, 640), (720, s * 145, 800),
-                           (560, s * 120, 790), (640, s * 60, 700)], 10))
-    # seat: rider section low, pillion stepped up
-    parts.append(blob([(440, -150, 800), (440, 150, 800), (690, -125, 805), (690, 125, 805),
-                       (730, -80, 830), (730, 80, 830), (440, -150, 740), (690, -130, 730),
-                       (440, 150, 740), (690, 130, 730)], 18))
-    parts.append(blob([(200, -110, 860), (200, 110, 860), (380, -120, 850), (380, 120, 850),
-                       (420, -130, 780), (420, 130, 780), (220, -100, 780), (220, 100, 780)], 16))
-    # short, kicked-up tail unit and LED tail light
-    parts.append(blob([(420, -140, 760), (420, 140, 760), (150, -105, 810), (150, 105, 810),
-                       (-60, -45, 890), (-60, 45, 890), (-70, -35, 860), (-70, 35, 860),
-                       (200, -90, 730), (200, 90, 730)], 10))
-    parts.append(blob([(-75, -40, 870), (-75, 40, 870), (-90, -25, 880), (-90, 25, 880)], 10))
+        # side panel / airbox cover sweeping from the tank back under the seat
+        parts.append(blob([(730, s * 150, 810), (740, s * 140, 640), (620, s * 128, 610),
+                           (470, s * 140, 700), (430, s * 145, 770), (600, s * 155, 790),
+                           (640, s * 70, 640)], 10))
+        # tail-cowl side flank with a sharp lower crease
+        parts.append(blob([(470, s * 142, 770), (450, s * 132, 700), (250, s * 112, 750),
+                           (60, s * 75, 820), (-55, s * 48, 860), (40, s * 85, 870),
+                           (300, s * 128, 830), (250, s * 40, 760)], 8))
+    # rider seat: dished, narrow at the tank, wider at the rear
+    parts.append(blob([(730, -95, 830), (730, 95, 830), (640, -140, 808), (640, 140, 808),
+                       (470, -150, 800), (470, 150, 800), (430, -140, 815), (430, 140, 815),
+                       (740, -110, 760), (740, 110, 760), (440, -140, 745), (440, 140, 745)], 18))
+    # pillion pad stepped up above the rider seat
+    parts.append(blob([(420, -120, 860), (420, 120, 860), (180, -95, 885), (180, 95, 885),
+                       (440, -130, 800), (440, 130, 800), (170, -85, 820), (170, 85, 820)], 16))
+    # tail unit: short and upswept, ending in a slim LED light bar
+    parts.append(blob([(200, -100, 870), (200, 100, 870), (-55, -45, 900), (-55, 45, 900),
+                       (-75, -35, 870), (-75, 35, 870), (200, -95, 790), (-20, -40, 830),
+                       (200, 95, 790), (-20, 40, 830)], 10))
+    parts.append(blob([(-80, -42, 885), (-80, 42, 885), (-95, -28, 875), (-95, 28, 875)], 9))
     # licence plate hugger arm and plate
     parts.append(capsule((80, 0, 760), (-140, 0, 610), 22))
     plate = box(-12, 12, -90, 90, -65, 65).rotate((0, 25, 0)).translate((-160, 0, 590))
@@ -371,11 +377,38 @@ def bodywork():
     return union(parts)
 
 
+def fill_voids(m):
+    """Remove sealed internal cavities (inside-out shells) left by overlapping parts."""
+    return Manifold.compose([p for p in m.decompose() if p.volume() > 0])
+
+
 def motorcycle():
     front = wheel(FRONT_AXLE, 300, 120, 149, (-78, 78))
     rear = wheel(REAR_AXLE, 315, 180, 122, (92,))
-    return union([front, rear, front_end(), engine(), exhaust(),
-                  frame_and_rear(), bodywork()])
+    return fill_voids(union([front, rear, front_end(), engine(), exhaust(),
+                             frame_and_rear(), bodywork()]))
+
+
+# simple stroke font, glyph cell 0.6 wide x 1 tall
+GLYPHS = {
+    "M": [[(0, 0), (0, 1), (0.3, 0.45), (0.6, 1), (0.6, 0)]],
+    "T": [[(0, 1), (0.6, 1)], [(0.3, 1), (0.3, 0)]],
+    "-": [[(0.1, 0.5), (0.5, 0.5)]],
+    "0": [[(0, 0), (0.6, 0), (0.6, 1), (0, 1), (0, 0)]],
+    "7": [[(0, 1), (0.6, 1), (0.2, 0)]],
+}
+
+
+def lettering(text, x0, y0, height, stroke, depth):
+    """Raised stroke lettering lying in the xy plane, reading along +x."""
+    strokes, r = [], stroke / 2
+    for i, ch in enumerate(text):
+        for line in GLYPHS[ch]:
+            for (u0, v0), (u1, v1) in zip(line, line[1:]):
+                a = CrossSection.circle(r, 16).translate((x0 + (i * 0.9 + u0) * height, y0 + v0 * height))
+                b = CrossSection.circle(r, 16).translate((x0 + (i * 0.9 + u1) * height, y0 + v1 * height))
+                strokes.append(CrossSection.batch_hull([a, b]))
+    return CrossSection.batch_boolean(strokes, OpType.Add).extrude(depth)
 
 
 def display_base(bike):
@@ -384,11 +417,11 @@ def display_base(bike):
     w = 430.0
     slab = CrossSection.square((xmax - xmin - 2 * 60, w - 2 * 60)).offset(60, 0, circular_segments=32)
     slab = slab.translate((xmin + 60, -w / 2 + 60)).extrude(40).translate((0, 0, -36))
-    bevel = CrossSection.square((xmax - xmin - 2 * 80, w - 2 * 80)).offset(60, 0, circular_segments=32)
     # small raised kerb stripes for a bit of character
-    stripes = union([box(xmin + 120 + i * 110, xmin + 170 + i * 110, -w / 2 + 25, -w / 2 + 45, 0, 10)
+    stripes = union([box(xmin + 120 + i * 110, xmin + 170 + i * 110, w / 2 - 45, w / 2 - 25, 0, 10)
                      for i in range(int((xmax - xmin - 240) / 110) + 1)])
-    return slab + stripes
+    label = lettering("MT-07", 720, -w / 2 + 28, 75, 16, 14)
+    return slab + stripes + label
 
 
 PIN_HOLES = [(720.0, 300.0), (930.0, 880.0)]  # (x, z) positions on the y=0 plane
