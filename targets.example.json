@@ -1,0 +1,6 @@
+{
+  "labor_pct_max": 24.0,
+  "food_cost_pct_max": 29.0,
+  "avg_ticket_min": 12.50,
+  "avg_delivery_minutes_max": 15.0
+}
