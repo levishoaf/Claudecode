@@ -106,6 +106,16 @@ def to_xz(m):
     return m.rotate((-90, 0, 0))
 
 
+def grow(m, amount=0.2):
+    """Scale a solid about its centre so it is about `amount` mm larger overall."""
+    if m.is_empty():
+        return m
+    b = m.bounding_box()
+    c = np.array([(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2])
+    k = 1 + amount / max(b[3] - b[0], b[4] - b[1], b[5] - b[2])
+    return m.translate(tuple(-c)).scale((k, k, k)).translate(tuple(c))
+
+
 def fill_voids(m):
     """Remove sealed internal cavities (inside-out shells) left by overlapping parts."""
     return Manifold.compose([p for p in m.decompose() if p.volume() > 0])
@@ -141,7 +151,7 @@ class Parts:
         for k in GROUPS:
             m = union(self.g[k])
             if not m.is_empty():
-                out[k] = m - taken
+                out[k] = m - grow(taken)  # grown a hair so tangent surfaces don't pinch
                 taken = taken + m
         return out
 
