@@ -260,6 +260,7 @@ def front_end():
         p.add("metal", cyl_between(fork_point(-10, y), fork_point(330, y), 22, 32))
         p.add("dark", cyl_between(fork_point(300, y), fork_point(TOP_CLAMP + 20, y), 30, 32),
               cyl_between(fork_point(296, y), fork_point(320, y), 33, 32))  # dust seal ring
+        p.add("light", blob([fork_point(290, y) + np.array([20, 0, 0]), fork_point(250, y) + np.array([22, 0, 0])], 9))  # reflector
         p.add("metal", cyl_between(fork_point(TOP_CLAMP + 12, y), fork_point(TOP_CLAMP + 38, y), 22, 24))  # cap, sunk into the tube
         # axle clamp with pinch-bolt slot, and a small fork guard
         lug = blob([fork_point(-25, y), fork_point(40, y)], 30)
@@ -291,7 +292,7 @@ def front_end():
     for s in (-1, 1):
         bar = bar_points(s)
         p.add("dark", capsule(top + np.array([0, 30 * s, 0]), bar[0], 16))
-        p.add("dark", chain(bar, 13))
+        p.add("metal", chain(bar, 13))  # silver tapered bar
         p.add("dark", capsule(bar[2] + np.array([5, -75 * s, -5]), bar[2] + np.array([0, 25 * s, 2]), 19))  # grip
         p.add("metal", sphere(bar[2] + np.array([0, 32 * s, 2]), 18))  # bar-end weight
         p.add("dark", blob([bar[1] + np.array([-5, 15 * s, 0]), bar[1] + np.array([25, 75 * s, 10]),
@@ -333,7 +334,7 @@ def front_end():
     # front fender (short, sporty) on stays bolted to the fork legs
     prof = CrossSection.square((30, 180), center=True).translate((322, 0))
     fender = to_xz(prof.revolve(SEG * 2, 85)).rotate((0, -140, 0))
-    p.add("paint", fender.translate(tuple(FRONT_AXLE)))
+    p.add("dark", fender.translate(tuple(FRONT_AXLE)))
     for s in (-1, 1):
         y = (FORK_Y - 15) * s
         p.add("dark", capsule(fork_point(200, y), fork_point(130, y) + np.array([60, 0, 120]), 14))
@@ -348,7 +349,7 @@ def engine():
                         (700, -120, 172), (700, 120, 172)], 25))
     p.add("dark", blob([(620, -100, 168), (620, 100, 168), (900, -90, 180), (900, 90, 180)], 20))
     # crankcase parting line
-    p.add("metal", blob([(545, -150, 300), (545, 150, 300), (900, -150, 300), (900, 150, 300)], 7)
+    p.add("dark", blob([(545, -150, 300), (545, 150, 300), (900, -150, 300), (900, 150, 300)], 7)
           - box(600, 860, -140, 140, 200, 400))
     # cylinder block leaning forward with deep cooling fins
     cyl_axis = np.array([math.sin(math.radians(40)), 0, math.cos(math.radians(40))])
@@ -368,7 +369,7 @@ def engine():
     # cam cover with raised ribs and twin spark-plug covers
     cover = head + cyl_axis * 25
     up = cyl_axis * 45
-    p.add("metal", blob([cover + np.array([-70, -135, 0]), cover + np.array([70, -135, 0]),
+    p.add("dark", blob([cover + np.array([-70, -135, 0]), cover + np.array([70, -135, 0]),
                          cover + np.array([-70, 135, 0]), cover + np.array([70, 135, 0]),
                          cover + up + np.array([-40, -110, 0]), cover + up + np.array([40, 110, 0]),
                          cover + up + np.array([-40, 110, 0]), cover + up + np.array([40, -110, 0])], 14))
@@ -379,7 +380,7 @@ def engine():
         p.add("dark", cyl_between(cover + up * 0.8 + np.array([0, y, 0]),
                                   cover + up * 1.5 + np.array([0, y, 0]), 24, 24))
     # side covers: clutch (right), alternator (left), sprocket cover (left)
-    p.add("metal", ycyl((700, 160, 310), 105, 60), ycyl((620, -160, 290), 95, 60))
+    p.add("dark", ycyl((700, 160, 310), 105, 60), ycyl((620, -160, 290), 95, 60))
     p.add("dark", ycyl((700, 192, 310), 80, 20), ycyl((620, -188, 290), 70, 16))
     for a in np.linspace(0, 2 * math.pi, 8, endpoint=False):  # cover bolts
         p.add("dark", sphere((700 + 92 * math.cos(a), 190, 310 + 92 * math.sin(a)), 10, 12),
@@ -501,16 +502,24 @@ def bodywork():
             vents.append(union([blob([(px, py, z - 18) for px, py, _ in pts], 8),
                                 blob([(px, py, z + 40) for px, py, _ in pts], 8)]).hull())
             grilles.append(blob([(px, py, z - 24) for px, py, _ in pts], 6))  # sits on the vent floor
-    p.add("paint", tank - union(vents))
+    tank = tank - union(vents)
+    side_zone = Manifold.hull_points([(x, y, z) for x, zt in ((765, 865), (1200, 970))
+                                      for y in (-300, 300) for z in (600, zt)])
+    p.add("dark", tank)                 # matte black top cover
+    p.add("paint", tank ^ side_zone)    # blue tank side panels
     p.add("dark", *grilles)
-    p.add("metal", blob([(1060, -18, 962), (1060, 18, 962), (1035, -18, 966), (1035, 18, 966)], 8))  # filler cap
+    p.add("metal", cyl_between((1045, 0, 955), (1043, 0, 984), 38, 32))  # round filler cap
     for s in (-1, 1):
         # angular side covers flowing down from the tank (MT-09 lines)
-        sh = blob([(870, s * 150, 920), (1150, s * 140, 930), (1210, s * 185, 860),
-                   (1170, s * 215, 760), (1070, s * 220, 640), (960, s * 205, 600),
-                   (870, s * 170, 680), (920, s * 210, 820),
-                   (900, s * 120, 700), (1120, s * 120, 700)], 9)
-        p.add("paint", sh)  # 2025: no side intake vents behind the forks
+        sh = blob([(1030, s * 150, 935), (1150, s * 140, 940), (1210, s * 185, 860),
+                   (1170, s * 210, 760), (1080, s * 205, 620), (1000, s * 190, 600),
+                   (975, s * 175, 700), (1010, s * 195, 850),
+                   (1000, s * 120, 700), (1120, s * 120, 700)], 9)
+        p.add("dark", sh)  # 2025: black side covers, no intake vents behind the forks
+        p.add("metal", ycyl((1110, s * 212, 735), 22, 20, 24))  # tuning-fork emblem
+        # big blue tank side panel: top edge rising toward the front, meeting the black cover
+        p.add("paint", blob([(765, s * 118, 870), (1050, s * 165, 948), (1065, s * 192, 865),
+                             (1010, s * 188, 770), (800, s * 140, 800), (900, s * 178, 885)], 8))
         p.add("dark", blob([(980, s * 150, 610), (1080, s * 165, 600), (1150, s * 180, 700),
                             (1120, s * 200, 800), (1000, s * 190, 720)], 8))  # inner layer
         p.add("dark", blob([(1010, s * 140, 560), (1060, s * 150, 450), (1000, s * 145, 430),
@@ -520,7 +529,9 @@ def bodywork():
                             (470, s * 140, 700), (430, s * 145, 770), (600, s * 155, 790),
                             (640, s * 70, 640)], 10))
         # tail-cowl side flank with a sharp lower crease
-        p.add("paint", blob([(470, s * 142, 770), (450, s * 132, 700), (250, s * 112, 750),
+        p.add("paint", blob([(485, s * 146, 775), (470, s * 139, 715), (300, s * 120, 770),
+                             (330, s * 127, 815), (450, s * 143, 805)], 8))  # blue accent under the seat step
+        p.add("dark", blob([(470, s * 142, 770), (450, s * 132, 700), (250, s * 112, 750),
                              (60, s * 75, 820), (-55, s * 48, 860), (40, s * 85, 870),
                              (300, s * 128, 830), (250, s * 40, 760)], 8))
     # rider seat: dished, narrow at the tank, wider at the rear
@@ -531,16 +542,17 @@ def bodywork():
     p.add("dark", blob([(420, -120, 860), (420, 120, 860), (180, -95, 885), (180, 95, 885),
                         (440, -130, 800), (440, 130, 800), (170, -85, 820), (170, 85, 820)], 16))
     # tail unit: short and upswept, ending in a slim LED light bar
-    p.add("paint", blob([(200, -100, 870), (200, 100, 870), (-55, -45, 900), (-55, 45, 900),
+    p.add("dark", blob([(200, -100, 870), (200, 100, 870), (-55, -45, 900), (-55, 45, 900),
                          (-75, -35, 870), (-75, 35, 870), (200, -95, 790), (-20, -40, 830),
                          (200, 95, 790), (-20, 40, 830)], 10))
     p.add("light", blob([(-80, -12, 902), (-80, 12, 902), (-84, -9, 848), (-84, 9, 848)], 7))  # vertical LED line
-    # licence plate hugger arm, plate and indicators
-    p.add("dark", blob([(120, -55, 800), (120, 55, 800), (60, -45, 770), (60, 45, 770),
-                        (-230, -90, 690), (-230, 90, 690), (-230, -80, 660), (-230, 80, 660)], 10))  # rear fender
-    p.add("light", box(-12, 12, -90, 90, -65, 65).rotate((0, 25, 0)).translate((-260, 0, 620)))
+    # long, slim licence-plate bracket reaching well behind the tyre
+    p.add("dark", chain([(120, 0, 795), (-150, 0, 735), (-340, 0, 702)], 20),
+          blob([(-330, -35, 702), (-330, 35, 702), (-378, -30, 690), (-378, 30, 690)], 14))
+    p.add("light", box(-12, 12, -90, 90, -60, 60).rotate((0, 10, 0)).translate((-388, 0, 632)))
     for s in (-1, 1):
-        p.add("light", capsule((-240, s * 50, 665), (-255, s * 115, 675), 12))
+        p.add("dark", capsule((-335, s * 30, 702), (-350, s * 100, 712), 10))  # indicator stalk
+        p.add("light", capsule((-350, s * 100, 712), (-362, s * 125, 716), 13))  # indicator
     # belly pan / engine skid
     p.add("dark", blob([(640, -110, 205), (640, 110, 205), (960, -80, 215), (960, 80, 215)], 10))
     return p
@@ -615,7 +627,7 @@ def lettering(text, x0, y0, height, stroke, depth):
 
 
 def display_base():
-    xmin, xmax, w = -375.0, 1755.0, 430.0
+    xmin, xmax, w = -470.0, 1755.0, 430.0
     slab = CrossSection.square((xmax - xmin - 2 * 60, w - 2 * 60)).offset(60, 0, circular_segments=32)
     # slab top sits 4 mm above the ground plane so the tyres sink into it
     slab = slab.translate((xmin + 60, -w / 2 + 60)).extrude(40).translate((0, 0, -36))

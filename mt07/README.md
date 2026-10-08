@@ -9,7 +9,7 @@ You only need **one** of the three versions below. The mirrors are an optional a
 
 ## 1. One piece (`stl/mt07_full.stl`)
 
-118 × 47 × 62 mm on a display base with raised “MT-07” lettering.
+124 × 47 × 63 mm on a display base with raised “MT-07” lettering.
 Print upright with tree/organic supports.
 
 ## 2. Two halves (`stl/mt07_half_left.stl`, `stl/mt07_half_right.stl`)
@@ -41,10 +41,10 @@ Trim the filament flush and add a drop of glue at the ends.
 Import all four together as **one object with multiple parts** in PrusaSlicer, OrcaSlicer or Bambu Studio,
 then give each part a filament. Suggested colours:
 
-- `paint`: Icon Blue (tank, shrouds, tail, wheels, fender, shock spring)
-- `dark`: black (frame, engine, tyres, seat, base)
-- `metal`: silver (discs, exhaust, fork tubes, engine covers, lettering)
-- `light`: white (headlight, tail light, indicators, number plate)
+- `paint`: Icon Blue (tank side panels, small accent under the seat step, wheels, shock spring)
+- `dark`: matte black (tank top cover, side covers, frame, engine, swingarm, tail, seat, tyres, base)
+- `metal`: silver (handlebar, discs, exhaust, fork inner tubes, filler cap, emblems, lettering)
+- `light`: white (headlight, tail light, indicators, reflectors, number plate)
 
 ## Mirrors (`stl/mt07_mirrors.stl`)
 
@@ -74,6 +74,6 @@ the 41 mm upside-down fork with radially mounted 4-piston calipers; the 5" TFT u
 wider, lower handlebar; thicker backbone frame tubes; the new asymmetric steel swingarm; the 2-into-1
 exhaust with its catalytic converter near the headers; the slim vertical LED tail light; and the factory
 rear fender carrying the plate. The spoke pattern of the new SpinForged wheels isn't published, so the
-wheels are approximate. Pin holes, axle holes and mirror pegs
+wheels are approximate. Colours, the side covers, the tank panel and the long plate bracket were checked against a photo of a 2025 Icon Blue bike. Pin holes, axle holes and mirror pegs
 are sized in printed millimetres, so they stay correct at any scale. Small parts such as
 brake discs, levers and footpegs are thickened so they survive printing at 1:18.
