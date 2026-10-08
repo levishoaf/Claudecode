@@ -45,7 +45,8 @@ def _heading(text, markdown, level=2):
     return f"{text}\n{'=' * len(text)}" if level == 1 else f"{text}\n{'-' * len(text)}"
 
 
-def render(records, summary, weekdays, trend, findings, targets, markdown=False, store=None):
+def render(records, summary, weekdays, trend, findings, targets, markdown=False, store=None,
+           dayparts=None, shifts=None, add_ons=None):
     out = []
     title = "Jimmy John's Store Performance Report" + (f" — {store}" if store else "")
     out.append(_heading(title, markdown, 1))
@@ -54,6 +55,9 @@ def render(records, summary, weekdays, trend, findings, targets, markdown=False,
         f"Net sales: ${summary['total_sales']:,.0f} (avg ${summary['avg_daily_sales']:,.0f}/day)  ·  "
         f"Orders: {summary['total_transactions']:,.0f} (avg {summary['avg_daily_transactions']:,.0f}/day)"
     )
+    if summary["days"] < 28:
+        out.append(f"Note: only {summary['days']} days of data. Day-of-week and shift results come from "
+                   f"just a few samples each — load 4+ weeks for patterns you can trust.")
 
     # Scorecard
     rows = scorecard(summary, targets)
@@ -95,17 +99,38 @@ def render(records, summary, weekdays, trend, findings, targets, markdown=False,
     # Day of week
     if len(weekdays) > 1:
         out.append(_heading("By day of week", markdown))
+        cols = [("Avg sales", "avg_daily_sales", "money"), ("Avg orders", "avg_daily_transactions", "count"),
+                ("Avg ticket", "avg_ticket", "money"), ("Labor %", "labor_pct", "pct"),
+                ("SPLH", "sales_per_labor_hour", "money"), ("Waste %", "waste_pct", "pct")]
+        cols = [c for c in cols if any(m[c[1]] is not None for m in weekdays.values())]
         out.append(_table(
-            ["Day", "Avg sales", "Avg orders", "Avg ticket", "Labor %", "SPLH", "Waste %"],
-            [[day, fmt_value(m["avg_daily_sales"], "money"),
-              f"{m['avg_daily_transactions']:,.0f}",
-              fmt_value(m["avg_ticket"], "money"),
-              fmt_value(m["labor_pct"], "pct"),
-              fmt_value(m["sales_per_labor_hour"], "money"),
-              fmt_value(m["waste_pct"], "pct")]
+            ["Day"] + [c[0] for c in cols],
+            [[day] + [f"{m[key]:,.0f}" if fmt == "count" else fmt_value(m[key], fmt)
+                      for _, key, fmt in cols]
              for day, m in weekdays.items()],
             markdown,
         ))
+
+    # Shifts
+    if dayparts:
+        out.append(_heading("By shift", markdown))
+        rows = [[name, fmt_value(m["avg_daily_sales"], "money"),
+                 f"{m['avg_daily_transactions']:,.0f}",
+                 fmt_value(m["avg_ticket"], "money"),
+                 fmt_value(m["labor_pct"], "pct")]
+                for name, m in list(dayparts.items()) + list((shifts or {}).items())]
+        out.append(_table(["Shift", "Avg sales", "Avg orders", "Avg ticket", "Labor %"], rows, markdown))
+
+    # Add-ons
+    if add_ons:
+        out.append(_heading("Add-ons per 100 orders", markdown))
+        out.append(_table(
+            ["Item", "Sold", "Per 100 orders", "Avg price"],
+            [[name, f"{a['count']:,.0f}", f"{a['per_100_orders']:.0f}", fmt_value(a["avg_price"], "money")]
+             for name, a in add_ons.items()],
+            markdown,
+        ))
+        out.append("Counts are items sold on their own; combos already include a side and a drink.")
 
     # Trend
     if trend:
@@ -124,7 +149,9 @@ def render(records, summary, weekdays, trend, findings, targets, markdown=False,
                          _fmt_change(t["recent"] - t["earlier"], fmt)])
         out.append(_table(["Metric", "Earlier", "Recent", "Change"], rows, markdown))
 
-    missing = [label for key, (label, *_rest) in SCORECARD.items() if summary.get(key) is None]
+    missing = [label for key, (label, *_rest) in SCORECARD.items() if summary.get(key) is None
+               and not (key.startswith("online_") and (summary.get("online_mix_pct") is not None
+                                                       or summary.get("online_sales_pct") is not None))]
     if missing:
         out.append(_heading("Not measured", markdown))
         out.append("Add these columns to your data to get advice on them: " + ", ".join(missing) + ".")
@@ -132,7 +159,8 @@ def render(records, summary, weekdays, trend, findings, targets, markdown=False,
     return "\n\n".join(out) + "\n"
 
 
-def to_json(records, summary, weekdays, trend, findings, targets):
+def to_json(records, summary, weekdays, trend, findings, targets,
+            dayparts=None, shifts=None, add_ons=None):
     def default(o):
         if isinstance(o, date):
             return o.isoformat()
@@ -154,6 +182,9 @@ def to_json(records, summary, weekdays, trend, findings, targets):
             for f in findings
         ],
         "by_weekday": weekdays,
+        "by_shift": dayparts or {},
+        "by_weekday_shift": shifts or {},
+        "add_ons": add_ons or {},
         "trend": trend,
     }
     return json.dumps(payload, indent=2, default=default) + "\n"

@@ -29,6 +29,7 @@ OPTIONAL_COLUMNS = (
     "late_deliveries",      # deliveries over the delivery-time target
     "online_orders",        # app + web orders (pickup and delivery)
     "catering_sales",       # catering / box-lunch revenue ($)
+    "online_sales",         # app + web order revenue ($)
     "complaints",           # customer complaints logged
     "avg_service_seconds",  # in-store order-to-handoff time
 )
@@ -62,6 +63,7 @@ ALIASES = {
     "late_deliveries": ["late orders", "late delivery count"],
     "online_orders": ["online order count", "web orders", "app orders"],
     "catering_sales": ["catering", "catering net sales", "catering revenue"],
+    "online_sales": ["online net sales", "total online sales", "online revenue"],
     "complaints": ["complaint count", "guest complaints"],
     "avg_service_seconds": ["avg service time", "average service time", "service time"],
 }
@@ -78,6 +80,8 @@ class DayRecord:
     net_sales: float
     transactions: float
     values: dict = field(default_factory=dict)
+    # Optional shift split, e.g. {"AM": {"net_sales": ..., "labor_cost": ...}, "PM": {...}}
+    parts: dict = field(default_factory=dict)
 
     def get(self, name):
         """Return an optional column's value, or None if it wasn't provided."""
@@ -236,33 +240,75 @@ def read_file(path, mapping=None):
     return sums, matched
 
 
-def load_csv(paths, mapping=None, warn=sys.stderr):
-    """Read and merge one or more CSV files into DayRecords sorted by date."""
+@dataclass
+class Dataset:
+    records: list
+    item_mix: dict = None  # weekly add-on item counts, when the export has them
+
+
+def _read_any(path, mapping):
+    """Return (days, parts, item_mix) for a CSV export or a PDQ Weekly Sales Report."""
+    from . import pdq
+
+    if path.lower().endswith((".xls", ".xlsx")) or _looks_like_pdq_csv(path):
+        if path.lower().endswith(".xlsx"):
+            raise DataError(f"{path}: .xlsx isn't supported yet; save it as CSV from Excel.")
+        grid = pdq.read_grid(path)
+        if not pdq.is_weekly_sales_report(grid):
+            raise DataError(f"{path}: only PDQ Weekly Sales Reports can be read from Excel files; "
+                            f"save other reports as CSV.")
+        return pdq.parse_weekly_sales(grid, path)
+    days, _matched = read_file(path, mapping)
+    return days, {}, None
+
+
+def _looks_like_pdq_csv(path):
+    from . import pdq
+
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        head = [row for _, row in zip(range(5), csv.reader(f))]
+    return pdq.is_weekly_sales_report(head)
+
+
+def load_files(paths, mapping=None, warn=sys.stderr):
+    """Read and merge one or more exports into a Dataset with DayRecords sorted by date."""
     if isinstance(paths, str):
         paths = [paths]
-    merged = {}  # date -> {column: value}
-    source = {}  # column -> file that provided it
+    merged = {}        # date -> {column: value}
+    merged_parts = {}  # date -> {daypart: {column: value}}
+    source = {}        # (date, column) -> file that provided it
+    found = set()      # columns seen in any file
+    item_mix = None
     for path in paths:
-        days, matched = read_file(path, mapping)
-        for column in matched:
-            if column == "date":
-                continue
-            if column in source and source[column] != path:
-                raise DataError(f"'{column}' was found in both {source[column]} and {path}; "
-                                f"remove it from one file or map it explicitly.")
-            source[column] = path
+        days, parts, items = _read_any(path, mapping)
         for day, values in days.items():
+            for column in values:
+                if (day, column) in source:
+                    raise DataError(f"{day}: '{column}' appears in both {source[day, column]} and "
+                                    f"{path}. Remove the duplicate file or column.")
+                source[day, column] = path
+            found.update(values)
             merged.setdefault(day, {}).update(values)
+        for day, by_part in parts.items():
+            merged_parts.setdefault(day, {}).update(by_part)
+        if items:
+            if item_mix is None:
+                item_mix = {"orders": 0.0, "items": {}}
+            item_mix["orders"] += items["orders"]
+            for name, item in items["items"].items():
+                acc = item_mix["items"].setdefault(name, {"count": 0.0, "sales": 0.0})
+                acc["count"] += item["count"]
+                acc["sales"] += item["sales"]
 
     for column in ("net_sales", "transactions"):
-        if column not in source:
+        if column not in found:
             raise DataError(
                 f"no '{column}' column found in {', '.join(paths)}. Run with --show-columns to "
                 f"see what was recognized, then add a column mapping (--map).")
 
     records, skipped = [], 0
     for day in sorted(merged):
-        values = merged[day]
+        values = dict(merged[day])
         if "net_sales" not in values or "transactions" not in values:
             skipped += 1
             continue
@@ -271,21 +317,35 @@ def load_csv(paths, mapping=None, warn=sys.stderr):
             net_sales=values.pop("net_sales"),
             transactions=values.pop("transactions"),
             values=values,
+            parts=merged_parts.get(day, {}),
         ))
     if skipped and warn:
         print(f"warning: skipped {skipped} day(s) that had no sales or order count", file=warn)
     if not records:
         raise DataError(f"no data rows found in {', '.join(paths)}")
-    return records
+    return Dataset(records, item_mix)
+
+
+def load_csv(paths, mapping=None, warn=sys.stderr):
+    """Read and merge one or more exports into DayRecords sorted by date."""
+    return load_files(paths, mapping, warn).records
 
 
 def describe_columns(paths, mapping=None):
     """Human-readable summary of which headers were matched in each file."""
     lines = []
+    from . import pdq
+
     for path in paths:
+        lines.append(path)
+        if path.lower().endswith(".xls") or _looks_like_pdq_csv(path):
+            lines.append("  PDQ Weekly Sales Report:")
+            for column, labels in pdq.ROWS.items():
+                lines.append(f"  {column:<22} <- " + " + ".join(repr(l) for l in labels))
+            lines.append("  add-on counts          <- " + ", ".join(pdq.ITEMS))
+            continue
         with open(path, newline="", encoding="utf-8-sig") as f:
             rows = list(csv.reader(f))
-        lines.append(path)
         try:
             header_at = _find_header(rows, mapping or {}, path)
         except DataError as e:

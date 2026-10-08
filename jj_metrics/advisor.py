@@ -14,6 +14,7 @@ SCORECARD = {
     "avg_delivery_minutes": ("Avg delivery time", "avg_delivery_minutes_max", "max", "minutes"),
     "late_delivery_pct": ("Late deliveries", "late_delivery_pct_max", "max", "pct"),
     "online_mix_pct": ("Online order mix", "online_mix_pct_min", "min", "pct"),
+    "online_sales_pct": ("Online sales mix", "online_sales_pct_min", "min", "pct"),
     "catering_pct": ("Catering % of sales", "catering_pct_min", "min", "pct"),
     "complaints_per_1000": ("Complaints / 1,000 orders", "complaints_per_1000_max", "max", "number"),
     "avg_service_seconds": ("In-store service time", "avg_service_seconds_max", "max", "seconds"),
@@ -53,6 +54,21 @@ def _gap(actual, target, direction):
     return max(miss, 0.0) / target
 
 
+def _daypart_labor_notes(dayparts, shifts, target):
+    """Lines pointing at which shifts drive labor over target."""
+    notes = []
+    rated = [(p, m["labor_pct"]) for p, m in dayparts.items() if m.get("labor_pct") is not None]
+    if len(rated) > 1:
+        notes.append("By shift: " + ", ".join(f"{p} {pct:.1f}%" for p, pct in rated) + ".")
+    heavy = sorted(((name, m["labor_pct"]) for name, m in shifts.items()
+                    if m.get("labor_pct") is not None and m["labor_pct"] > target),
+                   key=lambda x: x[1], reverse=True)[:3]
+    if heavy:
+        notes.append("Heaviest shifts: " + ", ".join(f"{n} {pct:.1f}%" for n, pct in heavy)
+                     + " — review staffing on these first.")
+    return notes
+
+
 def _worst_weekday(weekdays, key, highest=True):
     rows = [(name, m[key]) for name, m in weekdays.items() if m.get(key) is not None]
     if len(rows) < 2:
@@ -60,8 +76,18 @@ def _worst_weekday(weekdays, key, highest=True):
     return (max if highest else min)(rows, key=lambda x: x[1])
 
 
-def advise(summary, weekdays, trend, targets):
-    """Return a list of Findings, most valuable first."""
+# What-if used for add-on items: selling this many more per 100 orders.
+ADD_ON_LIFT_PER_100 = 5
+ADD_ON_ITEMS = ("Cookies", "Sides (chips, pickles)", "Drinks")
+
+
+def advise(summary, weekdays, trend, targets, dayparts=None, shifts=None, add_ons=None):
+    """Return a list of Findings, most valuable first.
+
+    dayparts / shifts are metrics by shift ("PM") and weekday + shift ("Monday PM")
+    when the data has a shift split; add_ons is metrics.add_on_rates() output.
+    """
+    dayparts, shifts, add_ons = dayparts or {}, shifts or {}, add_ons or {}
     monthly_sales = (summary["avg_daily_sales"] or 0) * DAYS_PER_MONTH
     monthly_tx = (summary["avg_daily_transactions"] or 0) * DAYS_PER_MONTH
     findings = []
@@ -97,7 +123,31 @@ def advise(summary, weekdays, trend, targets):
         worst = _worst_weekday(weekdays, "labor_pct", highest=True)
         if worst:
             f.extra.append(f"Highest labor % day: {worst[0]} at {worst[1]:.1f}% — start trimming hours there.")
+        f.extra += _daypart_labor_notes(dayparts, shifts, target)
         findings.append(f)
+    elif summary.get("labor_pct") is not None:
+        # Overall labor is fine, but one shift may still be running heavy.
+        target = targets["labor_pct_max"]
+        for part, m in dayparts.items():
+            if m.get("labor_pct") is None or m["labor_pct"] <= target:
+                continue
+            part_monthly_sales = m["avg_daily_sales"] * DAYS_PER_MONTH
+            f = Finding(
+                metric="labor_pct",
+                title=f"Trim {part} shift labor",
+                detail=(f"Overall labor is on target, but {part} shifts run {m['labor_pct']:.1f}% "
+                        f"vs a {target:.1f}% target."),
+                monthly_impact=(m["labor_pct"] - target) / 100 * part_monthly_sales,
+                impact_kind="savings",
+                severity=_gap(m["labor_pct"], target, "max"),
+                actions=[
+                    f"Cut or shorten the {part} shift that overlaps the slowest hours.",
+                    f"Cross-train {part} drivers to cover inside tasks when deliveries are slow.",
+                ],
+            )
+            f.extra += _daypart_labor_notes({}, {k: v for k, v in shifts.items()
+                                                 if k.endswith(" " + part)}, target)
+            findings.append(f)
     if splh:
         actual, target, gap = splh
         hours = monthly_sales / actual if actual else None
@@ -200,13 +250,16 @@ def advise(summary, weekdays, trend, targets):
                 "Push box lunches and platters for meetings; mention them on bag stuffers and receipts.",
             ],
         ))
-    online = missed("online_mix_pct")
+    online_key = "online_mix_pct" if summary.get("online_mix_pct") is not None else "online_sales_pct"
+    online = missed(online_key)
     if online:
         actual, target, gap = online
+        what = "orders are" if online_key == "online_mix_pct" else "sales are"
+        base = "transactions" if online_key == "online_mix_pct" else "sales"
         findings.append(Finding(
-            metric="online_mix_pct",
+            metric=online_key,
             title="Shift more orders online",
-            detail=f"Online orders are {actual:.1f}% of transactions vs a {target:.1f}% target.",
+            detail=f"Online {what} {actual:.1f}% of {base} vs a {target:.1f}% target.",
             severity=gap,
             actions=[
                 "Put QR codes for the app and rewards program at the register and on every bag.",
@@ -267,6 +320,37 @@ def advise(summary, weekdays, trend, targets):
                 "Call back unhappy customers the same day.",
             ],
         ))
+
+    # --- Add-on items (cookies, chips, drinks) ----------------------------
+    lifts = []
+    for name in ADD_ON_ITEMS:
+        item = add_ons.get(name)
+        if item and item["avg_price"]:
+            value = ADD_ON_LIFT_PER_100 / 100 * monthly_tx * item["avg_price"]
+            lifts.append((name, item, value))
+    if lifts:
+        rates = "; ".join(f"{name.split(' (')[0].lower()} {item['per_100_orders']:.0f}"
+                          for name, item, _ in lifts)
+        f = Finding(
+            metric="add_ons",
+            title="Sell more cookies, chips and drinks",
+            detail=(f"Add-ons sold per 100 orders: {rates}. Selling {ADD_ON_LIFT_PER_100} more of each "
+                    f"per 100 orders would add about ${sum(v for *_, v in lifts):,.0f}/month."),
+            monthly_impact=sum(v for *_, v in lifts),
+            impact_kind="added sales",
+            severity=0.01,
+            actions=[
+                "Ask \"Do you want to add a cookie or chips?\" on every in-store and phone order.",
+                "Keep cookies and chips within reach of the register and the pickup shelf.",
+                "Track add-ons per 100 orders by shift each week and recognize the best shift lead.",
+                "Push combos: they bundle a side and drink at a price that's an easy yes.",
+            ],
+        )
+        for name, item, value in lifts:
+            f.extra.append(f"{name}: {item['per_100_orders']:.0f} per 100 orders at "
+                           f"${item['avg_price']:,.2f} avg — +{ADD_ON_LIFT_PER_100} per 100 = "
+                           f"${value:,.0f}/month.")
+        findings.append(f)
 
     # --- Weak day of week --------------------------------------------------
     weakest = _worst_weekday(weekdays, "avg_daily_sales", highest=False)

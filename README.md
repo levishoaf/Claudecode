@@ -2,7 +2,7 @@
 
 A command-line tool that reads your store's daily numbers, scores them against targets, and gives you a ranked list of what to fix first. Each recommendation comes with specific actions and an estimated monthly dollar impact.
 
-It needs only Python 3.9+. There's nothing to install.
+It needs Python 3.9+. To read PDQ's Excel (.xls) reports directly, install one package: `pip install -r requirements.txt`. Everything else uses only the standard library.
 
 ## Quick start
 
@@ -37,7 +37,32 @@ One or more CSV files. These are the columns the tool understands. If you're bui
 | `complaints` | | Customer complaints logged |
 | `avg_service_seconds` | | In-store order-to-handoff time |
 
-## Using your POS exports (PDQ or any other POS)
+## PDQ Weekly Sales Report
+
+Export the **Weekly Sales Report** from PDQ and pass the `.xls` file straight in. You can pass several weeks at once:
+
+```bash
+python3 -m jj_metrics "JJ_90024_-_Weekly_Sales_-_Week-_40_Year-_2026.xls"
+python3 -m jj_metrics weekly_reports/*.xls --store "#90024" --format markdown -o report.md
+```
+
+What it reads from each week:
+
+| Report row | Used for |
+|---|---|
+| `=Adjusted Sales` | Sales. PDQ's own Labor % uses this, so the numbers match. |
+| `# Of Sales` | Order count and average ticket |
+| `Labor $` | Labor %, overall and for every AM/PM shift |
+| `-Waste` | Waste % (only the waste rung into PDQ) |
+| `Box Lunch` + `Platters` | Catering % of sales |
+| `Total Online Orders` | Online sales mix |
+| `Cookie`, `IN/DEL-Side`, `IN/DEL-Pop`, `IN/DEL-Combos` (#EA) | Add-ons sold per 100 orders |
+
+Because the report splits each day into AM and PM, you also get labor % by shift (for example "Wednesday PM 33%"), so you can see which shifts to restaff. Load 4 or more weeks for day-of-week and shift patterns you can trust. A single week gives only one sample per shift.
+
+The report has no labor hours or food cost, so sales per labor hour and food cost % won't show. Add them with a CSV from PDQ's labor or inventory reports if you have one, passed alongside the weekly files.
+
+## Using other POS exports
 
 You don't need to rename columns or reshape your POS reports. Export them as **CSV**; if a report only exports to Excel, open it and use *Save As → CSV*. Then point the tool at them directly:
 

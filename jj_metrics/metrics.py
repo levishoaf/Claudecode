@@ -7,6 +7,8 @@ metric only uses the days that actually reported the columns it needs.
 
 import calendar
 
+from .loader import DayRecord
+
 
 def _ratio(records, numerator, denominator, scale=1.0):
     """sum(numerator) / sum(denominator) over records reporting both columns."""
@@ -66,6 +68,7 @@ def compute(records):
         "late_delivery_pct": _ratio(records, "late_deliveries", "delivery_orders", 100),
         "delivery_mix_pct": _ratio(records, "delivery_orders", "transactions", 100),
         "online_mix_pct": _ratio(records, "online_orders", "transactions", 100),
+        "online_sales_pct": _ratio(records, "online_sales", "net_sales", 100),
         "catering_pct": _ratio(records, "catering_sales", "net_sales", 100),
         "complaints_per_1000": _ratio(records, "complaints", "transactions", 1000),
         "avg_service_seconds": _weighted_avg(records, "avg_service_seconds", "transactions"),
@@ -78,6 +81,47 @@ def by_weekday(records):
     for r in records:
         groups.setdefault(r.day.weekday(), []).append(r)
     return {calendar.day_name[wd]: compute(groups[wd]) for wd in sorted(groups)}
+
+
+def _split_parts(records, label):
+    """Turn each day's shift split into DayRecords grouped by label(record, part)."""
+    groups = {}
+    for r in records:
+        for part, values in r.parts.items():
+            if "net_sales" not in values:
+                continue
+            rest = {k: v for k, v in values.items() if k not in ("net_sales", "transactions")}
+            groups.setdefault(label(r, part), []).append(
+                DayRecord(r.day, values["net_sales"], values.get("transactions", 0.0), rest))
+    return groups
+
+
+def by_daypart(records):
+    """Metrics per shift (e.g. AM / PM) when the data has a shift split, else {}."""
+    groups = _split_parts(records, lambda r, part: part)
+    return {part: compute(groups[part]) for part in sorted(groups)}
+
+
+def by_weekday_daypart(records):
+    """Metrics per weekday + shift, e.g. "Monday PM", Monday first."""
+    groups = _split_parts(records, lambda r, part: (r.day.weekday(), part))
+    return {f"{calendar.day_name[wd]} {part}": compute(groups[wd, part])
+            for wd, part in sorted(groups)}
+
+
+def add_on_rates(item_mix):
+    """Items sold per 100 orders, from weekly item counts."""
+    if not item_mix or not item_mix.get("orders"):
+        return {}
+    orders = item_mix["orders"]
+    return {
+        name: {
+            "count": item["count"],
+            "per_100_orders": item["count"] / orders * 100,
+            "avg_price": item["sales"] / item["count"] if item["count"] else None,
+        }
+        for name, item in item_mix["items"].items()
+    }
 
 
 def trend(records):

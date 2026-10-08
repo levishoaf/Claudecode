@@ -16,6 +16,7 @@ DEFAULT_TARGETS = {
     "avg_delivery_minutes_max": 15.0, # "Freaky Fast" order-to-door
     "late_delivery_pct_max": 10.0,    # % of deliveries over target
     "online_mix_pct_min": 40.0,       # online orders as % of transactions
+    "online_sales_pct_min": 40.0,     # online sales as % of net sales
     "catering_pct_min": 6.0,          # catering as % of net sales
     "complaints_per_1000_max": 2.0,   # complaints per 1,000 transactions
     "avg_service_seconds_max": 30.0,  # in-store order-to-handoff time

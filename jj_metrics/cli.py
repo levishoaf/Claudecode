@@ -5,7 +5,7 @@ import sys
 from datetime import date
 
 from . import advisor, metrics, report
-from .loader import DataError, describe_columns, load_csv, load_mapping
+from .loader import DataError, describe_columns, load_files, load_mapping
 from .sample import generate
 from .targets import load_targets
 
@@ -48,14 +48,16 @@ def main(argv=None):
         if args.show_columns:
             print(describe_columns(args.csv, mapping))
             return 0
-        records = load_csv(args.csv, mapping)
+        dataset = load_files(args.csv, mapping)
         targets = load_targets(args.targets)
     except (OSError, DataError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
-    records = [r for r in records
+    records = [r for r in dataset.records
                if (not args.start or r.day >= args.start) and (not args.end or r.day <= args.end)]
+    # Add-on counts are weekly totals, so they can't be trimmed to a date range.
+    add_ons = {} if (args.start or args.end) else metrics.add_on_rates(dataset.item_mix)
     if not records:
         print("error: no data in the selected date range", file=sys.stderr)
         return 1
@@ -63,13 +65,17 @@ def main(argv=None):
     summary = metrics.compute(records)
     weekdays = metrics.by_weekday(records)
     trend = metrics.trend(records)
-    findings = advisor.advise(summary, weekdays, trend, targets)
+    dayparts = metrics.by_daypart(records)
+    shifts = metrics.by_weekday_daypart(records)
+    findings = advisor.advise(summary, weekdays, trend, targets,
+                              dayparts=dayparts, shifts=shifts, add_ons=add_ons)
 
+    extra = dict(dayparts=dayparts, shifts=shifts, add_ons=add_ons)
     if args.format == "json":
-        text = report.to_json(records, summary, weekdays, trend, findings, targets)
+        text = report.to_json(records, summary, weekdays, trend, findings, targets, **extra)
     else:
         text = report.render(records, summary, weekdays, trend, findings, targets,
-                             markdown=args.format == "markdown", store=args.store)
+                             markdown=args.format == "markdown", store=args.store, **extra)
 
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:

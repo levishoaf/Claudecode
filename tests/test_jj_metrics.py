@@ -1,12 +1,13 @@
+import csv
 import json
 import os
 import tempfile
 import unittest
 from datetime import date, timedelta
 
-from jj_metrics import advisor, metrics
+from jj_metrics import advisor, metrics, pdq
 from jj_metrics.cli import main
-from jj_metrics.loader import DataError, DayRecord, describe_columns, load_csv, load_mapping
+from jj_metrics.loader import DataError, DayRecord, describe_columns, load_csv, load_files, load_mapping
 from jj_metrics.targets import DEFAULT_TARGETS, load_targets
 
 
@@ -108,6 +109,118 @@ class PosExportTests(TempDirTest):
         text = describe_columns([path])
         self.assertIn("net_sales              <- 'Net Sales'", text)
         self.assertIn("not used: 'Notes'", text)
+
+
+def pdq_grid(start=date(2026, 9, 28), days=2, sales=(1000.0, 500.0), labor=(250.0, 150.0)):
+    """A small grid laid out like a PDQ Weekly Sales Report."""
+    dates = [start + timedelta(days=i) for i in range(days)]
+    header = ["Sales Item", "Summary", "#EA"]
+    date_row, part_row = ["", "", ""], ["", "", ""]
+    for d in dates:
+        header += [d.strftime("%a"), ""]
+        date_row += [f"{d.month}/{d.day}/{d.year}", ""]
+        part_row += ["AM", "PM"]
+
+    def line(label, am, pm, summary="0.00", each="0"):
+        return [label, summary, each] + [f"${am:,.2f}", f"${pm:,.2f}"] * days
+
+    return [
+        ["Weekly Sales Report"], ["Week Ending Date", "", "46299.0"], [], header, date_row, part_row,
+        line("Cookie", 20.0, 10.0, summary=f"{60.0 * days / 2:.2f}", each=str(30 * days // 2)),
+        line("IN-Side", 12.0, 6.0, summary=f"{36.0 * days / 2:.2f}", each=str(30 * days // 2)),
+        line("Box Lunch", 100.0, 0.0),
+        line("Platters", 50.0, 0.0),
+        line("=Adjusted Sales", *sales),
+        line("-Waste", 5.0, 0.0),
+        ["# Of Sales", "0.00", str(100 * days)] + ["60", "40"] * days,
+        ["Shift Manager - Name", "0.00", "0"] + ["A. Person", "B. Person"] * days,
+        line("Labor $", *labor),
+        line("Labor %", 25.0, 30.0),
+        line("Total Online Orders", 400.0, 200.0, each="40"),
+    ]
+
+
+class PdqTests(TempDirTest):
+    def write_grid(self, name, grid):
+        path = os.path.join(self.tmp.name, name)
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            csv.writer(f).writerows(grid)
+        return path
+
+    def test_parses_days_shifts_and_items(self):
+        days, parts, items = pdq.parse_weekly_sales(pdq_grid())
+        first = days[date(2026, 9, 28)]
+        self.assertEqual(first["net_sales"], 1500.0)
+        self.assertEqual(first["transactions"], 100.0)
+        self.assertEqual(first["labor_cost"], 400.0)
+        self.assertEqual(first["catering_sales"], 150.0)
+        self.assertEqual(first["online_sales"], 600.0)
+        self.assertEqual(parts[date(2026, 9, 28)]["PM"]["labor_cost"], 150.0)
+        self.assertEqual(items["orders"], 200.0)
+        self.assertEqual(items["items"]["Cookies"], {"count": 30.0, "sales": 60.0})
+        self.assertNotIn("Drinks", items["items"])
+
+    def test_report_saved_as_csv_and_multiple_weeks(self):
+        week1 = self.write_grid("w1.csv", pdq_grid())
+        week2 = self.write_grid("w2.csv", pdq_grid(start=date(2026, 10, 5)))
+        dataset = load_files([week1, week2])
+        self.assertEqual(len(dataset.records), 4)
+        self.assertEqual(dataset.item_mix["orders"], 400.0)
+        rates = metrics.add_on_rates(dataset.item_mix)
+        self.assertAlmostEqual(rates["Cookies"]["per_100_orders"], 15.0)
+        self.assertAlmostEqual(rates["Cookies"]["avg_price"], 2.0)
+
+    def test_same_week_twice_is_an_error(self):
+        week = self.write_grid("w1.csv", pdq_grid())
+        copy = self.write_grid("w1-copy.csv", pdq_grid())
+        with self.assertRaisesRegex(DataError, "appears in both"):
+            load_files([week, copy])
+
+    def test_shift_labor_breakdown_and_findings(self):
+        # Overall labor 400/1500 = 26.7%; PM is 30% and drives it.
+        records = load_files(self.write_grid("w.csv", pdq_grid(days=7))).records
+        dayparts = metrics.by_daypart(records)
+        self.assertAlmostEqual(dayparts["AM"]["labor_pct"], 25.0)
+        self.assertAlmostEqual(dayparts["PM"]["labor_pct"], 30.0)
+        shifts = metrics.by_weekday_daypart(records)
+        self.assertEqual(list(shifts)[:2], ["Monday AM", "Monday PM"])
+        summary = metrics.compute(records)
+        findings = advisor.advise(summary, metrics.by_weekday(records), None, DEFAULT_TARGETS,
+                                  dayparts=dayparts, shifts=shifts)
+        labor = [f for f in findings if f.metric == "labor_pct"][0]
+        self.assertIn("By shift: AM 25.0%, PM 30.0%.", labor.extra)
+
+    def test_shift_over_target_when_overall_is_fine(self):
+        records = load_files(self.write_grid("w.csv", pdq_grid(days=7, labor=(200.0, 150.0)))).records
+        targets = dict(DEFAULT_TARGETS, labor_pct_max=24.0)
+        findings = advisor.advise(metrics.compute(records), {}, None, targets,
+                                  dayparts=metrics.by_daypart(records))
+        self.assertEqual([f.title for f in findings if f.metric == "labor_pct"], ["Trim PM shift labor"])
+
+    def test_add_on_finding(self):
+        records = load_files(self.write_grid("w.csv", pdq_grid())).records
+        dataset_rates = metrics.add_on_rates(pdq.parse_weekly_sales(pdq_grid())[2])
+        findings = advisor.advise(metrics.compute(records), {}, None, DEFAULT_TARGETS,
+                                  add_ons=dataset_rates)
+        add_on = [f for f in findings if f.metric == "add_ons"][0]
+        # +5 cookies per 100 orders at $2.00 on 100 orders/day.
+        cookie_value = 0.05 * 100 * advisor.DAYS_PER_MONTH * 2.0
+        side_value = 0.05 * 100 * advisor.DAYS_PER_MONTH * 1.2
+        self.assertAlmostEqual(add_on.monthly_impact, cookie_value + side_value)
+
+    def test_end_to_end_report(self):
+        path = self.write_grid("w.csv", pdq_grid(days=7))
+        out = os.path.join(self.tmp.name, "r.txt")
+        self.assertEqual(main([path, "-o", out]), 0)
+        with open(out, encoding="utf-8") as f:
+            text = f.read()
+        for needle in ("By shift", "Monday PM", "Add-ons per 100 orders", "Online sales mix"):
+            self.assertIn(needle, text)
+        self.assertNotIn("SPLH", text)
+
+    def test_not_a_weekly_sales_report(self):
+        with self.assertRaisesRegex(DataError, "Sales Item"):
+            pdq.parse_weekly_sales([["Weekly Sales Report"], ["nothing else"]])
 
 
 class TargetsTests(TempDirTest):
