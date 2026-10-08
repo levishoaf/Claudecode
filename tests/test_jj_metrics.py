@@ -6,7 +6,7 @@ from datetime import date, timedelta
 
 from jj_metrics import advisor, metrics
 from jj_metrics.cli import main
-from jj_metrics.loader import DataError, DayRecord, load_csv
+from jj_metrics.loader import DataError, DayRecord, describe_columns, load_csv, load_mapping
 from jj_metrics.targets import DEFAULT_TARGETS, load_targets
 
 
@@ -50,9 +50,64 @@ class LoaderTests(TempDirTest):
             load_csv(path)
 
     def test_bad_date(self):
-        path = self.write("d.csv", "date,net_sales,transactions\n1/1/2026,100,10\n")
-        with self.assertRaisesRegex(DataError, "YYYY-MM-DD"):
+        path = self.write("d.csv", "date,net_sales,transactions\n2026.01.01,100,10\n")
+        with self.assertRaisesRegex(DataError, "can't read date"):
             load_csv(path)
+
+
+class PosExportTests(TempDirTest):
+    def test_report_with_title_lines_totals_and_us_dates(self):
+        path = self.write("sales.csv", "Daily Sales Summary\nStore 1234,,\n"
+                                       "Business Date,Net Sales ($),Order Count,Avg Delivery Time,Delivery Count\n"
+                                       '10/01/2026,"$2,000.00",160,16:30,50\n'
+                                       '10/02/2026,"$1,000.00",80,12:00,30\n'
+                                       'Total,"$3,000.00",240,,80\n')
+        records = load_csv(path)
+        self.assertEqual([r.day for r in records], [date(2026, 10, 1), date(2026, 10, 2)])
+        self.assertEqual(records[0].net_sales, 2000.0)
+        self.assertEqual(records[0].get("avg_delivery_minutes"), 16.5)
+
+    def test_shift_rows_are_totaled_and_files_merged(self):
+        sales = self.write("sales.csv", "Date,Net Sales,Orders\n2026-10-01,2000,160\n")
+        labor = self.write("labor.csv", "Employee,Date,Hours Worked,Gross Pay\n"
+                                        "Ann,10/01/2026,8,120\nBob,10/01/2026 06:00 AM,7.5,112.50\n")
+        [record] = load_csv([sales, labor])
+        self.assertEqual(record.get("labor_hours"), 15.5)
+        self.assertEqual(record.get("labor_cost"), 232.5)
+
+    def test_order_level_export_with_mapping(self):
+        orders = self.write("orders.csv", "Order #,Closed,Total,Ticket Time (s)\n"
+                                          "1,10/01/2026 11:02 AM,10.00,20\n"
+                                          "2,10/01/2026 11:05 AM,14.00,40\n"
+                                          "3,10/02/2026 12:00 PM,9.50,30\n")
+        mapping = self.write("map.json", json.dumps({
+            "date": "Closed", "net_sales": "Total", "transactions": "@count",
+            "avg_service_seconds": "Ticket Time (s)"}))
+        records = load_csv(orders, load_mapping(mapping))
+        self.assertEqual([(r.net_sales, r.transactions) for r in records], [(24.0, 2), (9.5, 1)])
+        self.assertEqual(records[0].get("avg_service_seconds"), 30.0)
+
+    def test_custom_date_format(self):
+        path = self.write("d.csv", "Date,Net Sales,Orders\n01.10.2026,100,10\n")
+        mapping = {"date_format": "%d.%m.%Y"}
+        self.assertEqual(load_csv(path, mapping)[0].day, date(2026, 10, 1))
+
+    def test_same_column_in_two_files_is_an_error(self):
+        a = self.write("a.csv", "Date,Net Sales,Orders\n2026-10-01,100,10\n")
+        b = self.write("b.csv", "Date,Net Sales\n2026-10-01,100\n")
+        with self.assertRaisesRegex(DataError, "net_sales"):
+            load_csv([a, b])
+
+    def test_unrecognized_sales_column_points_to_mapping(self):
+        path = self.write("d.csv", "Date,Revenue,Orders\n2026-10-01,100,10\n")
+        with self.assertRaisesRegex(DataError, "--map"):
+            load_csv(path)
+
+    def test_show_columns(self):
+        path = self.write("d.csv", "Business Date,Net Sales,Orders,Notes\n2026-10-01,100,10,x\n")
+        text = describe_columns([path])
+        self.assertIn("net_sales              <- 'Net Sales'", text)
+        self.assertIn("not used: 'Notes'", text)
 
 
 class TargetsTests(TempDirTest):

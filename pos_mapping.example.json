@@ -1,0 +1,11 @@
+{
+  "date": "Business Date",
+  "net_sales": "Net Sales",
+  "transactions": "Order Count",
+  "labor_hours": "Total Hours",
+  "labor_cost": "Total Labor",
+  "delivery_orders": "Delivery Orders",
+  "online_orders": "Online Orders",
+  "catering_sales": "Catering Sales",
+  "date_format": "%m/%d/%Y"
+}

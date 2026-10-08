@@ -10,15 +10,15 @@ It needs only Python 3.9+. There's nothing to install.
 # Try it on the included 90-day sample
 python3 -m jj_metrics sample_data/sample_store.csv
 
-# Your own data, as a Markdown report
-python3 -m jj_metrics my_store.csv --store "#1234" --format markdown -o report.md
+# Your own POS exports, as a Markdown report
+python3 -m jj_metrics sales_export.csv labor_export.csv --store "#1234" --format markdown -o report.md
 ```
 
 See [`sample_data/sample_report.md`](sample_data/sample_report.md) for example output.
 
 ## Input data
 
-A CSV file with **one row per day**. Column names are case-insensitive. Only the first three columns are required. Leave out any column you don't track, and the report will list what isn't being measured.
+One or more CSV files. These are the columns the tool understands. If you're building a file by hand, use these names with one row per day; POS exports with different names work too (see the next section). Column names are case-insensitive. Only the first three columns are required. Leave out any column you don't track, and the report will list what isn't being measured.
 
 | Column | Required | Meaning |
 |---|---|---|
@@ -37,7 +37,55 @@ A CSV file with **one row per day**. Column names are case-insensitive. Only the
 | `complaints` | | Customer complaints logged |
 | `avg_service_seconds` | | In-store order-to-handoff time |
 
-Most POS and back-office systems can export daily sales, labor and order counts. Paste them into a spreadsheet with these headers and save it as CSV.
+## Using your POS exports (PDQ or any other POS)
+
+You don't need to rename columns or reshape your POS reports. Export them as **CSV**; if a report only exports to Excel, open it and use *Save As → CSV*. Then point the tool at them directly:
+
+```bash
+python3 -m jj_metrics sales_export.csv labor_export.csv
+```
+
+What it handles automatically:
+
+- **Common header names.** "Business Date", "Net Sales ($)", "Order Count", "Hours Worked", "Gross Pay" and similar are recognized.
+- **Report title lines** above the header row, and **Total/Summary rows** at the bottom.
+- **US dates** (`10/07/2026`), dates with times (`10/07/2026 11:32 AM`), `$1,234.56` amounts, `(12.50)` negatives and `mm:ss` times.
+- **More than one row per day.** Per-shift labor rows or per-order rows are added up into daily totals.
+- **Several files**, such as a sales report plus a labor report, merged by date.
+
+### Step 1: check what was recognized
+
+```bash
+python3 -m jj_metrics sales_export.csv labor_export.csv --show-columns
+```
+
+```
+sales_export.csv
+  (header found on line 3)
+  date                   <- 'Business Date'
+  net_sales              <- 'Net Sales ($)'
+  transactions           <- 'Order Count'
+labor_export.csv
+  date                   <- 'Date'
+  labor_hours            <- 'Hours Worked'
+  labor_cost             <- 'Gross Pay'
+  not used: 'Employee'
+```
+
+### Step 2: map anything it missed
+
+If a column you need shows up under "not used", or was matched to the wrong metric, write a small JSON mapping file from our column names to your headers. Copy [`pos_mapping.example.json`](pos_mapping.example.json) and replace its header names with the exact ones in your export; the ones in the example are placeholders. Delete any lines you don't need.
+
+```bash
+python3 -m jj_metrics sales_export.csv labor_export.csv --map my_pdq_mapping.json
+```
+
+Two special settings:
+
+- `"transactions": "@count"`: each row in the export is a single order, so the tool counts rows to get the order count. Use this for an order or transaction detail export.
+- `"date_format": "%d.%m.%Y"`: use this only if your dates aren't in a common US or ISO format. It takes Python [strftime codes](https://strftime.org/).
+
+Once your mapping works, reuse the same command every week or month.
 
 ## What it reports
 
@@ -73,6 +121,8 @@ python3 -m jj_metrics my_store.csv --targets targets.example.json
 ## Other options
 
 ```
+--map JSON                    column mapping for your POS exports
+--show-columns                show which columns were recognized, then exit
 --format text|markdown|json   output format (default: text)
 -o, --output PATH             write to a file instead of the screen
 --start / --end YYYY-MM-DD    analyze only part of the data

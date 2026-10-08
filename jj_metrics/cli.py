@@ -5,7 +5,7 @@ import sys
 from datetime import date
 
 from . import advisor, metrics, report
-from .loader import DataError, load_csv
+from .loader import DataError, describe_columns, load_csv, load_mapping
 from .sample import generate
 from .targets import load_targets
 
@@ -15,7 +15,12 @@ def build_parser():
         prog="jj_metrics",
         description="Analyze Jimmy John's store data and recommend how to improve key metrics.",
     )
-    p.add_argument("csv", nargs="?", help="CSV of daily store data (see README for columns)")
+    p.add_argument("csv", nargs="*",
+                   help="CSV export(s) of store data; several files (e.g. sales + labor) are merged by date")
+    p.add_argument("--map", metavar="JSON",
+                   help="column mapping for POS exports whose headers aren't recognized automatically")
+    p.add_argument("--show-columns", action="store_true",
+                   help="show which columns were recognized in each file, then exit")
     p.add_argument("--targets", help="JSON file overriding default metric targets")
     p.add_argument("--format", choices=["text", "markdown", "json"], default="text")
     p.add_argument("--output", "-o", help="write the report to this file instead of stdout")
@@ -39,7 +44,11 @@ def main(argv=None):
         build_parser().error("a CSV file is required (or use --generate-sample)")
 
     try:
-        records = load_csv(args.csv)
+        mapping = load_mapping(args.map)
+        if args.show_columns:
+            print(describe_columns(args.csv, mapping))
+            return 0
+        records = load_csv(args.csv, mapping)
         targets = load_targets(args.targets)
     except (OSError, DataError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
