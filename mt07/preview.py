@@ -10,17 +10,24 @@ VIEWS = [("Right side", 0, -90), ("Left side", 0, 90), ("Front 3/4", 20, -40),
          ("Rear 3/4", 25, 140), ("Top", 89, -90), ("Front", 5, 0)]
 
 
-def render(m, path, views=VIEWS, size=(18, 11), grid=(2, 3)):
-    mesh = m.to_mesh()
-    v = np.asarray(mesh.vert_properties)[:, :3]
-    tri = v[np.asarray(mesh.tri_verts)]
-    n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+def render(items, path, views=VIEWS, size=(18, 11), grid=(2, 3)):
+    """items: a Manifold, or a list of (Manifold, rgb) pairs."""
+    if not isinstance(items, list):
+        items = [(items, (0.16, 0.30, 0.62))]
     light = np.array([0.4, -0.5, 0.75])
     light /= np.linalg.norm(light)
-    shade = 0.35 + 0.65 * np.clip(n @ light, 0, 1)
-    base = np.array([0.16, 0.30, 0.62])  # Icon Blue-ish
-    colors = np.clip(base[None, :] * shade[:, None] * 1.6, 0, 1)
+    tris, cols = [], []
+    for m, rgb in items:
+        mesh = m.to_mesh()
+        v = np.asarray(mesh.vert_properties)[:, :3]
+        t = v[np.asarray(mesh.tri_verts)]
+        n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
+        n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+        shade = 0.45 + 0.75 * np.clip(n @ light, 0, 1)
+        tris.append(t)
+        cols.append(np.clip(np.array(rgb)[None, :] * shade[:, None], 0, 1))
+    tri, colors = np.concatenate(tris), np.concatenate(cols)
+    v = tri.reshape(-1, 3)
 
     lo, hi = v.min(0), v.max(0)
     mid, span = (lo + hi) / 2, (hi - lo).max() / 2
