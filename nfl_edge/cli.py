@@ -30,9 +30,22 @@ def _fmt_american(price: int) -> str:
 
 
 def _describe(bet: Bet) -> str:
+    if bet.market.startswith("player_"):
+        from .extras import stat_label
+
+        player, side = bet.pick.rsplit(" ", 1)
+        label = stat_label(bet.market)
+        if label == "Anytime TD":
+            return f"{player} Anytime TD" + ("" if side == "Yes" else " (No)")
+        if side == "Over" and bet.point % 1:
+            return f"{player} {int(bet.point + 0.5)}+ {label}"
+        return f"{player} {side} {bet.point:g} {label}"
+    if bet.market in ("team_totals", "alternate_team_totals"):
+        team, side = bet.pick.rsplit(" ", 1)
+        return f"{team} Team Total {side} {bet.point:g}"
     if bet.point is None:
         return f"{bet.pick} ML"
-    if bet.market == "totals":
+    if bet.market in ("totals", "alternate_totals"):
         return f"{bet.pick} {bet.point:g}"
     return f"{bet.pick} {bet.point:+g}"
 
@@ -59,7 +72,9 @@ def parlay_stake(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) 
 
 
 SLIP_WIDTH = 52
-SLIP_MARKETS = {"h2h": "MONEYLINE", "spreads": "SPREAD", "totals": "TOTAL POINTS"}
+SLIP_MARKETS = {"h2h": "MONEYLINE", "spreads": "SPREAD", "totals": "TOTAL POINTS",
+                "alternate_spreads": "ALT SPREAD", "alternate_totals": "ALT TOTAL POINTS",
+                "team_totals": "TEAM TOTAL POINTS", "alternate_team_totals": "ALT TEAM TOTAL"}
 try:
     from zoneinfo import ZoneInfo
 
@@ -81,6 +96,14 @@ def _slip_time(b: Bet) -> str:
     return f"{b.commence_time.astimezone(EASTERN):%a %b %-d, %-I:%M %p} ET"
 
 
+def _slip_market(b: Bet) -> str:
+    if b.market.startswith("player_"):
+        from .extras import stat_label
+
+        return ("ALT " if b.market.endswith("_alternate") else "") + stat_label(b.market).upper()
+    return SLIP_MARKETS.get(b.market, b.market.upper())
+
+
 def format_slip(p: Parlay, wager: float) -> list[str]:
     """A parlay laid out like a FanDuel bet slip."""
     inner = SLIP_WIDTH - 4
@@ -98,7 +121,7 @@ def format_slip(p: Parlay, wager: float) -> list[str]:
         if i:
             out.append(line())
         out += [line(f"● {_slip_selection(b)}", _fmt_american(b.fd_price)),
-                line(f"  {SLIP_MARKETS.get(b.market, b.market.upper())}"),
+                line(f"  {_slip_market(b)}"),
                 line(f"  {b.game}"),
                 line(f"  {_slip_time(b)}")]
     out += [rule,

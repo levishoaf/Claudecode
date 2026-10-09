@@ -61,11 +61,13 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
             if not any(s["game_id"] == leg["game_id"] for s in stats):
                 return "pending", "player stats not posted yet"
             return "lost", "no stats recorded (did not play)"
-        value = int(float(row[stat] or 0))
+        value = int(sum(float(row.get(c) or 0) for c in stat.split("+")))
         if stat == "passing_tds":
             detail = f"{value} passing TD{'s' * (value != 1)}"
         else:
             detail = f"{value} {stat.replace('_', ' ')}"
+        if "max" in leg:  # an Under
+            return ("won" if value <= leg["max"] else "lost"), detail
         return ("won" if value >= leg["min"] else "lost"), detail
     return "pending", f"unknown leg type {leg['type']}"
 

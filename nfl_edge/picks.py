@@ -21,11 +21,21 @@ def value_key(ev: float, win_prob: float) -> tuple[float, float]:
     return round(ev, 3), win_prob
 
 
+def subject_key(b: Bet) -> tuple[str, str, str]:
+    """What a bet is about: alternate lines count as their main market, and
+    props and team totals are per player or team. Only the best bet on each
+    subject is kept, so the list isn't five versions of one player."""
+    market = b.market.replace("alternate_", "").removesuffix("_alternate")
+    if market.startswith("player_") or market == "team_totals":
+        return b.game, market, b.pick.rsplit(" ", 1)[0]
+    return b.game, market, ""
+
+
 def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0) -> list[Bet]:
-    """Best `count` singles, at most one side of any market."""
+    """Best `count` singles, one per subject (see subject_key)."""
     seen, out = set(), []
     for b in sorted(bets, key=lambda b: value_key(b.ev, b.fair_prob), reverse=True):
-        key = (b.game, b.market)
+        key = subject_key(b)
         if b.fair_prob < min_prob or key in seen:
             continue
         seen.add(key)

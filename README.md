@@ -45,6 +45,31 @@ weather and marks what changed: **NEW** picks, **odds moved**, and
 **Saving bets:** say yes when asked, or pass `--save`, to store the picks in
 `bets/` for `python3 -m nfl_edge.grade`.
 
+**Player props and alternate lines:** answer yes when asked, or pass
+`--extras`. The builder adds these markets:
+
+- **Alternate lines:** alternate spreads and totals, team totals and
+  alternate team totals.
+- **Player props:** passing, rushing and receiving yards, receptions,
+  passing TDs and anytime TD, plus their alternate "X+" lines.
+
+How they're priced:
+
+- **Alternate spreads and totals** start from the consensus main line. Their
+  chances come from real NFL results of past games with a similar line, so
+  key numbers like 3 and 7, and pushes, are handled.
+- **Player props** start from the market's main over/under for that player,
+  with the margin removed. The player's game logs then set how likely each
+  alternate "X+" line is relative to it. A prop with no main line to anchor
+  to is marked **(model only)**; trust it less.
+- **Players who missed most of a season** are skipped.
+- **College:** alternate lines and team totals only, no props.
+
+These markets cost about 1 API credit per market per game: about 15 credits
+per NFL game with the default markets. Check that your Odds API plan
+includes them. Choose your own markets with `--extra-markets
+player_receptions,player_receptions_alternate,alternate_spreads`.
+
 **Your API key:** the first run asks for it (hidden) and can save it to
 `~/.nfl_edge/odds_api_key`, outside the project folder. You can also set
 `ODDS_API_KEY`.
@@ -54,6 +79,7 @@ Examples:
 ```bash
 python3 bets.py --sport ncaaf --date today --singles 10 --legs 3 --parlays 3
 python3 bets.py --sport nfl --watch 30 --save
+python3 bets.py --sport nfl --extras --singles 20
 ```
 
 ## Setup

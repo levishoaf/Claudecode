@@ -44,3 +44,32 @@ def fetch_odds(
         raise OddsAPIError(f"HTTP {e.code} from The Odds API: {body}") from e
     except urllib.error.URLError as e:
         raise OddsAPIError(f"Could not reach The Odds API: {e.reason}") from e
+
+
+EVENT_URL = "https://api.the-odds-api.com/v4/sports/{sport}/events/{event_id}/odds"
+
+
+def fetch_event_odds(
+    api_key: str,
+    event_id: str,
+    markets: list[str],
+    sport: str = "nfl",
+    bookmakers: tuple[str, ...] = ("fanduel", "pinnacle", "draftkings", "betmgm"),
+    timeout: float = 20,
+) -> tuple[dict, str | None]:
+    """Props and alternate lines for one game. Costs about one credit per
+    market returned (up to 10 bookmakers count as one region)."""
+    params = urllib.parse.urlencode({
+        "apiKey": api_key, "markets": ",".join(markets),
+        "bookmakers": ",".join(bookmakers), "oddsFormat": "american",
+    })
+    url = EVENT_URL.format(sport=SPORT_KEYS[sport], event_id=event_id)
+    try:
+        with urllib.request.urlopen(f"{url}?{params}", timeout=timeout) as resp:
+            return json.load(resp), resp.headers.get("x-requests-remaining")
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")
+        raise OddsAPIError(f"HTTP {e.code} from The Odds API: {body}") from e
+    except urllib.error.URLError as e:
+        raise OddsAPIError(f"Could not reach The Odds API: {e.reason}") from e
+

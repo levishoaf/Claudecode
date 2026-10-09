@@ -26,7 +26,8 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from nfl_edge import cfb, data  # noqa: E402
-from nfl_edge.api import OddsAPIError, fetch_odds  # noqa: E402
+from nfl_edge import extras  # noqa: E402
+from nfl_edge.api import OddsAPIError, fetch_event_odds, fetch_odds  # noqa: E402
 from nfl_edge.cli import build_model, format_slip, _describe, _fmt_american  # noqa: E402
 from nfl_edge.finder import find_bets  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
@@ -82,10 +83,24 @@ def leg_record(bet, events: list[dict], model, sport: str) -> dict | None:
            "win_prob": round(bet.fair_prob, 4), "label": f"{_describe(bet)} ({bet.game})"}
     if bet.market == "h2h":
         leg.update(type="moneyline", team=team)
-    elif bet.market == "spreads":
+    elif bet.market == "spreads" and bet.point is not None:
         leg.update(type="spread", team=team, point=bet.point)
-    elif bet.market == "totals":
+    elif bet.market == "alternate_spreads":
+        leg.update(type="spread", team=team, point=bet.point)
+    elif bet.market in ("totals", "alternate_totals"):
         leg.update(type="total", side=bet.pick, line=bet.point)
+    elif bet.market in ("team_totals", "alternate_team_totals"):
+        name, side = bet.pick.rsplit(" ", 1)
+        code = cfb.match_team(name, model.schools) if sport == "ncaaf" else TEAM_ABBR.get(name)
+        leg.update(type="team_total", team=code, side=side, line=bet.point)
+    elif bet.market.startswith("player_"):
+        player, side = bet.pick.rsplit(" ", 1)
+        stat = extras.PLAYER_MARKETS[extras.base_market(bet.market)][0]
+        leg.update(type="player_stat", player=player, stat=stat)
+        if side in ("Over", "Yes"):
+            leg["min"] = int(bet.point) + 1
+        else:
+            leg["max"] = int(bet.point)
     else:
         return None
     return leg
@@ -111,6 +126,33 @@ def save(singles, parlays, events, model, sport: str, season: int, stamp: str) -
                                        indent=2) + "\n")
             written.append(path)
     return written
+
+
+def extra_bets(args, events: list[dict], season: int) -> list:
+    """Price player props and alternate lines for each game."""
+    markets = args.extra_markets.split(",") if args.extra_markets else (
+        extras.DEFAULT_NCAAF_MARKETS if args.sport == "ncaaf" else extras.DEFAULT_NFL_MARKETS)
+    games = data.games() if args.sport == "nfl" else []
+    lines = extras.LineDistribution(args.sport, games)
+    players = extras.load_player_model(season, games) if args.sport == "nfl" else None
+    saved = json.loads(args.extras_file.read_text()) if args.extras_file else None
+    key = None if saved else api_key(False)
+    out, remaining = [], None
+    for e in events:
+        if saved is not None:
+            extra = saved.get(e["id"])
+        else:
+            try:
+                extra, remaining = fetch_event_odds(key, e["id"], markets, args.sport)
+            except OddsAPIError as err:
+                print(f"(Props/alternate lines unavailable for {e['away_team']} @ "
+                      f"{e['home_team']}: {err}. Your plan may not include these markets.)")
+                continue
+        if extra:
+            out += extras.price_event(e, extra, args.sport, lines, players)
+    if remaining is not None:
+        print(f"(API credits remaining after props and alternate lines: {remaining})")
+    return out
 
 
 def game_label(b) -> str:
@@ -154,6 +196,8 @@ def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[st
 
     all_bets = find_bets(events, min_ev=-1.0, min_books=1, model=model, model_weight=0.1,
                          include_started=bool(args.file))
+    if args.extras:
+        all_bets += extra_bets(args, events, season)
     min_prob = args.min_prob / 100
     singles = rank_singles(all_bets, args.singles, min_prob)
     parlays = best_parlays(all_bets, args.legs, args.parlays,
@@ -178,7 +222,8 @@ def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[st
         be = decimal_to_american(1 / b.fair_prob)
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)} ({b.game}) {_fmt_american(b.fd_price)}"
               f"  pays ${payout:.0f}/$100  EV {b.ev:+.1%}  worth it at {_fmt_american(be)} or better"
-              f"  {b.commence_time.astimezone(ET):%a %-I:%M %p} ET{mark(b)}")
+              f"  {b.commence_time.astimezone(ET):%a %-I:%M %p} ET"
+              f"{'  (model only)' if 'player logs only' in b.books else ''}{mark(b)}")
     if previous:
         gone = set(previous) - {game_label(b) for b in singles}
         for label in sorted(gone):
@@ -213,6 +258,10 @@ def main() -> int:
                    help="let different parlays share games")
     p.add_argument("--file", type=Path, help="read odds JSON from a file instead of the API")
     p.add_argument("--save", action="store_true", help="save the picks as paper bets for grading")
+    p.add_argument("--extras", action="store_true",
+                   help="also price player props and alternate lines (costs more API credits)")
+    p.add_argument("--extra-markets", help="comma-separated Odds API market keys to use with --extras")
+    p.add_argument("--extras-file", type=Path, help=argparse.SUPPRESS)  # offline testing
     p.add_argument("--watch", type=int, default=0, metavar="MINUTES",
                    help="keep running and refresh every MINUTES (odds, injuries, weather)")
     args = p.parse_args()
@@ -226,6 +275,7 @@ def main() -> int:
         args.legs = int(ask("Legs per parlay", "3"))
         args.parlays = int(ask("How many parlays", "3"))
         args.stake = float(ask("Parlay wager in dollars", "10"))
+        args.extras = ask("Include player props and alternate lines? (y/n)", "y").lower() == "y"
         args.watch = int(ask("Refresh automatically every how many minutes? (0 = no)", "0"))
     args.sport = args.sport or "nfl"
     args.date = args.date or "all"
@@ -237,6 +287,14 @@ def main() -> int:
     if args.watch:
         # Injury reports, schedules and weather refresh at least this often too.
         data.FRESH_SECONDS = min(data.FRESH_SECONDS, args.watch * 60)
+
+    if args.extras and not args.extras_file:
+        n = len((args.extra_markets or ",".join(
+            extras.DEFAULT_NCAAF_MARKETS if args.sport == "ncaaf" else extras.DEFAULT_NFL_MARKETS)).split(","))
+        print(f"Note: props and alternate lines cost about {n} credits per game per update "
+              f"(e.g. {n * 14} for 14 games), on top of about 6 for the main lines.")
+        if interactive and ask("Continue? (y/n)", "y").lower() != "y":
+            args.extras = False
 
     previous: dict[str, int] = {}
     saved = False
