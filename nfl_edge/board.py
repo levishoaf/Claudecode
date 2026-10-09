@@ -348,6 +348,8 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]
 GAME_STATUSES = ("Out", "Doubtful", "Questionable")
 ESPN_INJURIES = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
+# Same report on ESPN's other API host, tried if the first can't be reached.
+ESPN_INJURIES_ALT = "https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 INJURY_MAX_AGE = 30 * 60  # injury news moves fast; refresh every 30 minutes
 
 
@@ -356,9 +358,13 @@ def espn_official(payload: object | None = None) -> dict[tuple[str, str], dict]:
     within minutes of the NFL's Friday release. {(team, player key): info}.
     Returns {} if ESPN can't be reached or its format isn't recognised."""
     if payload is None:
-        try:
-            payload = data.read_json(ESPN_INJURIES, "espn_nfl_injuries.json", INJURY_MAX_AGE)
-        except (data.DataError, ValueError):
+        for url in (ESPN_INJURIES, ESPN_INJURIES_ALT):
+            try:
+                payload = data.read_json(url, "espn_nfl_injuries.json", INJURY_MAX_AGE)
+                break
+            except (data.DataError, ValueError):
+                continue
+        else:
             return {}
     out = {}
     try:
