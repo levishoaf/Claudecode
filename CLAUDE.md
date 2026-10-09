@@ -22,3 +22,8 @@ Every bet the user asks for, singles and parlays alike, must aim for the
 - **Be honest about trade-offs.** A higher win chance always means a
   smaller payout. When nothing on the board has positive expected value,
   say so plainly rather than overstating any pick.
+- **Skip players who missed most of a season.** For any player-based bet
+  (props, QB touchdown legs and so on), leave out any player who appeared
+  in half or fewer of his team's games this season or last season. A player
+  traded mid-season counts against one season's schedule, not two. Rookies
+  are judged on the current season only.
