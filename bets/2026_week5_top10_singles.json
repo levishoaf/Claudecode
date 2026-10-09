@@ -1,0 +1,107 @@
+{
+  "name": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+  "saved": "2026-10-09",
+  "kind": "singles",
+  "season": 2026,
+  "week": 5,
+  "note": "Fake $100 bets at consensus odds as of 2026-10-09 ~16:50 UTC; all slightly -EV (-2.1% to -3.3%).",
+  "legs": [
+    {
+      "type": "moneyline",
+      "game_id": "2026_05_PHI_JAX",
+      "team": "JAX",
+      "odds": -410,
+      "stake": 100,
+      "win_prob": 0.787,
+      "label": "Jaguars moneyline (vs Eagles)"
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_HOU_TEN",
+      "team": "TEN",
+      "point": 7.5,
+      "odds": -115,
+      "stake": 100,
+      "win_prob": 0.523,
+      "label": "Titans +7.5 (vs Texans)"
+    },
+    {
+      "type": "total",
+      "game_id": "2026_05_BAL_ATL",
+      "side": "Over",
+      "line": 43.5,
+      "odds": -115,
+      "stake": 100,
+      "win_prob": 0.522,
+      "label": "Ravens-Falcons Over 43.5"
+    },
+    {
+      "type": "total",
+      "game_id": "2026_05_MIN_NO",
+      "side": "Over",
+      "line": 41.5,
+      "odds": -112,
+      "stake": 100,
+      "win_prob": 0.515,
+      "label": "Vikings-Saints Over 41.5"
+    },
+    {
+      "type": "total",
+      "game_id": "2026_05_NYG_WAS",
+      "side": "Over",
+      "line": 41.5,
+      "odds": -115,
+      "stake": 100,
+      "win_prob": 0.519,
+      "label": "Giants-Commanders Over 41.5"
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_DET_ARI",
+      "team": "ARI",
+      "point": 5.5,
+      "odds": -110,
+      "stake": 100,
+      "win_prob": 0.508,
+      "label": "Cardinals +5.5 (vs Lions)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "2026_05_CHI_GB",
+      "team": "CHI",
+      "odds": -120,
+      "stake": 100,
+      "win_prob": 0.529,
+      "label": "Bears moneyline (at Packers)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "2026_05_CIN_MIA",
+      "team": "CIN",
+      "odds": -310,
+      "stake": 100,
+      "win_prob": 0.733,
+      "label": "Bengals moneyline (at Dolphins)"
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_LV_NE",
+      "team": "LV",
+      "point": 3.5,
+      "odds": -110,
+      "stake": 100,
+      "win_prob": 0.507,
+      "label": "Raiders +3.5 (at Patriots)"
+    },
+    {
+      "type": "total",
+      "game_id": "2026_05_CLE_NYJ",
+      "side": "Over",
+      "line": 39.5,
+      "odds": -112,
+      "stake": 100,
+      "win_prob": 0.511,
+      "label": "Browns-Jets Over 39.5"
+    }
+  ]
+}
