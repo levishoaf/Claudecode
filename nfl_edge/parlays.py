@@ -63,3 +63,21 @@ def build_parlays(bets: list[Bet], *, max_legs: int = 3, min_ev: float = 0.0,
                 parlays.append(parlay)
     parlays.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
     return parlays[:count]
+
+
+def most_likely_parlay(bets: list[Bet], legs: int) -> Parlay | None:
+    """The `legs`-leg parlay with the highest win probability, one leg per game.
+
+    Win probability is a product of independent legs, so the best choice is
+    the single most likely outcome in each game, then the `legs` games where
+    that outcome is most likely. Legs are NOT required to have an edge, so
+    the result usually has negative expected value; check `ev`.
+    """
+    best: dict[str, Bet] = {}
+    for b in bets:
+        if b.game not in best or b.fair_prob > best[b.game].fair_prob:
+            best[b.game] = b
+    if len(best) < legs:
+        return None
+    chosen = sorted(best.values(), key=lambda b: b.fair_prob, reverse=True)[:legs]
+    return Parlay(tuple(sorted(chosen, key=lambda b: (b.commence_time, b.game))))

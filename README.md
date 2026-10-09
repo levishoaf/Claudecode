@@ -57,6 +57,7 @@ python -m nfl_edge --parlays         # also suggest parlays
 | `--parlay-count` | `5` | Parlays to show |
 | `--parlay-min-ev` | `1.0` | Minimum parlay EV in % |
 | `--parlay-wager` | Kelly stake | Show slips for a fixed wager |
+| `--parlay-legs` | off | Single most likely parlay with exactly N legs (may be -EV) |
 | `--season` | current | Season to pull stats from |
 | `--stats-file` | nflverse | Local `games.csv` path or URL |
 
@@ -178,6 +179,26 @@ How they're built:
   favorites and pairs. More legs always means a lower chance of winning.
 - **Smaller stakes.** Stakes use the same fractional Kelly as singles. That
   naturally sizes parlays smaller, because they lose more often.
+
+### Big parlays
+
+`--parlay-legs N` builds the single most likely parlay with exactly N legs.
+It takes the most likely outcome in each game, then the N games where that
+outcome is most likely. Those legs aren't required to have an edge, so the
+slip also shows the parlay's fair odds and expected loss.
+
+For example, an 11-leg parlay of the favorites for week 5 of 2026, using
+consensus lines:
+
+| | |
+|---|---|
+| Legs | 11 favorites on the moneyline, from -148 to -425 |
+| Pays | +6615 ($10 wins $661) |
+| Chance of winning | **about 1%** (fair odds +9972) |
+| Expected value | **-33%** |
+
+Every leg adds FanDuel's margin again, so long parlays of favorites are
+among the worst-value bets on the board.
 
 Keep in mind:
 

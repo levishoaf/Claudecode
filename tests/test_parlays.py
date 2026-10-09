@@ -5,7 +5,7 @@ from pathlib import Path
 
 from nfl_edge.cli import SLIP_WIDTH, format_slip
 from nfl_edge.finder import Bet, find_bets
-from nfl_edge.parlays import Parlay, build_parlays
+from nfl_edge.parlays import Parlay, build_parlays, most_likely_parlay
 
 SAMPLE = Path(__file__).parent.parent / "nfl_edge" / "sample_odds.json"
 KICKOFF = datetime(2026, 10, 11, 17, tzinfo=timezone.utc)
@@ -67,6 +67,25 @@ class BuildParlaysTest(unittest.TestCase):
         parlays = build_parlays(legs, count=3)
         self.assertEqual(len(parlays), 3)
         self.assertIn("Houston Texans", {b.pick for b in parlays[0].legs})
+
+
+class MostLikelyParlayTest(unittest.TestCase):
+    def test_picks_most_likely_leg_per_game_then_best_games(self):
+        legs = [bet("A", -400, 0.78, "A fav"), bet("A", 300, 0.22, "A dog"),
+                bet("B", -110, 0.50, "B side"), bet("C", -250, 0.70, "C fav"),
+                bet("D", -150, 0.58, "D fav")]
+        p = most_likely_parlay(legs, 3)
+        self.assertEqual({b.pick for b in p.legs}, {"A fav", "C fav", "D fav"})
+        self.assertAlmostEqual(p.win_prob, 0.78 * 0.70 * 0.58)
+
+    def test_needs_enough_games(self):
+        self.assertIsNone(most_likely_parlay([bet("A", 100, 0.5), bet("B", 100, 0.5)], 3))
+
+    def test_allows_negative_ev_legs(self):
+        legs = [bet(g, -110, 0.5) for g in "ABCD"]
+        p = most_likely_parlay(legs, 4)
+        self.assertEqual(len(p.legs), 4)
+        self.assertLess(p.ev, 0)
 
 
 class SlipTest(unittest.TestCase):

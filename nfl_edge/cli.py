@@ -15,8 +15,8 @@ from . import data
 from .context import SeasonData
 from .factors import Coefficients
 from .model import GameModel
-from .odds import DEVIG_METHODS
-from .parlays import Parlay, build_parlays
+from .odds import DEVIG_METHODS, decimal_to_american
+from .parlays import Parlay, build_parlays, most_likely_parlay
 from .stats import SeasonModel
 from .weather import kickoff_forecast
 
@@ -121,6 +121,35 @@ def print_parlays(parlays: list[Parlay], bankroll: float, kelly_mult: float,
         print("\n".join(format_slip(p, amount)))
     print("\nA parlay only wins if every leg wins. Odds and payout assume FanDuel's standard "
           "parlay\npricing (the product of the legs); confirm on the bet slip before placing it.")
+
+
+def print_most_likely(events: list[dict], args: argparse.Namespace, model, max_pct: float) -> int:
+    every_leg = find_bets(
+        events, min_ev=-1.0, min_books=args.min_books, devig=args.devig,
+        sharp_only=not args.all_books, include_started=args.demo, model=model,
+        model_weight=args.model_weight,
+    )
+    p = most_likely_parlay(every_leg, args.parlay_legs)
+    if p is None:
+        games = len({b.game for b in every_leg})
+        print(f"Only {games} games have FanDuel odds; a {args.parlay_legs}-leg parlay needs "
+              f"{args.parlay_legs} different games.")
+        return 1
+    wager = args.parlay_wager if args.parlay_wager is not None else 10.0
+    if args.json:
+        print(json.dumps(_parlay_json(p, args.bankroll, args.kelly, max_pct), indent=2))
+        return 0
+    print(f"Most likely {len(p.legs)}-leg parlay (one leg per game, most likely outcome in each)\n")
+    print("\n".join(format_slip(p, wager)))
+    fair_decimal = 1 / p.win_prob
+    print(f"\nFair odds for this parlay: {_fmt_american(decimal_to_american(fair_decimal))}. "
+          f"FanDuel pays {_fmt_american(p.american)}.")
+    print(f"Expected value: {p.ev:+.1%}, about ${-p.ev * wager:,.2f} lost per ${wager:,.0f} "
+          f"bet on average." if p.ev < 0 else f"Expected value: {p.ev:+.1%}.")
+    if p.ev < 0:
+        print("Legs were picked for likelihood, not value, so FanDuel's margin on each one "
+              "compounds.\nThe suggested stake for a negative-EV bet is $0.")
+    return 0
 
 
 def _parlay_json(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) -> dict:
@@ -235,6 +264,9 @@ def main(argv: list[str] | None = None) -> int:
                      help="also suggest parlays with the highest chance of winning")
     par.add_argument("--max-legs", type=int, default=3, help="max legs per parlay (default 3)")
     par.add_argument("--parlay-count", type=int, default=5, help="parlays to show (default 5)")
+    par.add_argument("--parlay-legs", type=int,
+                     help="build the single most likely parlay with exactly this many legs "
+                          "(legs may have negative EV)")
     par.add_argument("--parlay-wager", type=float,
                      help="show slips for this wager instead of the suggested stake")
     par.add_argument("--parlay-min-ev", type=float, default=1.0,
@@ -303,6 +335,9 @@ def main(argv: list[str] | None = None) -> int:
         require_agreement=args.require_agreement,
     )
     max_pct = args.max_bet / 100
+
+    if args.parlay_legs:
+        return print_most_likely(events, args, model, max_pct)
 
     parlays = None
     if args.parlays:
