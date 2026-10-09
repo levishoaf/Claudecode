@@ -38,6 +38,12 @@ class GradeTest(unittest.TestCase):
         self.assertEqual(profit_of(leg, "lost"), -100)
         self.assertEqual(profit_of(leg, "push"), 0)
 
+    def test_decimal_scores(self):
+        games = {"c": {"game_id": "c", "away_team": "Iowa", "home_team": "Washington",
+                       "away_score": "24.0", "home_score": "21.0"}}
+        leg = {"type": "moneyline", "game_id": "c", "team": "Iowa"}
+        self.assertEqual(grade_leg(leg, games, []), ("won", "Iowa 24 - Washington 21"))
+
 
 if __name__ == "__main__":
     unittest.main()

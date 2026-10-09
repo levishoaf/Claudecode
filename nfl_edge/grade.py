@@ -2,6 +2,7 @@
 
     python -m nfl_edge.grade bets/2026_week5_sgp5.json
 
+Works for NFL bets and, with "sport": "ncaaf" in the file, college bets.
 Supported legs: moneyline (team wins), spread (team + point), total
 (Over/Under a line) and passing_tds (player throws at least `min` passing
 touchdowns). Player stats usually post the day after a game.
@@ -31,7 +32,7 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
         return "pending", "game not found"
     if g["home_score"] == "":
         return "pending", "not final yet"
-    home, away = int(g["home_score"]), int(g["away_score"])
+    home, away = int(float(g["home_score"])), int(float(g["away_score"]))
     score = f"{g['away_team']} {away} - {g['home_team']} {home}"
     if leg["type"] == "moneyline":
         if home == away:
@@ -56,8 +57,26 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
     return "pending", f"unknown leg type {leg['type']}"
 
 
+def college_games(season: int, source: str | None = None) -> dict[str, dict]:
+    """College schedule rows reshaped like nflverse games (scores blank until final)."""
+    from . import cfb
+
+    games = {}
+    for r in cfb.load_schedule(season, source, current_season=season):
+        final = r["completed"] == "TRUE"
+        games[r["game_id"]] = {
+            "game_id": r["game_id"], "home_team": r["home_team"], "away_team": r["away_team"],
+            "home_score": r["home_points"] if final else "",
+            "away_score": r["away_points"] if final else "",
+        }
+    return games
+
+
 def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, str]]:
-    games = {g["game_id"]: g for g in data.games(games_source)}
+    if bet.get("sport") == "ncaaf":
+        games = college_games(bet["season"], games_source)
+    else:
+        games = {g["game_id"]: g for g in data.games(games_source)}
     stats: list[dict] = []
     if any(leg["type"] == "passing_tds" for leg in bet["legs"]):
         try:

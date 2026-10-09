@@ -1,0 +1,74 @@
+{
+  "name": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+  "saved": "2026-10-09",
+  "kind": "singles",
+  "sport": "ncaaf",
+  "season": 2026,
+  "week": 6,
+  "note": "Fake $100 bets at the FanDuel prices from the user's 7-leg slip. win_prob = 90% market (FanDuel de-vigged) + 10% college model.",
+  "legs": [
+    {
+      "type": "moneyline",
+      "game_id": "401858487",
+      "team": "Iowa",
+      "odds": 154,
+      "stake": 100,
+      "win_prob": 0.396,
+      "label": "Iowa moneyline (@ Washington)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401858481",
+      "team": "Indiana",
+      "odds": -226,
+      "stake": 100,
+      "win_prob": 0.67,
+      "label": "Indiana moneyline (@ Nebraska)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401856718",
+      "team": "Ole Miss",
+      "odds": -253,
+      "stake": 100,
+      "win_prob": 0.671,
+      "label": "Ole Miss moneyline (@ Vanderbilt)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401858484",
+      "team": "Oregon",
+      "odds": -309,
+      "stake": 100,
+      "win_prob": 0.724,
+      "label": "Oregon moneyline (vs UCLA)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401858255",
+      "team": "Duke",
+      "odds": -191,
+      "stake": 100,
+      "win_prob": 0.632,
+      "label": "Duke moneyline (@ Georgia Tech)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401856713",
+      "team": "Tennessee",
+      "odds": -351,
+      "stake": 100,
+      "win_prob": 0.746,
+      "label": "Tennessee moneyline (@ Arkansas)"
+    },
+    {
+      "type": "moneyline",
+      "game_id": "401856715",
+      "team": "LSU",
+      "odds": -234,
+      "stake": 100,
+      "win_prob": 0.676,
+      "label": "LSU moneyline (@ Kentucky)"
+    }
+  ]
+}
