@@ -133,6 +133,8 @@ class App:
         self.picked: set[str] = set()  # labels of singles on your slip
         self.picked_parlays: set[tuple] = set()  # parlays on your slip
         self.last_args = None
+        self.tab = "singles"
+        self.week_values: dict[str, int | None] = {}
         self.results: queue.Queue = queue.Queue()
         root.title("Bet Builder")
         root.geometry(f"{W}x{H}")
@@ -154,7 +156,7 @@ class App:
 
         self.say("Loading this week's picks...")
         root.after(100, self.poll)
-        root.after(200, self.build)  # always start with the latest data
+        root.after(150, lambda: (self.load_weeks(), self.build()))  # always start with the latest data
 
     # -------------------------------------------------------------- layout
     def style(self) -> None:
@@ -164,7 +166,10 @@ class App:
             s.configure(name, fieldbackground=WHITE, foreground=TEXT, bordercolor=BORDER,
                         lightcolor=WHITE, darkcolor=WHITE, insertcolor=TEXT, padding=5,
                         arrowcolor=BLUE, background=WHITE)
-        s.map("TCombobox", fieldbackground=[("readonly", WHITE)])
+        # Keep a chosen week readable while the box has focus.
+        s.map("TCombobox", fieldbackground=[("readonly", WHITE)],
+              selectbackground=[("readonly", WHITE)], selectforeground=[("readonly", TEXT)],
+              foreground=[("readonly", TEXT)])
         s.configure("Vertical.TScrollbar", troughcolor=BG, background="#c3ccd8",
                     bordercolor=BG, arrowcolor=MUTED, lightcolor="#c3ccd8", darkcolor="#c3ccd8")
 
@@ -188,7 +193,7 @@ class App:
 
         row2 = tk.Frame(top, bg=NAVY)
         row2.pack(fill="x", padx=18, pady=(6, 14))
-        self.when = tk.StringVar(value="week")
+        self.when = tk.StringVar(value="Loading weeks...")
         self.n_singles, self.n_parlays = tk.StringVar(value="30"), tk.StringVar(value="10")
         self.min_legs, self.max_legs = tk.StringVar(value="3"), tk.StringVar(value="5")
         self.stake, self.lo, self.hi, self.refresh = (tk.StringVar(value=v)
@@ -200,10 +205,12 @@ class App:
             tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
                      font=self.f["label"]).pack(anchor="w")
             if values:
-                ttk.Combobox(box, textvariable=var, values=values, width=width,
-                             font=self.f["body"]).pack(anchor="w")
+                w = ttk.Combobox(box, textvariable=var, values=values, width=width,
+                                 font=self.f["body"], state="readonly")
             else:
-                ttk.Entry(box, textvariable=var, width=width, font=self.f["body"]).pack(anchor="w")
+                w = ttk.Entry(box, textvariable=var, width=width, font=self.f["body"])
+            w.pack(anchor="w")
+            return w
 
         def pair(label, a, b):
             box = tk.Frame(row2, bg=NAVY)
@@ -216,7 +223,13 @@ class App:
             tk.Label(inner, text="–", bg=NAVY, fg=WHITE).pack(side="left", padx=2)
             ttk.Entry(inner, textvariable=b, width=3, font=self.f["body"]).pack(side="left")
 
-        field("Games", self.when, 9, ["week", "today", date.today().isoformat()])
+        self.games_box = field("Games", self.when, 16, ["Loading weeks..."])
+        def chose_week(_event):
+            self.games_box.selection_clear()
+            self.root.focus_set()
+            self.build()
+
+        self.games_box.bind("<<ComboboxSelected>>", chose_week)
         field("Singles", self.n_singles, 3)
         field("Parlays", self.n_parlays, 3)
         pair("Legs", self.min_legs, self.max_legs)
@@ -233,9 +246,31 @@ class App:
         c.create_window(W / 2, 72, window=top, width=PANEL_W)
 
     def pick_sport(self, key: str) -> None:
+        changed = self.sport.get() != key
         self.sport.set(key)
         for k, b in self.seg_btns.items():
             b.set_kind("primary" if k == key else "ghost")
+        if changed:
+            self.load_weeks()
+            self.build()
+
+    def load_weeks(self) -> None:
+        """Fill the Games list with this week and every later week known right now."""
+        values: dict[str, int | None] = {}
+        try:
+            if self.sport.get() == "ncaaf":
+                for i, w in enumerate(board.cfb_weeks()):
+                    values[f"Week {w}" + ("  ·  this week" if i == 0 else "")] = w
+            else:
+                for i, (w, lines) in enumerate(board.nfl_weeks()):
+                    tag = "this week" if i == 0 else ("lines posted" if lines else "no lines yet")
+                    values[f"Week {w}  ·  {tag}"] = w
+        except data.DataError:
+            pass
+        values["Today's games"] = None
+        self.week_values = values
+        self.games_box.configure(values=list(values))
+        self.when.set(next(iter(values)))
 
     def output(self, c: tk.Canvas) -> None:
         out = tk.Frame(c, bg=BG)
@@ -291,12 +326,24 @@ class App:
     def toggle_single(self, b) -> None:
         key = bets.label(b)
         self.picked.symmetric_difference_update({key})
-        self.refresh_cards()
+        self.after_toggle()
 
     def toggle_parlay(self, p) -> None:
         key = tuple(bets.label(b) for b in p.legs)
         self.picked_parlays.symmetric_difference_update({key})
-        self.refresh_cards()
+        self.after_toggle()
+
+    def after_toggle(self) -> None:
+        if self.tab == "slip":  # removing from the slip view redraws it
+            self.show_tab("slip")
+        else:
+            self.refresh_cards()
+            self.update_tab_count()
+
+    def update_tab_count(self) -> None:
+        label = getattr(self, "tab_labels", {}).get("slip")
+        if label is not None and label.winfo_exists():
+            label.configure(text=f"Your slip ({len(self.picked) + len(self.picked_parlays)})")
 
     def slip_bets(self) -> tuple[list, list]:
         singles = [b for b in self.singles if bets.label(b) in self.picked]
@@ -334,51 +381,7 @@ class App:
     def clear_slip(self) -> None:
         self.picked.clear()
         self.picked_parlays.clear()
-        self.refresh_cards()
-
-    def view_slip(self) -> None:
-        singles, parlays = self.slip_bets()
-        if not singles and not parlays:
-            self.verdict.configure(text="Your slip is empty: click bet cards to add them.", fg=WHITE)
-            return
-        self.clear()
-        self.card_widgets = {}
-        head = tk.Frame(self.body, bg=BG)
-        head.pack(fill="x", padx=16, pady=(14, 6))
-        tk.Label(head, text="Your slip", bg=BG, fg=TEXT, font=self.f["h2"]).pack(side="left")
-        FlatButton(head, "Back to all bets", lambda: self.render(
-            self.last_args, self.singles, self.parlays, {}), "secondary",
-            self.f["bold"]).pack(side="right")
-        cols = tk.Frame(self.body, bg=BG)
-        cols.pack(fill="both", padx=10)
-        left, right = tk.Frame(cols, bg=BG), tk.Frame(cols, bg=BG)
-        left.pack(side="left", anchor="n", padx=6)
-        right.pack(side="left", anchor="n", padx=6)
-        tk.Frame(left, bg=BG, width=468, height=1).pack()
-        tk.Frame(right, bg=BG, width=372, height=1).pack()
-        stake = float(self.stake.get() or 10)
-        if singles:
-            tk.Label(left, text=f"SINGLE BETS  ·  ${stake:,.0f} EACH", bg=BG, fg=MUTED,
-                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
-            total = 0.0
-            for i, b in enumerate(singles, 1):
-                self.single_card(left, i, b, {}, stake=stake)
-                total += stake / b.fair_prob
-            tk.Label(left, text=f"If every single wins: ${total:,.2f} back on ${stake * len(singles):,.2f}*",
-                     bg=BG, fg=TEXT, font=self.f["bold"]).pack(anchor="w", pady=6)
-        combo = self.combined(singles)
-        if combo:
-            tk.Label(right, text="YOUR SINGLES AS ONE PARLAY", bg=BG, fg=MUTED,
-                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
-            self.parlay_card(right, "Mine", combo, stake)
-        if parlays:
-            tk.Label(right, text="PARLAYS YOU PICKED", bg=BG, fg=MUTED,
-                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
-            for p in parlays:
-                self.parlay_card(right, self.parlays.index(p) + 1, p, stake)
-        tk.Label(self.body, text="* At break-even odds; FanDuel's payout will differ. "
-                                 "Save slip to grade these after the games.",
-                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+        self.show_tab(self.tab)
 
     # -------------------------------------------------------------- output
     def clear(self) -> None:
@@ -394,53 +397,120 @@ class App:
                  anchor="nw").pack(anchor="nw", padx=16, pady=14)
 
     def render(self, args, singles, parlays, previous) -> None:
+        """Header, tab bar and the current tab's cards."""
+        self.render_args = (args, singles, parlays, previous)
         self.clear()
         self.card_widgets = {}
         head = tk.Frame(self.body, bg=BG)
-        head.pack(fill="x", padx=16, pady=(14, 6))
+        head.pack(fill="x", padx=16, pady=(12, 2))
         sport = "NFL" if args.sport == "nfl" else "College Football"
         tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        tk.Label(head, text=f"   {len(singles)} single bets  ·  {len(parlays)} parlays  ·  "
-                            f"{args.min_prob:.0f}–{args.max_prob:.0f}% chance, likeliest first",
+        tk.Label(head, text=f"   {args.min_prob:.0f}–{args.max_prob:.0f}% chance, likeliest first"
+                            "  ·  click a card to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         if args.sport == "nfl" and board.NOTES.get("injuries"):
             ready = "included for all" in board.NOTES["injuries"]
             tk.Label(self.body, text=("✓ " if ready else "⚠ ") + board.NOTES["injuries"],
                      bg=BG, fg=GREEN if ready else MOVED_BADGE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        tk.Label(self.body, text="Click a card to add it to your slip.", bg=BG, fg=MUTED,
-                 font=self.f["tiny"]).pack(anchor="w", padx=16)
 
-        cols = tk.Frame(self.body, bg=BG)
-        cols.pack(fill="both", padx=10)
-        left, right = tk.Frame(cols, bg=BG), tk.Frame(cols, bg=BG)
-        left.pack(side="left", anchor="n", padx=6)
-        right.pack(side="left", anchor="n", padx=6)
-        tk.Frame(left, bg=BG, width=468, height=1).pack()
-        tk.Frame(right, bg=BG, width=372, height=1).pack()
+        tabs = tk.Frame(self.body, bg=BG)
+        tabs.pack(fill="x", padx=16, pady=(10, 0))
+        n_slip = len(self.picked) + len(self.picked_parlays)
+        self.tab_labels = {}
+        for key, text in (("singles", f"Single bets ({len(singles)})"),
+                          ("parlays", f"Parlays ({len(parlays)})"),
+                          ("slip", f"Your slip ({n_slip})")):
+            on = key == self.tab
+            tab = tk.Frame(tabs, bg=BG)
+            tab.pack(side="left", padx=(0, 18))
+            lbl = tk.Label(tab, text=text, bg=BG, fg=BLUE if on else MUTED, cursor="hand2",
+                           font=self.f["bold"])
+            lbl.pack()
+            self.tab_labels[key] = lbl
+            tk.Frame(tab, bg=BLUE if on else BG, height=3).pack(fill="x", pady=(4, 0))
+            for w in (tab, lbl):
+                w.bind("<Button-1>", lambda e, k=key: self.show_tab(k))
+        tk.Frame(self.body, bg=BORDER, height=1).pack(fill="x", padx=16)
 
-        tk.Label(left, text="SINGLE BETS", bg=BG, fg=MUTED, font=self.f["label"]).pack(
-            anchor="w", pady=(6, 4))
-        if not singles:
-            tk.Label(left, text="None found. Try a wider chance range or another date.", bg=BG,
-                     fg=TEXT, font=self.f["body"]).pack(anchor="w")
-        for i, b in enumerate(singles, 1):
-            self.single_card(left, i, b, previous)
-
-        sizes = sorted({len(p.legs) for p in parlays})
-        span = (f"{sizes[0]}–{sizes[-1]}" if len(sizes) > 1 else f"{sizes[0]}") if sizes else ""
-        tk.Label(right, text=f"PARLAYS  ·  {span} LEGS", bg=BG, fg=MUTED,
-                 font=self.f["label"]).pack(anchor="w", pady=(6, 4))
-        if args.parlays and not parlays:
-            tk.Label(right, text="Not enough games for that many legs.", bg=BG, fg=TEXT,
-                     font=self.f["body"]).pack(anchor="w")
-        for i, p in enumerate(parlays, 1):
-            self.parlay_card(right, i, p, args.stake)
+        grid = tk.Frame(self.body, bg=BG)
+        grid.pack(fill="both", padx=10, pady=(6, 0))
+        if self.tab == "singles":
+            self.singles_tab(grid, singles, previous)
+        elif self.tab == "parlays":
+            self.parlays_tab(grid, parlays, args.stake)
+        else:
+            self.slip_tab(grid)
         self.refresh_cards()
         tk.Label(self.body, text="Odds shown are break-even: bet only if FanDuel pays that or "
                                  "better. Check any price at the bottom.",
                  bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+
+    def show_tab(self, key: str) -> None:
+        self.tab = key
+        if getattr(self, "render_args", None):
+            self.render(*self.render_args)
+
+    def columns(self, parent, n: int = 2, width: int = 418) -> list[tk.Frame]:
+        cols = []
+        for _ in range(n):
+            col = tk.Frame(parent, bg=BG)
+            col.pack(side="left", anchor="n", padx=6)
+            tk.Frame(col, bg=BG, width=width, height=1).pack()
+            cols.append(col)
+        return cols
+
+    def singles_tab(self, parent, singles, previous) -> None:
+        if not singles:
+            tk.Label(parent, text="None found. Try a wider chance range or another week.", bg=BG,
+                     fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        cols = self.columns(parent)
+        for i, b in enumerate(singles, 1):
+            self.single_card(cols[(i - 1) % 2], i, b, previous)
+
+    def parlays_tab(self, parent, parlays, stake) -> None:
+        if not parlays:
+            tk.Label(parent, text="Not enough games for these parlays this week.", bg=BG,
+                     fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        cols = self.columns(parent)
+        for i, p in enumerate(parlays, 1):
+            self.parlay_card(cols[(i - 1) % 2], i, p, stake)
+
+    def slip_tab(self, parent) -> None:
+        singles, parlays = self.slip_bets()
+        if not singles and not parlays:
+            tk.Label(parent, text="Your slip is empty. Click cards on the Single bets or Parlays "
+                                  "tabs to add them.", bg=BG, fg=TEXT,
+                     font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        left, right = self.columns(parent)
+        stake = float(self.stake.get() or 10)
+        if singles:
+            tk.Label(left, text=f"SINGLE BETS  ·  ${stake:,.0f} EACH", bg=BG, fg=MUTED,
+                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
+            total = 0.0
+            for b in singles:
+                self.single_card(left, self.singles.index(b) + 1, b, {}, stake=stake)
+                total += stake / b.fair_prob
+            tk.Label(left, text=f"If every single wins: ${total:,.2f} back on "
+                                f"${stake * len(singles):,.2f}*",
+                     bg=BG, fg=TEXT, font=self.f["bold"]).pack(anchor="w", pady=6)
+        combo = self.combined(singles)
+        if combo:
+            tk.Label(right, text="YOUR SINGLES AS ONE PARLAY", bg=BG, fg=MUTED,
+                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
+            self.parlay_card(right, "Mine", combo, stake)
+        if parlays:
+            tk.Label(right, text="PARLAYS YOU PICKED", bg=BG, fg=MUTED,
+                     font=self.f["label"]).pack(anchor="w", pady=(6, 4))
+            for p in parlays:
+                self.parlay_card(right, self.parlays.index(p) + 1, p, stake)
+
+    def view_slip(self) -> None:
+        self.show_tab("slip")
 
     def card(self, parent) -> tk.Frame:
         frame = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
@@ -462,7 +532,7 @@ class App:
         top = tk.Frame(mid, bg=CARD)
         top.pack(fill="x")
         tk.Label(top, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["pick"],
-                 wraplength=270, justify="left").pack(side="left")
+                 wraplength=220, justify="left").pack(side="left")
         old = previous.get(bets.label(b)) if previous else None
         if previous and old is None:
             tk.Label(top, text=" NEW ", bg=NEW_BADGE, fg=WHITE, font=self.f["tinyb"]).pack(
@@ -477,9 +547,9 @@ class App:
         meta = f"{b.game}  ·  {_slip_time(b)}"
         if b.priced:
             meta += f"  ·  consensus {_fmt_american(b.fd_price)}"
-        tk.Label(mid, text=meta, bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=290,
+        tk.Label(mid, text=meta, bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=240,
                  justify="left").pack(anchor="w")
-        bar(mid, b.fair_prob, CARD, 150, self.f["tinyb"]).pack(anchor="w", pady=(6, 0))
+        bar(mid, b.fair_prob, CARD, 130, self.f["tinyb"]).pack(anchor="w", pady=(6, 0))
         if stake:
             tk.Label(mid, text=f"${stake:,.2f} wins ${stake / b.fair_prob - stake:,.2f}*",
                      bg=CARD, fg=TEXT, font=self.f["tinyb"]).pack(anchor="w", pady=(4, 0))
@@ -512,7 +582,7 @@ class App:
             txt.pack(side="left", padx=8)
             name = _slip_selection(b) + ("  (Q)" if b.note == "Questionable" else "")
             tk.Label(txt, text=name, bg=CARD, fg=TEXT, font=self.f["bold"],
-                     wraplength=240, justify="left").pack(anchor="w")
+                     wraplength=280, justify="left").pack(anchor="w")
             tk.Label(txt, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
             tk.Label(txt, text=f"{b.game}  ·  {_slip_time(b)}", bg=CARD, fg=MUTED,
                      font=self.f["tiny"], wraplength=240, justify="left").pack(anchor="w")
@@ -534,7 +604,10 @@ class App:
     # -------------------------------------------------------------- actions
     def args(self) -> argparse.Namespace:
         return argparse.Namespace(
-            sport=self.sport.get(), date=self.when.get(), singles=int(self.n_singles.get() or 30),
+            sport=self.sport.get(),
+            date="today" if self.when.get() == "Today's games" else "week",
+            week=self.week_values.get(self.when.get()),
+            singles=int(self.n_singles.get() or 30),
             legs=int(self.min_legs.get() or 3), min_legs=int(self.min_legs.get() or 3),
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
@@ -568,6 +641,8 @@ class App:
             self.say(f"Couldn't load data: {item[1]}")
         else:
             _, args, self.singles, self.parlays = item
+            if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
+                self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args
             labels = {bets.label(b) for b in self.singles}
             self.picked &= labels

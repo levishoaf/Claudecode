@@ -23,7 +23,19 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 ![Bet builder window](docs/bet-builder-preview.png)
 
 The window opens with this week's **top 30 single bets** and **10 parlays of
-3 to 5 legs**.
+3 to 5 legs**, each on its own tab: **Single bets**, **Parlays** and
+**Your slip**.
+
+**Choosing a week:** the **Games** list shows this week and every later week
+on the schedule, labeled with what's known right now:
+
+- **This week** and **lines posted:** full picks, meaning game lines,
+  alternate lines, team totals and player props.
+- **No lines yet:** moneylines from the stats model only, labeled as such.
+  A week fills in automatically once its lines and injury reports come out.
+- **Today's games** is also available.
+
+![Week list](docs/bet-builder-weeks.png)
 
 - **Building a slip:** click any card to add it to **your slip**. The slip
   bar shows your picks, plus the chance if your singles were combined into
@@ -37,6 +49,8 @@ The window opens with this week's **top 30 single bets** and **10 parlays of
   are dropped, **Questionable** players get a **Q** badge, and a status
   line says whether this week's injury reports are in yet. It moves to the
   next week automatically once the current games are played.
+
+![Parlays tab](docs/bet-builder-parlays.png)
 
 ![Your slip](docs/bet-builder-slip.png)
 

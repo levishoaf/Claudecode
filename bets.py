@@ -139,10 +139,11 @@ def build(args):
     lo, hi = args.min_prob / 100, args.max_prob / 100
     day = None if args.date in ("week", "all") else (
         date.today() if args.date == "today" else date.fromisoformat(args.date))
+    week = getattr(args, "week", None)
     if args.sport == "ncaaf":
-        bets = cfb_board(day, lo, hi)
+        bets = cfb_board(day, lo, hi, week=week)
     else:
-        bets = nfl_board(day, lo, hi, games_source=args.games_file)
+        bets = nfl_board(day, lo, hi, games_source=args.games_file, week=week)
     singles = rank_singles(bets, args.singles, rank_by="prob", per_game=args.per_game)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
@@ -249,6 +250,7 @@ def main() -> int:
     p = argparse.ArgumentParser(description="Build FanDuel single bets and parlays from free data.")
     p.add_argument("--sport", choices=["nfl", "ncaaf"])
     p.add_argument("--date", help="'week' (this week's games, default), 'today' or YYYY-MM-DD (Eastern)")
+    p.add_argument("--week", type=int, help="a specific week, e.g. 6 (default: this week)")
     p.add_argument("--singles", type=int, help="how many single bets")
     p.add_argument("--legs", type=int, help="legs per parlay")
     p.add_argument("--min-legs", type=int, help="smallest parlay (with --max-legs for a mix)")

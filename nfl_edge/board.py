@@ -81,20 +81,51 @@ def _pick_line(prob_at, lines, lo: float, hi: float) -> tuple[float, float] | No
     return best
 
 
+def has_lines(g: dict) -> bool:
+    return bool(g["spread_line"] and g["total_line"] and g["home_moneyline"] and g["away_moneyline"])
+
+
+def upcoming_nfl(now: datetime | None = None, games_source: str | None = None) -> list[dict]:
+    now = now or datetime.now(EASTERN)
+    season = season_for(now.date())
+    return [g for g in data.games(games_source) if g["season"] == str(season)
+            and g["game_type"] == "REG" and g["home_score"] == "" and kickoff_of(g) > now]
+
+
+def nfl_weeks(now: datetime | None = None, games_source: str | None = None) -> list[tuple[int, bool]]:
+    """[(week, lines posted?)] for this week and every later week on the schedule."""
+    weeks: dict[int, bool] = {}
+    for g in upcoming_nfl(now, games_source):
+        w = int(g["week"])
+        weeks[w] = weeks.get(w, True) and has_lines(g)
+    return sorted(weeks.items())
+
+
+def cfb_weeks(now: datetime | None = None, ahead: int = 4) -> list[int]:
+    now = now or datetime.now(EASTERN)
+    season = season_for(now.date())
+    weeks = sorted({int(r["week"]) for r in cfb.load_schedule(season, current_season=season)
+                    if r["completed"] != "TRUE" and r["season_type"] == "regular"
+                    and datetime.fromisoformat(r["start_date"].replace("Z", "+00:00")) > now})
+    return weeks[:ahead]
+
+
 def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = None,
-              games_source: str | None = None) -> list[Bet]:
+              games_source: str | None = None, week: int | None = None) -> list[Bet]:
     from .cli import build_model  # heavy import, only when needed
 
     now = now or datetime.now(EASTERN)
     all_games = data.games(games_source)
     season = season_for(now.date())
-    rows = [g for g in all_games if g["season"] == str(season) and g["game_type"] == "REG"
-            and g["home_score"] == "" and g["spread_line"] and g["total_line"]
-            and g["home_moneyline"] and g["away_moneyline"]]
-    rows = [g for g in rows if kickoff_of(g) > now and (day is None or kickoff_of(g).date() == day)]
-    if day is None and rows:  # default: this week's games only
-        week = min(int(g["week"]) for g in rows)
-        rows = [g for g in rows if int(g["week"]) == week]
+    upcoming = [g for g in upcoming_nfl(now, games_source)
+                if day is None or kickoff_of(g).date() == day]
+    if week is None and day is None and upcoming:  # default: this week's games only
+        week = min(int(g["week"]) for g in upcoming)
+    if week is not None:
+        upcoming = [g for g in upcoming if int(g["week"]) == week]
+    rows = [g for g in upcoming if has_lines(g)]
+    if upcoming and not rows:  # schedule known, lines not out yet
+        return _model_only_week(upcoming, season, lo, hi, games_source)
     if not rows:
         return []
 
@@ -167,6 +198,32 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
     return [b for b in bets if lo <= b.fair_prob <= hi]
 
 
+def _model_only_week(rows, season, lo, hi, games_source) -> list[Bet]:
+    """Moneylines from the stats model for a week whose lines aren't posted."""
+    from .cli import build_model
+    from .stats import probabilities_from_points
+
+    week = int(rows[0]["week"])
+    NOTES["injuries"] = (f"Week {week} lines aren't posted yet: moneylines from the stats model "
+                         "only. Props, alternate lines and injury reports come later.")
+    model = build_model(season, games_source, None, weather=False)
+    out = []
+    for g in rows:
+        home, away = ABBR_NAME[g["home_team"]], ABBR_NAME[g["away_team"]]
+        event = {"id": g["game_id"], "home_team": home, "away_team": away,
+                 "commence_time": kickoff_of(g).astimezone(timezone.utc).isoformat()}
+        p = model.predict(event)
+        if p is None:
+            continue
+        probs = probabilities_from_points(home, p.home_pts, p.away_pts, "h2h",
+                                          [{"name": home}, {"name": away}])
+        for team, prob in probs.items():
+            if lo <= prob <= hi:
+                out.append(make_bet(f"{away} @ {home}", kickoff_of(g), "h2h", team, None, prob,
+                                    g["game_id"], "stats model (no lines yet)", week=week))
+    return out
+
+
 def _props(rows, all_games, season, lo, hi) -> list[Bet]:
     players = load_player_model(season, all_games)
     implied, info = {}, {}
@@ -198,7 +255,11 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             status[(i["team"], name_key(i["full_name"]))] = i["report_status"]
     playing = set(implied)
     reported = {t for t, _ in status} & playing
-    if reported == playing:
+    current = min(int(g["week"]) for g in upcoming_nfl()) if upcoming_nfl() else week
+    if week > current and not reported:
+        NOTES["injuries"] = (f"Week {week} injury reports come out the week of the games; "
+                             "these picks will update then")
+    elif reported == playing:
         NOTES["injuries"] = f"Week {week} injury reports included for all {len(playing)} teams"
     elif reported:
         NOTES["injuries"] = (f"Week {week} injury reports in for {len(reported)} of {len(playing)} "
@@ -240,7 +301,8 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
     return out
 
 
-def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = None) -> list[Bet]:
+def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = None,
+              week: int | None = None) -> list[Bet]:
     now = now or datetime.now(EASTERN)
     season = season_for(now.date())
     rows = cfb.load_schedule(season, current_season=season)
@@ -251,8 +313,9 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 
     upcoming = [r for r in rows if r["completed"] != "TRUE" and kick_of(r) > now
                 and (day is None or kick_of(r).date() == day)]
-    if day is None and upcoming:  # default: this week's games only
+    if week is None and day is None and upcoming:  # default: this week's games only
         week = min(int(r["week"]) for r in upcoming)
+    if week is not None:
         upcoming = [r for r in upcoming if int(r["week"]) == week]
     out = []
     for r in upcoming:
