@@ -9,7 +9,9 @@ is betting only when **FanDuel pays more than the true odds**. This tool:
    (Pinnacle, Circa, BetOnline, LowVig) by removing their margin.
 3. Compares each FanDuel price to that fair probability and lists the bets
    with **positive expected value**, sorted by edge.
-4. Suggests a stake with **fractional Kelly** sizing (quarter Kelly, capped
+4. Blends in a **season-stats model** built from this season's completed
+   games (see below).
+5. Suggests a stake with **fractional Kelly** sizing (quarter Kelly, capped
    at 2% of bankroll by default).
 
 Sharp-book closing lines are the best public predictor of NFL outcomes.
@@ -41,9 +43,44 @@ python -m nfl_edge --json
 | `--bankroll` | `1000` | Bankroll for stake sizing |
 | `--kelly` | `0.25` | Kelly multiplier |
 | `--max-bet` | `2.0` | Stake cap as % of bankroll |
+| `--model-weight` | `0.1` | Max weight of the stats model in the blend (0 = market only) |
+| `--require-agreement` | off | Only show bets the stats model also favors |
+| `--ratings` | off | Print this season's team power ratings |
+| `--no-stats` | off | Skip the stats model |
+| `--season` | current | Season to pull stats from |
+| `--stats-file` | nflverse | Local `games.csv` path or URL |
 
 Each live run costs `markets × regions` API credits (6 with the defaults).
 Keep `eu` in `--regions`, since that is where Pinnacle comes from.
+
+## Season stats model
+
+Each run downloads this season's completed game results from
+[nflverse](https://github.com/nflverse/nfldata) and fits offense and defense
+ratings for every team (ridge regression on points scored and allowed, with
+home field). Those ratings give a projected margin and total for each game,
+which become win/cover/over probabilities.
+
+The final probability is `(1 - w) * market + w * stats`. `w` is
+`--model-weight` scaled down until both teams have played 8 games, so early
+in the season the stats barely move the estimate. The table shows all three
+numbers: `Mkt%`, `Stats%`, and the blended `Win%` used for EV and stakes.
+
+**Be realistic about what stats add.** On 2015–2025, predicting each week
+from earlier weeks only, blending the stats model in made predictions
+slightly *worse* than the closing market at every weight. On its own it
+picked the right side of the closing spread 48.9% of the time (52.4% is
+break-even). The betting market already prices in last week's box score.
+That's why the default weight is small. Check it yourself:
+
+```bash
+python -m nfl_edge.backtest              # downloads nflverse data
+python -m nfl_edge.backtest --start 2020 --end 2025
+```
+
+`--require-agreement` uses the stats as a filter: it drops +EV bets the
+stats model disagrees with. You'll get fewer bets, but by the backtest
+above, the ones you keep are no more likely to win.
 
 ## Using it well
 

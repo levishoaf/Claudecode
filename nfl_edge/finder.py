@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from .odds import (
     DEVIG_METHODS,
@@ -12,6 +13,9 @@ from .odds import (
     implied_probability,
     kelly_fraction,
 )
+
+if TYPE_CHECKING:
+    from .stats import SeasonModel
 
 TARGET_BOOK = "fanduel"
 
@@ -29,7 +33,9 @@ class Bet:
     pick: str
     point: float | None
     fd_price: int
-    fair_prob: float
+    fair_prob: float  # blended probability used for EV and sizing
+    market_prob: float  # no-vig sharp-book probability
+    model_prob: float | None  # season-stats model probability
     ev: float
     kelly: float
     books: list[str]
@@ -81,8 +87,18 @@ def find_bets(
     devig: str = "power",
     sharp_only: bool = True,
     include_started: bool = False,
+    model: SeasonModel | None = None,
+    model_weight: float = 0.0,
+    require_agreement: bool = False,
     now: datetime | None = None,
 ) -> list[Bet]:
+    """Find FanDuel bets whose price beats the estimated true probability.
+
+    The estimate starts from no-vig sharp-book odds. With a season model it
+    becomes (1 - w) * market + w * model, where w is `model_weight` scaled
+    down by how few games the teams have played. With `require_agreement`,
+    a bet is kept only if the model alone also rates it above the market.
+    """
     now = now or datetime.now(timezone.utc)
     bets: list[Bet] = []
 
@@ -115,8 +131,21 @@ def find_bets(
                 if result is None:
                     continue
                 fair, used = result
+                model_probs = None
+                weight = 0.0
+                if model is not None:
+                    model_probs = model.outcome_probabilities(
+                        event["home_team"], event["away_team"], market_key, fd
+                    )
+                    weight = model_weight * model.sample_weight_for(
+                        event["home_team"], event["away_team"]
+                    )
                 for outcome in fd:
-                    p = fair[outcome["name"]]
+                    market_p = fair[outcome["name"]]
+                    model_p = model_probs[outcome["name"]] if model_probs else None
+                    if require_agreement and (model_p is None or model_p <= market_p):
+                        continue
+                    p = market_p if model_p is None else (1 - weight) * market_p + weight * model_p
                     ev = expected_value(p, outcome["price"])
                     if ev < min_ev:
                         continue
@@ -129,6 +158,8 @@ def find_bets(
                             point=outcome.get("point"),
                             fd_price=outcome["price"],
                             fair_prob=p,
+                            market_prob=market_p,
+                            model_prob=model_p,
                             ev=ev,
                             kelly=kelly_fraction(p, outcome["price"]),
                             books=used,
