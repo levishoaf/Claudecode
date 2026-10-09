@@ -26,12 +26,12 @@ from nfl_edge.odds import decimal_to_american
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
 NUMBER_ROWS = (163, 792)  # yard numbers sit in the gaps between panels
-TURF = ("#14261a", "#112116")  # dark, alternating 5-yard stripes
-ENDZONE = "#0b170f"
-CHALK, CHALK_SOFT = "#8d9c8f", "#5f6e62"  # muted lines so the field stays in the background
-PANEL, PANEL_EDGE, INK, GOLD = "#0f1a10", "#e8e2c8", "#f4f1e4", "#f2c14e"
+TURF = ("#2b2b2e", "#252528")  # charcoal, alternating 5-yard stripes
+ENDZONE = "#1c1c1f"
+CHALK, CHALK_SOFT = "#8e8e94", "#5c5c62"  # muted lines so the field stays in the background
+PANEL, PANEL_EDGE, INK, GOLD = "#141416", "#c9c6bc", "#f2f1ec", "#f2c14e"
 MONO = ("Menlo", 11) if sys.platform == "darwin" else ("Consolas", 10)
-CARD, CARD_EDGE, MUTED, SLIP_HEAD = "#16241a", "#35503a", "#a9b8a4", "#1f3a8a"
+CARD, CARD_EDGE, MUTED, SLIP_HEAD = "#202024", "#3c3c42", "#a8a8ae", "#1f3a8a"
 NEW_BADGE, MOVED_BADGE = "#2e7dd1", "#b8741a"
 
 
@@ -46,7 +46,7 @@ def chance_color(p: float) -> str:
 
 def chance_bar(parent: tk.Widget, p: float, bg: str, width: int = 150) -> tk.Frame:
     row = tk.Frame(parent, bg=bg)
-    bar = tk.Canvas(row, width=width, height=10, bg="#0b130c", highlightthickness=0)
+    bar = tk.Canvas(row, width=width, height=10, bg="#0e0e10", highlightthickness=0)
     bar.create_rectangle(0, 0, width * p, 10, fill=chance_color(p), outline="")
     bar.pack(side="left")
     tk.Label(row, text=f"{p:.0%} to win", bg=bg, fg=INK,
@@ -71,7 +71,7 @@ def draw_field(c: tk.Canvas) -> None:
     for x0 in (0, W - zone):  # end zones
         c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="")
     for side, x in ((90, zone / 2), (-90, W - zone / 2)):
-        c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6f7a62",
+        c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6e6e74",
                       font=("Helvetica", 30, "bold"))
     for i in range(0, 101, 5):  # yard lines
         x = zone + i * yard
@@ -297,15 +297,15 @@ class App:
                      font=("Helvetica", 8, "bold")).pack(anchor="w")
             tk.Label(txt, text=f"{b.game}  ·  {_slip_time(b)}", bg=CARD, fg=MUTED,
                      font=("Helvetica", 8), wraplength=250, justify="left").pack(anchor="w")
-        foot = tk.Frame(card, bg="#0b130c")
+        foot = tk.Frame(card, bg="#0e0e10")
         foot.pack(fill="x")
         payout = wager / p.win_prob
         for title, value in (("Wager", f"${wager:,.2f}"), ("To win*", f"${payout - wager:,.2f}"),
                              ("Payout*", f"${payout:,.2f}")):
-            box = tk.Frame(foot, bg="#0b130c")
+            box = tk.Frame(foot, bg="#0e0e10")
             box.pack(side="left", expand=True, pady=6)
-            tk.Label(box, text=title, bg="#0b130c", fg=MUTED, font=("Helvetica", 8)).pack()
-            tk.Label(box, text=value, bg="#0b130c", fg=INK,
+            tk.Label(box, text=title, bg="#0e0e10", fg=MUTED, font=("Helvetica", 8)).pack()
+            tk.Label(box, text=value, bg="#0e0e10", fg=INK,
                      font=("Helvetica", 12, "bold")).pack()
         chance_bar(card, p.win_prob, CARD, width=200).pack(anchor="w", padx=10, pady=6)
 
