@@ -18,6 +18,7 @@
   --line: #e5e7eb;
   --on-dark: #f3f4f6;
   --on-dark-2: #a8adb7;
+  --mark: #8a93a3;
   --good: #128a4a;
   --good-soft: #e3f5ea;
   --warn: #b7791f;
@@ -63,6 +64,9 @@ button, input, select { font: inherit; }
 .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: var(--navy-2); color: var(--on-dark); font-family: var(--body); font-size: 12px; line-height: 20px; text-align: center; }
 
 main { padding-block: 18px; display: grid; gap: 14px; }
+/* Owner watermark: faint, fixed over the whole page, never blocks clicks. */
+.watermark { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 50; overflow: hidden; }
+.watermark span { font-family: var(--display); font-weight: 800; font-size: clamp(56px, 14vw, 180px); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: var(--mark); opacity: .13; transform: rotate(-24deg); user-select: none; }
 .notice { background: rgba(12, 27, 51, .85); border: 1px solid #2a4170; border-radius: 10px; padding: 10px 14px; color: var(--on-dark); font-size: 14px; }
 .notice strong { color: #fff; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
@@ -123,7 +127,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .v-bad { color: var(--bad); }
 .x { border: 0; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: underline; }
 
-.slipbar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--navy); border-top: 3px solid var(--blue); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.slipbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--navy); border-top: 3px solid var(--blue); padding-bottom: env(safe-area-inset-bottom, 0px); }
 .slipbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 12px; }
 .slipbar .sum { flex: 1; min-width: 0; font-size: 14px; color: var(--on-dark); }
 .btn { border: 0; border-radius: 999px; padding: 9px 18px; font-weight: 700; cursor: pointer; }
@@ -163,6 +167,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   </div>
 </header>
 
+<div class="watermark" aria-hidden="true"><span>Levi Shoaf</span></div>
 <main class="wrap" id="main"></main>
 
 <div class="slipbar">
