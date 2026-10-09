@@ -39,9 +39,10 @@ def _download(url: str) -> str:
     return raw.decode()
 
 
-def read_csv(source: str | Path, *, permanent: bool = False) -> list[dict]:
+def read_csv(source: str | Path, *, permanent: bool = False,
+             max_age: float | None = None) -> list[dict]:
     """Rows from a local path or URL. URLs are cached; `permanent` files never
-    expire, others are refreshed after FRESH_SECONDS."""
+    expire, others are refreshed after `max_age` seconds (default FRESH_SECONDS)."""
     source = str(source)
     if "://" not in source:
         try:
@@ -50,7 +51,8 @@ def read_csv(source: str | Path, *, permanent: bool = False) -> list[dict]:
             raise DataError(f"Could not read {source}: {e}") from e
 
     cached = cache_dir() / source.rsplit("/", 1)[-1]
-    if cached.exists() and (permanent or time.time() - cached.stat().st_mtime < FRESH_SECONDS):
+    fresh = FRESH_SECONDS if max_age is None else min(max_age, FRESH_SECONDS)
+    if cached.exists() and (permanent or time.time() - cached.stat().st_mtime < fresh):
         text = cached.read_text()
     else:
         try:
@@ -69,8 +71,20 @@ def games(source: str | Path | None = None) -> list[dict]:
     return read_csv(source or GAMES_URL)
 
 
+def read_json(url: str, name: str, max_age: float) -> object:
+    """JSON from a URL, cached for `max_age` seconds under `name`."""
+    import json
+
+    cached = cache_dir() / name
+    if cached.exists() and time.time() - cached.stat().st_mtime < max_age:
+        return json.loads(cached.read_text())
+    text = _download(url)
+    cached.write_text(text)
+    return json.loads(text)
+
+
 def release(kind: str, season: int, current_season: int,
-            data_dir: str | Path | None = None) -> list[dict]:
+            data_dir: str | Path | None = None, max_age: float | None = None) -> list[dict]:
     """An nflverse per-season release file such as injuries or snap_counts.
     Returns [] if the file doesn't exist yet."""
     if data_dir:
@@ -79,6 +93,6 @@ def release(kind: str, season: int, current_season: int,
             return read_csv(local)
     try:
         return read_csv(RELEASE_URL.format(kind=kind, season=season),
-                        permanent=season < current_season)
+                        permanent=season < current_season, max_age=max_age)
     except DataError:
         return []

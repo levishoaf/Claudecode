@@ -57,9 +57,13 @@ grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
 **Questionable**) and a one- or two-word injury, like "Knee", "Hamstring" or
 "Rest".
 
-- **Before Friday:** official game statuses usually post Friday afternoon.
-  Until then the tab lists players who missed (**No practice**) or were
-  **Limited** in practice, and says so.
+- **Official statuses:** they come from ESPN's live NFL injury report, which
+  updates within minutes of the NFL's Friday afternoon release. nflverse's
+  copy usually arrives overnight and is the fallback. Injury data refreshes
+  at least every 30 minutes.
+- **Before Friday:** until a team's official statuses post, the tab lists
+  that team's players who missed (**No practice**) or were **Limited** in
+  practice, and says so.
 - **On bet cards:** props get a **Q** or **DNP** badge when the player is
   questionable or missed practice. Players ruled Out or Doubtful are dropped.
 - **Console:** `python3 bets.py --injuries` prints the same list.

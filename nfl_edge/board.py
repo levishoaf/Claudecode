@@ -250,15 +250,20 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
     # This week's injury report: Out/Doubtful players are dropped, Questionable flagged.
     week = int(rows[0]["week"])
     status, missed_practice = {}, set()
-    for i in data.release("injuries", season, season):
+    for (team_code, player_key), report in espn_official().items():
+        status[(team_code, player_key)] = report["status"]
+    espn_teams = {t for t, _ in status}
+    for i in data.release("injuries", season, season, max_age=INJURY_MAX_AGE):
         if i.get("game_type") != "REG" or i.get("week") != str(week):
             continue
-        if i.get("report_status"):
+        if i["team"] in espn_teams:
+            pass  # ESPN's official report is newer for this team
+        elif i.get("report_status"):
             status[(i["team"], name_key(i["full_name"]))] = i["report_status"]
         elif (i.get("practice_status") or "").startswith("Did Not"):
             missed_practice.add((i["team"], name_key(i["full_name"])))
     playing = set(implied)
-    reported = {t for t, _ in status} & playing
+    reported = ({t for t, _ in status} | espn_teams) & playing
     current = min(int(g["week"]) for g in upcoming_nfl()) if upcoming_nfl() else week
     if week > current and not reported:
         NOTES["injuries"] = (f"Week {week} injury reports come out the week of the games; "
@@ -338,6 +343,42 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 # ---------------------------------------------------------------- injury report
 
 SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]
+GAME_STATUSES = ("Out", "Doubtful", "Questionable")
+ESPN_INJURIES = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
+INJURY_MAX_AGE = 30 * 60  # injury news moves fast; refresh every 30 minutes
+
+
+def espn_official(payload: object | None = None) -> dict[tuple[str, str], dict]:
+    """Official game statuses from ESPN's live NFL injury report, which posts
+    within minutes of the NFL's Friday release. {(team, player key): info}.
+    Returns {} if ESPN can't be reached or its format isn't recognised."""
+    if payload is None:
+        try:
+            payload = data.read_json(ESPN_INJURIES, "espn_nfl_injuries.json", INJURY_MAX_AGE)
+        except (data.DataError, ValueError):
+            return {}
+    out = {}
+    try:
+        for team in payload.get("injuries", []):
+            abbr = TEAM_ABBR.get(team.get("displayName", ""))
+            if not abbr:
+                continue
+            for item in team.get("injuries", []):
+                status = (item.get("status") or "").strip().title()
+                if status not in GAME_STATUSES:
+                    continue  # skips Injured Reserve, PUP, etc. (not on the game report)
+                athlete = item.get("athlete") or {}
+                name = athlete.get("displayName") or ""
+                details = item.get("details") or {}
+                out[(abbr, name_key(name))] = {
+                    "player": name,
+                    "position": (athlete.get("position") or {}).get("abbreviation", ""),
+                    "status": status,
+                    "injury": short_injury(details.get("type") or details.get("detail") or ""),
+                }
+    except AttributeError:  # unexpected shape
+        return {}
+    return out
 
 
 def short_injury(text: str) -> str:
@@ -378,16 +419,29 @@ def injury_report(week: int | None = None, now: datetime | None = None,
 
     season = season_for((now or datetime.now(EASTERN)).date())
     players, official = [], set()
-    for r in data.release("injuries", season, season):
+    espn = espn_official() if week == current else {}
+    espn_teams = {t for t, _ in espn} & set(matchup)
+    seen = set()
+    for r in data.release("injuries", season, season, max_age=INJURY_MAX_AGE):
         if r.get("game_type") != "REG" or r.get("week") != str(week) or r["team"] not in matchup:
             continue
+        key = (r["team"], name_key(r["full_name"]))
+        seen.add(key)
         status = r.get("report_status", "")
-        if status:
-            official.add(r["team"])
-        else:
+        injury = short_injury(r.get("report_primary_injury") or r.get("practice_primary_injury"))
+        if r["team"] in espn_teams:
+            # ESPN already has this team's official report: it replaces both
+            # nflverse's statuses and the practice list.
+            info = espn.get(key)
+            status = info["status"] if info else ""
+            if info and info["injury"] != "Undisclosed":
+                injury = info["injury"]
+        elif not status:
             practice = r.get("practice_status", "")
             status = ("Did not practice" if practice.startswith("Did Not") else
                       "Limited" if practice.startswith("Limited") else "")
+        if status in GAME_STATUSES:
+            official.add(r["team"])
         if status not in SEVERITY:
             continue
         opp, when = matchup[r["team"]]
@@ -395,9 +449,17 @@ def injury_report(week: int | None = None, now: datetime | None = None,
             "team": r["team"], "team_name": ABBR_NAME.get(r["team"], r["team"]),
             "opponent": opp, "kickoff": when, "player": r["full_name"],
             "position": r.get("position", ""), "status": status,
-            "official": bool(r.get("report_status")),
-            "injury": short_injury(r.get("report_primary_injury") or r.get("practice_primary_injury")),
+            "official": status in GAME_STATUSES, "injury": injury,
         })
+    # Players ESPN lists who weren't on the practice report yet.
+    for (team, key), info in espn.items():
+        if team in matchup and (team, key) not in seen:
+            opp, when = matchup[team]
+            official.add(team)
+            players.append({"team": team, "team_name": ABBR_NAME.get(team, team),
+                            "opponent": opp, "kickoff": when, "player": info["player"],
+                            "position": info["position"], "status": info["status"],
+                            "official": True, "injury": info["injury"]})
     players.sort(key=lambda p: (p["kickoff"], p["team"], SEVERITY.index(p["status"]), p["player"]))
     teams = set(matchup)
     if official >= teams:
