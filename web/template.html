@@ -118,6 +118,23 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .official { font-size: 11px; color: var(--good); font-weight: 700; }
 
 .slip { display: grid; gap: 10px; }
+.pill { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; padding: 2px 7px; border-radius: 5px; color: #fff; vertical-align: 1px; }
+.p-won { background: var(--good); }
+.p-lost { background: var(--bad); }
+.p-push { background: #8a93a3; }
+.p-pending { background: var(--blue); }
+.rgrid { align-items: start; }
+.rlegs { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.rlegs li { display: grid; grid-template-columns: 18px 1fr; gap: 6px; font-size: 12.5px; }
+.rlegs .mk { font-weight: 800; text-align: center; }
+.mk-won { color: var(--good); } .mk-lost { color: var(--bad); } .mk-push, .mk-pending { color: var(--ink-2); }
+.rfoot { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 6px; font-size: 12px; font-weight: 600; }
+.summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.summary b { font-size: 16px; color: #fff; }
+.placerow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 7px; }
+.placerow input { width: 72px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; color: var(--ink); background: #fff; }
+.placerow .btn { padding: 5px 12px; font-size: 12.5px; }
+.placed-ok { color: var(--good); font-weight: 700; }
 .slip-item { background: var(--card); color: var(--ink); border-radius: 10px; padding: 9px 12px; display: grid; gap: 6px; }
 .check { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
 .check input { width: 90px; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; color: var(--ink); background: #fff; }
@@ -163,6 +180,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="count" id="n-parlays"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="count" id="n-injuries"></span></button>
       <button role="tab" id="tab-slip" data-tab="slip" aria-selected="false">Your slip<span class="count" id="n-slip"></span></button>
+      <button role="tab" id="tab-placed" data-tab="placed" aria-selected="false">Placed<span class="count" id="n-placed"></span></button>
+      <button role="tab" id="tab-unplaced" data-tab="unplaced" aria-selected="false">Not placed<span class="count" id="n-unplaced"></span></button>
     </nav>
   </div>
 </header>
@@ -316,6 +335,137 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (new Set(singles.map((s) => s.game)).size !== singles.length) return { shared: true };
     return { prob: singles.reduce((a, s) => a * s.prob, 1), n: singles.length };
   }
+  // ---- placed and not-placed bets, graded after the games
+  const RESULTS = DATA.legResults || {};
+  const HISTORY = DATA.history || [];
+  let db = null;
+  state.placed = [];
+  state.dbState = "loading";
+  function entryId(kind, lids) { return kind + ":" + [...lids].sort().join(" + "); }
+  function docId(s) {  // two FNV-1a hashes: a short id the store accepts
+    let a = 0x811c9dc5, b = 0x01000193;
+    for (let i = 0; i < s.length; i++) { a = Math.imul(a ^ s.charCodeAt(i), 16777619); b = Math.imul(b ^ s.charCodeAt(i), 2246822519); }
+    return "b" + (a >>> 0).toString(16) + (b >>> 0).toString(16);
+  }
+  function legStatus(lid) { return RESULTS[lid] || ["pending", ""]; }
+  function entryStatus(legs) {
+    const s = legs.map((l) => legStatus(l.lid)[0]);
+    if (s.includes("lost")) return "lost";
+    if (s.includes("pending")) return "pending";
+    return s.every((x) => x === "push") ? "push" : "won";
+  }
+  function profitOf(e, status) {
+    if (status === "lost") return -e.stake;
+    if (status !== "won") return 0;
+    let dec = amToDec(e.odds);
+    if (e.kind === "parlay") e.legs.forEach((l) => { if (legStatus(l.lid)[0] === "push") dec *= l.prob || 1; });
+    return e.stake * (Math.max(dec, 1) - 1);
+  }
+  function placedIds() { return new Set(state.placed.map((p) => p.entryId)); }
+  function unplaced() { const ids = placedIds(); return HISTORY.filter((h) => !ids.has(h.id)); }
+  function summaryOf(entries, money_) {
+    const st = entries.map((e) => [e, entryStatus(e.legs)]);
+    const done = st.filter(([, s]) => s !== "pending");
+    const pending = st.length - done.length;
+    const tail = pending ? ` · ${pending} pending` : "";
+    if (!done.length) return `No results yet${tail}`;
+    const won = done.filter(([, s]) => s === "won").length, lost = done.filter(([, s]) => s === "lost").length;
+    if (money_) {
+      const net = done.reduce((a, [e, s]) => a + profitOf(e, s), 0), staked = done.reduce((a, [e]) => a + e.stake, 0);
+      const pushed = done.length - won - lost;
+      return `Record ${won}-${lost}${pushed ? "-" + pushed : ""} · profit ${net >= 0 ? "+" : "−"}${money(Math.abs(net))} on ${money(staked)}${tail}`;
+    }
+    const decided = done.filter(([, s]) => s !== "push");
+    const expected = decided.reduce((a, [e]) => a + e.prob, 0) / (decided.length || 1);
+    return `Hit ${won} of ${decided.length} (${pct(won / (decided.length || 1))}) · the builder expected ${pct(expected)}${tail}`;
+  }
+  const WORD = { won: "HIT", lost: "MISS", push: "PUSH", pending: "PENDING" };
+  const MARK = { won: "✓", lost: "✗", push: "=", pending: "…" };
+  const kickWhen = (iso) => new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";
+  function resultCard(e, placed) {
+    const status = entryStatus(e.legs);
+    const title = e.kind === "single" ? e.legs[0].pick : `${e.legs.length}-leg parlay`;
+    const legs = e.legs.map((l) => {
+      const [s, detail] = legStatus(l.lid);
+      return `<li><span class="mk mk-${s}">${MARK[s]}</span><div>${e.kind === "parlay" ? `<b>${esc(l.pick)}</b><br>` : ""}<span class="game">${esc(l.game)} · ${esc(s !== "pending" && detail ? detail : kickWhen(l.kickoff))}</span></div></li>`;
+    }).join("");
+    let foot;
+    if (placed) {
+      const net = profitOf(e, status);
+      foot = `<span>${status === "pending" ? `${money(e.stake)} to win ${money(e.stake * (amToDec(e.odds) - 1))}` : `${money(e.stake)} staked · ${net >= 0 ? "+" : "−"}${money(Math.abs(net))}`}</span><button class="x" data-unplace="${esc(e.docId)}">Remove</button>`;
+    } else {
+      foot = `<span>Builder gave it ${pct(e.prob)} · ${esc((e.sport || "").toUpperCase())}</span>`;
+    }
+    return `<div class="card" style="cursor:default">
+      <div class="row"><span class="pill p-${status}">${WORD[status]}</span><div class="grow pick">${esc(title)}</div><b style="color:var(--blue)">${esc(fmtAm(e.odds))}</b></div>
+      <ul class="rlegs">${legs}</ul><div class="rfoot">${foot}</div></div>`;
+  }
+  function sortEntries(list) {
+    const first = (e) => e.legs.map((l) => l.kickoff).sort()[0], last = (e) => e.legs.map((l) => l.kickoff).sort().pop();
+    const pend = list.filter((e) => entryStatus(e.legs) === "pending").sort((a, b) => first(a).localeCompare(first(b)));
+    const done = list.filter((e) => entryStatus(e.legs) !== "pending").sort((a, b) => last(b).localeCompare(last(a)));
+    return pend.concat(done);
+  }
+  function trackedView(placed) {
+    const list = placed ? state.placed : unplaced();
+    const explain = placed
+      ? "Bets you marked as placed from Your slip. Each one is graded after its games."
+      : "Every pick the builder showed for the coming week that you didn't place, at the chance it had when first shown, and how it turned out.";
+    let html = `<div class="notice summary"><div><b>${esc(summaryOf(list, placed))}</b><br>${explain}</div></div>`;
+    if (placed && state.dbState === "off") return html + `<div class="empty">Placed bets need you signed in to claude.ai. Open this page from claude.ai to keep track of them.</div>`;
+    if (placed && state.dbState === "error") return html + `<div class="empty">Couldn't load your placed bets. Reload the page to try again.</div>`;
+    if (!list.length) return html + `<div class="empty">${placed ? "No placed bets yet. In Your slip, type the odds you got and tap I placed this." : "Nothing yet. Picks are logged for the week ahead as they're shown."}</div>`;
+    const shown = sortEntries(list).slice(0, 80);
+    html += `<div class="grid rgrid">${shown.map((e) => resultCard(e, placed)).join("")}</div>`;
+    if (list.length > shown.length) html += `<p class="foot">Showing the latest ${shown.length} of ${list.length}.</p>`;
+    return html + `<p class="foot">Results come in after each game (player stats usually the next morning) and appear when this page is next updated.</p>`;
+  }
+  function placeRow(key, legs, kind, prob) {
+    if (!legs.every((l) => l.lid && l.rec)) return `<div class="placerow">This bet came from an older version of the page. Remove it and add it again to track it.</div>`;
+    const eid = entryId(kind, legs.map((l) => l.lid));
+    if (placedIds().has(eid)) return `<div class="placerow"><span class="placed-ok">✓ In your Placed bets</span></div>`;
+    if (state.dbState === "off") return `<div class="placerow">Sign in to claude.ai to keep track of bets you place.</div>`;
+    return `<div class="placerow"><label>Odds you got <input id="po-${key}" inputmode="numeric" placeholder="${esc(fmtAm(decToAm(1 / prob)))}"></label>
+      <label>Stake $ <input id="ps-${key}" inputmode="decimal" value="${wager()}"></label>
+      <button class="btn btn-primary" data-place="${key}">I placed this</button></div>`;
+  }
+  function slipEntry(key) {
+    if (key === "combo") {
+      const singles = state.slip.filter((s) => s.kind === "single");
+      return { kind: "parlay", legs: singles, prob: singles.reduce((a, s) => a * s.prob, 1), sport: singles[0].sport };
+    }
+    const s = state.slip[+key];
+    return s.kind === "single" ? { kind: "single", legs: [s], prob: s.prob, sport: s.sport } : { kind: "parlay", legs: s.legs, prob: s.prob, sport: s.sport };
+  }
+  async function placeBet(key) {
+    const e = slipEntry(key);
+    const oddsText = ($("po-" + key)?.value || "").trim(), stake = parseFloat($("ps-" + key)?.value);
+    let odds = oddsText ? parseInt(oddsText.replace("+", ""), 10) : decToAm(1 / e.prob);
+    const msg = $("placemsg");
+    if (!odds || Math.abs(odds) < 100 || !(stake > 0)) { if (msg) msg.textContent = "Odds look like -150 or +240, and the stake is a dollar amount."; return; }
+    const eid = entryId(e.kind, e.legs.map((l) => l.lid));
+    const doc = { entryId: eid, kind: e.kind, sport: e.sport || state.sport, prob: e.prob, odds, stake,
+      placedAt: new Date().toISOString(),
+      legs: e.legs.map((l) => ({ lid: l.lid, pick: l.label, game: l.game, kickoff: l.kickoff, prob: l.prob, rec: l.rec })) };
+    try { await db.collection("placed").doc(docId(eid)).set(doc); }
+    catch (err) { if (msg) msg.textContent = err && err.code === "invalid_argument" ? "This view can't save bets. Open the page as its owner." : "Couldn't save that bet. Try again in a moment."; }
+  }
+  function startDb(tries = 0) {
+    if (!(window.claude && typeof window.claude.use === "function")) {
+      if (tries < 10) setTimeout(() => startDb(tries + 1), 300);
+      else { state.dbState = "off"; render(); }
+      return;
+    }
+    window.claude.use("db").then((d) => {
+      db = d;
+      if (!db) { state.dbState = "off"; render(); return; }
+      db.collection("placed").onSnapshot((snap) => {
+        state.placed = snap.docs.map((d) => ({ docId: d.id, ...d.data() }));
+        state.dbState = "on"; render();
+      }, () => { state.dbState = "error"; render(); });
+    }, () => { state.dbState = "off"; render(); });
+  }
+
   function slipView() {
     if (!state.slip.length) return `<div class="empty">Nothing here yet. Tap any single bet or parlay to add it.</div>`;
     const items = state.slip.map((s, i) => `<div class="slip-item">
@@ -325,12 +475,13 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         <div class="game">${s.kind === "single" ? esc(s.game) + " · " + esc(s.when) + " ET" : esc(s.weekLabel)}</div>
       </div><div class="odds"><b>${esc(s.breakeven)}</b><small>break-even</small></div></div>
       ${meter(s.prob)}${statRow(s.prob)}${checker(s.prob, s.id)}
-      <div><button class="x" data-remove="${i}">Remove</button></div></div>`).join("");
+      ${placeRow(i, s.kind === "single" ? [s] : s.legs, s.kind, s.prob)}
+      <div><button class="x" data-remove="${i}">Remove from slip</button></div></div>`).join("");
     const c = combo();
     let extra = "";
     if (c && c.shared) extra = `<div class="notice">Two of your singles are from the same game, so they aren't combined into one parlay here (same-game legs move together).</div>`;
-    else if (c) extra = `<div class="slip-item"><div class="mkt">Your ${c.n} singles as one parlay</div>${meter(c.prob)}${statRow(c.prob)}${checker(c.prob, "COMBO:" + state.slip.filter((s) => s.kind === "single").map((s) => s.id).join("|"))}</div>`;
-    return `<div class="slip">${extra}${items}</div>`;
+    else if (c) extra = `<div class="slip-item"><div class="mkt">Your ${c.n} singles as one parlay</div>${meter(c.prob)}${statRow(c.prob)}${checker(c.prob, "COMBO:" + state.slip.filter((s) => s.kind === "single").map((s) => s.id).join("|"))}${placeRow("combo", state.slip.filter((s) => s.kind === "single"), "parlay", c.prob)}</div>`;
+    return `<div class="slip"><div id="placemsg" class="foot" role="status"></div>${extra}${items}</div>`;
   }
 
   function render() {
@@ -344,6 +495,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     $("n-parlays").textContent = wk.parlays.length;
     $("n-injuries").textContent = wk.injuries ? wk.injuries.players.length : "–";
     $("n-slip").textContent = state.slip.length;
+    $("n-placed").textContent = state.placed.length;
+    $("n-unplaced").textContent = unplaced().length;
 
     let html = "";
     const future = /no lines yet/.test(wk.label);
@@ -355,6 +508,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="grid">${wk.parlays.map(parlayCard).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
+    if (state.tab === "placed") html += trackedView(true);
+    if (state.tab === "unplaced") html += trackedView(false);
     html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent.</p>`;
     $("main").innerHTML = html;
 
@@ -376,12 +531,14 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const wk = current();
     if (t.dataset.sport) { state.sport = t.dataset.sport; store.set("bb.sport", state.sport); render(); }
     else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
-    else if (t.dataset.single) { const b = wk.singles[+t.dataset.single]; toggle({ kind: "single", ...b }); }
-    else if (t.dataset.parlay) { const p = wk.parlays[+t.dataset.parlay]; toggle({ kind: "parlay", id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
+    else if (t.dataset.single) { const b = wk.singles[+t.dataset.single]; toggle({ kind: "single", sport: state.sport, ...b }); }
+    else if (t.dataset.parlay) { const p = wk.parlays[+t.dataset.parlay]; toggle({ kind: "parlay", sport: state.sport, id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
     else if (t.dataset.remove) { state.slip.splice(+t.dataset.remove, 1); save(); render(); }
     else if (t.id === "viewslip") { state.tab = "slip"; render(); window.scrollTo({ top: 0 }); }
     else if (t.id === "clearslip") { state.slip = []; save(); render(); }
+    else if (t.dataset.place != null) { placeBet(t.dataset.place); }
+    else if (t.dataset.unplace && db) { db.collection("placed").doc(t.dataset.unplace).delete().catch(() => {}); }
   });
   $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });
   $("wager").addEventListener("input", render);
@@ -398,5 +555,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     }
   });
   render();
+  startDb();
 })();
 </script>

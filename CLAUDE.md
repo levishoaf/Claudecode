@@ -50,6 +50,15 @@ The bet builder also runs as a private web page:
 https://claude.ai/artifact/QyRUWeX7NkXuVUSn4c3xsv
 
 **Every time the application changes, update the web page too.** Rebuild it
-with `python3 web/export.py <scratchpad>/bet-builder.html` (fresh data from
-that run) and republish to the same URL; carry any visible app change into
-`web/template.html` first. End each reply with the link to the web page.
+with fresh data and republish to the same URL; carry any visible app change
+into `web/template.html` first. End each reply with the link to the web page.
+
+To rebuild: read the page's placed bets first (ArtifactData `list` of the
+`placed` collection on the page's URL, saved as a JSON list), then run
+`python3 web/export.py <scratchpad>/bet-builder.html --placed <that file>`.
+This grades placed bets and logs this week's picks in `web/history.json`
+(commit and push it) for the Not placed tab. The page declares the `db`
+capability, so omit `capabilities` when republishing to keep it.
+
+The app keeps its own placed and not-placed bets in
+`~/Bet Builder/my bets.json` and grades them on every refresh.

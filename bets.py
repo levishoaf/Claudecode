@@ -38,7 +38,7 @@ else:
 from nfl_edge import data, extras  # noqa: E402
 from nfl_edge import board  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
-from nfl_edge.cli import _describe, _fmt_american, clock, format_slip  # noqa: E402
+from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
 from nfl_edge.picks import best_parlays, mixed_parlays, rank_singles  # noqa: E402
@@ -95,6 +95,33 @@ def leg_record(b, sport: str) -> dict | None:
     else:
         return None
     return leg
+
+
+def tracker_entries(singles, parlays, sport: str, season: int) -> list[dict]:
+    """The shown picks as bet-tracker entries (see nfl_edge/tracker.py)."""
+    from nfl_edge import tracker
+
+    def legs_of(bets_):
+        legs = []
+        for b in bets_:
+            leg = leg_record(b, sport)
+            if leg is None:
+                return None
+            leg["kickoff"] = b.commence_time.isoformat()
+            leg["market"] = _slip_market(b)
+            leg["pick"] = _describe(b)
+            leg["game"] = b.game
+            legs.append(leg)
+        return legs
+
+    out = []
+    for b in singles:
+        if legs := legs_of([b]):
+            out.append(tracker.make_entry("single", legs, b.fair_prob, sport, season))
+    for p in parlays:
+        if legs := legs_of(p.legs):
+            out.append(tracker.make_entry("parlay", legs, p.win_prob, sport, season))
+    return out
 
 
 def save(singles, parlays, sport: str, season: int) -> list[Path]:
