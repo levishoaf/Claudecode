@@ -185,6 +185,25 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
         print("\n* Payout at break-even odds. FanDuel will pay a little less, so check its slip.")
 
 
+def check_price(singles, parlays, entry: str) -> str:
+    """'3 -150' or 'P1 +240' -> a one-line verdict on FanDuel's price."""
+    try:
+        which, odds = entry.split()
+        price = int(odds.replace("+", ""))
+        if which.upper().startswith("P"):
+            p = parlays[int(which[1:]) - 1]
+            prob, name = p.win_prob, f"Parlay {which.upper()}"
+        else:
+            b = singles[int(which) - 1]
+            prob, name = b.fair_prob, _describe(b)
+        ev = prob * american_to_decimal(price) - 1
+    except (ValueError, IndexError, ZeroDivisionError):
+        return "Didn't catch that. Example: 3 -150 or P1 +240"
+    verdict = "worth it" if ev > 0 else "not worth it"
+    return (f"{name} at {_fmt_american(price)}: {prob:.0%} to win, expected value "
+            f"{ev:+.1%} per bet -> {verdict} (break-even {break_even(prob)})")
+
+
 def price_checker(singles, parlays) -> None:
     print("\nCHECK FANDUEL'S PRICE: type a pick number (or P1, P2...) and FanDuel's odds,")
     print("for example  3 -150  or  P1 +240.  Press Enter when done.")
@@ -192,23 +211,7 @@ def price_checker(singles, parlays) -> None:
         entry = input("> ").strip()
         if not entry:
             return
-        try:
-            which, odds = entry.split()
-            price = int(odds.replace("+", ""))
-            if which.upper().startswith("P"):
-                p = parlays[int(which[1:]) - 1]
-                prob, name = p.win_prob, f"Parlay {which.upper()}"
-            else:
-                b = singles[int(which) - 1]
-                prob, name = b.fair_prob, _describe(b)
-        except (ValueError, IndexError):
-            print("  Didn't catch that. Example: 3 -150")
-            continue
-        ev = prob * american_to_decimal(price) - 1
-        verdict = "worth it" if ev > 0 else "not worth it"
-        print(f"  {name} at {_fmt_american(price)}: {prob:.0%} to win, "
-              f"expected value {ev:+.1%} per bet -> {verdict} "
-              f"(break-even {break_even(prob)})")
+        print("  " + check_price(singles, parlays, entry))
 
 
 # ---------------------------------------------------------------- main

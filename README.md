@@ -20,17 +20,26 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 
 ## Quick start: the bet builder (no API key needed)
 
+![Bet builder window](docs/bet-builder-preview.png)
+
 **Download the standalone program** (no Python needed): on GitHub, open
 **Actions → Build executables**, pick the latest green run, and download
-**Bets-Windows** (`Bets.exe`) or **Bets-Mac** (`Bets`) from **Artifacts**.
-Unzip it and double-click.
+from **Artifacts**:
+
+- **Bets-Windows:** `Bets.exe`, the window above, and `Bets-Console.exe`,
+  the text version.
+- **Bets-Mac:** `Bets-Mac-App.zip`, the window app, and
+  `Bets-Mac-Console.zip`, the text version.
+
+Unzip and double-click.
 
 - **Windows:** if SmartScreen warns about an unknown app, click **More info →
   Run anyway**.
 - **Mac:** right-click → **Open** the first time.
 
-With Python 3.10+ installed, you can instead double-click `Bets.command` (Mac)
-or `Bets.bat` (Windows), or run `python3 bets.py`.
+With Python 3.10+ installed, run `python3 bets_gui.py` for the window, or
+double-click `Bets.command` (Mac) or `Bets.bat` (Windows), or run
+`python3 bets.py` for the text version.
 
 **What it does.** Choose **1** to build bets: pick the sport, which games
 (this week, today, or a date), how many single bets and parlays, the parlay

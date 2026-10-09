@@ -3,6 +3,8 @@ name: Build executables
 # Builds standalone programs with Python bundled inside, so the bet builder
 # runs with a double-click and nothing to install. Download them from the
 # run's "Artifacts" section on the Actions tab.
+#   Bets          windowed app with the football-field background
+#   Bets-Console  the same picks in a text console (supports --watch etc.)
 on:
   push:
     branches: [claude/fanduel-nfl-ev-finder, main]
@@ -16,13 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-latest
-            artifact: Bets-Windows
-            binary: dist/Bets.exe
-          - os: macos-latest
-            artifact: Bets-Mac
-            binary: dist/Bets
+        os: [windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -38,21 +34,43 @@ jobs:
         run: python -m unittest discover -t . -s tests
 
       - name: Build
-        run: >
-          pyinstaller --onefile --name Bets
-          --collect-data tzdata --collect-data certifi
-          bets.py
-
-      - name: Smoke test the build
         shell: bash
         run: |
+          COMMON="--onefile --collect-data tzdata --collect-data certifi"
+          pyinstaller $COMMON --name Bets-Console bets.py
+          pyinstaller $COMMON --windowed --name Bets bets_gui.py
+
+      - name: Smoke test the builds
+        shell: bash
+        timeout-minutes: 10
+        run: |
           cd dist
-          ./Bets* --sport nfl --singles 5 --legs 2 --parlays 1
-          ./Bets* --sport ncaaf --singles 5 --parlays 0
-          ./Bets* --grade
+          ./Bets-Console* --sport nfl --singles 5 --legs 2 --parlays 1
+          ./Bets-Console* --sport ncaaf --singles 5 --parlays 0
+          ./Bets-Console* --grade
+          if [ -d Bets.app ]; then ./Bets.app/Contents/MacOS/Bets --selftest; else ./Bets.exe --selftest; fi
+
+      - name: Package (Mac keeps file permissions inside a zip)
+        if: runner.os == 'macOS'
+        run: |
+          ditto -c -k --keepParent dist/Bets.app Bets-Mac-App.zip
+          chmod +x dist/Bets-Console
+          ditto -c -k dist/Bets-Console Bets-Mac-Console.zip
 
       - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
         with:
-          name: ${{ matrix.artifact }}
-          path: ${{ matrix.binary }}
+          name: Bets-Windows
+          path: |
+            dist/Bets.exe
+            dist/Bets-Console.exe
+          retention-days: 90
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: Bets-Mac
+          path: |
+            Bets-Mac-App.zip
+            Bets-Mac-Console.zip
           retention-days: 90
