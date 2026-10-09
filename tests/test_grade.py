@@ -6,7 +6,10 @@ GAMES = {
     "g1": {"game_id": "g1", "away_team": "HOU", "home_team": "TEN", "away_score": "24", "home_score": "17"},
     "g2": {"game_id": "g2", "away_team": "CIN", "home_team": "MIA", "away_score": "", "home_score": ""},
 }
-STATS = [{"game_id": "g1", "player_display_name": "C.J. Stroud", "passing_tds": "2"}]
+STATS = [{"game_id": "g1", "player_display_name": "C.J. Stroud", "passing_tds": "2",
+          "receptions": "0", "passing_yards": "251"},
+         {"game_id": "g1", "player_display_name": "Nico Collins", "passing_tds": "0",
+          "receptions": "5", "receiving_yards": "38"}]
 
 
 class GradeTest(unittest.TestCase):
@@ -19,7 +22,15 @@ class GradeTest(unittest.TestCase):
         leg = {"type": "passing_tds", "game_id": "g1", "player": "C.J. Stroud", "min": 1}
         self.assertEqual(grade_leg(leg, GAMES, STATS), ("won", "2 passing TDs"))
         self.assertEqual(grade_leg(dict(leg, min=3), GAMES, STATS)[0], "lost")
-        self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "pending")
+        self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "lost")
+        self.assertEqual(grade_leg(dict(leg, game_id="g2"), GAMES, STATS)[0], "pending")
+
+    def test_player_stat(self):
+        leg = {"type": "player_stat", "game_id": "g1", "player": "Nico Collins",
+               "stat": "receptions", "min": 4}
+        self.assertEqual(grade_leg(leg, GAMES, STATS), ("won", "5 receptions"))
+        self.assertEqual(grade_leg(dict(leg, stat="receiving_yards", min=40), GAMES, STATS),
+                         ("lost", "38 receiving yards"))
 
     def test_spread_and_total(self):
         spread = {"type": "spread", "game_id": "g1", "team": "TEN", "point": 7.5}

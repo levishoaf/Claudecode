@@ -4,8 +4,9 @@
 
 Works for NFL bets and, with "sport": "ncaaf" in the file, college bets.
 Supported legs: moneyline (team wins), spread (team + point), total
-(Over/Under a line) and passing_tds (player throws at least `min` passing
-touchdowns). Player stats usually post the day after a game.
+(Over/Under a line), passing_tds (player throws at least `min` passing
+touchdowns) and player_stat (player reaches `min` of any nflverse stat
+column, e.g. receptions, receiving_yards, rushing_yards, passing_yards). Player stats usually post the day after a game.
 
 A file with "kind": "singles" grades each leg as its own bet, using each
 leg's "odds" and "stake"; otherwise the legs form one parlay.
@@ -47,13 +48,20 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
         total = home + away
         diff = total - leg["line"] if leg["side"] == "Over" else leg["line"] - total
         return ("won" if diff > 0 else "push" if diff == 0 else "lost"), f"{score} (total {total})"
-    if leg["type"] == "passing_tds":
+    if leg["type"] in ("passing_tds", "player_stat"):
+        stat = leg.get("stat", "passing_tds")
         row = next((s for s in stats if s["game_id"] == leg["game_id"]
                     and s["player_display_name"] == leg["player"]), None)
         if row is None:
-            return "pending", "player stats not posted yet"
-        tds = int(row["passing_tds"] or 0)
-        return ("won" if tds >= leg["min"] else "lost"), f"{tds} passing TD{'s' * (tds != 1)}"
+            if not any(s["game_id"] == leg["game_id"] for s in stats):
+                return "pending", "player stats not posted yet"
+            return "lost", "no stats recorded (did not play)"
+        value = int(float(row[stat] or 0))
+        if stat == "passing_tds":
+            detail = f"{value} passing TD{'s' * (value != 1)}"
+        else:
+            detail = f"{value} {stat.replace('_', ' ')}"
+        return ("won" if value >= leg["min"] else "lost"), detail
     return "pending", f"unknown leg type {leg['type']}"
 
 
@@ -78,7 +86,7 @@ def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, s
     else:
         games = {g["game_id"]: g for g in data.games(games_source)}
     stats: list[dict] = []
-    if any(leg["type"] == "passing_tds" for leg in bet["legs"]):
+    if any(leg["type"] in ("passing_tds", "player_stat") for leg in bet["legs"]):
         try:
             stats = data.read_csv(STATS_URL.format(season=bet["season"]))
         except data.DataError:
