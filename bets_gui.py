@@ -26,8 +26,9 @@ from nfl_edge.odds import decimal_to_american
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
 NUMBER_ROWS = (163, 792)  # yard numbers sit in the gaps between panels
-TURF = ("#2f7d32", "#2a7130")  # alternating 5-yard stripes
-ENDZONE = "#1d4d20"
+TURF = ("#14261a", "#112116")  # dark, alternating 5-yard stripes
+ENDZONE = "#0b170f"
+CHALK, CHALK_SOFT = "#8d9c8f", "#5f6e62"  # muted lines so the field stays in the background
 PANEL, PANEL_EDGE, INK, GOLD = "#0f1a10", "#e8e2c8", "#f4f1e4", "#f2c14e"
 MONO = ("Menlo", 11) if sys.platform == "darwin" else ("Consolas", 10)
 CARD, CARD_EDGE, MUTED, SLIP_HEAD = "#16241a", "#35503a", "#a9b8a4", "#1f3a8a"
@@ -70,20 +71,21 @@ def draw_field(c: tk.Canvas) -> None:
     for x0 in (0, W - zone):  # end zones
         c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="")
     for side, x in ((90, zone / 2), (-90, W - zone / 2)):
-        c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#d9d4b8",
+        c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6f7a62",
                       font=("Helvetica", 30, "bold"))
     for i in range(0, 101, 5):  # yard lines
         x = zone + i * yard
-        c.create_line(x, 0, x, H, fill="white", width=3 if i % 10 == 0 else 1)
+        c.create_line(x, 0, x, H, fill=CHALK if i % 10 == 0 else CHALK_SOFT,
+                      width=3 if i % 10 == 0 else 1)
     for i in range(1, 100):  # hash marks
         x = zone + i * yard
         for y in (H * 0.36, H * 0.64):
-            c.create_line(x, y - 5, x, y + 5, fill="white")
+            c.create_line(x, y - 5, x, y + 5, fill=CHALK_SOFT)
     for i in range(10, 100, 10):  # yard numbers
         x = zone + i * yard
         n = str(i if i <= 50 else 100 - i)
         for y, ang in zip(NUMBER_ROWS, (180, 0)):
-            c.create_text(x, y, text=n, fill="white", angle=ang, font=("Helvetica", 24, "bold"))
+            c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"))
 
 
 class App:
