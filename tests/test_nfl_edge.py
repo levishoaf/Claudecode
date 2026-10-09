@@ -53,7 +53,8 @@ class FinderTest(unittest.TestCase):
     def test_finds_mispriced_fanduel_lines(self):
         bets = find_bets(self.events, now=BEFORE_KICKOFF)
         picks = {(b.market, b.pick) for b in bets}
-        self.assertEqual(picks, {("h2h", "Green Bay Packers"), ("totals", "Over")})
+        self.assertEqual(picks, {("h2h", "Green Bay Packers"), ("totals", "Over"),
+                                 ("h2h", "Houston Texans"), ("spreads", "Cincinnati Bengals")})
         self.assertEqual(bets, sorted(bets, key=lambda b: b.ev, reverse=True))
         self.assertTrue(all(b.ev >= 0.01 for b in bets))
 

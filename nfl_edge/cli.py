@@ -16,6 +16,7 @@ from .context import SeasonData
 from .factors import Coefficients
 from .model import GameModel
 from .odds import DEVIG_METHODS
+from .parlays import Parlay, build_parlays
 from .stats import SeasonModel
 from .weather import kickoff_forecast
 
@@ -50,6 +51,38 @@ def print_ratings(model: SeasonModel) -> None:
         print(f"{r.team:<5} {r.games:>3} {r.offense:>+6.1f} {r.defense:>+6.1f} {r.net:>+6.1f}")
     print("Off = points scored vs. average, Def = points allowed vs. average "
           "(negative is good), Net = points per game better than average.\n")
+
+
+def parlay_stake(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) -> float:
+    return bankroll * min(p.kelly * kelly_mult, max_pct)
+
+
+def print_parlays(parlays: list[Parlay], bankroll: float, kelly_mult: float,
+                  max_pct: float) -> None:
+    print("\nParlays (legs from different games, ranked by chance of winning)")
+    if not parlays:
+        print("  None: there aren't enough +EV legs in separate games right now.")
+        return
+    for i, p in enumerate(parlays, 1):
+        print(f"\n#{i}  {len(p.legs)} legs   wins {p.win_prob:.1%}   pays "
+              f"{_fmt_american(p.american)} (${100 * (p.decimal - 1):,.0f} per $100)   "
+              f"EV {p.ev:+.2%}   stake ${parlay_stake(p, bankroll, kelly_mult, max_pct):.2f}")
+        for b in p.legs:
+            print(f"    {_describe(b):<32} {_fmt_american(b.fd_price):>6}  {b.fair_prob:>6.1%}  "
+                  f"{b.game} ({b.commence_time:%a %H:%M} UTC)")
+    print("\nA parlay only wins if every leg wins. Its payout assumes FanDuel's standard "
+          "parlay odds\n(the product of the legs); check the bet slip before placing it.")
+
+
+def _parlay_json(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) -> dict:
+    return {
+        "legs": [{"game": b.game, "bet": _describe(b), "fanduel_odds": b.fd_price,
+                  "win_prob": round(b.fair_prob, 4)} for b in p.legs],
+        "win_prob": round(p.win_prob, 4),
+        "fanduel_odds": p.american,
+        "ev": round(p.ev, 4),
+        "stake": round(parlay_stake(p, bankroll, kelly_mult, max_pct), 2),
+    }
 
 
 def build_model(season: int, games_source: str | None, data_dir: str | None,
@@ -148,6 +181,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--max-bet", type=float, default=2.0, help="max stake as percent of bankroll")
     p.add_argument("--json", action="store_true", help="output JSON")
 
+    par = p.add_argument_group("parlays")
+    par.add_argument("--parlays", action="store_true",
+                     help="also suggest parlays with the highest chance of winning")
+    par.add_argument("--max-legs", type=int, default=3, help="max legs per parlay (default 3)")
+    par.add_argument("--parlay-count", type=int, default=5, help="parlays to show (default 5)")
+    par.add_argument("--parlay-min-ev", type=float, default=1.0,
+                     help="minimum parlay EV in percent (default 1.0)")
+
     stats = p.add_argument_group("season stats model")
     stats.add_argument("--no-stats", action="store_true", help="use market odds only")
     stats.add_argument("--season", type=int,
@@ -212,8 +253,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     max_pct = args.max_bet / 100
 
+    parlays = None
+    if args.parlays:
+        # Any leg with an edge can help a parlay, even one too small to bet alone.
+        legs = find_bets(
+            events,
+            min_ev=0.0,
+            min_books=args.min_books,
+            devig=args.devig,
+            sharp_only=not args.all_books,
+            include_started=args.demo,
+            model=model,
+            model_weight=args.model_weight,
+            require_agreement=args.require_agreement,
+        )
+        parlays = build_parlays(legs, max_legs=args.max_legs, min_ev=args.parlay_min_ev / 100,
+                                count=args.parlay_count)
+
     if args.json:
-        print(json.dumps([
+        singles = [
             {
                 "game": b.game,
                 "kickoff": b.commence_time.isoformat(),
@@ -229,9 +287,18 @@ def main(argv: list[str] | None = None) -> int:
                 "reference_books": b.books,
             }
             for b in bets
-        ], indent=2))
+        ]
+        if parlays is None:
+            print(json.dumps(singles, indent=2))
+        else:
+            print(json.dumps({
+                "bets": singles,
+                "parlays": [_parlay_json(p, args.bankroll, args.kelly, max_pct) for p in parlays],
+            }, indent=2))
     else:
         print_table(bets, args.bankroll, args.kelly, max_pct)
+        if parlays is not None:
+            print_parlays(parlays, args.bankroll, args.kelly, max_pct)
         if args.explain and model is not None:
             print_breakdown(model, events, bets)
     return 0

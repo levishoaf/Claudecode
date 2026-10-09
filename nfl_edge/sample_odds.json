@@ -564,5 +564,317 @@
     ]
    }
   ]
+ },
+ {
+  "id": "demo4",
+  "sport_key": "americanfootball_nfl",
+  "commence_time": "2026-10-11T17:00:00Z",
+  "home_team": "Tennessee Titans",
+  "away_team": "Houston Texans",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "fanduel",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -360
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": 310
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -110,
+        "point": -7.5
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": -110,
+        "point": 7.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 37.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 37.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -440
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": 360
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -105,
+        "point": -7.5
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": -105,
+        "point": 7.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -104,
+        "point": 37.5
+       },
+       {
+        "name": "Under",
+        "price": -106,
+        "point": 37.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "betonlineag",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -450
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": 350
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Houston Texans",
+        "price": -108,
+        "point": -7.5
+       },
+       {
+        "name": "Tennessee Titans",
+        "price": -112,
+        "point": 7.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 37.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 37.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "demo5",
+  "sport_key": "americanfootball_nfl",
+  "commence_time": "2026-10-11T17:00:00Z",
+  "home_team": "Miami Dolphins",
+  "away_team": "Cincinnati Bengals",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "fanduel",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -325
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": 260
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -102,
+        "point": -6.5
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": -115,
+        "point": 6.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 42.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 42.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -320
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": 270
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -112,
+        "point": -6.5
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": 102,
+        "point": 6.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 42.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 42.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "lowvig",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -318
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": 265
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Cincinnati Bengals",
+        "price": -110,
+        "point": -6.5
+       },
+       {
+        "name": "Miami Dolphins",
+        "price": 100,
+        "point": 6.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 42.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 42.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
  }
 ]

@@ -33,6 +33,7 @@ python -m nfl_edge                   # live odds
 python -m nfl_edge --bankroll 500 --min-ev 2
 python -m nfl_edge --markets h2h --regions us,eu   # cheaper: 2 credits
 python -m nfl_edge --json
+python -m nfl_edge --parlays         # also suggest parlays
 ```
 
 | Option | Default | Meaning |
@@ -51,6 +52,10 @@ python -m nfl_edge --json
 | `--no-weather` | off | Skip weather forecasts |
 | `--data-dir` | download | Folder with `injuries_YYYY.csv` / `snap_counts_YYYY.csv` |
 | `--no-stats` | off | Skip the stats model |
+| `--parlays` | off | Suggest parlays with the highest chance of winning |
+| `--max-legs` | `3` | Max legs per parlay |
+| `--parlay-count` | `5` | Parlays to show |
+| `--parlay-min-ev` | `1.0` | Minimum parlay EV in % |
 | `--season` | current | Season to pull stats from |
 | `--stats-file` | nflverse | Local `games.csv` path or URL |
 
@@ -125,6 +130,44 @@ Rerun the backtest yourself (takes about 15 seconds):
 ```bash
 python -m nfl_edge.backtest
 ```
+
+## Parlays
+
+`--parlays` builds 2–3 leg parlays and ranks them by **chance of winning**.
+It only shows parlays with positive expected value.
+
+```
+#1  2 legs   wins 40.1%   pays +153 ($153 per $100)   EV +1.37%   stake $2.21
+    Cincinnati Bengals -6.5            -102   50.9%  Cincinnati Bengals @ Miami Dolphins
+    Houston Texans ML                  -360   78.6%  Houston Texans @ Tennessee Titans
+```
+
+How they're built:
+
+- **Only +EV legs.** Every leg must pay more than its true odds, including
+  small edges (0–1%) that aren't worth betting alone. FanDuel's margin
+  compounds with every leg. Two ordinary -110 coin flips are -4.5% as
+  singles but -8.9% as a parlay, so a parlay of "likely winners" without an
+  edge is a fast way to lose. With +EV legs, the edges compound in your favor.
+- **Different games only.** Legs in the same game move together (a team
+  covering and its moneyline, or a blowout and the over). FanDuel prices
+  those as same-game parlays with its own adjustment, which this tool can't
+  see, so it never combines them.
+- **Favorites rise to the top.** Ranking by win probability favors heavy
+  favorites and pairs. More legs always means a lower chance of winning.
+- **Smaller stakes.** Stakes use the same fractional Kelly as singles. That
+  naturally sizes parlays smaller, because they lose more often.
+
+Keep in mind:
+
+- **A parlay's chance is the product of its legs.** Even the best one here
+  wins only about 40% of the time.
+- **The stakes overlap.** Every suggested stake assumes it's your only bet.
+  If you play several parlays that share a leg, they win and lose together;
+  cut each stake accordingly.
+- **Check the payout.** FanDuel's standard parlay payout is the product of
+  the legs' odds, but confirm it on the bet slip. Don't count profit boosts
+  or insurance until you see them there.
 
 ## Using it well
 
