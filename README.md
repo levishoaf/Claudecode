@@ -85,7 +85,7 @@ factors barely count. Current fitted values:
   opponent's margin.
 - **Rest, travel, divisional:** small.
 
-`--explain` prints the breakdown for each game you're told to bet:
+`--explain` prints the breakdown for each game you're told to bet (illustrative output):
 
 ```
 IND @ PIT: projected IND 22.4 - PIT 24.0 (total 46.4)
