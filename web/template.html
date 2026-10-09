@@ -42,7 +42,7 @@ body {
 button, input, select { font: inherit; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-.top { background: var(--navy); border-bottom: 3px solid var(--blue); }
+.top { position: relative; background: var(--navy); border-bottom: 3px solid var(--blue); }
 .wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; }
 .bar1 { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 14px; }
 .brand { font-family: var(--display); font-weight: 800; font-size: 28px; letter-spacing: .02em; text-transform: uppercase; margin: 0; }
@@ -64,9 +64,8 @@ button, input, select { font: inherit; }
 .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: var(--navy-2); color: var(--on-dark); font-family: var(--body); font-size: 12px; line-height: 20px; text-align: center; }
 
 main { padding-block: 18px; display: grid; gap: 14px; }
-/* Owner watermark: faint, fixed over the whole page, never blocks clicks. */
-.watermark { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 50; overflow: hidden; }
-.watermark span { font-family: var(--display); font-weight: 800; font-size: clamp(56px, 14vw, 180px); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: var(--mark); opacity: .13; transform: rotate(-24deg); user-select: none; }
+/* Owner watermark: small, straight, top-right corner of the header. */
+.watermark { position: absolute; top: 4px; right: 10px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--mark); pointer-events: none; user-select: none; }
 .notice { background: rgba(12, 27, 51, .85); border: 1px solid #2a4170; border-radius: 10px; padding: 10px 14px; color: var(--on-dark); font-size: 14px; }
 .notice strong { color: #fff; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
@@ -144,6 +143,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 </style>
 
 <header class="top">
+  <div class="watermark" aria-hidden="true">Levi Shoaf</div>
   <div class="wrap">
     <div class="bar1">
       <h1 class="brand">Bet <span>Builder</span></h1>
@@ -167,7 +167,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   </div>
 </header>
 
-<div class="watermark" aria-hidden="true"><span>Levi Shoaf</span></div>
 <main class="wrap" id="main"></main>
 
 <div class="slipbar">

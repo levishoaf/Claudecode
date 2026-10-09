@@ -158,6 +158,8 @@ class App:
         c = tk.Canvas(root, width=W, height=H, highlightthickness=0)
         c.pack(fill="both", expand=True)
         draw_field(c)
+        c.create_text(W - 12, H - 8, anchor="se", text="Levi Shoaf", fill="#8a8f99",
+                      font=self.f["tinyb"])  # owner watermark
         self.header(c)
         self.output(c)
         self.checker(c)
