@@ -567,6 +567,14 @@ class App:
                                   "tabs to add them.", bg=BG, fg=TEXT,
                      font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
+        self.place_inputs = []  # (entry, odds box, stake box) for Placed all
+        top = tk.Frame(parent, bg=BG)
+        top.pack(fill="x", padx=6, pady=(6, 0))
+        FlatButton(top, "Placed all", self.mark_all_placed, "primary",
+                   self.f["tinyb"]).pack(side="left")
+        tk.Label(top, text="  Marks every single and parlay below as placed, at the odds and "
+                           "stake next to each.", bg=BG, fg=MUTED,
+                 font=self.f["small"]).pack(side="left")
         left, right = self.columns(parent)
         stake = float(self.stake.get() or 10)
         if singles:
@@ -585,7 +593,7 @@ class App:
             tk.Label(right, text="YOUR SINGLES AS ONE PARLAY", bg=BG, fg=MUTED,
                      font=self.f["label"]).pack(anchor="w", pady=(6, 4))
             self.parlay_card(right, "Mine", combo, stake)
-            self.place_row(right, self.entry_for([], [combo]), stake)
+            self.place_row(right, self.entry_for([], [combo]), stake, bulk=False)
         if parlays:
             tk.Label(right, text="PARLAYS YOU PICKED", bg=BG, fg=MUTED,
                      font=self.f["label"]).pack(anchor="w", pady=(6, 4))
@@ -620,7 +628,7 @@ class App:
         entries = bets.tracker_entries(singles, parlays, args.sport, bets.season_for(date.today()))
         return entries[0] if entries else None
 
-    def place_row(self, parent, entry: dict | None, stake: float) -> None:
+    def place_row(self, parent, entry: dict | None, stake: float, bulk: bool = True) -> None:
         """'Odds you got [ ]  Stake [ ]  [I placed this]' under a slip card."""
         if entry is None:
             return
@@ -637,15 +645,46 @@ class App:
         amount = ttk.Entry(row, width=5, font=self.f["small"])
         amount.insert(0, f"{stake:g}")
         amount.pack(side="left", padx=(4, 8))
+        if bulk:  # your singles as one parlay is an alternative, not part of Placed all
+            self.place_inputs.append((entry, odds, amount))
         FlatButton(row, "I placed this", lambda: self.mark_placed(entry, odds.get(), amount.get()),
                    "secondary", self.f["tinyb"]).pack(side="left")
 
+    @staticmethod
+    def parse_place(odds_text: str, stake_text: str) -> tuple[int | None, float]:
+        """('-150' or blank, '10') -> (-150 or None, 10.0); ValueError if malformed."""
+        odds = int(odds_text.replace("+", "")) if odds_text.strip() else None
+        stake = float(stake_text)
+        if (odds is not None and abs(odds) < 100) or stake <= 0:
+            raise ValueError
+        return odds, stake
+
+    def mark_all_placed(self) -> None:
+        todo = []
+        for entry, odds_box, stake_box in getattr(self, "place_inputs", []):
+            try:
+                todo.append((entry, *self.parse_place(odds_box.get(), stake_box.get())))
+            except ValueError:
+                self.verdict.configure(text="Fix the odds or stake on one of the bets: odds "
+                                            "look like -150 or +240.", fg=WHITE)
+                return
+        if not todo:
+            self.verdict.configure(text="Everything on your slip is already placed.", fg=WHITE)
+            return
+        with self.ledger_lock:
+            ledger = tracker.load(self.ledger_path)
+            for entry, odds, stake in todo:
+                tracker.place(ledger, entry, odds, stake)
+            tracker.save(ledger, self.ledger_path)
+        self.ledger = ledger
+        total = sum(stake for _, _, stake in todo)
+        self.verdict.configure(text=f"Placed {len(todo)} bet{'s' * (len(todo) != 1)}, "
+                                    f"${total:,.2f} total.", fg=WHITE)
+        self.show_tab("slip")
+
     def mark_placed(self, entry: dict, odds_text: str, stake_text: str) -> None:
         try:
-            odds = int(odds_text.replace("+", "")) if odds_text.strip() else None
-            stake = float(stake_text)
-            if odds is not None and abs(odds) < 100:
-                raise ValueError
+            odds, stake = self.parse_place(odds_text, stake_text)
         except ValueError:
             self.verdict.configure(text="Odds look like -150 or +240; stake is a dollar amount.",
                                    fg=WHITE)

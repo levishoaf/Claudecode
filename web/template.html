@@ -437,18 +437,40 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const s = state.slip[+key];
     return s.kind === "single" ? { kind: "single", legs: [s], prob: s.prob, sport: s.sport } : { kind: "parlay", legs: s.legs, prob: s.prob, sport: s.sport };
   }
-  async function placeBet(key) {
+  function placeDoc(key) {  // the bet with that slip key as a placed-bet document, or a reason it can't be
     const e = slipEntry(key);
     const oddsText = ($("po-" + key)?.value || "").trim(), stake = parseFloat($("ps-" + key)?.value);
-    let odds = oddsText ? parseInt(oddsText.replace("+", ""), 10) : decToAm(1 / e.prob);
-    const msg = $("placemsg");
-    if (!odds || Math.abs(odds) < 100 || !(stake > 0)) { if (msg) msg.textContent = "Odds look like -150 or +240, and the stake is a dollar amount."; return; }
+    const odds = oddsText ? parseInt(oddsText.replace("+", ""), 10) : decToAm(1 / e.prob);
+    if (!odds || Math.abs(odds) < 100 || !(stake > 0)) return { error: "Odds look like -150 or +240, and the stake is a dollar amount." };
     const eid = entryId(e.kind, e.legs.map((l) => l.lid));
-    const doc = { entryId: eid, kind: e.kind, sport: e.sport || state.sport, prob: e.prob, odds, stake,
+    return { id: docId(eid), doc: { entryId: eid, kind: e.kind, sport: e.sport || state.sport, prob: e.prob, odds, stake,
       placedAt: new Date().toISOString(),
-      legs: e.legs.map((l) => ({ lid: l.lid, pick: l.label, game: l.game, kickoff: l.kickoff, prob: l.prob, rec: l.rec })) };
-    try { await db.collection("placed").doc(docId(eid)).set(doc); }
-    catch (err) { if (msg) msg.textContent = err && err.code === "invalid_argument" ? "This view can't save bets. Open the page as its owner." : "Couldn't save that bet. Try again in a moment."; }
+      legs: e.legs.map((l) => ({ lid: l.lid, pick: l.label, game: l.game, kickoff: l.kickoff, prob: l.prob, rec: l.rec })) } };
+  }
+  function saveError(err) {
+    return err && err.code === "invalid_argument" ? "This view can't save bets. Open the page as its owner." : "Couldn't save. Try again in a moment.";
+  }
+  async function placeBet(key) {
+    const msg = $("placemsg"), d = placeDoc(key);
+    if (d.error) { if (msg) msg.textContent = d.error; return; }
+    try { await db.collection("placed").doc(d.id).set(d.doc); }
+    catch (err) { if (msg) msg.textContent = saveError(err); }
+  }
+  async function placeAll() {
+    const msg = $("placemsg");
+    // Every slip bet that still shows an "I placed this" button (your singles as one parlay excluded).
+    const keys = [...document.querySelectorAll("[data-place]")].map((b) => b.dataset.place).filter((k) => k !== "combo");
+    if (!keys.length) { if (msg) msg.textContent = "Everything on your slip is already placed."; return; }
+    const docs = keys.map(placeDoc);
+    const bad = docs.find((d) => d.error);
+    if (bad) { if (msg) msg.textContent = "Fix the odds or stake on one of the bets. " + bad.error; return; }
+    let saved = 0;
+    for (const d of docs) {  // one write at a time
+      try { await db.collection("placed").doc(d.id).set(d.doc); saved++; }
+      catch (err) { const m = $("placemsg"); if (m) m.textContent = `Placed ${saved} of ${docs.length}. ` + saveError(err); return; }
+    }
+    const total = docs.reduce((a, d) => a + d.doc.stake, 0);
+    const m = $("placemsg"); if (m) m.textContent = `Placed ${saved} bet${saved === 1 ? "" : "s"}, ${money(total)} total.`;
   }
   function startDb(tries = 0) {
     if (!(window.claude && typeof window.claude.use === "function")) {
@@ -481,7 +503,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     let extra = "";
     if (c && c.shared) extra = `<div class="notice">Two of your singles are from the same game, so they aren't combined into one parlay here (same-game legs move together).</div>`;
     else if (c) extra = `<div class="slip-item"><div class="mkt">Your ${c.n} singles as one parlay</div>${meter(c.prob)}${statRow(c.prob)}${checker(c.prob, "COMBO:" + state.slip.filter((s) => s.kind === "single").map((s) => s.id).join("|"))}${placeRow("combo", state.slip.filter((s) => s.kind === "single"), "parlay", c.prob)}</div>`;
-    return `<div class="slip"><div id="placemsg" class="foot" role="status"></div>${extra}${items}</div>`;
+    const allBtn = state.dbState === "on"
+      ? `<div class="notice summary"><div><button class="btn btn-primary" data-placeall="1">Placed all</button> <span style="margin-left:8px">Marks every single and parlay below as placed, at the odds and stake next to each.</span></div></div>`
+      : "";
+    return `<div class="slip">${allBtn}<div id="placemsg" class="foot" role="status"></div>${extra}${items}</div>`;
   }
 
   function render() {
@@ -537,6 +562,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     else if (t.dataset.remove) { state.slip.splice(+t.dataset.remove, 1); save(); render(); }
     else if (t.id === "viewslip") { state.tab = "slip"; render(); window.scrollTo({ top: 0 }); }
     else if (t.id === "clearslip") { state.slip = []; save(); render(); }
+    else if (t.dataset.placeall) { placeAll(); }
     else if (t.dataset.place != null) { placeBet(t.dataset.place); }
     else if (t.dataset.unplace && db) { db.collection("placed").doc(t.dataset.unplace).delete().catch(() => {}); }
   });
