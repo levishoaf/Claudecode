@@ -20,6 +20,21 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 
 ## Quick start: the bet builder
 
+**No Python needed:** download a standalone program. On GitHub, open
+**Actions → Build executables**, pick the latest green run, and download
+**Bets-Windows** (`Bets.exe`) or **Bets-Mac** (`Bets`) from **Artifacts**,
+then unzip it. Double-click to run.
+
+- **Windows:** if SmartScreen warns about an unknown app, click **More info →
+  Run anyway**.
+- **Mac:** right-click the file → **Open** the first time. If it won't run,
+  open Terminal in that folder and run `chmod +x Bets` once.
+
+Saved bets go in a `bets` folder next to the program. Start the program and
+choose **2** to grade them.
+
+**With Python installed** (3.10+), you can also use these:
+
 **Double-click `Bets.command` (Mac) or `Bets.bat` (Windows)**, or run
 `python3 bets.py`. It asks a few questions:
 

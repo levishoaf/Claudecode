@@ -1,0 +1,57 @@
+name: Build executables
+
+# Builds standalone programs with Python bundled inside, so the bet builder
+# runs with a double-click and nothing to install. Download them from the
+# run's "Artifacts" section on the Actions tab.
+on:
+  push:
+    branches: [claude/fanduel-nfl-ev-finder, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: Bets-Windows
+            binary: dist/Bets.exe
+          - os: macos-latest
+            artifact: Bets-Mac
+            binary: dist/Bets
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: python -m pip install -r requirements-build.txt
+
+      - name: Run tests
+        run: python -m unittest discover -t . -s tests
+
+      - name: Build
+        run: >
+          pyinstaller --onefile --name Bets
+          --collect-data tzdata --collect-data certifi
+          bets.py
+
+      - name: Smoke test the build
+        shell: bash
+        run: |
+          cp nfl_edge/sample_odds.json dist/
+          cd dist
+          ./Bets* --file sample_odds.json --singles 3 --legs 2 --parlays 1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.binary }}
+          retention-days: 90

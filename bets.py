@@ -18,23 +18,39 @@ import json
 import os
 import sys
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
+if getattr(sys, "frozen", False):
+    # Standalone build (Bets.exe / Mac app): save bets next to the program and
+    # use the bundled certificates for HTTPS.
+    ROOT = Path(sys.executable).resolve().parent
+    try:
+        import certifi
+
+        os.environ.setdefault("SSL_CERT_FILE", certifi.where())
+    except ImportError:
+        pass
+else:
+    ROOT = Path(__file__).resolve().parent
+    sys.path.insert(0, str(ROOT))
 
 from nfl_edge import cfb, data  # noqa: E402
 from nfl_edge import extras  # noqa: E402
 from nfl_edge.api import OddsAPIError, fetch_event_odds, fetch_odds  # noqa: E402
 from nfl_edge.cli import build_model, format_slip, _describe, _fmt_american  # noqa: E402
 from nfl_edge.finder import find_bets  # noqa: E402
+from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
 from nfl_edge.picks import best_parlays, rank_singles  # noqa: E402
 from nfl_edge.stats import TEAM_ABBR  # noqa: E402
 
-ET = ZoneInfo("America/New_York")
+try:
+    from zoneinfo import ZoneInfo
+
+    ET = ZoneInfo("America/New_York")
+except Exception:  # Windows without the tzdata package: fall back to US daylight time
+    ET = timezone(timedelta(hours=-4), "ET")
 KEY_FILE = Path.home() / ".nfl_edge" / "odds_api_key"
 
 
@@ -244,7 +260,24 @@ def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[st
     return current, singles, parlays, events, model, season
 
 
+def grade_saved(which: str) -> None:
+    files = sorted((ROOT / "bets").glob("*.json")) if which == "all" else [Path(which)]
+    if not files:
+        print(f"No saved bets in {ROOT / 'bets'}")
+    for path in files:
+        print()
+        try:
+            print_report(path)
+        except (data.DataError, KeyError, ValueError) as e:
+            print(f"{path.name}: could not grade ({e})")
+
+
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        try:  # slips use box-drawing characters; never crash an old console on them
+            stream.reconfigure(errors="replace")
+        except AttributeError:
+            pass
     p = argparse.ArgumentParser(description="Build single bets and parlays from live FanDuel odds.")
     p.add_argument("--sport", choices=["nfl", "ncaaf"])
     p.add_argument("--date", help="'today', 'all', or YYYY-MM-DD (Eastern time)")
@@ -258,6 +291,8 @@ def main() -> int:
                    help="let different parlays share games")
     p.add_argument("--file", type=Path, help="read odds JSON from a file instead of the API")
     p.add_argument("--save", action="store_true", help="save the picks as paper bets for grading")
+    p.add_argument("--grade", nargs="?", const="all", metavar="FILE",
+                   help="grade saved bets (a file in bets/, or all of them)")
     p.add_argument("--extras", action="store_true",
                    help="also price player props and alternate lines (costs more API credits)")
     p.add_argument("--extra-markets", help="comma-separated Odds API market keys to use with --extras")
@@ -269,6 +304,14 @@ def main() -> int:
     interactive = sys.stdin.isatty() and len(sys.argv) == 1
     if interactive:
         print("FanDuel bet builder\n")
+        if ask("1 = build bets, 2 = grade saved bets", "1") == "2":
+            args.grade = "all"
+    if args.grade:
+        grade_saved(args.grade)
+        if interactive:
+            input("\nPress Enter to close.")
+        return 0
+    if interactive:
         args.sport = ask("Sport: nfl or ncaaf", "nfl")
         args.date = ask("Which games: all, today, or a date like 2026-10-11", "all")
         args.singles = int(ask("How many single bets", "10"))
@@ -307,8 +350,8 @@ def main() -> int:
                                         ask("\nSave these as paper bets to grade later? (y/n)", "n") == "y")):
             stamp = datetime.now(ET).strftime("%Y-%m-%d")
             for path in save(singles, parlays, events, model, args.sport, season, stamp):
-                print(f"Saved {path.relative_to(ROOT)}; grade with: "
-                      f"python3 -m nfl_edge.grade {path.relative_to(ROOT)}")
+                print(f"Saved {path.relative_to(ROOT)}. Grade later with option 2 "
+                      "when you start the program, or --grade.")
             saved = True
         if not args.watch:
             break

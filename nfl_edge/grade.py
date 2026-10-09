@@ -109,14 +109,9 @@ def profit_of(leg: dict, status: str) -> float:
     return 0.0
 
 
-def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("bet", type=Path, help="saved bet JSON file")
-    p.add_argument("--stats-file", help="nflverse games.csv path or URL")
-    args = p.parse_args()
-    bet = json.loads(args.bet.read_text())
-
-    results = grade(bet, args.stats_file)
+def print_report(path: Path, games_source: str | None = None) -> None:
+    bet = json.loads(Path(path).read_text())
+    results = grade(bet, games_source)
     print(bet["name"])
     mark = {"won": "✓", "lost": "✗", "push": "=", "pending": "…"}
     for leg, status, detail in results:
@@ -129,7 +124,7 @@ def main() -> int:
         wins = sum(s == "won" for _, s in settled)
         print(f"\nSettled {len(settled)}/{len(results)}: {wins} won, "
               f"profit ${profit:+,.2f} on ${staked:,.0f} staked")
-        return 0
+        return
 
     statuses = {s for _, s, _ in results}
     statuses.discard("push")  # a pushed leg drops out of the parlay
@@ -140,6 +135,14 @@ def main() -> int:
     else:
         verdict = "PENDING"
     print(f"\nParlay: {verdict}")
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("bet", type=Path, help="saved bet JSON file")
+    p.add_argument("--stats-file", help="nflverse games.csv path or URL")
+    args = p.parse_args()
+    print_report(args.bet, args.stats_file)
     return 0
 
 
