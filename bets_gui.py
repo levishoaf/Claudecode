@@ -29,6 +29,7 @@ from nfl_edge.parlays import Parlay
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
+CARD_W = 272  # bet cards, three across
 NUMBER_ROWS = (163, 752)  # yard numbers sit in the gaps between panels
 
 # Field (charcoal)
@@ -124,7 +125,7 @@ def bar(parent, p: float, bg: str, width: int, font) -> tk.Frame:
 
 def odds_button(parent, text: str, caption: str, f_big, f_small, bg=BLUE_SOFT) -> tk.Frame:
     """A sportsbook-style odds box: big price over a small caption."""
-    box = tk.Frame(parent, bg=bg, padx=12, pady=6, highlightbackground="#c7dbff",
+    box = tk.Frame(parent, bg=bg, padx=6, pady=3, highlightbackground="#c7dbff",
                    highlightthickness=1)
     tk.Label(box, text=text, bg=bg, fg=BLUE, font=f_big).pack()
     tk.Label(box, text=caption, bg=bg, fg=MUTED, font=f_small).pack()
@@ -474,7 +475,7 @@ class App:
         cols = []
         for _ in range(n):
             col = tk.Frame(parent, bg=BG)
-            col.pack(side="left", anchor="n", padx=6)
+            col.pack(side="left", anchor="n", padx=4)
             tk.Frame(col, bg=BG, width=width, height=1).pack()
             cols.append(col)
         return cols
@@ -484,18 +485,18 @@ class App:
             tk.Label(parent, text="None found. Try a wider chance range or another week.", bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
-        cols = self.columns(parent)
+        cols = self.columns(parent, 3, CARD_W)
         for i, b in enumerate(singles, 1):
-            self.single_card(cols[(i - 1) % 2], i, b, previous)
+            self.single_card(cols[(i - 1) % 3], i, b, previous)
 
     def parlays_tab(self, parent, parlays, stake) -> None:
         if not parlays:
             tk.Label(parent, text="Not enough games for these parlays this week.", bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
-        cols = self.columns(parent)
+        cols = self.columns(parent, 3, CARD_W)
         for i, p in enumerate(parlays, 1):
-            self.parlay_card(cols[(i - 1) % 2], i, p, stake)
+            self.parlay_card(cols[(i - 1) % 3], i, p, stake)
 
     def injuries_tab(self, parent) -> None:
         week, players, note = self.injuries
@@ -576,25 +577,25 @@ class App:
 
     def card(self, parent) -> tk.Frame:
         frame = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
-        frame.pack(fill="x", pady=5)
+        frame.pack(fill="x", pady=3)
         return frame
 
     def single_card(self, parent, i: int, b, previous, stake: float | None = None) -> None:
         card = self.card(parent)
-        badge = tk.Canvas(card, width=30, height=30, bg=CARD, highlightthickness=0)
-        oval = badge.create_oval(2, 2, 28, 28, fill=NAVY, outline="")
-        badge.create_text(15, 15, text=str(i), fill=WHITE, font=self.f["tinyb"])
-        badge.pack(side="left", anchor="n", padx=(12, 4), pady=12)
+        badge = tk.Canvas(card, width=22, height=22, bg=CARD, highlightthickness=0)
+        oval = badge.create_oval(2, 2, 20, 20, fill=NAVY, outline="")
+        badge.create_text(11, 11, text=str(i), fill=WHITE, font=self.f["tinyb"])
+        badge.pack(side="left", anchor="n", padx=(8, 2), pady=8)
 
         odds_button(card, _fmt_american(decimal_to_american(1 / b.fair_prob)), "break-even",
-                    self.f["odds"], self.f["tiny"]).pack(side="right", padx=12, pady=12)
+                    self.f["pick"], self.f["tiny"]).pack(side="right", padx=8, pady=8)
 
         mid = tk.Frame(card, bg=CARD)
-        mid.pack(side="left", fill="both", expand=True, padx=6, pady=10)
+        mid.pack(side="left", fill="both", expand=True, padx=4, pady=6)
         top = tk.Frame(mid, bg=CARD)
         top.pack(fill="x")
-        tk.Label(top, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["pick"],
-                 wraplength=220, justify="left").pack(side="left")
+        tk.Label(top, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["bold"],
+                 wraplength=122, justify="left").pack(side="left")
         old = previous.get(bets.label(b)) if previous else None
         if previous and old is None:
             tk.Label(top, text=" NEW ", bg=NEW_BADGE, fg=WHITE, font=self.f["tinyb"]).pack(
@@ -610,9 +611,9 @@ class App:
         meta = f"{b.game}  ·  {_slip_time(b)}"
         if b.priced:
             meta += f"  ·  consensus {_fmt_american(b.fd_price)}"
-        tk.Label(mid, text=meta, bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=240,
+        tk.Label(mid, text=meta, bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=124,
                  justify="left").pack(anchor="w")
-        bar(mid, b.fair_prob, CARD, 130, self.f["tinyb"]).pack(anchor="w", pady=(6, 0))
+        bar(mid, b.fair_prob, CARD, 50, self.f["tinyb"]).pack(anchor="w", pady=(4, 0))
         if stake:
             tk.Label(mid, text=f"${stake:,.2f} wins ${stake / b.fair_prob - stake:,.2f}*",
                      bg=CARD, fg=TEXT, font=self.f["tinyb"]).pack(anchor="w", pady=(4, 0))
@@ -626,16 +627,16 @@ class App:
         head.pack(fill="x")
         title = "Your parlay" if i == "Mine" else f"Parlay P{i}"
         tk.Label(head, text=title, bg=NAVY, fg=WHITE, font=self.f["bold"]).pack(
-            side="left", padx=(12, 4), pady=8)
+            side="left", padx=(10, 4), pady=4)
         tk.Label(head, text=f"{len(p.legs)} legs", bg=NAVY, fg="#9fb0c8",
                  font=self.f["small"]).pack(side="left")
         tk.Label(head, text=f" {_fmt_american(decimal_to_american(1 / p.win_prob))} ", bg=BLUE,
-                 fg=WHITE, font=self.f["bold"]).pack(side="right", padx=10)
+                 fg=WHITE, font=self.f["bold"]).pack(side="right", padx=8)
         for n, b in enumerate(p.legs):
             if n:
-                tk.Frame(card, bg=BORDER, height=1).pack(fill="x", padx=12)
+                tk.Frame(card, bg=BORDER, height=1).pack(fill="x", padx=10)
             leg = tk.Frame(card, bg=CARD)
-            leg.pack(fill="x", padx=12, pady=7)
+            leg.pack(fill="x", padx=10, pady=3)
             tk.Label(leg, text=_fmt_american(decimal_to_american(1 / b.fair_prob)), bg=CARD,
                      fg=BLUE, font=self.f["bold"]).pack(side="right", anchor="n")
             dot = tk.Canvas(leg, width=12, height=12, bg=CARD, highlightthickness=0)
@@ -645,21 +646,21 @@ class App:
             txt.pack(side="left", padx=8)
             name = _slip_selection(b) + {"Questionable": "  (Q)",
                                          "Did not practice": "  (DNP)"}.get(b.note, "")
-            tk.Label(txt, text=name, bg=CARD, fg=TEXT, font=self.f["bold"],
-                     wraplength=280, justify="left").pack(anchor="w")
+            tk.Label(txt, text=name, bg=CARD, fg=TEXT, font=self.f["tinyb"],
+                     wraplength=170, justify="left").pack(anchor="w")
             tk.Label(txt, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
             tk.Label(txt, text=f"{b.game}  ·  {_slip_time(b)}", bg=CARD, fg=MUTED,
-                     font=self.f["tiny"], wraplength=240, justify="left").pack(anchor="w")
+                     font=self.f["tiny"], wraplength=170, justify="left").pack(anchor="w")
         foot = tk.Frame(card, bg="#f6f8fb")
         foot.pack(fill="x")
         payout = wager / p.win_prob
         for title, value in (("Wager", f"${wager:,.2f}"), ("To win*", f"${payout - wager:,.2f}"),
                              ("Payout*", f"${payout:,.2f}")):
             box = tk.Frame(foot, bg="#f6f8fb")
-            box.pack(side="left", expand=True, pady=8)
+            box.pack(side="left", expand=True, pady=4)
             tk.Label(box, text=title.upper(), bg="#f6f8fb", fg=MUTED, font=self.f["tinyb"]).pack()
-            tk.Label(box, text=value, bg="#f6f8fb", fg=TEXT, font=self.f["pick"]).pack()
-        bar(card, p.win_prob, CARD, 190, self.f["tinyb"]).pack(anchor="w", padx=12, pady=8)
+            tk.Label(box, text=value, bg="#f6f8fb", fg=TEXT, font=self.f["bold"]).pack()
+        bar(card, p.win_prob, CARD, 120, self.f["tinyb"]).pack(anchor="w", padx=10, pady=5)
         if i != "Mine":
             key = tuple(bets.label(b) for b in p.legs)
             self.card_widgets[key] = (card, None, None)

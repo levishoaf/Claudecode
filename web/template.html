@@ -68,33 +68,33 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .watermark { position: absolute; top: 4px; right: 10px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--mark); pointer-events: none; user-select: none; }
 .notice { background: rgba(12, 27, 51, .85); border: 1px solid #2a4170; border-radius: 10px; padding: 10px 14px; color: var(--on-dark); font-size: 14px; }
 .notice strong { color: #fff; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
 
-.card { background: var(--card); color: var(--ink); border-radius: 12px; padding: 14px; display: grid; gap: 10px; cursor: pointer; border: 2px solid transparent; text-align: left; width: 100%; min-width: 0; }
+.card { background: var(--card); color: var(--ink); border-radius: 10px; padding: 9px 10px; display: grid; gap: 6px; cursor: pointer; border: 2px solid transparent; text-align: left; width: 100%; min-width: 0; }
 .card:hover { border-color: #bcd4ff; }
 .card.on { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22, 119, 255, .25); }
-.row { display: flex; align-items: flex-start; gap: 10px; }
+.row { display: flex; align-items: flex-start; gap: 8px; }
 .grow { flex: 1; min-width: 0; }
-.rank { font-family: var(--display); font-weight: 700; color: var(--ink-2); font-size: 15px; }
-.mkt { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
-.pick { font-weight: 700; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
-.game { color: var(--ink-2); font-size: 13px; overflow-wrap: anywhere; }
-.odds { flex: none; background: var(--blue-soft); color: var(--blue); border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 74px; }
-.odds b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.1; }
-.odds small { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.rank { font-family: var(--display); font-weight: 700; color: var(--ink-2); font-size: 13px; }
+.mkt { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.pick { font-weight: 700; font-size: 14px; line-height: 1.2; overflow-wrap: anywhere; }
+.game { color: var(--ink-2); font-size: 11.5px; overflow-wrap: anywhere; }
+.odds { flex: none; background: var(--blue-soft); color: var(--blue); border-radius: 7px; padding: 3px 7px; text-align: center; min-width: 58px; }
+.odds b { display: block; font-family: var(--display); font-size: 16px; line-height: 1.1; }
+.odds small { font-size: 9px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
 .card.on .odds { background: var(--blue); color: #fff; }
 .meter { display: flex; align-items: center; gap: 10px; }
-.track { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.track { flex: 1; height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; }
 .fill { height: 100%; border-radius: 3px; }
-.pct { font-family: var(--display); font-weight: 800; font-size: 20px; min-width: 46px; text-align: right; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 12px; color: var(--ink-2); }
-.stats b { display: block; color: var(--ink); font-size: 14px; }
+.pct { font-family: var(--display); font-weight: 800; font-size: 15px; min-width: 36px; text-align: right; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-top: 1px solid var(--line); padding-top: 5px; font-size: 10.5px; color: var(--ink-2); }
+.stats b { display: block; color: var(--ink); font-size: 12px; }
 .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
 .b-q { background: var(--warn-soft); color: var(--warn); }
 .b-dnp { background: var(--bad-soft); color: var(--bad); }
-.legs { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.legs li { display: flex; gap: 10px; align-items: baseline; border-left: 3px solid var(--line); padding-left: 10px; }
-.legs .lp { font-weight: 700; font-size: 13px; min-width: 36px; color: var(--ink-2); }
+.legs { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.legs li { display: flex; gap: 8px; align-items: baseline; border-left: 3px solid var(--line); padding-left: 8px; }
+.legs .lp { font-weight: 700; font-size: 12px; min-width: 30px; color: var(--ink-2); }
 
 .empty { color: var(--on-dark-2); padding: 18px; border: 1px dashed #555; border-radius: 10px; }
 
@@ -118,7 +118,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .official { font-size: 11px; color: var(--good); font-weight: 700; }
 
 .slip { display: grid; gap: 10px; }
-.slip-item { background: var(--card); color: var(--ink); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; }
+.slip-item { background: var(--card); color: var(--ink); border-radius: 10px; padding: 9px 12px; display: grid; gap: 6px; }
 .check { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
 .check input { width: 90px; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; color: var(--ink); background: #fff; }
 .verdict { font-weight: 700; }
@@ -219,8 +219,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const w = wager();
     return `<div class="stats">
       <div>To win<b>${pct(prob)}</b></div>
-      <div>Payout on ${money(w)}*<b>${money(w / prob)}</b></div>
-      <div>Worth it at<b>${fmtAm(decToAm(1 / prob))} or better</b></div>
+      <div>Payout*<b>${money(w / prob)}</b></div>
+      <div>Worst odds<b>${fmtAm(decToAm(1 / prob))}</b></div>
     </div>`;
   }
   function meter(p) {
@@ -254,7 +254,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         <div class="grow"><div class="mkt">Parlay ${i + 1} · ${p.legs.length} legs</div></div>
         <div class="odds"><b>${esc(p.breakeven)}</b><small>break-even</small></div>
       </div>
-      <ul class="legs">${p.legs.map((l) => `<li><span class="lp">${pct(l.prob)}</span><div class="grow"><div class="pick" style="font-size:14px">${esc(l.label)}${badge(l.note)}</div><div class="game">${esc(l.game)} · ${esc(l.when)}</div></div></li>`).join("")}</ul>
+      <ul class="legs">${p.legs.map((l) => `<li><span class="lp">${pct(l.prob)}</span><div class="grow"><div class="pick" style="font-size:12.5px">${esc(l.label)}${badge(l.note)}</div><div class="game">${esc(l.game)} · ${esc(l.when)}</div></div></li>`).join("")}</ul>
       ${meter(p.prob)}
       ${statRow(p.prob)}
     </button>`;
@@ -355,7 +355,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="grid">${wk.parlays.map(parlayCard).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
-    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payouts include your stake. Parlay chances assume legs from different games are independent.</p>`;
+    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent.</p>`;
     $("main").innerHTML = html;
 
     const c = combo();
