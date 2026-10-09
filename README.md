@@ -18,6 +18,44 @@ is betting only when **FanDuel pays more than the true odds**. This tool:
 Sharp-book closing lines are the best public predictor of NFL outcomes.
 When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 
+## Quick start: the bet builder
+
+**Double-click `Bets.command` (Mac) or `Bets.bat` (Windows)**, or run
+`python3 bets.py`. It asks a few questions:
+
+- **Sport:** NFL or college.
+- **Which games:** all upcoming, today's, or a date.
+- **How many:** single bets, legs per parlay, and number of parlays.
+- **Wager:** shown on the parlay slips.
+- **Auto-refresh:** whether to keep updating.
+
+Then it pulls live FanDuel odds and prints:
+
+- **Single bets** ranked by expected value, ties going to the likelier
+  bet. Each shows its win chance, odds, payout, EV and the worst odds still
+  worth taking.
+- **Parlays** as FanDuel-style slips. Legs come from different games, and
+  no two parlays share a game.
+
+**Keeping it up to date:** answer the refresh question with a number of
+minutes, or pass `--watch 30`. Each update re-pulls odds, injury reports and
+weather and marks what changed: **NEW** picks, **odds moved**, and
+**dropped** picks. Each update costs about 6 API credits.
+
+**Saving bets:** say yes when asked, or pass `--save`, to store the picks in
+`bets/` for `python3 -m nfl_edge.grade`.
+
+**Your API key:** the first run asks for it (hidden) and can save it to
+`~/.nfl_edge/odds_api_key`, outside the project folder. You can also set
+`ODDS_API_KEY`.
+
+Examples:
+
+```bash
+python3 bets.py --sport ncaaf --date today --singles 10 --legs 3 --parlays 3
+python3 bets.py --sport nfl --watch 30 --save
+```
+
 ## Setup
 
 Requires Python 3.10+ and no third-party packages.
