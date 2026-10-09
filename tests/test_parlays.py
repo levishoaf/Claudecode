@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
+from nfl_edge.cli import SLIP_WIDTH, format_slip
 from nfl_edge.finder import Bet, find_bets
 from nfl_edge.parlays import Parlay, build_parlays
 
@@ -66,6 +67,21 @@ class BuildParlaysTest(unittest.TestCase):
         parlays = build_parlays(legs, count=3)
         self.assertEqual(len(parlays), 3)
         self.assertIn("Houston Texans", {b.pick for b in parlays[0].legs})
+
+
+class SlipTest(unittest.TestCase):
+    def test_slip_layout_and_payout(self):
+        events = json.loads(SAMPLE.read_text())
+        legs = find_bets(events, min_ev=0, now=datetime(2026, 10, 10, tzinfo=timezone.utc))
+        p = build_parlays(legs, max_legs=3, count=1)[0]
+        slip = format_slip(p, 10)
+        self.assertTrue(all(len(line) == SLIP_WIDTH for line in slip))
+        text = "\n".join(slip)
+        self.assertIn(f"{len(p.legs)} Leg Parlay", text)
+        self.assertIn(f"${10 * p.decimal:,.2f}", text)
+        self.assertIn("MONEYLINE", text)
+        self.assertIn("Houston Texans @ Tennessee Titans", text)
+        self.assertIn("1:00 PM ET", text)
 
 
 if __name__ == "__main__":

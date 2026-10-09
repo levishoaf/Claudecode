@@ -56,6 +56,7 @@ python -m nfl_edge --parlays         # also suggest parlays
 | `--max-legs` | `3` | Max legs per parlay |
 | `--parlay-count` | `5` | Parlays to show |
 | `--parlay-min-ev` | `1.0` | Minimum parlay EV in % |
+| `--parlay-wager` | Kelly stake | Show slips for a fixed wager |
 | `--season` | current | Season to pull stats from |
 | `--stats-file` | nflverse | Local `games.csv` path or URL |
 
@@ -136,11 +137,31 @@ python -m nfl_edge.backtest
 `--parlays` builds 2–3 leg parlays and ranks them by **chance of winning**.
 It only shows parlays with positive expected value.
 
+Each parlay prints like a FanDuel bet slip. This one is from the demo
+data, with `--parlay-wager 10`:
+
 ```
-#1  2 legs   wins 40.1%   pays +153 ($153 per $100)   EV +1.37%   stake $2.21
-    Cincinnati Bengals -6.5            -102   50.9%  Cincinnati Bengals @ Miami Dolphins
-    Houston Texans ML                  -360   78.6%  Houston Texans @ Tennessee Titans
+┌──────────────────────────────────────────────────┐
+│ 2 Leg Parlay                                +153 │
+├──────────────────────────────────────────────────┤
+│ ● Cincinnati Bengals -6.5                   -102 │
+│   SPREAD                                         │
+│   Cincinnati Bengals @ Miami Dolphins            │
+│   Sun Oct 11, 1:00 PM ET                         │
+│                                                  │
+│ ● Houston Texans                            -360 │
+│   MONEYLINE                                      │
+│   Houston Texans @ Tennessee Titans              │
+│   Sun Oct 11, 1:00 PM ET                         │
+├──────────────────────────────────────────────────┤
+│ Wager $10.00                       To Win $15.31 │
+│ Total Payout                              $25.31 │
+├──────────────────────────────────────────────────┤
+│ Our estimate: 40.1% to win, EV +1.4%             │
+└──────────────────────────────────────────────────┘
 ```
+
+Without `--parlay-wager`, the wager is the suggested Kelly stake.
 
 How they're built:
 

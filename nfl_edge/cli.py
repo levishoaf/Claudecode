@@ -57,21 +57,70 @@ def parlay_stake(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) 
     return bankroll * min(p.kelly * kelly_mult, max_pct)
 
 
+SLIP_WIDTH = 52
+SLIP_MARKETS = {"h2h": "MONEYLINE", "spreads": "SPREAD", "totals": "TOTAL POINTS"}
+try:
+    from zoneinfo import ZoneInfo
+
+    EASTERN = ZoneInfo("America/New_York")
+except Exception:  # no tz database available
+    EASTERN = None
+
+
+def _slip_selection(b: Bet) -> str:
+    """Selection text the way FanDuel's bet slip shows it."""
+    if b.market == "h2h":
+        return b.pick
+    return _describe(b)
+
+
+def _slip_time(b: Bet) -> str:
+    if EASTERN is None:
+        return f"{b.commence_time:%a %b %-d, %-I:%M %p} UTC"
+    return f"{b.commence_time.astimezone(EASTERN):%a %b %-d, %-I:%M %p} ET"
+
+
+def format_slip(p: Parlay, wager: float) -> list[str]:
+    """A parlay laid out like a FanDuel bet slip."""
+    inner = SLIP_WIDTH - 4
+
+    def line(left: str = "", right: str = "") -> str:
+        left = left[: inner - len(right) - 1] if right else left[:inner]
+        return f"│ {left}{right.rjust(inner - len(left))} │"
+
+    rule = "├" + "─" * (SLIP_WIDTH - 2) + "┤"
+    payout = round(wager * p.decimal, 2)
+    out = ["┌" + "─" * (SLIP_WIDTH - 2) + "┐",
+           line(f"{len(p.legs)} Leg Parlay", _fmt_american(p.american)),
+           rule]
+    for i, b in enumerate(p.legs):
+        if i:
+            out.append(line())
+        out += [line(f"● {_slip_selection(b)}", _fmt_american(b.fd_price)),
+                line(f"  {SLIP_MARKETS.get(b.market, b.market.upper())}"),
+                line(f"  {b.game}"),
+                line(f"  {_slip_time(b)}")]
+    out += [rule,
+            line(f"Wager ${wager:,.2f}", f"To Win ${payout - wager:,.2f}"),
+            line("Total Payout", f"${payout:,.2f}"),
+            rule,
+            line(f"Our estimate: {p.win_prob:.1%} to win, EV {p.ev:+.1%}"),
+            "└" + "─" * (SLIP_WIDTH - 2) + "┘"]
+    return out
+
+
 def print_parlays(parlays: list[Parlay], bankroll: float, kelly_mult: float,
-                  max_pct: float) -> None:
+                  max_pct: float, wager: float | None = None) -> None:
     print("\nParlays (legs from different games, ranked by chance of winning)")
     if not parlays:
         print("  None: there aren't enough +EV legs in separate games right now.")
         return
     for i, p in enumerate(parlays, 1):
-        print(f"\n#{i}  {len(p.legs)} legs   wins {p.win_prob:.1%}   pays "
-              f"{_fmt_american(p.american)} (${100 * (p.decimal - 1):,.0f} per $100)   "
-              f"EV {p.ev:+.2%}   stake ${parlay_stake(p, bankroll, kelly_mult, max_pct):.2f}")
-        for b in p.legs:
-            print(f"    {_describe(b):<32} {_fmt_american(b.fd_price):>6}  {b.fair_prob:>6.1%}  "
-                  f"{b.game} ({b.commence_time:%a %H:%M} UTC)")
-    print("\nA parlay only wins if every leg wins. Its payout assumes FanDuel's standard "
-          "parlay odds\n(the product of the legs); check the bet slip before placing it.")
+        print(f"\n#{i}")
+        amount = wager if wager is not None else parlay_stake(p, bankroll, kelly_mult, max_pct)
+        print("\n".join(format_slip(p, amount)))
+    print("\nA parlay only wins if every leg wins. Odds and payout assume FanDuel's standard "
+          "parlay\npricing (the product of the legs); confirm on the bet slip before placing it.")
 
 
 def _parlay_json(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) -> dict:
@@ -186,6 +235,8 @@ def main(argv: list[str] | None = None) -> int:
                      help="also suggest parlays with the highest chance of winning")
     par.add_argument("--max-legs", type=int, default=3, help="max legs per parlay (default 3)")
     par.add_argument("--parlay-count", type=int, default=5, help="parlays to show (default 5)")
+    par.add_argument("--parlay-wager", type=float,
+                     help="show slips for this wager instead of the suggested stake")
     par.add_argument("--parlay-min-ev", type=float, default=1.0,
                      help="minimum parlay EV in percent (default 1.0)")
 
@@ -298,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print_table(bets, args.bankroll, args.kelly, max_pct)
         if parlays is not None:
-            print_parlays(parlays, args.bankroll, args.kelly, max_pct)
+            print_parlays(parlays, args.bankroll, args.kelly, max_pct, args.parlay_wager)
         if args.explain and model is not None:
             print_breakdown(model, events, bets)
     return 0
