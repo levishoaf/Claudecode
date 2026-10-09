@@ -43,3 +43,13 @@ Every bet the user asks for, singles and parlays alike, must aim for the
   in half or fewer of his team's games this season or last season. A player
   traded mid-season counts against one season's schedule, not two. Rookies
   are judged on the current season only.
+
+## Web version
+
+The bet builder also runs as a private web page:
+https://claude.ai/artifact/QyRUWeX7NkXuVUSn4c3xsv
+
+**Every time the application changes, update the web page too.** Rebuild it
+with `python3 web/export.py <scratchpad>/bet-builder.html` (fresh data from
+that run) and republish to the same URL; carry any visible app change into
+`web/template.html` first. End each reply with the link to the web page.
