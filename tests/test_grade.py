@@ -42,6 +42,12 @@ class GradeTest(unittest.TestCase):
         self.assertEqual(grade_leg(dict(total, side="Under"), GAMES, [])[0], "lost")
         self.assertEqual(grade_leg(dict(total, line=41), GAMES, [])[0], "push")
 
+    def test_team_total(self):
+        leg = {"type": "team_total", "game_id": "g1", "team": "TEN", "side": "Over", "line": 16.5}
+        self.assertEqual(grade_leg(leg, GAMES, [])[0], "won")  # TEN scored 17
+        self.assertEqual(grade_leg(dict(leg, line=17), GAMES, [])[0], "push")
+        self.assertEqual(grade_leg(dict(leg, team="HOU", line=24.5), GAMES, [])[0], "lost")
+
     def test_profit(self):
         from nfl_edge.grade import profit_of
         leg = {"odds": -115, "stake": 100}

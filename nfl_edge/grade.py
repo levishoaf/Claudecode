@@ -4,7 +4,8 @@
 
 Works for NFL bets and, with "sport": "ncaaf" in the file, college bets.
 Supported legs: moneyline (team wins), spread (team + point), total
-(Over/Under a line), passing_tds (player throws at least `min` passing
+(Over/Under a line), team_total (one team's points Over/Under a line),
+passing_tds (player throws at least `min` passing
 touchdowns) and player_stat (player reaches `min` of any nflverse stat
 column, e.g. receptions, receiving_yards, rushing_yards, passing_yards). Player stats usually post the day after a game.
 
@@ -48,6 +49,10 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
         total = home + away
         diff = total - leg["line"] if leg["side"] == "Over" else leg["line"] - total
         return ("won" if diff > 0 else "push" if diff == 0 else "lost"), f"{score} (total {total})"
+    if leg["type"] == "team_total":
+        pts = home if leg["team"] == g["home_team"] else away
+        diff = pts - leg["line"] if leg["side"] == "Over" else leg["line"] - pts
+        return ("won" if diff > 0 else "push" if diff == 0 else "lost"), f"{score} ({leg['team']} {pts})"
     if leg["type"] in ("passing_tds", "player_stat"):
         stat = leg.get("stat", "passing_tds")
         row = next((s for s in stats if s["game_id"] == leg["game_id"]
