@@ -90,10 +90,18 @@ def _slip_selection(b: Bet) -> str:
     return _describe(b)
 
 
+def clock(dt: datetime, with_date: bool = True) -> str:
+    """'Sun Oct 11, 1:00 PM' without platform-specific strftime codes
+    (%-d and %-I don't exist on Windows)."""
+    hour = dt.hour % 12 or 12
+    day = f"{dt:%a %b} {dt.day}, " if with_date else f"{dt:%a} "
+    return f"{day}{hour}:{dt:%M %p}"
+
+
 def _slip_time(b: Bet) -> str:
     if EASTERN is None:
-        return f"{b.commence_time:%a %b %-d, %-I:%M %p} UTC"
-    return f"{b.commence_time.astimezone(EASTERN):%a %b %-d, %-I:%M %p} ET"
+        return f"{clock(b.commence_time)} UTC"
+    return f"{clock(b.commence_time.astimezone(EASTERN))} ET"
 
 
 def _slip_market(b: Bet) -> str:

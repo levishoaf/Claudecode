@@ -38,7 +38,7 @@ else:
 from nfl_edge import cfb, data  # noqa: E402
 from nfl_edge import extras  # noqa: E402
 from nfl_edge.api import OddsAPIError, fetch_event_odds, fetch_odds  # noqa: E402
-from nfl_edge.cli import build_model, format_slip, _describe, _fmt_american  # noqa: E402
+from nfl_edge.cli import build_model, clock, format_slip, _describe, _fmt_american  # noqa: E402
 from nfl_edge.finder import find_bets  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
@@ -230,7 +230,7 @@ def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[st
         return ""
 
     print(f"\n{args.sport.upper()}: {len({e['id'] for e in events})} games, "
-          f"updated {datetime.now(ET):%a %-I:%M %p} ET. Ranked by expected value "
+          f"updated {clock(datetime.now(ET), with_date=False)} ET. Ranked by expected value "
           f"(win chance x payout); ties go to the likelier bet.\n")
     print("SINGLE BETS")
     for i, b in enumerate(singles, 1):
@@ -238,7 +238,7 @@ def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[st
         be = decimal_to_american(1 / b.fair_prob)
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)} ({b.game}) {_fmt_american(b.fd_price)}"
               f"  pays ${payout:.0f}/$100  EV {b.ev:+.1%}  worth it at {_fmt_american(be)} or better"
-              f"  {b.commence_time.astimezone(ET):%a %-I:%M %p} ET"
+              f"  {clock(b.commence_time.astimezone(ET), with_date=False)} ET"
               f"{'  (model only)' if 'player logs only' in b.books else ''}{mark(b)}")
     if previous:
         gone = set(previous) - {game_label(b) for b in singles}
