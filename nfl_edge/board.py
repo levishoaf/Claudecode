@@ -48,14 +48,15 @@ SCALING = {"normal": 0.5, "count": 0.3, "poisson": 1.0}
 
 
 def make_bet(game: str, kickoff: datetime, market: str, pick: str, point: float | None,
-             prob: float, game_id: str, source: str, price: int | None = None) -> Bet:
+             prob: float, game_id: str, source: str, price: int | None = None,
+             week: int | None = None) -> Bet:
     """A bet priced at `price`, or at its break-even odds when there's no price."""
     priced = price is not None
     if price is None:
         price = decimal_to_american(1 / min(max(prob, 0.01), 0.99))
     ev = prob * american_to_decimal(price) - 1
     return Bet(game, kickoff, market, pick, point, price, prob, prob, None, ev,
-               kelly_fraction(prob, price), [source], game_id, priced)
+               kelly_fraction(prob, price), [source], game_id, priced, week)
 
 
 def kickoff_of(row: dict) -> datetime:
@@ -157,6 +158,9 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 
     # 3) Player props.
     bets += _props(rows, all_games, season, lo, hi)
+    weeks = {g["game_id"]: int(g["week"]) for g in rows}
+    for b in bets:
+        b.week = weeks.get(b.game_id)
     return [b for b in bets if lo <= b.fair_prob <= hi]
 
 
@@ -233,5 +237,6 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
         game = f"{r['away_team']} @ {r['home_team']}"
         for team, p in ((r["home_team"], p_home), (r["away_team"], 1 - p_home)):
             if lo <= p <= hi:
-                out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model"))
+                out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model",
+                                    week=int(r["week"])))
     return out

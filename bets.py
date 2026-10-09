@@ -148,6 +148,16 @@ def build(args):
     return bets, singles, parlays
 
 
+def week_label(singles, parlays) -> str:
+    """'Week 5 · 2026 season' from the games actually shown."""
+    weeks = sorted({b.week for b in singles} | {b.week for p in parlays for b in p.legs} - {None})
+    season = season_for(date.today())
+    if not weeks:
+        return f"{season} season"
+    span = f"Week {weeks[0]}" if len(weeks) == 1 else f"Weeks {weeks[0]}-{weeks[-1]}"
+    return f"{span} · {season} season"
+
+
 def show(args, singles, parlays, previous: dict[str, float]) -> None:
     def mark(b) -> str:
         if not previous:
@@ -159,7 +169,8 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
             return f"  << chance moved from {old:.0%}"
         return ""
 
-    print(f"\n{args.sport.upper()} | updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
+    print(f"\n{args.sport.upper()} | {week_label(singles, parlays)} | "
+          f"updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
           f"bets with a {args.min_prob:.0f}-{args.max_prob:.0f}% chance, likeliest first\n")
     print("SINGLE BETS  (odds = break-even: bet only if FanDuel pays this or better)")
     if not singles:

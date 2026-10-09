@@ -210,7 +210,10 @@ class App:
         self.clear()
         head = tk.Frame(self.body, bg=PANEL)
         head.pack(fill="x", padx=12, pady=(10, 4))
-        tk.Label(head, text=f"{args.sport.upper()}  ·  {len(singles)} single bets  ·  "
+        tk.Label(head, text=f"{'NFL' if args.sport == 'nfl' else 'College'}  ·  "
+                            f"{bets.week_label(singles, parlays)}",
+                 bg=PANEL, fg=GOLD, font=("Helvetica", 14, "bold")).pack(side="left")
+        tk.Label(head, text=f"  ·  {len(singles)} single bets  ·  "
                             f"{len(parlays)} parlays  ·  {args.min_prob:.0f}–{args.max_prob:.0f}% "
                             "chance, likeliest first",
                  bg=PANEL, fg=MUTED, font=("Helvetica", 10)).pack(side="left")
