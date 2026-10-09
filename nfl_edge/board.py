@@ -16,6 +16,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 
 from . import cfb, data
+from .context import name_key
 from .extras import LineDistribution, load_player_model, p_over
 from .finder import Bet, find_bets
 from .odds import american_to_decimal, decimal_to_american, kelly_fraction
@@ -29,6 +30,8 @@ except Exception:  # no time-zone database
     EASTERN = timezone(timedelta(hours=-4), "ET")
 
 ABBR_NAME = {v: k for k, v in TEAM_ABBR.items()}
+# Status lines from the last board built (e.g. whether injury reports are in).
+NOTES: dict[str, str] = {}
 HALF_POINTS = [k + 0.5 for k in range(0, 60)]
 
 # position -> [(stat column, market, distribution, thresholds)]
@@ -187,9 +190,29 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             if g["season"] == str(season):
                 latest[t] = max(latest.get(t, 0), int(g["week"]))
 
+    # This week's injury report: Out/Doubtful players are dropped, Questionable flagged.
+    week = int(rows[0]["week"])
+    status = {}
+    for i in data.release("injuries", season, season):
+        if i.get("game_type") == "REG" and i.get("week") == str(week) and i.get("report_status"):
+            status[(i["team"], name_key(i["full_name"]))] = i["report_status"]
+    playing = set(implied)
+    reported = {t for t, _ in status} & playing
+    if reported == playing:
+        NOTES["injuries"] = f"Week {week} injury reports included for all {len(playing)} teams"
+    elif reported:
+        NOTES["injuries"] = (f"Week {week} injury reports in for {len(reported)} of {len(playing)} "
+                             "teams; refresh after they post (usually Friday afternoon)")
+    else:
+        NOTES["injuries"] = (f"Week {week} injury reports not posted yet "
+                             "(usually Wednesday to Friday); refresh later")
+
     out = []
     for key, team in players.current_team.items():
         if team not in implied or team not in pts:
+            continue
+        injury = status.get((team, key), "")
+        if injury in ("Out", "Doubtful"):
             continue
         apps = players.appearances.get((key, season), set())
         if (team, str(latest.get(team, 0))) not in apps:
@@ -211,7 +234,9 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             p, market, k = best
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"
-            out.append(make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs"))
+            bet = make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs")
+            bet.note = "Questionable" if injury == "Questionable" else ""
+            out.append(bet)
     return out
 
 

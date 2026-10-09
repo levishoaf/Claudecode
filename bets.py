@@ -36,11 +36,12 @@ else:
     sys.path.insert(0, str(ROOT))
 
 from nfl_edge import data, extras  # noqa: E402
+from nfl_edge import board  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import best_parlays, rank_singles  # noqa: E402
+from nfl_edge.picks import best_parlays, mixed_parlays, rank_singles  # noqa: E402
 
 
 def ask(question: str, default: str) -> str:
@@ -143,8 +144,15 @@ def build(args):
     else:
         bets = nfl_board(day, lo, hi, games_source=args.games_file)
     singles = rank_singles(bets, args.singles, rank_by="prob", per_game=args.per_game)
-    parlays = best_parlays(bets, args.legs, args.parlays, allow_overlap=args.allow_overlap,
-                           rank_by="prob") if args.parlays else []
+    lo_legs = getattr(args, "min_legs", None) or args.legs
+    hi_legs = getattr(args, "max_legs", None) or args.legs
+    if not args.parlays:
+        parlays = []
+    elif hi_legs > lo_legs:  # a spread of sizes; parlays may share games
+        parlays = mixed_parlays(bets, lo_legs, hi_legs, args.parlays)
+    else:
+        parlays = best_parlays(bets, lo_legs, args.parlays, allow_overlap=args.allow_overlap,
+                               rank_by="prob")
     return bets, singles, parlays
 
 
@@ -172,6 +180,8 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
     print(f"\n{args.sport.upper()} | {week_label(singles, parlays)} | "
           f"updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
           f"bets with a {args.min_prob:.0f}-{args.max_prob:.0f}% chance, likeliest first\n")
+    if args.sport == "nfl" and board.NOTES.get("injuries"):
+        print(f"Injuries: {board.NOTES['injuries']}\n")
     print("SINGLE BETS  (odds = break-even: bet only if FanDuel pays this or better)")
     if not singles:
         print("  None found. Try a wider chance range or a different date.")
@@ -179,13 +189,16 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
         when = clock(b.commence_time.astimezone(EASTERN), with_date=False)
         extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)}  ({break_even(b.fair_prob)}{extra})"
-              f"  {b.game}, {when} ET{mark(b)}")
+              f"  {b.game}, {when} ET{'  [Q]' if b.note == 'Questionable' else ''}{mark(b)}")
     if previous:
         for gone in sorted(set(previous) - {label(b) for b in singles}):
             print(f"    dropped: {gone}")
 
     if args.parlays:
-        print(f"\n{args.legs}-LEG PARLAYS" + ("" if args.allow_overlap else " (no shared games)"))
+        sizes = sorted({len(p.legs) for p in parlays}) or [args.legs]
+        span = f"{sizes[0]}" if len(sizes) == 1 else f"{sizes[0]}-{sizes[-1]}"
+        shared = len({b.game for p in parlays for b in p.legs}) < sum(len(p.legs) for p in parlays)
+        print(f"\nPARLAYS ({span} legs" + (", may share games)" if shared else ", no shared games)"))
         if not parlays:
             print("  Not enough games for that many legs.")
         for i, p in enumerate(parlays, 1):
@@ -238,6 +251,8 @@ def main() -> int:
     p.add_argument("--date", help="'week' (this week's games, default), 'today' or YYYY-MM-DD (Eastern)")
     p.add_argument("--singles", type=int, help="how many single bets")
     p.add_argument("--legs", type=int, help="legs per parlay")
+    p.add_argument("--min-legs", type=int, help="smallest parlay (with --max-legs for a mix)")
+    p.add_argument("--max-legs", type=int, help="largest parlay")
     p.add_argument("--parlays", type=int, help="how many parlays (0 for none)")
     p.add_argument("--stake", type=float, help="parlay wager shown on the slips")
     p.add_argument("--min-prob", type=float, default=60.0, help="lowest win chance in %% (default 60)")

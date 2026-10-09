@@ -83,3 +83,50 @@ def best_parlays(bets: list[Bet], legs: int, count: int, *, allow_overlap: bool 
         if len(chosen) == count:
             break
     return chosen
+
+
+def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
+                  min_prob: float = 0.0, rank_by: str = "prob", max_uses: int = 3,
+                  pool_size: int = 24) -> list[Parlay]:
+    """`count` parlays spread across `min_legs`..`max_legs` legs.
+
+    A week has too few games for many parlays without sharing games, so
+    parlays may share games with each other. Each parlay still uses
+    different games for its own legs, no two parlays are identical, and no
+    single bet appears in more than `max_uses` parlays.
+    """
+    sizes = list(range(min_legs, max_legs + 1))
+    quota = {n: count // len(sizes) for n in sizes}
+    for n in sizes[: count % len(sizes)]:
+        quota[n] += 1
+
+    pool = rank_singles(bets, pool_size, min_prob, rank_by=rank_by)
+    ranked = {}
+    for n in sizes:
+        candidates = [Parlay(c) for c in combinations(pool, n) if len({b.game for b in c}) == n]
+        if rank_by == "prob":
+            candidates.sort(key=lambda p: p.win_prob, reverse=True)
+        else:
+            candidates.sort(key=lambda p: value_key(p.ev, p.win_prob), reverse=True)
+        ranked[n] = candidates
+
+    uses: dict[int, int] = {}
+    chosen: list[Parlay] = []
+    taken = {n: 0 for n in sizes}
+    limit = max_uses
+    # Biggest parlays first: they need the most fresh legs. If the reuse limit
+    # leaves gaps, loosen it one step at a time.
+    while sum(taken.values()) < min(count, sum(len(c) for c in ranked.values())) and limit <= count:
+        for n in reversed(sizes):
+            for p in ranked[n]:
+                if taken[n] == quota[n]:
+                    break
+                if p in chosen or any(uses.get(id(b), 0) >= limit for b in p.legs):
+                    continue
+                chosen.append(p)
+                taken[n] += 1
+                for b in p.legs:
+                    uses[id(b)] = uses.get(id(b), 0) + 1
+        limit += 1
+    chosen.sort(key=lambda p: (len(p.legs), -p.win_prob))
+    return chosen

@@ -22,6 +22,24 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 
 ![Bet builder window](docs/bet-builder-preview.png)
 
+The window opens with this week's **top 30 single bets** and **10 parlays of
+3 to 5 legs**.
+
+- **Building a slip:** click any card to add it to **your slip**. The slip
+  bar shows your picks, plus the chance if your singles were combined into
+  one parlay. **View slip** shows them as slips, and **Save slip** stores
+  them for grading.
+- **Parlays can share games:** a week doesn't have enough games for 10
+  parlays without overlap. Each parlay still uses different games for its
+  own legs, and no bet appears in more than three parlays.
+- **Stays current:** every time it builds, it pulls the latest schedule,
+  lines, injury reports and stats. Players listed **Out** or **Doubtful**
+  are dropped, **Questionable** players get a **Q** badge, and a status
+  line says whether this week's injury reports are in yet. It moves to the
+  next week automatically once the current games are played.
+
+![Your slip](docs/bet-builder-slip.png)
+
 **Download the standalone program** (no Python needed): on GitHub, open
 **Actions → Build executables**, pick the latest green run, and download
 from **Artifacts**:

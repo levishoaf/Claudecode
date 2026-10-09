@@ -46,3 +46,22 @@ class BestParlaysTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MixedParlaysTest(unittest.TestCase):
+    def test_sizes_quota_and_reuse_limit(self):
+        from nfl_edge.picks import mixed_parlays
+
+        legs = [bet(g, -300, 0.75 - i * 0.005) for i, g in enumerate("ABCDEFGHIJKLMN")]
+        parlays = mixed_parlays(legs, 3, 5, 10, max_uses=3)
+        self.assertEqual(len(parlays), 10)
+        self.assertEqual(sorted({len(p.legs) for p in parlays}), [3, 4, 5])
+        self.assertEqual([len(p.legs) for p in parlays].count(3), 4)  # 10 = 4 + 3 + 3
+        for p in parlays:
+            self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
+        uses = {}
+        for p in parlays:
+            for b in p.legs:
+                uses[id(b)] = uses.get(id(b), 0) + 1
+        self.assertLessEqual(max(uses.values()), 3)
+        self.assertEqual(len({frozenset(id(b) for b in p.legs) for p in parlays}), 10)

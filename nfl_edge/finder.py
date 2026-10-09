@@ -42,6 +42,7 @@ class Bet:
     game_id: str | None = None  # schedule id, for saving and grading
     priced: bool = True  # False when fd_price is only the break-even price
     week: int | None = None  # schedule week, for display
+    note: str = ""  # e.g. "Questionable" from the injury report
 
     @property
     def fair_american(self) -> int:
