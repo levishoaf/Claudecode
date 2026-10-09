@@ -52,6 +52,20 @@ on the schedule, labeled with what's known right now:
 
 ![Parlays tab](docs/bet-builder-parlays.png)
 
+**Injuries tab:** every player on the selected week's NFL injury report,
+grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
+**Questionable**) and a one- or two-word injury, like "Knee", "Hamstring" or
+"Rest".
+
+- **Before Friday:** official game statuses usually post Friday afternoon.
+  Until then the tab lists players who missed (**No practice**) or were
+  **Limited** in practice, and says so.
+- **On bet cards:** props get a **Q** or **DNP** badge when the player is
+  questionable or missed practice. Players ruled Out or Doubtful are dropped.
+- **Console:** `python3 bets.py --injuries` prints the same list.
+
+![Injuries tab](docs/bet-builder-injuries.png)
+
 ![Your slip](docs/bet-builder-slip.png)
 
 **Download the standalone program** (no Python needed): on GitHub, open

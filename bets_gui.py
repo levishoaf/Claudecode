@@ -22,6 +22,7 @@ from tkinter import ttk
 import bets  # sets up paths for the standalone build
 from nfl_edge import board, data
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
+from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import decimal_to_american
 from nfl_edge.parlays import Parlay
 
@@ -41,6 +42,9 @@ BG, CARD, BORDER = "#eef1f5", "#ffffff", "#d9e0e8"
 TEXT, MUTED, WHITE = "#0d1b2a", "#5b6b7f", "#ffffff"
 GREEN, AMBER, RED, TRACK = "#22a352", "#e0a100", "#d64545", "#e3e8ef"
 NEW_BADGE, MOVED_BADGE = "#1677ff", "#e07b00"
+STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
+                 "Did not practice": "#6b7280", "Limited": "#94a3b8"}
+STATUS_SHORT = {"Did not practice": "No practice"}  # fits the badge
 
 
 def pick_font() -> str:
@@ -134,6 +138,7 @@ class App:
         self.picked_parlays: set[tuple] = set()  # parlays on your slip
         self.last_args = None
         self.tab = "singles"
+        self.injuries: tuple = (None, [], "")
         self.week_values: dict[str, int | None] = {}
         self.results: queue.Queue = queue.Queue()
         root.title("Bet Builder")
@@ -421,6 +426,7 @@ class App:
         self.tab_labels = {}
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
+                          ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("slip", f"Your slip ({n_slip})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
@@ -440,6 +446,8 @@ class App:
             self.singles_tab(grid, singles, previous)
         elif self.tab == "parlays":
             self.parlays_tab(grid, parlays, args.stake)
+        elif self.tab == "injuries":
+            self.injuries_tab(grid)
         else:
             self.slip_tab(grid)
         self.refresh_cards()
@@ -478,6 +486,50 @@ class App:
         cols = self.columns(parent)
         for i, p in enumerate(parlays, 1):
             self.parlay_card(cols[(i - 1) % 2], i, p, stake)
+
+    def injuries_tab(self, parent) -> None:
+        week, players, note = self.injuries
+        tk.Label(parent, text=note, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+                 justify="left").pack(anchor="w", padx=6, pady=(6, 2))
+        if not players:
+            return
+        legend = tk.Frame(parent, bg=BG)
+        legend.pack(anchor="w", padx=6, pady=(0, 4))
+        for status in board.SEVERITY:
+            tk.Label(legend, text=f" {STATUS_SHORT.get(status, status)} ", bg=STATUS_COLORS[status], fg=WHITE,
+                     font=self.f["tinyb"]).pack(side="left", padx=(0, 6))
+        holder = tk.Frame(parent, bg=BG)
+        holder.pack(fill="both")
+        cols = self.columns(holder)
+        teams: dict[str, list] = {}
+        for p in players:
+            teams.setdefault(p["team"], []).append(p)
+        heights = [0, 0]
+        for team, group in teams.items():
+            col = heights.index(min(heights))  # balance the two columns
+            heights[col] += len(group) + 2
+            card = self.card(cols[col])
+            head = tk.Frame(card, bg=NAVY)
+            head.pack(fill="x")
+            first = group[0]
+            tk.Label(head, text=first["team_name"], bg=NAVY, fg=WHITE,
+                     font=self.f["bold"]).pack(side="left", padx=(12, 6), pady=6)
+            tk.Label(head, text=f"{first['opponent']}  ·  {_clock(first['kickoff'])}", bg=NAVY,
+                     fg="#9fb0c8", font=self.f["tiny"]).pack(side="left")
+            for n, p in enumerate(group):
+                if n:
+                    tk.Frame(card, bg=BORDER, height=1).pack(fill="x", padx=12)
+                row = tk.Frame(card, bg=CARD)
+                row.pack(fill="x", padx=12, pady=4)
+                tk.Label(row, text=STATUS_SHORT.get(p["status"], p["status"]),
+                         bg=STATUS_COLORS[p["status"]], fg=WHITE, font=self.f["tinyb"],
+                         width=11).pack(side="right")
+                tk.Label(row, text=p["injury"], bg=CARD, fg=MUTED, font=self.f["tiny"],
+                         width=11, anchor="e").pack(side="right", padx=6)
+                tk.Label(row, text=f"{p['player']}", bg=CARD, fg=TEXT, font=self.f["bold"],
+                         wraplength=190, justify="left").pack(side="left")
+                tk.Label(row, text=p["position"], bg=CARD, fg=BLUE,
+                         font=self.f["tinyb"]).pack(side="left", padx=6)
 
     def slip_tab(self, parent) -> None:
         singles, parlays = self.slip_bets()
@@ -540,9 +592,10 @@ class App:
         elif old is not None and abs(old - b.fair_prob) >= 0.02:
             tk.Label(top, text=f" was {old:.0%} ", bg=MOVED_BADGE, fg=WHITE,
                      font=self.f["tinyb"]).pack(side="left", padx=6)
-        if b.note == "Questionable":
-            tk.Label(top, text=" Q ", bg=MOVED_BADGE, fg=WHITE, font=self.f["tinyb"]).pack(
-                side="left", padx=4)
+        if b.note:
+            badge_text = {"Questionable": " Q ", "Did not practice": " DNP "}.get(b.note, b.note)
+            tk.Label(top, text=badge_text, bg=STATUS_COLORS.get(b.note, MOVED_BADGE), fg=WHITE,
+                     font=self.f["tinyb"]).pack(side="left", padx=4)
         tk.Label(mid, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
         meta = f"{b.game}  ·  {_slip_time(b)}"
         if b.priced:
@@ -580,7 +633,8 @@ class App:
             dot.pack(side="left", anchor="n", pady=3)
             txt = tk.Frame(leg, bg=CARD)
             txt.pack(side="left", padx=8)
-            name = _slip_selection(b) + ("  (Q)" if b.note == "Questionable" else "")
+            name = _slip_selection(b) + {"Questionable": "  (Q)",
+                                         "Did not practice": "  (DNP)"}.get(b.note, "")
             tk.Label(txt, text=name, bg=CARD, fg=TEXT, font=self.f["bold"],
                      wraplength=280, justify="left").pack(anchor="w")
             tk.Label(txt, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
@@ -624,7 +678,10 @@ class App:
         def work():
             try:
                 _, singles, parlays = bets.build(args)
-                self.results.put(("ok", args, singles, parlays))
+                injuries = (None, [], "College injury reports aren't in the free data.")
+                if args.sport == "nfl" and args.date != "today":
+                    injuries = board.injury_report(args.week)
+                self.results.put(("ok", args, singles, parlays, injuries))
             except (data.DataError, ValueError) as e:
                 self.results.put(("error", str(e)))
 
@@ -640,7 +697,7 @@ class App:
         if item[0] == "error":
             self.say(f"Couldn't load data: {item[1]}")
         else:
-            _, args, self.singles, self.parlays = item
+            _, args, self.singles, self.parlays, self.injuries = item
             if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
                 self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args

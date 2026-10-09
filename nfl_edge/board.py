@@ -249,10 +249,14 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
 
     # This week's injury report: Out/Doubtful players are dropped, Questionable flagged.
     week = int(rows[0]["week"])
-    status = {}
+    status, missed_practice = {}, set()
     for i in data.release("injuries", season, season):
-        if i.get("game_type") == "REG" and i.get("week") == str(week) and i.get("report_status"):
+        if i.get("game_type") != "REG" or i.get("week") != str(week):
+            continue
+        if i.get("report_status"):
             status[(i["team"], name_key(i["full_name"]))] = i["report_status"]
+        elif (i.get("practice_status") or "").startswith("Did Not"):
+            missed_practice.add((i["team"], name_key(i["full_name"])))
     playing = set(implied)
     reported = {t for t, _ in status} & playing
     current = min(int(g["week"]) for g in upcoming_nfl()) if upcoming_nfl() else week
@@ -296,7 +300,8 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"
             bet = make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs")
-            bet.note = "Questionable" if injury == "Questionable" else ""
+            bet.note = ("Questionable" if injury == "Questionable" else
+                        "Did not practice" if (team, key) in missed_practice and not injury else "")
             out.append(bet)
     return out
 
@@ -328,3 +333,79 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
                 out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model",
                                     week=int(r["week"])))
     return out
+
+
+# ---------------------------------------------------------------- injury report
+
+SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]
+
+
+def short_injury(text: str) -> str:
+    """'Not injury related - resting player' -> 'Rest', 'Left Knee' -> 'Knee'."""
+    text = (text or "").strip()
+    if not text:
+        return "Undisclosed"
+    low = text.lower()
+    if low.startswith("not injury related"):
+        tail = low.split("-", 1)[-1]
+        return "Rest" if "rest" in tail else "Personal" if "personal" in tail else "Non-injury"
+    first = text.split(",")[0].split("/")[0]
+    words = [w for w in first.split() if w.lower() not in ("left", "right")]
+    return " ".join(words[:2]).title() or "Undisclosed"
+
+
+def injury_report(week: int | None = None, now: datetime | None = None,
+                  games_source: str | None = None) -> tuple[int | None, list[dict], str]:
+    """(week, players, note) for every team playing that week.
+
+    Official game designations (Out/Doubtful/Questionable) come first; until
+    they post, players who missed or were limited in practice are listed.
+    """
+    upcoming = upcoming_nfl(now, games_source)
+    if not upcoming:
+        return None, [], "No upcoming games."
+    current = min(int(g["week"]) for g in upcoming)
+    week = week or current
+    games = [g for g in upcoming if int(g["week"]) == week]
+    matchup = {}
+    for g in games:
+        when = kickoff_of(g)
+        matchup[g["home_team"]] = (f"vs {g['away_team']}", when)
+        matchup[g["away_team"]] = (f"@ {g['home_team']}", when)
+    if week > current:
+        return week, [], (f"Week {week} injury reports come out the week of the games "
+                          "(practice reports from Wednesday, game statuses on Friday).")
+
+    season = season_for((now or datetime.now(EASTERN)).date())
+    players, official = [], set()
+    for r in data.release("injuries", season, season):
+        if r.get("game_type") != "REG" or r.get("week") != str(week) or r["team"] not in matchup:
+            continue
+        status = r.get("report_status", "")
+        if status:
+            official.add(r["team"])
+        else:
+            practice = r.get("practice_status", "")
+            status = ("Did not practice" if practice.startswith("Did Not") else
+                      "Limited" if practice.startswith("Limited") else "")
+        if status not in SEVERITY:
+            continue
+        opp, when = matchup[r["team"]]
+        players.append({
+            "team": r["team"], "team_name": ABBR_NAME.get(r["team"], r["team"]),
+            "opponent": opp, "kickoff": when, "player": r["full_name"],
+            "position": r.get("position", ""), "status": status,
+            "official": bool(r.get("report_status")),
+            "injury": short_injury(r.get("report_primary_injury") or r.get("practice_primary_injury")),
+        })
+    players.sort(key=lambda p: (p["kickoff"], p["team"], SEVERITY.index(p["status"]), p["player"]))
+    teams = set(matchup)
+    if official >= teams:
+        note = f"Official Week {week} game statuses for all {len(teams)} teams."
+    elif official:
+        note = (f"Official game statuses in for {len(official)} of {len(teams)} teams; "
+                "the rest show practice participation until Friday's report.")
+    else:
+        note = ("Official game statuses aren't out yet (usually Friday afternoon); "
+                "showing who missed or was limited in practice.")
+    return week, players, note

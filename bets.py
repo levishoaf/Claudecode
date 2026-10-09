@@ -49,6 +49,9 @@ def ask(question: str, default: str) -> str:
     return answer or default
 
 
+NOTE_TAGS = {"Questionable": "  [Q]", "Did not practice": "  [DNP]"}
+
+
 def label(b) -> str:
     return f"{_describe(b)} ({b.game})"
 
@@ -190,7 +193,7 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
         when = clock(b.commence_time.astimezone(EASTERN), with_date=False)
         extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)}  ({break_even(b.fair_prob)}{extra})"
-              f"  {b.game}, {when} ET{'  [Q]' if b.note == 'Questionable' else ''}{mark(b)}")
+              f"  {b.game}, {when} ET{NOTE_TAGS.get(b.note, '')}{mark(b)}")
     if previous:
         for gone in sorted(set(previous) - {label(b) for b in singles}):
             print(f"    dropped: {gone}")
@@ -262,6 +265,8 @@ def main() -> int:
                    help="highest win chance in %% (default 80; higher pays very little)")
     p.add_argument("--per-game", type=int, default=3, help="max single bets per game (default 3)")
     p.add_argument("--allow-overlap", action="store_true", help="let parlays share games")
+    p.add_argument("--injuries", action="store_true",
+                   help="list this week's injured and questionable players and exit")
     p.add_argument("--save", action="store_true", help="save picks to grade later")
     p.add_argument("--grade", nargs="?", const="all", metavar="FILE", help="grade saved bets")
     p.add_argument("--watch", type=int, default=0, metavar="MINUTES",
@@ -274,6 +279,17 @@ def main() -> int:
         print("Bet Builder (free data, no API key)\n")
         if ask("1 = build bets, 2 = grade saved bets", "1") == "2":
             args.grade = "all"
+    if args.injuries:
+        week, players, note = board.injury_report(args.week)
+        print(f"NFL injury report  ·  Week {week}\n{note}\n")
+        team = None
+        for p in players:
+            if p["team"] != team:
+                team = p["team"]
+                print(f"\n{p['team_name']} ({p['opponent']}, "
+                      f"{clock(p['kickoff'].astimezone(EASTERN))} ET)")
+            print(f"  {p['player']:<26} {p['position']:<4} {p['status']:<17} {p['injury']}")
+        return 0
     if args.grade:
         grade_saved(args.grade)
         if interactive:
