@@ -145,7 +145,7 @@ class App:
         self.results: queue.Queue = queue.Queue()
         self.next_job = None  # pending automatic update
         self.next_at: float | None = None  # when it runs (time.monotonic)
-        root.title("Bet Builder")
+        root.title("Bet Builder by Levi Shoaf")
         root.geometry(f"{W}x{H}")
         root.resizable(False, False)
 

@@ -76,10 +76,12 @@ grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
 **Actions → Build executables**, pick the latest green run, and download
 from **Artifacts**:
 
-- **Bets-Windows:** `Bets.exe`, the window above, and `Bets-Console.exe`,
-  the text version.
-- **Bets-Mac:** `Bets-Mac-App.zip`, the window app, and
-  `Bets-Mac-Console.zip`, the text version.
+- **Bet Builder by Levi Shoaf - Windows:** `Bet Builder by Levi Shoaf.exe`,
+  the window above, and `Bet Builder by Levi Shoaf (Console).exe`, the text
+  version.
+- **Bet Builder by Levi Shoaf - Mac:** `Bet Builder by Levi Shoaf - Mac App.zip`,
+  the window app, and `Bet Builder by Levi Shoaf - Mac Console.zip`, the text
+  version.
 
 Unzip and double-click.
 

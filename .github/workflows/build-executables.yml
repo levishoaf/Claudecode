@@ -3,8 +3,8 @@ name: Build executables
 # Builds standalone programs with Python bundled inside, so the bet builder
 # runs with a double-click and nothing to install. Download them from the
 # run's "Artifacts" section on the Actions tab.
-#   Bets          windowed app with the football-field background
-#   Bets-Console  the same picks in a text console (supports --watch etc.)
+#   Bet Builder by Levi Shoaf            the windowed app
+#   Bet Builder by Levi Shoaf (Console)  the same picks in a text console (supports --watch etc.)
 on:
   push:
     branches: [claude/fanduel-nfl-ev-finder, main]
@@ -37,40 +37,43 @@ jobs:
         shell: bash
         run: |
           COMMON="--onefile --collect-data tzdata --collect-data certifi"
-          pyinstaller $COMMON --name Bets-Console bets.py
-          pyinstaller $COMMON --windowed --name Bets bets_gui.py
+          pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Console)" bets.py
+          pyinstaller $COMMON --windowed --name "Bet Builder by Levi Shoaf" bets_gui.py
 
       - name: Smoke test the builds
         shell: bash
         timeout-minutes: 10
         run: |
           cd dist
-          ./Bets-Console* --sport nfl --singles 5 --legs 2 --parlays 1
-          ./Bets-Console* --sport ncaaf --singles 5 --parlays 0
-          ./Bets-Console* --grade
-          if [ -d Bets.app ]; then ./Bets.app/Contents/MacOS/Bets --selftest; else ./Bets.exe --selftest; fi
+          CONSOLE="./Bet Builder by Levi Shoaf (Console)"
+          [ -f "$CONSOLE.exe" ] && CONSOLE="$CONSOLE.exe"
+          "$CONSOLE" --sport nfl --singles 5 --legs 2 --parlays 1
+          "$CONSOLE" --sport ncaaf --singles 5 --parlays 0
+          "$CONSOLE" --grade
+          APP="Bet Builder by Levi Shoaf"
+          if [ -d "$APP.app" ]; then "./$APP.app/Contents/MacOS/$APP" --selftest; else "./$APP.exe" --selftest; fi
 
       - name: Package (Mac keeps file permissions inside a zip)
         if: runner.os == 'macOS'
         run: |
-          ditto -c -k --keepParent dist/Bets.app Bets-Mac-App.zip
-          chmod +x dist/Bets-Console
-          ditto -c -k dist/Bets-Console Bets-Mac-Console.zip
+          ditto -c -k --keepParent "dist/Bet Builder by Levi Shoaf.app" "Bet Builder by Levi Shoaf - Mac App.zip"
+          chmod +x "dist/Bet Builder by Levi Shoaf (Console)"
+          ditto -c -k "dist/Bet Builder by Levi Shoaf (Console)" "Bet Builder by Levi Shoaf - Mac Console.zip"
 
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Windows'
         with:
-          name: Bets-Windows
+          name: Bet Builder by Levi Shoaf - Windows
           path: |
-            dist/Bets.exe
-            dist/Bets-Console.exe
+            dist/Bet Builder by Levi Shoaf.exe
+            dist/Bet Builder by Levi Shoaf (Console).exe
           retention-days: 90
 
       - uses: actions/upload-artifact@v4
         if: runner.os == 'macOS'
         with:
-          name: Bets-Mac
+          name: Bet Builder by Levi Shoaf - Mac
           path: |
-            Bets-Mac-App.zip
-            Bets-Mac-Console.zip
+            Bet Builder by Levi Shoaf - Mac App.zip
+            Bet Builder by Levi Shoaf - Mac Console.zip
           retention-days: 90
