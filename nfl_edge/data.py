@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import gzip
 import io
 import os
 import time
@@ -30,9 +31,12 @@ def cache_dir() -> Path:
 def _download(url: str) -> str:
     try:
         with urllib.request.urlopen(url, timeout=60) as resp:
-            return resp.read().decode()
+            raw = resp.read()
     except urllib.error.URLError as e:
         raise DataError(f"Could not download {url}: {e}") from e
+    if raw[:2] == b"\x1f\x8b":  # gzip
+        raw = gzip.decompress(raw)
+    return raw.decode()
 
 
 def read_csv(source: str | Path, *, permanent: bool = False) -> list[dict]:

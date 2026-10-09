@@ -16,7 +16,6 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from .factors import solve
 
 # Historical NFL standard deviations of final margin and total vs. expectation.
 MARGIN_SD = 13.5
@@ -70,49 +69,64 @@ class Rating:
 
 class SeasonModel:
     def __init__(self, games: list[Game], ridge: float = RIDGE_LAMBDA,
-                 home_field: float = HOME_FIELD):
+                 home_field: float = HOME_FIELD, prior: dict[str, float] | None = None):
+        """`prior` maps team -> expected net points per game vs. average (split
+        evenly between offense and defense); ridge pulls ratings toward it
+        instead of toward 0. Teams with no games fall back to their prior."""
         if not games:
             raise ValueError("No completed games found for this season")
         self.home_field = home_field
+        self.prior = prior or {}
         self.games_played: dict[str, int] = {}
         for g in games:
             for t in (g.home, g.away):
                 self.games_played[t] = self.games_played.get(t, 0) + 1
 
-        teams = sorted(self.games_played)
-        idx = {t: i for i, t in enumerate(teams)}
-        n = len(teams)
-        size = 1 + 2 * n  # intercept, offenses, defenses
-
-        # Accumulate normal equations X'X and X'y directly; each row has 3 ones.
-        xtx = [[0.0] * size for _ in range(size)]
-        xty = [0.0] * size
-
-        def add_row(off_team: str, def_team: str, y: float) -> None:
-            cols = (0, 1 + idx[off_team], 1 + n + idx[def_team])
-            for i in cols:
-                xty[i] += y
-                for j in cols:
-                    xtx[i][j] += 1
-
+        # Each game gives two rows: points = avg + offense[scorer] + defense[opponent].
+        rows = []
         for g in games:
             hfa = 0.0 if g.neutral else home_field
-            add_row(g.home, g.away, g.home_pts - hfa)
-            add_row(g.away, g.home, g.away_pts)
+            rows.append((g.home, g.away, g.home_pts - hfa))
+            rows.append((g.away, g.home, g.away_pts))
 
-        for i in range(1, size):
-            xtx[i][i] += ridge
+        teams = sorted(self.games_played)
+        off_prior = {t: self.prior.get(t, 0.0) / 2 for t in teams}
+        def_prior = {t: -self.prior.get(t, 0.0) / 2 for t in teams}
+        off, dfn = dict(off_prior), dict(def_prior)
+        by_off: dict[str, list[tuple[str, float]]] = {t: [] for t in teams}
+        by_def: dict[str, list[tuple[str, float]]] = {t: [] for t in teams}
+        for o, d, y in rows:
+            by_off[o].append((d, y))
+            by_def[d].append((o, y))
 
-        beta = solve(xtx, xty)
-        self.league_avg = beta[0]
-        self.ratings = {
-            t: Rating(t, beta[1 + idx[t]], beta[1 + n + idx[t]], self.games_played[t])
-            for t in teams
-        }
+        # Ridge regression solved by backfitting (coordinate descent). It
+        # converges to the exact solution and scales to 130+ college teams.
+        avg = sum(y for _, _, y in rows) / len(rows)
+        for _ in range(500):
+            change = 0.0
+            new_avg = sum(y - off[o] - dfn[d] for o, d, y in rows) / len(rows)
+            change = max(change, abs(new_avg - avg))
+            avg = new_avg
+            for t in teams:
+                v = (sum(y - avg - dfn[d] for d, y in by_off[t]) + ridge * off_prior[t]) / (
+                    len(by_off[t]) + ridge)
+                change, off[t] = max(change, abs(v - off[t])), v
+            for t in teams:
+                v = (sum(y - avg - off[o] for o, y in by_def[t]) + ridge * def_prior[t]) / (
+                    len(by_def[t]) + ridge)
+                change, dfn[t] = max(change, abs(v - dfn[t])), v
+            if change < 1e-7:
+                break
+
+        self.league_avg = avg
+        self.ratings = {t: Rating(t, off[t], dfn[t], self.games_played[t]) for t in teams}
         self.num_games = len(games)
 
     def _rating(self, team: str) -> Rating:
-        return self.ratings.get(team, Rating(team, 0.0, 0.0, 0))
+        if team in self.ratings:
+            return self.ratings[team]
+        net = self.prior.get(team, 0.0)
+        return Rating(team, net / 2, -net / 2, 0)
 
     def predict(self, home: str, away: str, neutral: bool = False) -> tuple[float, float]:
         """Expected (home_pts, away_pts) for abbreviated team names."""
@@ -128,7 +142,8 @@ class SeasonModel:
 
 
 def probabilities_from_points(home_name: str, home_pts: float, away_pts: float,
-                              market: str, outcomes: list[dict]) -> dict[str, float] | None:
+                              market: str, outcomes: list[dict], margin_sd: float = MARGIN_SD,
+                              total_sd: float = TOTAL_SD) -> dict[str, float] | None:
     """Probability of each outcome of a two-way market given projected points,
     normalized to sum to 1 so it is comparable with no-vig market odds."""
     margin = home_pts - away_pts
@@ -136,11 +151,11 @@ def probabilities_from_points(home_name: str, home_pts: float, away_pts: float,
     for o in outcomes:
         name, point = o["name"], o.get("point") or 0.0
         if market == "totals":
-            p_over = 1 - normal_cdf((point - (home_pts + away_pts)) / TOTAL_SD)
+            p_over = 1 - normal_cdf((point - (home_pts + away_pts)) / total_sd)
             raw[name] = p_over if name == "Over" else 1 - p_over
         elif market in ("h2h", "spreads"):
             team_margin = margin if name == home_name else -margin
-            raw[name] = normal_cdf((team_margin + point) / MARGIN_SD)
+            raw[name] = normal_cdf((team_margin + point) / margin_sd)
         else:
             return None
     total = sum(raw.values())

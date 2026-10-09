@@ -211,6 +211,52 @@ Keep in mind:
   the legs' odds, but confirm it on the bet slip. Don't count profit boosts
   or insurance until you see them there.
 
+## College football
+
+```bash
+python -m nfl_edge --sport ncaaf --explain
+python -m nfl_edge --sport ncaaf --parlays
+python -m nfl_edge.cfb_backtest        # about 2 minutes
+```
+
+The odds side works exactly like the NFL one: FanDuel is compared with sharp
+books through The Odds API (`americanfootball_ncaaf`). The stats side uses
+the free [cfbfastR-data](https://github.com/sportsdataverse/cfbfastR-data)
+repository: season schedules with scores and Elo ratings, and historical
+betting lines for the backtest.
+
+**How the college model differs from the NFL one:**
+
+- **Starts from preseason Elo.** By October a college team has played about
+  5 games, often against much weaker opponents. Ratings start from each
+  team's preseason Elo and move with this season's scores.
+- **Pooled FCS opponents.** All FCS teams share one pooled rating.
+- **Current Elo blended in.** The projected margin is half the ratings and
+  half the current Elo.
+- **College-sized constants.** Home field is about 3.6 points, and results
+  vary more: about 16.5 points around the margin, 16 around the total.
+- **No injury, QB or weather adjustments.** There's no free source for
+  those.
+
+**Backtest:** settings chosen on 2023–2024, tested on 664 FBS games in 2025
+that the fit never saw, against the consensus closing line.
+
+| Prediction | Win log loss | Margin error | Total error |
+|---|---|---|---|
+| Closing consensus line | 0.5300 | **11.88** | **12.26** |
+| College model | 0.5285 | 12.28 | 12.80 |
+| Market + 10% model | **0.5283** | 11.88 | 12.26 |
+
+- **Winners:** the model picks winners about as well as the closing line,
+  slightly better in this test.
+- **Margins and totals:** worse than the line.
+- **Big disagreements:** when the model and the spread differed by 5+
+  points, the model's side covered 82 of 151 times (54.3%). That's
+  promising, but too few games to call it a proven edge.
+
+As with the NFL, the reliable edge is FanDuel lagging the sharp books, not
+the model.
+
 ## Using it well
 
 - **Act fast.** Edges close within minutes. Run it close to when you bet,

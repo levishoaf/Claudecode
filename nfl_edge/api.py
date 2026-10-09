@@ -7,17 +7,19 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-BASE_URL = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds"
+BASE_URL = "https://api.the-odds-api.com/v4/sports/{sport}/odds"
+SPORT_KEYS = {"nfl": "americanfootball_nfl", "ncaaf": "americanfootball_ncaaf"}
 
 
 class OddsAPIError(RuntimeError):
     pass
 
 
-def fetch_nfl_odds(
+def fetch_odds(
     api_key: str,
     markets: list[str],
     regions: list[str],
+    sport: str = "nfl",
     timeout: float = 20,
 ) -> tuple[list[dict], str | None]:
     """Return (events, requests_remaining).
@@ -33,7 +35,8 @@ def fetch_nfl_odds(
         }
     )
     try:
-        with urllib.request.urlopen(f"{BASE_URL}?{params}", timeout=timeout) as resp:
+        url = BASE_URL.format(sport=SPORT_KEYS[sport])
+        with urllib.request.urlopen(f"{url}?{params}", timeout=timeout) as resp:
             remaining = resp.headers.get("x-requests-remaining")
             return json.load(resp), remaining
     except urllib.error.HTTPError as e:

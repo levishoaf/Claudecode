@@ -9,7 +9,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from .api import OddsAPIError, fetch_nfl_odds
+from . import cfb
+from .api import SPORT_KEYS, OddsAPIError, fetch_odds
 from .finder import Bet, find_bets
 from . import data
 from .context import SeasonData
@@ -204,7 +205,14 @@ def print_breakdown(model: GameModel, events: list[dict], bets: list[Bet]) -> No
             print(f"  - {note}")
 
 
-def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: float) -> None:
+STATS_LEGEND = {
+    "nfl": "Stats% = team ratings adjusted for injuries, starting QB,\ntravel, divisional game and weather.",
+    "ncaaf": "Stats% = college team ratings built on preseason and current Elo.",
+}
+
+
+def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: float,
+                sport: str = "nfl") -> None:
     if not bets:
         print("No +EV bets on FanDuel right now. Passing is a winning decision too.")
         return
@@ -226,9 +234,8 @@ def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: fl
             f"${stake(b, bankroll, kelly_mult, max_pct):>7.2f}"
         )
     print(
-        "\nMkt% = sharp-book no-vig odds. Stats% = team ratings adjusted for injuries, "
-        "starting QB,\ntravel, divisional game and weather. Win% = blend used for EV "
-        "and stakes."
+        f"\nMkt% = sharp-book no-vig odds. {STATS_LEGEND[sport]}\n"
+        "Win% = blend used for EV and stakes."
     )
     print(
         f"{len(bets)} bet(s). Stakes = {kelly_mult:g}x Kelly on a ${bankroll:,.0f} "
@@ -243,7 +250,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument("--api-key", default=os.environ.get("ODDS_API_KEY"),
                    help="The Odds API key (or set ODDS_API_KEY)")
-    p.add_argument("--demo", action="store_true", help="use bundled sample data instead of the API")
+    p.add_argument("--sport", choices=sorted(SPORT_KEYS), default="nfl",
+                   help="nfl (default) or ncaaf for college football")
+    p.add_argument("--demo", action="store_true",
+                   help="use bundled NFL sample data instead of the API")
     p.add_argument("--file", type=Path, help="read odds JSON from a file instead of the API")
     p.add_argument("--markets", default="h2h,spreads,totals")
     p.add_argument("--regions", default="us,eu",
@@ -293,6 +303,8 @@ def main(argv: list[str] | None = None) -> int:
     stats.add_argument("--ratings", action="store_true", help="print team power ratings")
     args = p.parse_args(argv)
 
+    if args.demo and args.sport != "nfl":
+        p.error("--demo only has NFL sample data; use --file for college odds")
     if args.demo or args.file:
         events = json.loads((args.file or SAMPLE).read_text())
     else:
@@ -300,8 +312,8 @@ def main(argv: list[str] | None = None) -> int:
             p.error("an API key is required (get a free one at https://the-odds-api.com), "
                     "or run with --demo")
         try:
-            events, remaining = fetch_nfl_odds(
-                args.api_key, args.markets.split(","), args.regions.split(",")
+            events, remaining = fetch_odds(
+                args.api_key, args.markets.split(","), args.regions.split(","), args.sport
             )
         except OddsAPIError as e:
             print(e, file=sys.stderr)
@@ -314,8 +326,11 @@ def main(argv: list[str] | None = None) -> int:
         today = date.today()
         season = args.season or (today.year if today.month >= 3 else today.year - 1)
         try:
-            model = build_model(season, args.stats_file, args.data_dir, not args.no_weather)
-        except data.DataError as e:
+            if args.sport == "ncaaf":
+                model = cfb.CfbModel(cfb.load_schedule(season, args.stats_file, season))
+            else:
+                model = build_model(season, args.stats_file, args.data_dir, not args.no_weather)
+        except (data.DataError, ValueError) as e:
             print(f"Warning: {e}; continuing with market odds only.", file=sys.stderr)
         else:
             print(f"(Season stats: {season}, {model.num_games} completed games)",
@@ -382,7 +397,7 @@ def main(argv: list[str] | None = None) -> int:
                 "parlays": [_parlay_json(p, args.bankroll, args.kelly, max_pct) for p in parlays],
             }, indent=2))
     else:
-        print_table(bets, args.bankroll, args.kelly, max_pct)
+        print_table(bets, args.bankroll, args.kelly, max_pct, args.sport)
         if parlays is not None:
             print_parlays(parlays, args.bankroll, args.kelly, max_pct, args.parlay_wager)
         if args.explain and model is not None:
