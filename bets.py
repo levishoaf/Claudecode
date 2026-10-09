@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
-"""Build single bets and parlays from live FanDuel odds.
+"""Build single bets and parlays for FanDuel from free public data.
 
-Double-click Bets.command (Mac) or Bets.bat (Windows), or run:
+No API key or account needed. Double-click Bets.command (Mac), Bets.bat
+(Windows) or the standalone Bets program, or run:
 
-    python3 bets.py                      # asks a few questions
-    python3 bets.py --sport ncaaf --date today --singles 10 --legs 3 --parlays 3
+    python3 bets.py                     # asks a few questions
+    python3 bets.py --sport nfl --date 2026-10-11 --singles 30 --legs 4 --parlays 3
 
-Needs a free key from https://the-odds-api.com, read from the ODDS_API_KEY
-environment variable or saved once to ~/.nfl_edge/odds_api_key.
+Without FanDuel's own prices, every bet shows its chance of winning and its
+break-even odds (the worst price still worth taking). Type FanDuel's price
+into the checker at the end to see whether a bet is worth it.
 """
 
 from __future__ import annotations
 
 import argparse
-import getpass
 import json
 import os
 import sys
 import time
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime
 from pathlib import Path
 
 if getattr(sys, "frozen", False):
-    # Standalone build (Bets.exe / Mac app): save bets next to the program and
-    # use the bundled certificates for HTTPS.
+    # Standalone build: save bets next to the program, use bundled certificates.
     ROOT = Path(sys.executable).resolve().parent
     try:
         import certifi
@@ -35,23 +35,12 @@ else:
     ROOT = Path(__file__).resolve().parent
     sys.path.insert(0, str(ROOT))
 
-from nfl_edge import cfb, data  # noqa: E402
-from nfl_edge import extras  # noqa: E402
-from nfl_edge.api import OddsAPIError, fetch_event_odds, fetch_odds  # noqa: E402
-from nfl_edge.cli import build_model, clock, format_slip, _describe, _fmt_american  # noqa: E402
-from nfl_edge.finder import find_bets  # noqa: E402
+from nfl_edge import data, extras  # noqa: E402
+from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
+from nfl_edge.cli import _describe, _fmt_american, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
 from nfl_edge.picks import best_parlays, rank_singles  # noqa: E402
-from nfl_edge.stats import TEAM_ABBR  # noqa: E402
-
-try:
-    from zoneinfo import ZoneInfo
-
-    ET = ZoneInfo("America/New_York")
-except Exception:  # Windows without the tzdata package: fall back to US daylight time
-    ET = timezone(timedelta(hours=-4), "ET")
-KEY_FILE = Path.home() / ".nfl_edge" / "odds_api_key"
 
 
 def ask(question: str, default: str) -> str:
@@ -59,205 +48,75 @@ def ask(question: str, default: str) -> str:
     return answer or default
 
 
-def api_key(interactive: bool) -> str | None:
-    key = os.environ.get("ODDS_API_KEY")
-    if key:
-        return key
-    if KEY_FILE.exists():
-        return KEY_FILE.read_text().strip()
-    if not interactive:
+def label(b) -> str:
+    return f"{_describe(b)} ({b.game})"
+
+
+def break_even(p: float) -> str:
+    return _fmt_american(decimal_to_american(1 / p))
+
+
+# ---------------------------------------------------------------- saving
+
+def leg_record(b, sport: str) -> dict | None:
+    """A bet in the grader's format (see nfl_edge/grade.py)."""
+    if not b.game_id:
         return None
-    print("You need a free API key from https://the-odds-api.com")
-    key = getpass.getpass("Paste your key (hidden): ").strip()
-    if key and ask("Save it on this computer so you aren't asked again? (y/n)", "y").lower() == "y":
-        KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
-        KEY_FILE.write_text(key)
-        KEY_FILE.chmod(0o600)
-        print(f"Saved to {KEY_FILE}")
-    return key or None
+    if sport == "nfl":
+        from nfl_edge.stats import TEAM_ABBR
 
-
-def kickoff_et(event: dict) -> datetime:
-    return datetime.fromisoformat(event["commence_time"].replace("Z", "+00:00")).astimezone(ET)
-
-
-def season_for(today: date) -> int:
-    return today.year if today.month >= 3 else today.year - 1
-
-
-def leg_record(bet, events: list[dict], model, sport: str) -> dict | None:
-    """Turn a Bet into a grader leg (bets/*.json format)."""
-    event = next((e for e in events if f"{e['away_team']} @ {e['home_team']}" == bet.game), None)
-    row = model.schedule_row(event) if (event and model) else None
-    if row is None:
-        return None
-    if sport == "ncaaf":
-        team = cfb.match_team(bet.pick, model.schools)
+        team_code = TEAM_ABBR.get
     else:
-        team = TEAM_ABBR.get(bet.pick)
-    leg = {"game_id": row["game_id"], "odds": bet.fd_price, "stake": 100,
-           "win_prob": round(bet.fair_prob, 4), "label": f"{_describe(bet)} ({bet.game})"}
-    if bet.market == "h2h":
-        leg.update(type="moneyline", team=team)
-    elif bet.market == "spreads" and bet.point is not None:
-        leg.update(type="spread", team=team, point=bet.point)
-    elif bet.market == "alternate_spreads":
-        leg.update(type="spread", team=team, point=bet.point)
-    elif bet.market in ("totals", "alternate_totals"):
-        leg.update(type="total", side=bet.pick, line=bet.point)
-    elif bet.market in ("team_totals", "alternate_team_totals"):
-        name, side = bet.pick.rsplit(" ", 1)
-        code = cfb.match_team(name, model.schools) if sport == "ncaaf" else TEAM_ABBR.get(name)
-        leg.update(type="team_total", team=code, side=side, line=bet.point)
-    elif bet.market.startswith("player_"):
-        player, side = bet.pick.rsplit(" ", 1)
-        stat = extras.PLAYER_MARKETS[extras.base_market(bet.market)][0]
+        def team_code(name):
+            return name
+    leg = {"game_id": b.game_id, "odds": b.fd_price, "stake": 100,
+           "win_prob": round(b.fair_prob, 4), "label": label(b)}
+    if b.market == "h2h":
+        leg.update(type="moneyline", team=team_code(b.pick))
+    elif b.market in ("spreads", "alternate_spreads"):
+        leg.update(type="spread", team=team_code(b.pick), point=b.point)
+    elif b.market in ("totals", "alternate_totals"):
+        leg.update(type="total", side=b.pick, line=b.point)
+    elif b.market in ("team_totals", "alternate_team_totals"):
+        team, side = b.pick.rsplit(" ", 1)
+        leg.update(type="team_total", team=team_code(team), side=side, line=b.point)
+    elif b.market.startswith("player_"):
+        player, side = b.pick.rsplit(" ", 1)
+        stat = extras.PLAYER_MARKETS[extras.base_market(b.market)][0]
         leg.update(type="player_stat", player=player, stat=stat)
         if side in ("Over", "Yes"):
-            leg["min"] = int(bet.point) + 1
+            leg["min"] = int(b.point) + 1
         else:
-            leg["max"] = int(bet.point)
+            leg["max"] = int(b.point)
     else:
         return None
     return leg
 
 
-def save(singles, parlays, events, model, sport: str, season: int, stamp: str) -> list[Path]:
+def save(singles, parlays, sport: str, season: int) -> list[Path]:
+    stamp = datetime.now(EASTERN).strftime("%Y-%m-%d_%H%M")
     out_dir = ROOT / "bets"
     out_dir.mkdir(exist_ok=True)
+    note = ("Odds are break-even prices (or consensus prices for game lines), "
+            "not FanDuel's; profit is what a fair price would pay.")
     written = []
-    legs = [leg for b in singles if (leg := leg_record(b, events, model, sport))]
+    legs = [leg for b in singles if (leg := leg_record(b, sport))]
     if legs:
         path = out_dir / f"{stamp}_{sport}_singles.json"
         path.write_text(json.dumps({"name": f"{sport.upper()} singles ({stamp})", "kind": "singles",
-                                    "sport": sport, "season": season, "legs": legs}, indent=2) + "\n")
+                                    "sport": sport, "season": season, "note": note,
+                                    "legs": legs}, indent=2) + "\n")
         written.append(path)
     for i, p in enumerate(parlays, 1):
-        legs = [leg_record(b, events, model, sport) for b in p.legs]
+        legs = [leg_record(b, sport) for b in p.legs]
         if all(legs):
             path = out_dir / f"{stamp}_{sport}_parlay{i}.json"
-            path.write_text(json.dumps({"name": f"{sport.upper()} parlay #{i} ({stamp})", "sport": sport,
-                                        "season": season, "odds": p.american,
-                                        "estimated_win_prob": round(p.win_prob, 4), "legs": legs},
-                                       indent=2) + "\n")
+            path.write_text(json.dumps({"name": f"{sport.upper()} parlay #{i} ({stamp})",
+                                        "sport": sport, "season": season, "note": note,
+                                        "estimated_win_prob": round(p.win_prob, 4),
+                                        "legs": legs}, indent=2) + "\n")
             written.append(path)
     return written
-
-
-def extra_bets(args, events: list[dict], season: int) -> list:
-    """Price player props and alternate lines for each game."""
-    markets = args.extra_markets.split(",") if args.extra_markets else (
-        extras.DEFAULT_NCAAF_MARKETS if args.sport == "ncaaf" else extras.DEFAULT_NFL_MARKETS)
-    games = data.games() if args.sport == "nfl" else []
-    lines = extras.LineDistribution(args.sport, games)
-    players = extras.load_player_model(season, games) if args.sport == "nfl" else None
-    saved = json.loads(args.extras_file.read_text()) if args.extras_file else None
-    key = None if saved else api_key(False)
-    out, remaining = [], None
-    for e in events:
-        if saved is not None:
-            extra = saved.get(e["id"])
-        else:
-            try:
-                extra, remaining = fetch_event_odds(key, e["id"], markets, args.sport)
-            except OddsAPIError as err:
-                print(f"(Props/alternate lines unavailable for {e['away_team']} @ "
-                      f"{e['home_team']}: {err}. Your plan may not include these markets.)")
-                continue
-        if extra:
-            out += extras.price_event(e, extra, args.sport, lines, players)
-    if remaining is not None:
-        print(f"(API credits remaining after props and alternate lines: {remaining})")
-    return out
-
-
-def game_label(b) -> str:
-    return f"{_describe(b)} ({b.game})"
-
-
-def run_once(args, interactive: bool, previous: dict[str, int]) -> tuple[dict[str, int], list, list, list, object, int] | None:
-    """Fetch, model and print one board. Returns what's needed to diff and save."""
-    if args.file:
-        events = json.loads(args.file.read_text())
-    else:
-        key = api_key(interactive)
-        if not key:
-            print("No API key. Set ODDS_API_KEY or run without arguments to enter one.")
-            return None
-        try:
-            events, remaining = fetch_odds(key, ["h2h", "spreads", "totals"], ["us", "eu"], args.sport)
-        except OddsAPIError as e:
-            print(e)
-            return None
-        print(f"(API credits remaining: {remaining})")
-    if args.date != "all":
-        day = date.today() if args.date == "today" else date.fromisoformat(args.date)
-        events = [e for e in events if kickoff_et(e).date() == day]
-    if not args.file:
-        now = datetime.now(ET)
-        events = [e for e in events if kickoff_et(e) > now]
-    if not events:
-        print("No upcoming games found for that date.")
-        return None
-
-    season = season_for(date.today())
-    model = None
-    try:
-        if args.sport == "ncaaf":
-            model = cfb.CfbModel(cfb.load_schedule(season, current_season=season))
-        else:
-            model = build_model(season, None, None, weather=True)
-    except (data.DataError, ValueError) as e:
-        print(f"(Stats model unavailable: {e}; using market odds only)")
-
-    all_bets = find_bets(events, min_ev=-1.0, min_books=1, model=model, model_weight=0.1,
-                         include_started=bool(args.file))
-    if args.extras:
-        all_bets += extra_bets(args, events, season)
-    min_prob = args.min_prob / 100
-    singles = rank_singles(all_bets, args.singles, min_prob)
-    parlays = best_parlays(all_bets, args.legs, args.parlays,
-                           allow_overlap=args.allow_overlap, min_prob=min_prob)
-
-    def mark(b) -> str:
-        if not previous:
-            return ""
-        old = previous.get(game_label(b))
-        if old is None:
-            return "  << NEW"
-        if old != b.fd_price:
-            return f"  << odds moved from {_fmt_american(old)}"
-        return ""
-
-    print(f"\n{args.sport.upper()}: {len({e['id'] for e in events})} games, "
-          f"updated {clock(datetime.now(ET), with_date=False)} ET. Ranked by expected value "
-          f"(win chance x payout); ties go to the likelier bet.\n")
-    print("SINGLE BETS")
-    for i, b in enumerate(singles, 1):
-        payout = 100 * (american_to_decimal(b.fd_price) - 1)
-        be = decimal_to_american(1 / b.fair_prob)
-        print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)} ({b.game}) {_fmt_american(b.fd_price)}"
-              f"  pays ${payout:.0f}/$100  EV {b.ev:+.1%}  worth it at {_fmt_american(be)} or better"
-              f"  {clock(b.commence_time.astimezone(ET), with_date=False)} ET"
-              f"{'  (model only)' if 'player logs only' in b.books else ''}{mark(b)}")
-    if previous:
-        gone = set(previous) - {game_label(b) for b in singles}
-        for label in sorted(gone):
-            print(f"    dropped: {label}")
-    if singles and all(b.ev < 0 for b in singles):
-        print("\nNone of these has positive expected value at FanDuel's prices; they lose the least.")
-
-    print(f"\n{args.legs}-LEG PARLAYS" + ("" if args.allow_overlap else " (no shared games)"))
-    if not parlays:
-        print("Not enough games for that many legs.")
-    for i, par in enumerate(parlays, 1):
-        print(f"\n#{i}")
-        print("\n".join(format_slip(par, args.stake)))
-    if 0 < len(parlays) < args.parlays:
-        print(f"\nOnly {len(parlays)} parlay(s) fit without sharing games; "
-              "use --allow-overlap for more.")
-    current = {game_label(b): b.fd_price for b in singles}
-    return current, singles, parlays, events, model, season
 
 
 def grade_saved(which: str) -> None:
@@ -272,38 +131,116 @@ def grade_saved(which: str) -> None:
             print(f"{path.name}: could not grade ({e})")
 
 
+# ---------------------------------------------------------------- one board
+
+def build(args):
+    """Candidate bets, picked singles and parlays for the chosen sport and day."""
+    lo, hi = args.min_prob / 100, args.max_prob / 100
+    day = None if args.date in ("week", "all") else (
+        date.today() if args.date == "today" else date.fromisoformat(args.date))
+    if args.sport == "ncaaf":
+        bets = cfb_board(day, lo, hi)
+    else:
+        bets = nfl_board(day, lo, hi, games_source=args.games_file)
+    singles = rank_singles(bets, args.singles, rank_by="prob", per_game=args.per_game)
+    parlays = best_parlays(bets, args.legs, args.parlays, allow_overlap=args.allow_overlap,
+                           rank_by="prob") if args.parlays else []
+    return bets, singles, parlays
+
+
+def show(args, singles, parlays, previous: dict[str, float]) -> None:
+    def mark(b) -> str:
+        if not previous:
+            return ""
+        old = previous.get(label(b))
+        if old is None:
+            return "  << NEW"
+        if abs(old - b.fair_prob) >= 0.02:
+            return f"  << chance moved from {old:.0%}"
+        return ""
+
+    print(f"\n{args.sport.upper()} | updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
+          f"bets with a {args.min_prob:.0f}-{args.max_prob:.0f}% chance, likeliest first\n")
+    print("SINGLE BETS  (odds = break-even: bet only if FanDuel pays this or better)")
+    if not singles:
+        print("  None found. Try a wider chance range or a different date.")
+    for i, b in enumerate(singles, 1):
+        when = clock(b.commence_time.astimezone(EASTERN), with_date=False)
+        extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
+        print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)}  ({break_even(b.fair_prob)}{extra})"
+              f"  {b.game}, {when} ET{mark(b)}")
+    if previous:
+        for gone in sorted(set(previous) - {label(b) for b in singles}):
+            print(f"    dropped: {gone}")
+
+    if args.parlays:
+        print(f"\n{args.legs}-LEG PARLAYS" + ("" if args.allow_overlap else " (no shared games)"))
+        if not parlays:
+            print("  Not enough games for that many legs.")
+        for i, p in enumerate(parlays, 1):
+            print(f"\nP{i}")
+            print("\n".join(format_slip(p, args.stake, break_even=True)))
+        if 0 < len(parlays) < args.parlays:
+            print(f"\nOnly {len(parlays)} parlay(s) fit without sharing games.")
+        print("\n* Payout at break-even odds. FanDuel will pay a little less, so check its slip.")
+
+
+def price_checker(singles, parlays) -> None:
+    print("\nCHECK FANDUEL'S PRICE: type a pick number (or P1, P2...) and FanDuel's odds,")
+    print("for example  3 -150  or  P1 +240.  Press Enter when done.")
+    while True:
+        entry = input("> ").strip()
+        if not entry:
+            return
+        try:
+            which, odds = entry.split()
+            price = int(odds.replace("+", ""))
+            if which.upper().startswith("P"):
+                p = parlays[int(which[1:]) - 1]
+                prob, name = p.win_prob, f"Parlay {which.upper()}"
+            else:
+                b = singles[int(which) - 1]
+                prob, name = b.fair_prob, _describe(b)
+        except (ValueError, IndexError):
+            print("  Didn't catch that. Example: 3 -150")
+            continue
+        ev = prob * american_to_decimal(price) - 1
+        verdict = "worth it" if ev > 0 else "not worth it"
+        print(f"  {name} at {_fmt_american(price)}: {prob:.0%} to win, "
+              f"expected value {ev:+.1%} per bet -> {verdict} "
+              f"(break-even {break_even(prob)})")
+
+
+# ---------------------------------------------------------------- main
+
 def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         try:  # slips use box-drawing characters; never crash an old console on them
             stream.reconfigure(errors="replace")
         except AttributeError:
             pass
-    p = argparse.ArgumentParser(description="Build single bets and parlays from live FanDuel odds.")
+    p = argparse.ArgumentParser(description="Build FanDuel single bets and parlays from free data.")
     p.add_argument("--sport", choices=["nfl", "ncaaf"])
-    p.add_argument("--date", help="'today', 'all', or YYYY-MM-DD (Eastern time)")
-    p.add_argument("--singles", type=int, help="how many single bets to show")
+    p.add_argument("--date", help="'week' (this week's games, default), 'today' or YYYY-MM-DD (Eastern)")
+    p.add_argument("--singles", type=int, help="how many single bets")
     p.add_argument("--legs", type=int, help="legs per parlay")
-    p.add_argument("--parlays", type=int, help="how many parlays")
+    p.add_argument("--parlays", type=int, help="how many parlays (0 for none)")
     p.add_argument("--stake", type=float, help="parlay wager shown on the slips")
-    p.add_argument("--min-prob", type=float, default=50.0,
-                   help="skip bets below this win chance in percent (default 50)")
-    p.add_argument("--allow-overlap", action="store_true",
-                   help="let different parlays share games")
-    p.add_argument("--file", type=Path, help="read odds JSON from a file instead of the API")
-    p.add_argument("--save", action="store_true", help="save the picks as paper bets for grading")
-    p.add_argument("--grade", nargs="?", const="all", metavar="FILE",
-                   help="grade saved bets (a file in bets/, or all of them)")
-    p.add_argument("--extras", action="store_true",
-                   help="also price player props and alternate lines (costs more API credits)")
-    p.add_argument("--extra-markets", help="comma-separated Odds API market keys to use with --extras")
-    p.add_argument("--extras-file", type=Path, help=argparse.SUPPRESS)  # offline testing
+    p.add_argument("--min-prob", type=float, default=60.0, help="lowest win chance in %% (default 60)")
+    p.add_argument("--max-prob", type=float, default=80.0,
+                   help="highest win chance in %% (default 80; higher pays very little)")
+    p.add_argument("--per-game", type=int, default=3, help="max single bets per game (default 3)")
+    p.add_argument("--allow-overlap", action="store_true", help="let parlays share games")
+    p.add_argument("--save", action="store_true", help="save picks to grade later")
+    p.add_argument("--grade", nargs="?", const="all", metavar="FILE", help="grade saved bets")
     p.add_argument("--watch", type=int, default=0, metavar="MINUTES",
-                   help="keep running and refresh every MINUTES (odds, injuries, weather)")
+                   help="keep running and refresh every MINUTES")
+    p.add_argument("--games-file", help=argparse.SUPPRESS)  # offline testing
     args = p.parse_args()
 
     interactive = sys.stdin.isatty() and len(sys.argv) == 1
     if interactive:
-        print("FanDuel bet builder\n")
+        print("FanDuel bet builder (free data, no API key)\n")
         if ask("1 = build bets, 2 = grade saved bets", "1") == "2":
             args.grade = "all"
     if args.grade:
@@ -313,50 +250,43 @@ def main() -> int:
         return 0
     if interactive:
         args.sport = ask("Sport: nfl or ncaaf", "nfl")
-        args.date = ask("Which games: all, today, or a date like 2026-10-11", "all")
+        args.date = ask("Which games: week (this week), today, or a date like 2026-10-11", "week")
         args.singles = int(ask("How many single bets", "10"))
         args.legs = int(ask("Legs per parlay", "3"))
-        args.parlays = int(ask("How many parlays", "3"))
+        args.parlays = int(ask("How many parlays (0 = none)", "3"))
         args.stake = float(ask("Parlay wager in dollars", "10"))
-        args.extras = ask("Include player props and alternate lines? (y/n)", "y").lower() == "y"
         args.watch = int(ask("Refresh automatically every how many minutes? (0 = no)", "0"))
     args.sport = args.sport or "nfl"
-    args.date = args.date or "all"
+    args.date = args.date or "week"
     args.singles = 10 if args.singles is None else args.singles
     args.legs = args.legs or 3
     args.parlays = 3 if args.parlays is None else args.parlays
     args.stake = args.stake or 10.0
-
     if args.watch:
-        # Injury reports, schedules and weather refresh at least this often too.
         data.FRESH_SECONDS = min(data.FRESH_SECONDS, args.watch * 60)
 
-    if args.extras and not args.extras_file:
-        n = len((args.extra_markets or ",".join(
-            extras.DEFAULT_NCAAF_MARKETS if args.sport == "ncaaf" else extras.DEFAULT_NFL_MARKETS)).split(","))
-        print(f"Note: props and alternate lines cost about {n} credits per game per update "
-              f"(e.g. {n * 14} for 14 games), on top of about 6 for the main lines.")
-        if interactive and ask("Continue? (y/n)", "y").lower() != "y":
-            args.extras = False
-
-    previous: dict[str, int] = {}
+    previous: dict[str, float] = {}
     saved = False
     while True:
-        result = run_once(args, interactive, previous)
-        if result is None:
+        print("Loading data...")
+        try:
+            _, singles, parlays = build(args)
+        except data.DataError as e:
+            print(f"Couldn't load data: {e}")
             break
-        previous, singles, parlays, events, model, season = result
+        show(args, singles, parlays, previous)
+        previous = {label(b): b.fair_prob for b in singles}
+        if not args.watch and interactive:
+            price_checker(singles, parlays)
         if not saved and (args.save or (interactive and not args.watch and
-                                        ask("\nSave these as paper bets to grade later? (y/n)", "n") == "y")):
-            stamp = datetime.now(ET).strftime("%Y-%m-%d")
-            for path in save(singles, parlays, events, model, args.sport, season, stamp):
-                print(f"Saved {path.relative_to(ROOT)}. Grade later with option 2 "
-                      "when you start the program, or --grade.")
+                                        ask("\nSave these to grade later? (y/n)", "n") == "y")):
+            season = season_for(date.today())
+            for path in save(singles, parlays, args.sport, season):
+                print(f"Saved {path.relative_to(ROOT)}. Grade later with option 2 or --grade.")
             saved = True
         if not args.watch:
             break
-        print(f"\nNext update in {args.watch} minutes (each update uses about 6 API credits). "
-              "Press Ctrl+C to stop.")
+        print(f"\nNext update in {args.watch} minutes. Press Ctrl+C to stop.")
         try:
             time.sleep(args.watch * 60)
         except KeyboardInterrupt:

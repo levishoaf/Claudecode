@@ -112,31 +112,40 @@ def _slip_market(b: Bet) -> str:
     return SLIP_MARKETS.get(b.market, b.market.upper())
 
 
-def format_slip(p: Parlay, wager: float) -> list[str]:
-    """A parlay laid out like a FanDuel bet slip."""
+def format_slip(p: Parlay, wager: float, break_even: bool = False) -> list[str]:
+    """A parlay laid out like a FanDuel bet slip. With `break_even`, odds are
+    the break-even prices from our estimates (no FanDuel prices available)."""
     inner = SLIP_WIDTH - 4
 
     def line(left: str = "", right: str = "") -> str:
         left = left[: inner - len(right) - 1] if right else left[:inner]
         return f"│ {left}{right.rjust(inner - len(left))} │"
 
+    def leg_odds(b: Bet) -> int:
+        return decimal_to_american(1 / b.fair_prob) if break_even else b.fd_price
+
     rule = "├" + "─" * (SLIP_WIDTH - 2) + "┤"
-    payout = round(wager * p.decimal, 2)
+    decimal = 1 / p.win_prob if break_even else p.decimal
+    odds = _fmt_american(decimal_to_american(decimal))
+    star = "*" if break_even else ""
+    payout = round(wager * decimal, 2)
     out = ["┌" + "─" * (SLIP_WIDTH - 2) + "┐",
-           line(f"{len(p.legs)} Leg Parlay", _fmt_american(p.american)),
+           line(f"{len(p.legs)} Leg Parlay", f"break-even {odds}" if break_even else odds),
            rule]
     for i, b in enumerate(p.legs):
         if i:
             out.append(line())
-        out += [line(f"● {_slip_selection(b)}", _fmt_american(b.fd_price)),
+        out += [line(f"● {_slip_selection(b)}", _fmt_american(leg_odds(b))),
                 line(f"  {_slip_market(b)}"),
                 line(f"  {b.game}"),
                 line(f"  {_slip_time(b)}")]
+    estimate = (f"Our estimate: {p.win_prob:.1%} to win" if break_even
+                else f"Our estimate: {p.win_prob:.1%} to win, EV {p.ev:+.1%}")
     out += [rule,
-            line(f"Wager ${wager:,.2f}", f"To Win ${payout - wager:,.2f}"),
-            line("Total Payout", f"${payout:,.2f}"),
+            line(f"Wager ${wager:,.2f}", f"To Win ${payout - wager:,.2f}{star}"),
+            line("Total Payout", f"${payout:,.2f}{star}"),
             rule,
-            line(f"Our estimate: {p.win_prob:.1%} to win, EV {p.ev:+.1%}"),
+            line(estimate),
             "└" + "─" * (SLIP_WIDTH - 2) + "┘"]
     return out
 

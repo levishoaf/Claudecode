@@ -39,6 +39,8 @@ class Bet:
     ev: float
     kelly: float
     books: list[str]
+    game_id: str | None = None  # schedule id, for saving and grading
+    priced: bool = True  # False when fd_price is only the break-even price
 
     @property
     def fair_american(self) -> int:
@@ -91,6 +93,7 @@ def find_bets(
     model_weight: float = 0.0,
     require_agreement: bool = False,
     now: datetime | None = None,
+    target_book: str = TARGET_BOOK,
 ) -> list[Bet]:
     """Find FanDuel bets whose price beats the estimated true probability.
 
@@ -121,10 +124,10 @@ def find_bets(
 
         for market_key, by_line in lines.items():
             for offers in by_line.values():
-                fd = next((o for b, o in offers if b == TARGET_BOOK), None)
+                fd = next((o for b, o in offers if b == target_book), None)
                 if fd is None:
                     continue
-                reference = [(b, o) for b, o in offers if b != TARGET_BOOK]
+                reference = [(b, o) for b, o in offers if b != target_book]
                 if len(reference) < min_books:
                     continue
                 result = fair_probabilities(reference, devig, sharp_only)

@@ -46,9 +46,10 @@ jobs:
       - name: Smoke test the build
         shell: bash
         run: |
-          cp nfl_edge/sample_odds.json dist/
           cd dist
-          ./Bets* --file sample_odds.json --singles 3 --legs 2 --parlays 1
+          ./Bets* --sport nfl --singles 5 --legs 2 --parlays 1
+          ./Bets* --sport ncaaf --singles 5 --parlays 0
+          ./Bets* --grade
 
       - uses: actions/upload-artifact@v4
         with:
