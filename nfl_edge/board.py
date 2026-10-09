@@ -273,6 +273,9 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
     elif reported:
         NOTES["injuries"] = (f"Week {week} injury reports in for {len(reported)} of {len(playing)} "
                              "teams; refresh after they post (usually Friday afternoon)")
+    elif missed_practice:
+        NOTES["injuries"] = (f"Week {week} game statuses aren't out yet (usually Friday "
+                             "afternoon); players who missed practice are flagged")
     else:
         NOTES["injuries"] = (f"Week {week} injury reports not posted yet "
                              "(usually Wednesday to Friday); refresh later")

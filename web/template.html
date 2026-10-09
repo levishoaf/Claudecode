@@ -1,0 +1,395 @@
+<title>Bet Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy sportsbook header over a charcoal field; white bet cards in a responsive grid; slip bar pinned to the bottom. Single committed dark look (the user's charcoal choice). */
+:root {
+  color-scheme: dark;
+  --field: #2b2b2e;
+  --field-2: #252528;
+  --navy: #0c1b33;
+  --navy-2: #13284a;
+  --blue: #1677ff;
+  --blue-soft: #e8f1ff;
+  --card: #ffffff;
+  --ink: #111827;
+  --ink-2: #4b5563;
+  --line: #e5e7eb;
+  --on-dark: #f3f4f6;
+  --on-dark-2: #a8adb7;
+  --good: #128a4a;
+  --good-soft: #e3f5ea;
+  --warn: #b7791f;
+  --warn-soft: #fdf3dc;
+  --bad: #c62828;
+  --bad-soft: #fde7e7;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  background:
+    repeating-linear-gradient(90deg, var(--field) 0 80px, var(--field-2) 80px 160px);
+  color: var(--on-dark);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  padding-bottom: 96px;
+}
+button, input, select { font: inherit; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.top { background: var(--navy); border-bottom: 3px solid var(--blue); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; }
+.bar1 { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 14px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 28px; letter-spacing: .02em; text-transform: uppercase; margin: 0; }
+.brand span { color: var(--blue); }
+.seg { display: inline-flex; background: var(--navy-2); border-radius: 999px; padding: 3px; }
+.seg button { border: 0; background: transparent; color: var(--on-dark-2); padding: 6px 16px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+.weeksel { background: var(--navy-2); color: var(--on-dark); border: 1px solid #2a4170; border-radius: 8px; padding: 7px 10px; font-weight: 600; max-width: 100%; }
+.updated { margin-left: auto; color: var(--on-dark-2); font-size: 13px; }
+.updated b { color: var(--on-dark); font-weight: 600; }
+
+.bar2 { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding-block: 0 12px; color: var(--on-dark-2); font-size: 13px; }
+.bar2 label { display: inline-flex; align-items: center; gap: 6px; }
+.bar2 input { width: 72px; background: var(--navy-2); color: var(--on-dark); border: 1px solid #2a4170; border-radius: 6px; padding: 4px 8px; }
+
+.tabs { display: flex; gap: 4px; overflow-x: auto; }
+.tabs button { border: 0; background: transparent; color: var(--on-dark-2); padding: 10px 14px; font-weight: 700; font-family: var(--display); font-size: 17px; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: #fff; border-bottom-color: #fff; }
+.count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: var(--navy-2); color: var(--on-dark); font-family: var(--body); font-size: 12px; line-height: 20px; text-align: center; }
+
+main { padding-block: 18px; display: grid; gap: 14px; }
+.notice { background: rgba(12, 27, 51, .85); border: 1px solid #2a4170; border-radius: 10px; padding: 10px 14px; color: var(--on-dark); font-size: 14px; }
+.notice strong { color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+
+.card { background: var(--card); color: var(--ink); border-radius: 12px; padding: 14px; display: grid; gap: 10px; cursor: pointer; border: 2px solid transparent; text-align: left; width: 100%; min-width: 0; }
+.card:hover { border-color: #bcd4ff; }
+.card.on { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22, 119, 255, .25); }
+.row { display: flex; align-items: flex-start; gap: 10px; }
+.grow { flex: 1; min-width: 0; }
+.rank { font-family: var(--display); font-weight: 700; color: var(--ink-2); font-size: 15px; }
+.mkt { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.pick { font-weight: 700; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
+.game { color: var(--ink-2); font-size: 13px; overflow-wrap: anywhere; }
+.odds { flex: none; background: var(--blue-soft); color: var(--blue); border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 74px; }
+.odds b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.1; }
+.odds small { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.card.on .odds { background: var(--blue); color: #fff; }
+.meter { display: flex; align-items: center; gap: 10px; }
+.track { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; border-radius: 3px; }
+.pct { font-family: var(--display); font-weight: 800; font-size: 20px; min-width: 46px; text-align: right; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 12px; color: var(--ink-2); }
+.stats b { display: block; color: var(--ink); font-size: 14px; }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
+.b-q { background: var(--warn-soft); color: var(--warn); }
+.b-dnp { background: var(--bad-soft); color: var(--bad); }
+.legs { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.legs li { display: flex; gap: 10px; align-items: baseline; border-left: 3px solid var(--line); padding-left: 10px; }
+.legs .lp { font-weight: 700; font-size: 13px; min-width: 36px; color: var(--ink-2); }
+
+.empty { color: var(--on-dark-2); padding: 18px; border: 1px dashed #555; border-radius: 10px; }
+
+.inj-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.inj-tools input { background: var(--card); color: var(--ink); border: 0; border-radius: 8px; padding: 8px 12px; width: min(280px, 100%); }
+.chip { border: 1px solid #555; background: transparent; color: var(--on-dark); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.chip[aria-pressed="true"] { background: var(--on-dark); color: var(--navy); border-color: var(--on-dark); }
+.inj-game { background: var(--card); color: var(--ink); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.inj-game h3 { margin: 0 0 8px; font-family: var(--display); font-size: 18px; letter-spacing: .02em; }
+.inj-game h3 small { font-family: var(--body); font-weight: 500; color: var(--ink-2); font-size: 13px; margin-left: 6px; }
+.inj { display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.status { font-size: 11px; font-weight: 700; text-align: center; border-radius: 6px; padding: 3px 4px; text-transform: uppercase; letter-spacing: .03em; }
+.s-out { background: var(--bad); color: #fff; }
+.s-doubtful { background: var(--bad-soft); color: var(--bad); }
+.s-questionable { background: var(--warn-soft); color: var(--warn); }
+.s-dnp { background: #f1e4ff; color: #6b2bb5; }
+.s-limited { background: var(--line); color: var(--ink-2); }
+.inj .who { min-width: 0; overflow-wrap: anywhere; }
+.inj .who small { color: var(--ink-2); }
+.inj .what { color: var(--ink-2); font-size: 13px; text-align: right; }
+.official { font-size: 11px; color: var(--good); font-weight: 700; }
+
+.slip { display: grid; gap: 10px; }
+.slip-item { background: var(--card); color: var(--ink); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; }
+.check { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
+.check input { width: 90px; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; color: var(--ink); background: #fff; }
+.verdict { font-weight: 700; }
+.v-good { color: var(--good); }
+.v-bad { color: var(--bad); }
+.x { border: 0; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: underline; }
+
+.slipbar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--navy); border-top: 3px solid var(--blue); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.slipbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 12px; }
+.slipbar .sum { flex: 1; min-width: 0; font-size: 14px; color: var(--on-dark); }
+.btn { border: 0; border-radius: 999px; padding: 9px 18px; font-weight: 700; cursor: pointer; }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-ghost { background: transparent; color: var(--on-dark); border: 1px solid #2a4170; }
+.foot { color: var(--on-dark-2); font-size: 12.5px; max-width: 70ch; }
+@media (max-width: 520px) {
+  .updated { margin-left: 0; width: 100%; }
+  .grid { grid-template-columns: 1fr; }
+  .inj { grid-template-columns: 66px 1fr; }
+  .inj .what { grid-column: 2; text-align: left; }
+}
+@media (prefers-reduced-motion: no-preference) { .card { transition: border-color .12s, box-shadow .12s; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="bar1">
+      <h1 class="brand">Bet <span>Builder</span></h1>
+      <div class="seg" role="group" aria-label="League">
+        <button id="sport-nfl" data-sport="nfl" aria-pressed="true">NFL</button>
+        <button id="sport-ncaaf" data-sport="ncaaf" aria-pressed="false">College</button>
+      </div>
+      <select id="week" class="weeksel" aria-label="Games"></select>
+      <div class="updated">Updated <b id="updated"></b></div>
+    </div>
+    <div class="bar2">
+      <label for="wager">Wager $ <input id="wager" type="number" min="1" step="1" value="100"></label>
+      <span>Bets with a 60–80% chance, likeliest first. Tap a bet to add it to your slip.</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Single bets<span class="count" id="n-singles"></span></button>
+      <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="count" id="n-parlays"></span></button>
+      <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="count" id="n-injuries"></span></button>
+      <button role="tab" id="tab-slip" data-tab="slip" aria-selected="false">Your slip<span class="count" id="n-slip"></span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<div class="slipbar">
+  <div class="wrap">
+    <div class="sum" id="slipsum">Your slip is empty.</div>
+    <button class="btn btn-primary" id="viewslip">View slip</button>
+    <button class="btn btn-ghost" id="clearslip">Clear</button>
+  </div>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById("data").textContent);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const state = {
+    sport: store.get("bb.sport", "nfl"),
+    week: {},
+    tab: store.get("bb.tab", "singles"),
+    slip: store.get("bb.slip", []),       // [{kind, id, ...snapshot}]
+    prices: store.get("bb.prices", {}),
+    injFilter: "all",
+    injSearch: ""
+  };
+  if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const pct = (p) => Math.round(p * 100) + "%";
+  const money = (x) => "$" + (x >= 1000 ? x.toLocaleString("en-US", { maximumFractionDigits: 0 }) : (Number.isInteger(x) ? String(x) : x.toFixed(2)));
+  const wager = () => Math.max(1, Number($("wager").value) || 100);
+  const amToDec = (a) => (a > 0 ? 1 + a / 100 : 1 + 100 / -a);
+  const fmtAm = (a) => (a > 0 ? "+" : "") + a;
+  const decToAm = (d) => (d >= 2 ? Math.round((d - 1) * 100) : Math.round(-100 / (d - 1)));
+  const color = (p) => (p >= 0.72 ? "var(--good)" : p >= 0.62 ? "var(--blue)" : "var(--warn)");
+
+  function weekList() { return DATA[state.sport] || []; }
+  function current() {
+    const list = weekList();
+    const w = state.week[state.sport];
+    return list.find((x) => x.week === w) || list[0] || { singles: [], parlays: [], label: "" };
+  }
+  function parlayId(p) { return "P:" + p.legs.map((l) => l.id).join(" | "); }
+  function inSlip(id) { return state.slip.some((s) => s.id === id); }
+  function save() { store.set("bb.slip", state.slip); store.set("bb.prices", state.prices); }
+
+  function statRow(prob) {
+    const w = wager();
+    return `<div class="stats">
+      <div>To win<b>${pct(prob)}</b></div>
+      <div>Payout on ${money(w)}*<b>${money(w / prob)}</b></div>
+      <div>Worth it at<b>${fmtAm(decToAm(1 / prob))} or better</b></div>
+    </div>`;
+  }
+  function meter(p) {
+    return `<div class="meter"><div class="track"><div class="fill" style="width:${(p * 100).toFixed(1)}%;background:${color(p)}"></div></div><span class="pct" style="color:${color(p)}">${pct(p)}</span></div>`;
+  }
+  function badge(note) {
+    if (note === "Questionable") return '<span class="badge b-q">Q</span>';
+    if (note === "Did not practice") return '<span class="badge b-dnp">DNP</span>';
+    return "";
+  }
+
+  function singleCard(b, i) {
+    return `<button class="card${inSlip(b.id) ? " on" : ""}" data-single="${i}" aria-pressed="${inSlip(b.id)}">
+      <div class="row">
+        <span class="rank">${i + 1}</span>
+        <div class="grow">
+          <div class="mkt">${esc(b.market)}</div>
+          <div class="pick">${esc(b.label)}${badge(b.note)}</div>
+          <div class="game">${esc(b.game)} · ${esc(b.when)} ET</div>
+        </div>
+        <div class="odds"><b>${esc(b.breakeven)}</b><small>break-even</small></div>
+      </div>
+      ${meter(b.prob)}
+      ${statRow(b.prob)}
+    </button>`;
+  }
+  function parlayCard(p, i) {
+    const id = parlayId(p);
+    return `<button class="card${inSlip(id) ? " on" : ""}" data-parlay="${i}" aria-pressed="${inSlip(id)}">
+      <div class="row">
+        <div class="grow"><div class="mkt">Parlay ${i + 1} · ${p.legs.length} legs</div></div>
+        <div class="odds"><b>${esc(p.breakeven)}</b><small>break-even</small></div>
+      </div>
+      <ul class="legs">${p.legs.map((l) => `<li><span class="lp">${pct(l.prob)}</span><div class="grow"><div class="pick" style="font-size:14px">${esc(l.label)}${badge(l.note)}</div><div class="game">${esc(l.game)} · ${esc(l.when)}</div></div></li>`).join("")}</ul>
+      ${meter(p.prob)}
+      ${statRow(p.prob)}
+    </button>`;
+  }
+
+  const SEV = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"];
+  const SCLS = { Out: "s-out", Doubtful: "s-doubtful", Questionable: "s-questionable", "Did not practice": "s-dnp", Limited: "s-limited" };
+  const SSHORT = { "Did not practice": "DNP" };
+  function injuriesView(wk) {
+    const inj = wk.injuries;
+    if (!inj) return `<div class="empty">Injury reports are for NFL games. Switch to NFL to see them.</div>`;
+    let players = inj.players;
+    if (state.injFilter === "game") players = players.filter((p) => ["Out", "Doubtful", "Questionable"].includes(p.status));
+    if (state.injFilter === "out") players = players.filter((p) => ["Out", "Doubtful"].includes(p.status));
+    const q = state.injSearch.trim().toLowerCase();
+    if (q) players = players.filter((p) => (p.player + " " + p.team_name + " " + p.team + " " + p.injury).toLowerCase().includes(q));
+    const games = new Map();
+    for (const p of players) {
+      const home = p.opponent.startsWith("vs") ? p.team : p.opponent.slice(2);
+      const away = p.opponent.startsWith("vs") ? p.opponent.slice(3) : p.team;
+      const key = away + " @ " + home;
+      if (!games.has(key)) games.set(key, { kickoff: p.kickoff, rows: [] });
+      games.get(key).rows.push(p);
+    }
+    const when = (iso) => new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", hour: "numeric", minute: "2-digit" });
+    const blocks = [...games.entries()].sort((a, b) => a[1].kickoff.localeCompare(b[1].kickoff)).map(([k, g]) => `
+      <section class="inj-game"><h3>${esc(k)}<small>${esc(when(g.kickoff))} ET</small></h3>
+      ${g.rows.map((p) => `<div class="inj"><span class="status ${SCLS[p.status] || "s-limited"}">${esc(SSHORT[p.status] || p.status)}</span>
+        <div class="who"><b>${esc(p.player)}</b> <small>${esc(p.position)} · ${esc(p.team)}</small>${p.official ? ' <span class="official">official</span>' : ""}</div>
+        <div class="what">${esc(p.injury || "")}</div></div>`).join("")}</section>`).join("");
+    return `<div class="notice">${esc(inj.note)}</div>
+      <div class="inj-tools">
+        <input id="injsearch" type="search" placeholder="Search player, team or injury" value="${esc(state.injSearch)}" aria-label="Search injuries">
+        <button class="chip" data-inj="all" aria-pressed="${state.injFilter === "all"}">Everyone</button>
+        <button class="chip" data-inj="game" aria-pressed="${state.injFilter === "game"}">Game statuses</button>
+        <button class="chip" data-inj="out" aria-pressed="${state.injFilter === "out"}">Out or doubtful</button>
+      </div>
+      ${blocks ? `<div class="grid">${blocks}</div>` : `<div class="empty">No players match.</div>`}`;
+  }
+
+  function verdict(prob, key) {
+    const raw = state.prices[key];
+    if (raw == null || raw === "") return `<span>Type FanDuel's odds to check the expected value.</span>`;
+    const a = parseInt(String(raw).replace("+", ""), 10);
+    if (!a || Math.abs(a) < 100) return `<span class="verdict v-bad">Enter odds like -150 or +240.</span>`;
+    const ev = prob * amToDec(a) - 1;
+    const w = wager();
+    return `<span class="verdict ${ev > 0 ? "v-good" : "v-bad"}">${ev > 0 ? "Worth it" : "Not worth it"}: EV ${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}% (${ev >= 0 ? "+" : "−"}${money(Math.abs(ev * w))} per ${money(w)}), pays ${money(w * amToDec(a))}</span>`;
+  }
+  function checker(prob, key) {
+    return `<div class="check"><label>FanDuel odds <input data-price="${esc(key)}" inputmode="numeric" placeholder="-150" value="${esc(state.prices[key] ?? "")}"></label><span data-verdict="${esc(key)}">${verdict(prob, key)}</span></div>`;
+  }
+  function combo() {
+    const singles = state.slip.filter((s) => s.kind === "single");
+    if (singles.length < 2) return null;
+    if (new Set(singles.map((s) => s.game)).size !== singles.length) return { shared: true };
+    return { prob: singles.reduce((a, s) => a * s.prob, 1), n: singles.length };
+  }
+  function slipView() {
+    if (!state.slip.length) return `<div class="empty">Nothing here yet. Tap any single bet or parlay to add it.</div>`;
+    const items = state.slip.map((s, i) => `<div class="slip-item">
+      <div class="row"><div class="grow">
+        <div class="mkt">${s.kind === "single" ? esc(s.market) : "Parlay · " + s.legs.length + " legs"}</div>
+        <div class="pick">${s.kind === "single" ? esc(s.label) : s.legs.map((l) => esc(l.label)).join("<br>")}</div>
+        <div class="game">${s.kind === "single" ? esc(s.game) + " · " + esc(s.when) + " ET" : esc(s.weekLabel)}</div>
+      </div><div class="odds"><b>${esc(s.breakeven)}</b><small>break-even</small></div></div>
+      ${meter(s.prob)}${statRow(s.prob)}${checker(s.prob, s.id)}
+      <div><button class="x" data-remove="${i}">Remove</button></div></div>`).join("");
+    const c = combo();
+    let extra = "";
+    if (c && c.shared) extra = `<div class="notice">Two of your singles are from the same game, so they aren't combined into one parlay here (same-game legs move together).</div>`;
+    else if (c) extra = `<div class="slip-item"><div class="mkt">Your ${c.n} singles as one parlay</div>${meter(c.prob)}${statRow(c.prob)}${checker(c.prob, "COMBO:" + state.slip.filter((s) => s.kind === "single").map((s) => s.id).join("|"))}</div>`;
+    return `<div class="slip">${extra}${items}</div>`;
+  }
+
+  function render() {
+    const wk = current();
+    document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sport === state.sport)));
+    const sel = $("week");
+    sel.innerHTML = weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
+    $("updated").textContent = DATA.updated;
+    document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
+    $("n-singles").textContent = wk.singles.length;
+    $("n-parlays").textContent = wk.parlays.length;
+    $("n-injuries").textContent = wk.injuries ? wk.injuries.players.length : "–";
+    $("n-slip").textContent = state.slip.length;
+
+    let html = "";
+    const future = /no lines yet/.test(wk.label);
+    if (state.tab === "singles" || state.tab === "parlays") {
+      if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
+      else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
+    }
+    if (state.tab === "singles") html += wk.singles.length ? `<div class="grid">${wk.singles.map(singleCard).join("")}</div>` : `<div class="empty">No bets in the 60–80% range for this week.</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="grid">${wk.parlays.map(parlayCard).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
+    if (state.tab === "injuries") html += injuriesView(wk);
+    if (state.tab === "slip") html += slipView();
+    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payouts include your stake. Parlay chances assume legs from different games are independent.</p>`;
+    $("main").innerHTML = html;
+
+    const c = combo();
+    const n = state.slip.length;
+    $("slipsum").innerHTML = !n ? "Your slip is empty." :
+      `<b>${n} pick${n > 1 ? "s" : ""}</b>` + (c && !c.shared ? ` · singles as one parlay: <b>${pct(c.prob)}</b> to win, break-even <b>${fmtAm(decToAm(1 / c.prob))}</b>, pays ${money(wager() / c.prob)} on ${money(wager())}` : "");
+  }
+
+  function toggle(entry) {
+    const i = state.slip.findIndex((s) => s.id === entry.id);
+    if (i >= 0) state.slip.splice(i, 1); else state.slip.push(entry);
+    save(); render();
+  }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) return;
+    const wk = current();
+    if (t.dataset.sport) { state.sport = t.dataset.sport; store.set("bb.sport", state.sport); render(); }
+    else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
+    else if (t.dataset.single) { const b = wk.singles[+t.dataset.single]; toggle({ kind: "single", ...b }); }
+    else if (t.dataset.parlay) { const p = wk.parlays[+t.dataset.parlay]; toggle({ kind: "parlay", id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
+    else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
+    else if (t.dataset.remove) { state.slip.splice(+t.dataset.remove, 1); save(); render(); }
+    else if (t.id === "viewslip") { state.tab = "slip"; render(); window.scrollTo({ top: 0 }); }
+    else if (t.id === "clearslip") { state.slip = []; save(); render(); }
+  });
+  $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });
+  $("wager").addEventListener("input", render);
+  document.addEventListener("input", (e) => {
+    const t = e.target;
+    if (t.dataset && t.dataset.price != null) {
+      state.prices[t.dataset.price] = t.value; save();
+      const item = t.dataset.price.startsWith("COMBO:") ? combo() : state.slip.find((s) => s.id === t.dataset.price);
+      const v = document.querySelector(`[data-verdict="${CSS.escape(t.dataset.price)}"]`);
+      if (item && v) v.innerHTML = verdict(item.prob, t.dataset.price);
+    } else if (t.id === "injsearch") {
+      state.injSearch = t.value; render();
+      const s = $("injsearch"); s.focus(); s.setSelectionRange(s.value.length, s.value.length);
+    }
+  });
+  render();
+})();
+</script>
