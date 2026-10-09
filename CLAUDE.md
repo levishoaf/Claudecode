@@ -6,6 +6,22 @@ bets live in `bets/` and are graded with `python -m nfl_edge.grade <file>`.
 
 ## The user's standing betting preference
 
+**Bets can come from any market in FanDuel's NFL section, not just game
+lines.** When picking bets, consider all of them and choose the best by the
+rules below:
+
+- **Game lines:** moneyline, spread and total.
+- **Alternate lines:** alternate spreads and totals, team totals, and
+  first-half or quarter lines.
+- **Player props and their alternate lines:** passing, rushing and
+  receiving yards, receptions, and passing touchdowns.
+- **Touchdown scorer bets:** anytime TD and first TD.
+
+Estimate each market from the data available: the game model for spreads
+and totals at any line, and player game logs for props. Say plainly when a
+market's FanDuel price isn't available, and give its break-even odds
+instead.
+
 Every bet the user asks for, singles and parlays alike, must aim for the
 **highest win percentage with the best payout**. In practice:
 
