@@ -116,7 +116,7 @@ def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: fl
         )
     print(
         "\nMkt% = sharp-book no-vig odds. Stats% = team ratings adjusted for injuries, "
-        "starting QB,\nrest, travel, divisional game and weather. Win% = blend used for EV "
+        "starting QB,\ntravel, divisional game and weather. Win% = blend used for EV "
         "and stakes."
     )
     print(
@@ -160,7 +160,7 @@ def main(argv: list[str] | None = None) -> int:
     stats.add_argument("--no-weather", action="store_true", help="skip weather forecasts")
     stats.add_argument("--explain", action="store_true",
                        help="show what drives each game's projection "
-                            "(injuries, QB, rest, travel, weather)")
+                            "(injuries, QB, travel, weather)")
     stats.add_argument("--model-weight", type=float, default=0.1,
                        help="max weight of the stats model in the blend, 0-1 "
                             "(default 0.1; see python -m nfl_edge.backtest)")

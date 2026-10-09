@@ -51,10 +51,9 @@ class ContextTest(unittest.TestCase):
         self.assertEqual(f.qb_out_away, 0.0)
 
     def test_schedule_features(self):
-        row = fx.game(5, "MIA", "BUF", home_rest=14, away_rest=6, div_game=1, wind=22, temp=30)
+        row = fx.game(5, "MIA", "BUF", div_game=1, wind=22, temp=30)
         sd = SeasonData(fx.season() + [row], [], [])
         f = sd.features(row, actual_qb=False)
-        self.assertEqual(f.rest_diff, 7)  # capped
         self.assertEqual(f.div_game, 1)
         self.assertGreater(f.travel_diff, 1)  # Miami flies ~1,200 miles to Buffalo
         self.assertEqual(f.wind_excess, 12)

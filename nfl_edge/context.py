@@ -2,7 +2,8 @@
 
 All features for a game in week W use only information available before
 kickoff: snap shares and starting QBs from weeks < W, that week's injury
-report, the schedule (rest, venue, divisional) and the weather.
+report, the schedule (venue, divisional) and the weather. Rest days are
+intentionally not used.
 """
 
 from __future__ import annotations
@@ -37,7 +38,6 @@ class Injury:
 @dataclass
 class Features:
     home_field: float = 1.0
-    rest_diff: float = 0.0  # home rest days minus away, capped at +/-7
     travel_diff: float = 0.0  # away travel minus home travel, thousands of miles
     div_game: float = 0.0
     off_inj_home: float = 0.0  # starter-equivalents missing
@@ -175,11 +175,6 @@ class SeasonData:
         home, away = game["home_team"], game["away_team"]
         f = Features()
         f.home_field = 0.0 if game["location"] == "Neutral" else 1.0
-        h_rest, a_rest = _num(game["home_rest"]), _num(game["away_rest"])
-        if h_rest is not None and a_rest is not None:
-            f.rest_diff = max(-7.0, min(7.0, h_rest - a_rest))
-            if abs(f.rest_diff) >= 3:
-                f.notes.append(f"rest {home} {h_rest:.0f}d vs {away} {a_rest:.0f}d")
         venue = game["stadium_id"]
         h_miles = miles_between(self.home_venue.get(home, ""), venue)
         a_miles = miles_between(self.home_venue.get(away, ""), venue)

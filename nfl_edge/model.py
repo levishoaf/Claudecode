@@ -1,5 +1,5 @@
 """Full game model: this season's team ratings plus context adjustments
-(injuries, starting QB, rest, travel, divisional game, weather)."""
+(injuries, starting QB, travel, divisional game, weather)."""
 
 from __future__ import annotations
 

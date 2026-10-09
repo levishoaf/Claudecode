@@ -10,7 +10,8 @@ is betting only when **FanDuel pays more than the true odds**. This tool:
 3. Compares each FanDuel price to that fair probability and lists the bets
    with **positive expected value**, sorted by edge.
 4. Blends in a **game model**: this season's team ratings adjusted for
-   injuries, starting QB, rest, travel, divisional games and weather (see below).
+   injuries, starting QB, travel, divisional games and weather (see below).
+   Rest days are deliberately ignored.
 5. Suggests a stake with **fractional Kelly** sizing (quarter Kelly, capped
    at 2% of bankroll by default).
 
@@ -66,7 +67,6 @@ All data is free and needs no extra keys. It's cached in `~/.cache/nfl_edge`
 | Team strength | nflverse results, this season | Offense/defense ratings (ridge regression on points scored and allowed) |
 | Starting QB | nflverse injury report + starts | Usual starter Out/Doubtful/Questionable |
 | Other injuries | Injury report × snap counts | Each Out/Doubtful/Questionable player weighted by how much he plays |
-| Rest | Schedule | Rest-day difference (byes, short weeks) |
 | Travel | Stadium coordinates | Extra miles the away team travels |
 | Home field | Schedule | Removed for neutral and international games |
 | Divisional game | Schedule | Familiar opponents play closer games |
@@ -83,7 +83,7 @@ factors barely count. Current fitted values:
 - **Wind:** about 0.33 fewer points per mph above 10 mph.
 - **Injuries:** a full-time defensive starter out adds about 0.7 to the
   opponent's margin.
-- **Rest, travel, divisional:** small.
+- **Travel, divisional:** small.
 
 `--explain` prints the breakdown for each game you're told to bet (illustrative output):
 
@@ -91,8 +91,6 @@ factors barely count. Current fitted values:
 IND @ PIT: projected IND 22.4 - PIT 24.0 (total 46.4)
   team ratings alone: IND 22.6 - PIT 23.8
   home field           PIT +0.4 margin
-  rest                 PIT +0.1 margin
-  - rest PIT 10d vs IND 7d
   - forecast 48F, wind 14 mph
 ```
 
@@ -113,7 +111,7 @@ Out-of-sample results: fit on 2015–2020, tested on 1,196 games in 2021–2025.
 
 The factors are real: they improve the model. But the closing market
 already prices them in, and nothing beats it. The model picked the right
-side of the closing spread 48.1% of the time (52.4% is break-even). The
+side of the closing spread 48.5% of the time (52.4% is break-even). The
 backtest also asks whether the market under-reacts to any factor; none
 showed a significant gap.
 

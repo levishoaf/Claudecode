@@ -1,7 +1,7 @@
 """Small synthetic nflverse-style rows for tests."""
 
 COLUMNS = ["season", "game_type", "week", "gameday", "away_team", "away_score", "home_team",
-           "home_score", "location", "away_rest", "home_rest", "spread_line", "total_line",
+           "home_score", "location", "spread_line", "total_line",
            "div_game", "roof", "temp", "wind", "away_qb_id", "home_qb_id", "away_qb_name",
            "home_qb_name", "stadium_id"]
 
@@ -14,7 +14,7 @@ def game(week, away, home, away_score=None, home_score=None, **kw):
     row = dict.fromkeys(COLUMNS, "")
     row.update(
         season="2026", game_type="REG", week=str(week), gameday=f"2026-09-{week + 9:02d}",
-        away_team=away, home_team=home, location="Home", away_rest="7", home_rest="7",
+        away_team=away, home_team=home, location="Home",
         div_game="0", roof="outdoors", stadium_id=STADIUM[home],
         away_score="" if away_score is None else str(away_score),
         home_score="" if home_score is None else str(home_score),

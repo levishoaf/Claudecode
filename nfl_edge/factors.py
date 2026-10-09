@@ -13,7 +13,6 @@ FACTORS_FILE = Path(__file__).with_name("factors.json")
 # Each term: (name, label shown to users, function of (features, base margin)).
 MARGIN_TERMS = [
     ("home_field", "home field", lambda f, m: f.home_field),
-    ("rest_diff", "rest", lambda f, m: f.rest_diff),
     ("travel_diff", "travel", lambda f, m: f.travel_diff),
     ("div_shrink", "divisional game", lambda f, m: f.div_game * m),
     ("off_inj_diff", "offensive injuries", lambda f, m: f.off_inj_home - f.off_inj_away),
