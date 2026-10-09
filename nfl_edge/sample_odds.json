@@ -2,9 +2,9 @@
  {
   "id": "demo1",
   "sport_key": "americanfootball_nfl",
-  "commence_time": "2026-10-11T20:25:00Z",
-  "home_team": "Buffalo Bills",
-  "away_team": "Kansas City Chiefs",
+  "commence_time": "2026-10-11T17:00:00Z",
+  "home_team": "Green Bay Packers",
+  "away_team": "Chicago Bears",
   "bookmakers": [
    {
     "key": "fanduel",
@@ -14,12 +14,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": 135
+        "name": "Chicago Bears",
+        "price": -140
        },
        {
-        "name": "Buffalo Bills",
-        "price": -160
+        "name": "Green Bay Packers",
+        "price": 118
        }
       ]
      },
@@ -27,14 +27,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
+        "name": "Chicago Bears",
         "price": -110,
-        "point": 2.5
+        "point": -1.5
        },
        {
-        "name": "Buffalo Bills",
+        "name": "Green Bay Packers",
         "price": -110,
-        "point": -2.5
+        "point": 1.5
        }
       ]
      },
@@ -44,12 +44,12 @@
        {
         "name": "Over",
         "price": -110,
-        "point": 47.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -110,
-        "point": 47.5
+        "point": 45.5
        }
       ]
      }
@@ -63,12 +63,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": 120
+        "name": "Chicago Bears",
+        "price": -118
        },
        {
-        "name": "Buffalo Bills",
-        "price": -130
+        "name": "Green Bay Packers",
+        "price": 104
        }
       ]
      },
@@ -76,14 +76,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": -102,
-        "point": 2.5
+        "name": "Chicago Bears",
+        "price": -105,
+        "point": -1.5
        },
        {
-        "name": "Buffalo Bills",
-        "price": -108,
-        "point": -2.5
+        "name": "Green Bay Packers",
+        "price": -105,
+        "point": 1.5
        }
       ]
      },
@@ -93,12 +93,12 @@
        {
         "name": "Over",
         "price": -105,
-        "point": 47.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -105,
-        "point": 47.5
+        "point": 45.5
        }
       ]
      }
@@ -112,12 +112,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": 118
+        "name": "Chicago Bears",
+        "price": -120
        },
        {
-        "name": "Buffalo Bills",
-        "price": -138
+        "name": "Green Bay Packers",
+        "price": 100
        }
       ]
      },
@@ -125,14 +125,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": -105,
-        "point": 2.5
+        "name": "Chicago Bears",
+        "price": -108,
+        "point": -1.5
        },
        {
-        "name": "Buffalo Bills",
-        "price": -115,
-        "point": -2.5
+        "name": "Green Bay Packers",
+        "price": -112,
+        "point": 1.5
        }
       ]
      },
@@ -142,12 +142,12 @@
        {
         "name": "Over",
         "price": -108,
-        "point": 47.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -112,
-        "point": 47.5
+        "point": 45.5
        }
       ]
      }
@@ -161,12 +161,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": 115
+        "name": "Chicago Bears",
+        "price": -122
        },
        {
-        "name": "Buffalo Bills",
-        "price": -135
+        "name": "Green Bay Packers",
+        "price": 102
        }
       ]
      },
@@ -174,14 +174,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Kansas City Chiefs",
-        "price": -108,
-        "point": 2.5
+        "name": "Chicago Bears",
+        "price": -110,
+        "point": -1.5
        },
        {
-        "name": "Buffalo Bills",
-        "price": -112,
-        "point": -2.5
+        "name": "Green Bay Packers",
+        "price": -110,
+        "point": 1.5
        }
       ]
      },
@@ -191,12 +191,12 @@
        {
         "name": "Over",
         "price": -110,
-        "point": 48.0
+        "point": 46.0
        },
        {
         "name": "Under",
         "price": -110,
-        "point": 48.0
+        "point": 46.0
        }
       ]
      }
@@ -207,9 +207,9 @@
  {
   "id": "demo2",
   "sport_key": "americanfootball_nfl",
-  "commence_time": "2026-10-12T00:20:00Z",
-  "home_team": "Dallas Cowboys",
-  "away_team": "Philadelphia Eagles",
+  "commence_time": "2026-10-11T17:00:00Z",
+  "home_team": "Pittsburgh Steelers",
+  "away_team": "Indianapolis Colts",
   "bookmakers": [
    {
     "key": "fanduel",
@@ -219,12 +219,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
-        "price": -180
+        "name": "Indianapolis Colts",
+        "price": 124
        },
        {
-        "name": "Dallas Cowboys",
-        "price": 150
+        "name": "Pittsburgh Steelers",
+        "price": -148
        }
       ]
      },
@@ -232,14 +232,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
+        "name": "Indianapolis Colts",
         "price": -110,
-        "point": -3.5
+        "point": 2.5
        },
        {
-        "name": "Dallas Cowboys",
+        "name": "Pittsburgh Steelers",
         "price": -110,
-        "point": 3.5
+        "point": -2.5
        }
       ]
      },
@@ -248,12 +248,12 @@
       "outcomes": [
        {
         "name": "Over",
-        "price": 110,
+        "price": 108,
         "point": 44.5
        },
        {
         "name": "Under",
-        "price": -134,
+        "price": -130,
         "point": 44.5
        }
       ]
@@ -268,12 +268,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
-        "price": -170
+        "name": "Indianapolis Colts",
+        "price": 128
        },
        {
-        "name": "Dallas Cowboys",
-        "price": 152
+        "name": "Pittsburgh Steelers",
+        "price": -140
        }
       ]
      },
@@ -281,63 +281,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
-        "price": -104,
-        "point": -3.5
+        "name": "Indianapolis Colts",
+        "price": -102,
+        "point": 2.5
        },
        {
-        "name": "Dallas Cowboys",
-        "price": -106,
-        "point": 3.5
-       }
-      ]
-     },
-     {
-      "key": "totals",
-      "outcomes": [
-       {
-        "name": "Over",
-        "price": 102,
-        "point": 44.5
-       },
-       {
-        "name": "Under",
-        "price": -112,
-        "point": 44.5
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "key": "betonlineag",
-    "title": "betonlineag",
-    "markets": [
-     {
-      "key": "h2h",
-      "outcomes": [
-       {
-        "name": "Philadelphia Eagles",
-        "price": -175
-       },
-       {
-        "name": "Dallas Cowboys",
-        "price": 150
-       }
-      ]
-     },
-     {
-      "key": "spreads",
-      "outcomes": [
-       {
-        "name": "Philadelphia Eagles",
-        "price": -105,
-        "point": -3.5
-       },
-       {
-        "name": "Dallas Cowboys",
-        "price": -115,
-        "point": 3.5
+        "name": "Pittsburgh Steelers",
+        "price": -108,
+        "point": -2.5
        }
       ]
      },
@@ -351,7 +302,56 @@
        },
        {
         "name": "Under",
-        "price": -120,
+        "price": -110,
+        "point": 44.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "betonlineag",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Indianapolis Colts",
+        "price": 125
+       },
+       {
+        "name": "Pittsburgh Steelers",
+        "price": -145
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Indianapolis Colts",
+        "price": -105,
+        "point": 2.5
+       },
+       {
+        "name": "Pittsburgh Steelers",
+        "price": -115,
+        "point": -2.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -102,
+        "point": 44.5
+       },
+       {
+        "name": "Under",
+        "price": -118,
         "point": 44.5
        }
       ]
@@ -366,12 +366,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
-        "price": -185
+        "name": "Indianapolis Colts",
+        "price": 122
        },
        {
-        "name": "Dallas Cowboys",
-        "price": 155
+        "name": "Pittsburgh Steelers",
+        "price": -145
        }
       ]
      },
@@ -379,14 +379,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Philadelphia Eagles",
+        "name": "Indianapolis Colts",
         "price": -110,
-        "point": -3.5
+        "point": 2.5
        },
        {
-        "name": "Dallas Cowboys",
+        "name": "Pittsburgh Steelers",
         "price": -110,
-        "point": 3.5
+        "point": -2.5
        }
       ]
      },
@@ -395,12 +395,12 @@
       "outcomes": [
        {
         "name": "Over",
-        "price": 105,
+        "price": -102,
         "point": 44.5
        },
        {
         "name": "Under",
-        "price": -125,
+        "price": -118,
         "point": 44.5
        }
       ]
@@ -412,9 +412,9 @@
  {
   "id": "demo3",
   "sport_key": "americanfootball_nfl",
-  "commence_time": "2026-10-11T17:00:00Z",
-  "home_team": "Green Bay Packers",
-  "away_team": "Detroit Lions",
+  "commence_time": "2026-10-11T20:25:00Z",
+  "home_team": "Seattle Seahawks",
+  "away_team": "San Francisco 49ers",
   "bookmakers": [
    {
     "key": "fanduel",
@@ -424,12 +424,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Detroit Lions",
-        "price": -125
+        "name": "San Francisco 49ers",
+        "price": 136
        },
        {
-        "name": "Green Bay Packers",
-        "price": 105
+        "name": "Seattle Seahawks",
+        "price": -162
        }
       ]
      },
@@ -437,14 +437,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Detroit Lions",
+        "name": "San Francisco 49ers",
         "price": -110,
-        "point": -1.5
+        "point": 3.0
        },
        {
-        "name": "Green Bay Packers",
+        "name": "Seattle Seahawks",
         "price": -110,
-        "point": 1.5
+        "point": -3.0
        }
       ]
      },
@@ -454,12 +454,12 @@
        {
         "name": "Over",
         "price": -110,
-        "point": 50.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -110,
-        "point": 50.5
+        "point": 45.5
        }
       ]
      }
@@ -473,12 +473,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Detroit Lions",
-        "price": -122
+        "name": "San Francisco 49ers",
+        "price": 140
        },
        {
-        "name": "Green Bay Packers",
-        "price": 111
+        "name": "Seattle Seahawks",
+        "price": -152
        }
       ]
      },
@@ -486,14 +486,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Detroit Lions",
-        "price": -105,
-        "point": -1.5
+        "name": "San Francisco 49ers",
+        "price": -104,
+        "point": 3.0
        },
        {
-        "name": "Green Bay Packers",
-        "price": -105,
-        "point": 1.5
+        "name": "Seattle Seahawks",
+        "price": -106,
+        "point": -3.0
        }
       ]
      },
@@ -503,12 +503,12 @@
        {
         "name": "Over",
         "price": -104,
-        "point": 50.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -106,
-        "point": 50.5
+        "point": 45.5
        }
       ]
      }
@@ -522,12 +522,12 @@
       "key": "h2h",
       "outcomes": [
        {
-        "name": "Detroit Lions",
-        "price": -120
+        "name": "San Francisco 49ers",
+        "price": 138
        },
        {
-        "name": "Green Bay Packers",
-        "price": 110
+        "name": "Seattle Seahawks",
+        "price": -150
        }
       ]
      },
@@ -535,14 +535,14 @@
       "key": "spreads",
       "outcomes": [
        {
-        "name": "Detroit Lions",
-        "price": -104,
-        "point": -1.5
+        "name": "San Francisco 49ers",
+        "price": -105,
+        "point": 3.0
        },
        {
-        "name": "Green Bay Packers",
-        "price": -106,
-        "point": 1.5
+        "name": "Seattle Seahawks",
+        "price": -105,
+        "point": -3.0
        }
       ]
      },
@@ -552,12 +552,12 @@
        {
         "name": "Over",
         "price": -105,
-        "point": 50.5
+        "point": 45.5
        },
        {
         "name": "Under",
         "price": -105,
-        "point": 50.5
+        "point": 45.5
        }
       ]
      }

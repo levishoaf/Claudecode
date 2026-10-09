@@ -11,8 +11,13 @@ from pathlib import Path
 
 from .api import OddsAPIError, fetch_nfl_odds
 from .finder import Bet, find_bets
+from . import data
+from .context import SeasonData
+from .factors import Coefficients
+from .model import GameModel
 from .odds import DEVIG_METHODS
-from .stats import SeasonModel, StatsError, load_games
+from .stats import SeasonModel
+from .weather import kickoff_forecast
 
 SAMPLE = Path(__file__).with_name("sample_odds.json")
 MARKET_LABELS = {"h2h": "Moneyline", "spreads": "Spread", "totals": "Total"}
@@ -47,6 +52,47 @@ def print_ratings(model: SeasonModel) -> None:
           "(negative is good), Net = points per game better than average.\n")
 
 
+def build_model(season: int, games_source: str | None, data_dir: str | None,
+                weather: bool) -> GameModel:
+    all_games = data.games(games_source)
+    rows = [g for g in all_games if g["season"] == str(season)]
+    if not any(g["home_score"] for g in rows):
+        raise data.DataError(f"No completed games found for the {season} season")
+    season_data = SeasonData(
+        rows,
+        data.release("injuries", season, season, data_dir),
+        data.release("snap_counts", season, season, data_dir),
+        history=all_games,
+    )
+    return GameModel(rows, season_data, Coefficients.load(),
+                     kickoff_forecast if weather else None)
+
+
+def print_breakdown(model: GameModel, events: list[dict], bets: list[Bet]) -> None:
+    """Explain the projection for every game that has a recommended bet."""
+    seen = set()
+    for b in bets:
+        event = next(e for e in events if f"{e['away_team']} @ {e['home_team']}" == b.game)
+        if b.game in seen:
+            continue
+        seen.add(b.game)
+        p = model.predict(event)
+        if p is None:
+            continue
+        print(f"\n{p.away} @ {p.home}: projected {p.away} {p.away_pts:.1f} - {p.home} {p.home_pts:.1f}"
+              f" (total {p.home_pts + p.away_pts:.1f})")
+        print(f"  team ratings alone: {p.away} {p.base_away:.1f} - {p.home} {p.base_home:.1f}")
+        for label, dm, dt in sorted(p.adjustments, key=lambda a: -abs(a[1]) - abs(a[2])):
+            parts = []
+            if abs(dm) >= 0.05:
+                parts.append(f"{p.home if dm > 0 else p.away} {abs(dm):+.1f} margin")
+            if abs(dt) >= 0.05:
+                parts.append(f"total {dt:+.1f}")
+            print(f"  {label:<20} {', '.join(parts)}")
+        for note in p.notes:
+            print(f"  - {note}")
+
+
 def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: float) -> None:
     if not bets:
         print("No +EV bets on FanDuel right now. Passing is a winning decision too.")
@@ -69,8 +115,9 @@ def print_table(bets: list[Bet], bankroll: float, kelly_mult: float, max_pct: fl
             f"${stake(b, bankroll, kelly_mult, max_pct):>7.2f}"
         )
     print(
-        "\nMkt% = sharp-book no-vig odds, Stats% = season-stats model, "
-        "Win% = blend used for EV and stakes."
+        "\nMkt% = sharp-book no-vig odds. Stats% = team ratings adjusted for injuries, "
+        "starting QB,\nrest, travel, divisional game and weather. Win% = blend used for EV "
+        "and stakes."
     )
     print(
         f"{len(bets)} bet(s). Stakes = {kelly_mult:g}x Kelly on a ${bankroll:,.0f} "
@@ -107,6 +154,13 @@ def main(argv: list[str] | None = None) -> int:
                        help="NFL season (default: current, based on today's date)")
     stats.add_argument("--stats-file",
                        help="nflverse games.csv path or URL (default: download latest)")
+    stats.add_argument("--data-dir",
+                       help="folder with injuries_YYYY.csv / snap_counts_YYYY.csv "
+                            "(default: download latest)")
+    stats.add_argument("--no-weather", action="store_true", help="skip weather forecasts")
+    stats.add_argument("--explain", action="store_true",
+                       help="show what drives each game's projection "
+                            "(injuries, QB, rest, travel, weather)")
     stats.add_argument("--model-weight", type=float, default=0.1,
                        help="max weight of the stats model in the blend, 0-1 "
                             "(default 0.1; see python -m nfl_edge.backtest)")
@@ -136,14 +190,14 @@ def main(argv: list[str] | None = None) -> int:
         today = date.today()
         season = args.season or (today.year if today.month >= 3 else today.year - 1)
         try:
-            model = SeasonModel(load_games(season, args.stats_file))
-        except StatsError as e:
+            model = build_model(season, args.stats_file, args.data_dir, not args.no_weather)
+        except data.DataError as e:
             print(f"Warning: {e}; continuing with market odds only.", file=sys.stderr)
         else:
             print(f"(Season stats: {season}, {model.num_games} completed games)",
                   file=sys.stderr)
             if args.ratings and not args.json:
-                print_ratings(model)
+                print_ratings(model.ratings)
 
     bets = find_bets(
         events,
@@ -178,4 +232,6 @@ def main(argv: list[str] | None = None) -> int:
         ], indent=2))
     else:
         print_table(bets, args.bankroll, args.kelly, max_pct)
+        if args.explain and model is not None:
+            print_breakdown(model, events, bets)
     return 0

@@ -1,4 +1,4 @@
-"""Team ratings from this season's completed games (nflverse results data).
+"""Team ratings from this season's completed games.
 
 Each team gets an offense and a defense rating, fit by ridge regression on
 points scored:
@@ -13,15 +13,10 @@ are turned into probabilities with a normal distribution.
 
 from __future__ import annotations
 
-import csv
-import io
 import math
-import urllib.error
-import urllib.request
 from dataclasses import dataclass
-from pathlib import Path
 
-GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+from .factors import solve
 
 # Historical NFL standard deviations of final margin and total vs. expectation.
 MARGIN_SD = 13.5
@@ -48,10 +43,6 @@ TEAM_ABBR = {
 }
 
 
-class StatsError(RuntimeError):
-    pass
-
-
 def normal_cdf(x: float) -> float:
     return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
@@ -63,55 +54,6 @@ class Game:
     home_pts: int
     away_pts: int
     neutral: bool
-
-
-def load_games(season: int, source: str | Path | None = None) -> list[Game]:
-    """Completed regular-season games for `season` from a URL or local CSV."""
-    url = str(source or GAMES_URL)
-    if "://" not in url:
-        try:
-            text = Path(url).read_text()
-        except OSError as e:
-            raise StatsError(f"Could not read game results: {e}") from e
-    else:
-        try:
-            with urllib.request.urlopen(url, timeout=30) as resp:
-                text = resp.read().decode()
-        except urllib.error.URLError as e:
-            raise StatsError(f"Could not download game results: {e}") from e
-
-    games = []
-    for row in csv.DictReader(io.StringIO(text)):
-        if row["season"] != str(season) or row["game_type"] != "REG":
-            continue
-        if row["home_score"] == "" or row["away_score"] == "":
-            continue
-        games.append(Game(
-            home=row["home_team"],
-            away=row["away_team"],
-            home_pts=int(row["home_score"]),
-            away_pts=int(row["away_score"]),
-            neutral=row["location"] == "Neutral",
-        ))
-    return games
-
-
-def _solve(a: list[list[float]], b: list[float]) -> list[float]:
-    """Gaussian elimination with partial pivoting."""
-    n = len(b)
-    m = [row[:] + [b[i]] for i, row in enumerate(a)]
-    for col in range(n):
-        pivot = max(range(col, n), key=lambda r: abs(m[r][col]))
-        m[col], m[pivot] = m[pivot], m[col]
-        for r in range(col + 1, n):
-            f = m[r][col] / m[col][col]
-            if f:
-                for c in range(col, n + 1):
-                    m[r][c] -= f * m[col][c]
-    x = [0.0] * n
-    for r in range(n - 1, -1, -1):
-        x[r] = (m[r][n] - sum(m[r][c] * x[c] for c in range(r + 1, n))) / m[r][r]
-    return x
 
 
 @dataclass
@@ -130,7 +72,7 @@ class SeasonModel:
     def __init__(self, games: list[Game], ridge: float = RIDGE_LAMBDA,
                  home_field: float = HOME_FIELD):
         if not games:
-            raise StatsError("No completed games found for this season")
+            raise ValueError("No completed games found for this season")
         self.home_field = home_field
         self.games_played: dict[str, int] = {}
         for g in games:
@@ -161,7 +103,7 @@ class SeasonModel:
         for i in range(1, size):
             xtx[i][i] += ridge
 
-        beta = _solve(xtx, xty)
+        beta = solve(xtx, xty)
         self.league_avg = beta[0]
         self.ratings = {
             t: Rating(t, beta[1 + idx[t]], beta[1 + n + idx[t]], self.games_played[t])
@@ -184,33 +126,22 @@ class SeasonModel:
         played = min(self._rating(home).games, self._rating(away).games)
         return min(1.0, played / FULL_WEIGHT_GAMES)
 
-    def sample_weight_for(self, home_name: str, away_name: str) -> float:
-        home, away = TEAM_ABBR.get(home_name), TEAM_ABBR.get(away_name)
-        if home is None or away is None:
-            return 0.0
-        return self.sample_weight(home, away)
 
-    def outcome_probabilities(
-        self, home_name: str, away_name: str, market: str, outcomes: list[dict]
-    ) -> dict[str, float] | None:
-        """Model probability for each outcome of a two-way market, normalized
-        to sum to 1 so it is comparable with no-vig market probabilities."""
-        home, away = TEAM_ABBR.get(home_name), TEAM_ABBR.get(away_name)
-        if home is None or away is None:
+def probabilities_from_points(home_name: str, home_pts: float, away_pts: float,
+                              market: str, outcomes: list[dict]) -> dict[str, float] | None:
+    """Probability of each outcome of a two-way market given projected points,
+    normalized to sum to 1 so it is comparable with no-vig market odds."""
+    margin = home_pts - away_pts
+    raw = {}
+    for o in outcomes:
+        name, point = o["name"], o.get("point") or 0.0
+        if market == "totals":
+            p_over = 1 - normal_cdf((point - (home_pts + away_pts)) / TOTAL_SD)
+            raw[name] = p_over if name == "Over" else 1 - p_over
+        elif market in ("h2h", "spreads"):
+            team_margin = margin if name == home_name else -margin
+            raw[name] = normal_cdf((team_margin + point) / MARGIN_SD)
+        else:
             return None
-        home_pts, away_pts = self.predict(home, away)
-        margin = home_pts - away_pts
-
-        raw = {}
-        for o in outcomes:
-            name, point = o["name"], o.get("point") or 0.0
-            if market == "totals":
-                p_over = 1 - normal_cdf((point - (home_pts + away_pts)) / TOTAL_SD)
-                raw[name] = p_over if name == "Over" else 1 - p_over
-            elif market in ("h2h", "spreads"):
-                team_margin = margin if name == home_name else -margin
-                raw[name] = normal_cdf((team_margin + point) / MARGIN_SD)
-            else:
-                return None
-        total = sum(raw.values())
-        return {k: v / total for k, v in raw.items()}
+    total = sum(raw.values())
+    return {k: v / total for k, v in raw.items()}

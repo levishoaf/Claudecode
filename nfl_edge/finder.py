@@ -15,7 +15,7 @@ from .odds import (
 )
 
 if TYPE_CHECKING:
-    from .stats import SeasonModel
+    from .model import GameModel
 
 TARGET_BOOK = "fanduel"
 
@@ -35,7 +35,7 @@ class Bet:
     fd_price: int
     fair_prob: float  # blended probability used for EV and sizing
     market_prob: float  # no-vig sharp-book probability
-    model_prob: float | None  # season-stats model probability
+    model_prob: float | None  # ratings + context model probability
     ev: float
     kelly: float
     books: list[str]
@@ -87,7 +87,7 @@ def find_bets(
     devig: str = "power",
     sharp_only: bool = True,
     include_started: bool = False,
-    model: SeasonModel | None = None,
+    model: GameModel | None = None,
     model_weight: float = 0.0,
     require_agreement: bool = False,
     now: datetime | None = None,
@@ -134,12 +134,8 @@ def find_bets(
                 model_probs = None
                 weight = 0.0
                 if model is not None:
-                    model_probs = model.outcome_probabilities(
-                        event["home_team"], event["away_team"], market_key, fd
-                    )
-                    weight = model_weight * model.sample_weight_for(
-                        event["home_team"], event["away_team"]
-                    )
+                    model_probs = model.outcome_probabilities(event, market_key, fd)
+                    weight = model_weight * model.sample_weight_for(event)
                 for outcome in fd:
                     market_p = fair[outcome["name"]]
                     model_p = model_probs[outcome["name"]] if model_probs else None

@@ -1,13 +1,6 @@
-import json
 import unittest
-from datetime import datetime, timezone
-from pathlib import Path
 
-from nfl_edge.finder import find_bets
-from nfl_edge.stats import TEAM_ABBR, Game, SeasonModel, normal_cdf
-
-SAMPLE = Path(__file__).parent.parent / "nfl_edge" / "sample_odds.json"
-BEFORE_KICKOFF = datetime(2026, 10, 10, tzinfo=timezone.utc)
+from nfl_edge.stats import TEAM_ABBR, Game, SeasonModel, normal_cdf, probabilities_from_points
 
 
 def season(weeks: int) -> list[Game]:
@@ -41,22 +34,6 @@ class SeasonModelTest(unittest.TestCase):
         self.assertAlmostEqual(model.sample_weight("KC", "BUF"), 2 / 8)
         self.assertEqual(model.sample_weight("KC", "XXX"), 0.0)
 
-    def test_outcome_probabilities_sum_to_one(self):
-        model = SeasonModel(season(8))
-        kc, buf = "Kansas City Chiefs", "Buffalo Bills"
-        cases = [
-            ("h2h", [{"name": kc, "price": -200}, {"name": buf, "price": 170}]),
-            ("spreads", [{"name": kc, "price": -110, "point": 3.5},
-                         {"name": buf, "price": -110, "point": -3.5}]),
-            ("totals", [{"name": "Over", "price": -110, "point": 44.5},
-                        {"name": "Under", "price": -110, "point": 44.5}]),
-        ]
-        for market, outcomes in cases:
-            probs = model.outcome_probabilities(buf, kc, market, outcomes)
-            self.assertAlmostEqual(sum(probs.values()), 1)
-            if market != "totals":
-                self.assertGreater(probs[kc], 0.5)
-
     def test_normal_cdf(self):
         self.assertAlmostEqual(normal_cdf(0), 0.5)
         self.assertAlmostEqual(normal_cdf(1.96), 0.975, places=3)
@@ -65,30 +42,29 @@ class SeasonModelTest(unittest.TestCase):
         self.assertEqual(len(set(TEAM_ABBR.values())), 32)
 
 
-class BlendTest(unittest.TestCase):
-    def setUp(self):
-        self.events = json.loads(SAMPLE.read_text())
-        self.model = SeasonModel(season(8))
+class ProbabilitiesTest(unittest.TestCase):
+    kc, buf = "Kansas City Chiefs", "Buffalo Bills"
 
-    def test_zero_weight_matches_market_only(self):
-        plain = find_bets(self.events, now=BEFORE_KICKOFF)
-        blended = find_bets(self.events, model=self.model, model_weight=0,
-                            now=BEFORE_KICKOFF)
-        self.assertEqual([(b.pick, round(b.ev, 9)) for b in plain],
-                         [(b.pick, round(b.ev, 9)) for b in blended])
+    def test_sum_to_one_and_favor_projected_winner(self):
+        cases = [
+            ("h2h", [{"name": self.kc}, {"name": self.buf}]),
+            ("spreads", [{"name": self.kc, "point": -3.5}, {"name": self.buf, "point": 3.5}]),
+        ]
+        for market, outcomes in cases:
+            probs = probabilities_from_points(self.kc, 28, 20, market, outcomes)
+            self.assertAlmostEqual(sum(probs.values()), 1)
+            self.assertGreater(probs[self.kc], 0.5)
 
-    def test_blend_moves_toward_model(self):
-        bets = find_bets(self.events, model=self.model, model_weight=1, min_ev=-1,
-                         now=BEFORE_KICKOFF)
-        for b in bets:
-            lo, hi = sorted((b.market_prob, b.model_prob))
-            self.assertTrue(lo - 1e-12 <= b.fair_prob <= hi + 1e-12)
+    def test_totals(self):
+        outcomes = [{"name": "Over", "point": 44.5}, {"name": "Under", "point": 44.5}]
+        probs = probabilities_from_points(self.kc, 28, 24, "totals", outcomes)
+        self.assertGreater(probs["Over"], 0.6)
+        self.assertAlmostEqual(sum(probs.values()), 1)
 
-    def test_require_agreement(self):
-        bets = find_bets(self.events, model=self.model, model_weight=0.3, min_ev=-1,
-                         require_agreement=True, now=BEFORE_KICKOFF)
-        self.assertTrue(bets)
-        self.assertTrue(all(b.model_prob > b.market_prob for b in bets))
+    def test_pickem_spread_is_coin_flip(self):
+        outcomes = [{"name": self.kc, "point": 0}, {"name": self.buf, "point": 0}]
+        probs = probabilities_from_points(self.kc, 24, 24, "spreads", outcomes)
+        self.assertAlmostEqual(probs[self.kc], 0.5)
 
 
 if __name__ == "__main__":

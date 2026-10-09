@@ -1,0 +1,22 @@
+{
+  "fit_seasons": "2015-2025",
+  "games": 2544,
+  "margin": {
+    "home_field": 0.3924,
+    "rest_diff": 0.0424,
+    "travel_diff": -0.2057,
+    "div_shrink": -0.0593,
+    "off_inj_diff": -0.6211,
+    "def_inj_diff": -0.7143,
+    "qb_diff": -3.1182
+  },
+  "total": {
+    "intercept": -0.033,
+    "wind": -0.3256,
+    "cold": -0.0901,
+    "indoor": 1.4311,
+    "off_inj_sum": -0.0001,
+    "def_inj_sum": 0.6984,
+    "qb_sum": -2.8183
+  }
+}

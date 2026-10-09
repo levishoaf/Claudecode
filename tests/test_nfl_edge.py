@@ -53,16 +53,16 @@ class FinderTest(unittest.TestCase):
     def test_finds_mispriced_fanduel_lines(self):
         bets = find_bets(self.events, now=BEFORE_KICKOFF)
         picks = {(b.market, b.pick) for b in bets}
-        self.assertEqual(picks, {("h2h", "Kansas City Chiefs"), ("totals", "Over")})
+        self.assertEqual(picks, {("h2h", "Green Bay Packers"), ("totals", "Over")})
         self.assertEqual(bets, sorted(bets, key=lambda b: b.ev, reverse=True))
         self.assertTrue(all(b.ev >= 0.01 for b in bets))
 
     def test_only_compares_identical_lines(self):
-        # DraftKings' KC/BUF total is 48.0 vs FanDuel's 47.5, so it must not be used.
+        # DraftKings' CHI/GB total is 46.0 vs FanDuel's 45.5, so it must not be used.
         bets = find_bets(self.events, min_ev=-1, now=BEFORE_KICKOFF)
-        kc_total = [b for b in bets if b.market == "totals" and "Chiefs" in b.game]
-        self.assertTrue(kc_total)
-        for b in kc_total:
+        gb_total = [b for b in bets if b.market == "totals" and "Packers" in b.game]
+        self.assertTrue(gb_total)
+        for b in gb_total:
             self.assertNotIn("draftkings", b.books)
 
     def test_prefers_sharp_books(self):

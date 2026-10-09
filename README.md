@@ -9,8 +9,8 @@ is betting only when **FanDuel pays more than the true odds**. This tool:
    (Pinnacle, Circa, BetOnline, LowVig) by removing their margin.
 3. Compares each FanDuel price to that fair probability and lists the bets
    with **positive expected value**, sorted by edge.
-4. Blends in a **season-stats model** built from this season's completed
-   games (see below).
+4. Blends in a **game model**: this season's team ratings adjusted for
+   injuries, starting QB, rest, travel, divisional games and weather (see below).
 5. Suggests a stake with **fractional Kelly** sizing (quarter Kelly, capped
    at 2% of bankroll by default).
 
@@ -46,6 +46,9 @@ python -m nfl_edge --json
 | `--model-weight` | `0.1` | Max weight of the stats model in the blend (0 = market only) |
 | `--require-agreement` | off | Only show bets the stats model also favors |
 | `--ratings` | off | Print this season's team power ratings |
+| `--explain` | off | Show what drives each recommended game's projection |
+| `--no-weather` | off | Skip weather forecasts |
+| `--data-dir` | download | Folder with `injuries_YYYY.csv` / `snap_counts_YYYY.csv` |
 | `--no-stats` | off | Skip the stats model |
 | `--season` | current | Season to pull stats from |
 | `--stats-file` | nflverse | Local `games.csv` path or URL |
@@ -53,34 +56,77 @@ python -m nfl_edge --json
 Each live run costs `markets × regions` API credits (6 with the defaults).
 Keep `eu` in `--regions`, since that is where Pinnacle comes from.
 
-## Season stats model
+## Game model
 
-Each run downloads this season's completed game results from
-[nflverse](https://github.com/nflverse/nfldata) and fits offense and defense
-ratings for every team (ridge regression on points scored and allowed, with
-home field). Those ratings give a projected margin and total for each game,
-which become win/cover/over probabilities.
+All data is free and needs no extra keys. It's cached in `~/.cache/nfl_edge`
+(override with `NFL_EDGE_CACHE`).
 
-The final probability is `(1 - w) * market + w * stats`. `w` is
-`--model-weight` scaled down until both teams have played 8 games, so early
-in the season the stats barely move the estimate. The table shows all three
-numbers: `Mkt%`, `Stats%`, and the blended `Win%` used for EV and stakes.
+| Factor | Source | How it's used |
+|---|---|---|
+| Team strength | nflverse results, this season | Offense/defense ratings (ridge regression on points scored and allowed) |
+| Starting QB | nflverse injury report + starts | Usual starter Out/Doubtful/Questionable |
+| Other injuries | Injury report × snap counts | Each Out/Doubtful/Questionable player weighted by how much he plays |
+| Rest | Schedule | Rest-day difference (byes, short weeks) |
+| Travel | Stadium coordinates | Extra miles the away team travels |
+| Home field | Schedule | Removed for neutral and international games |
+| Divisional game | Schedule | Familiar opponents play closer games |
+| Weather | Open-Meteo forecast at kickoff | Wind over 10 mph and cold below 45°F, outdoor games only |
+| Dome | Schedule | Indoor scoring environment |
 
-**Be realistic about what stats add.** On 2015–2025, predicting each week
-from earlier weeks only, blending the stats model in made predictions
-slightly *worse* than the closing market at every weight. On its own it
-picked the right side of the closing spread 48.9% of the time (52.4% is
-break-even). The betting market already prices in last week's box score.
-That's why the default weight is small. Check it yourself:
+How much each factor is worth isn't guessed. `python -m nfl_edge.backtest
+--write` fits it on 2015–2025 and stores it in `nfl_edge/factors.json`. Every
+game is rebuilt using only information available before kickoff. Each
+estimate is then shrunk toward zero according to its uncertainty, so noisy
+factors barely count. Current fitted values:
 
-```bash
-python -m nfl_edge.backtest              # downloads nflverse data
-python -m nfl_edge.backtest --start 2020 --end 2025
+- **Starting QB out:** about 3.1 points of margin and 2.8 fewer total points.
+- **Wind:** about 0.33 fewer points per mph above 10 mph.
+- **Injuries:** a full-time defensive starter out adds about 0.7 to the
+  opponent's margin.
+- **Rest, travel, divisional:** small.
+
+`--explain` prints the breakdown for each game you're told to bet:
+
+```
+IND @ PIT: projected IND 22.4 - PIT 24.0 (total 46.4)
+  team ratings alone: IND 22.6 - PIT 23.8
+  home field           PIT +0.4 margin
+  rest                 PIT +0.1 margin
+  - rest PIT 10d vs IND 7d
+  - forecast 48F, wind 14 mph
 ```
 
-`--require-agreement` uses the stats as a filter: it drops +EV bets the
-stats model disagrees with. You'll get fewer bets, but by the backtest
-above, the ones you keep are no more likely to win.
+The final probability is `(1 - w) * market + w * model`. `w` is
+`--model-weight` (default 0.1), scaled down until both teams have played
+8 games.
+
+### What the backtest says
+
+Out-of-sample results: fit on 2015–2020, tested on 1,196 games in 2021–2025.
+
+| Prediction | Win log loss | Margin error | Total error |
+|---|---|---|---|
+| Closing market line | **0.608** | **9.85** | **10.26** |
+| Team ratings only | 0.647 | 10.46 | 10.76 |
+| Ratings + all factors | 0.640 | 10.39 | 10.58 |
+| Market + 10% model | 0.609 | 9.86 | 10.26 |
+
+The factors are real: they improve the model. But the closing market
+already prices them in, and nothing beats it. The model picked the right
+side of the closing spread 48.1% of the time (52.4% is break-even). The
+backtest also asks whether the market under-reacts to any factor; none
+showed a significant gap.
+
+So where does the edge come from? From **FanDuel lagging the sharp books**,
+which the finder catches directly. The model is a second opinion and a
+sanity check. Use `--require-agreement` to drop bets it disagrees with, or
+`--model-weight 0` for market only.
+
+Rerun the backtest yourself (takes about 15 seconds):
+
+```bash
+python -m nfl_edge.backtest
+```
 
 ## Using it well
 
@@ -98,5 +144,5 @@ above, the ones you keep are no more likely to win.
 ## Tests
 
 ```bash
-python -m unittest discover tests
+python -m unittest discover -t . -s tests
 ```
