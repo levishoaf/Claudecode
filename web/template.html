@@ -288,7 +288,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         <button class="chip" data-inj="game" aria-pressed="${state.injFilter === "game"}">Game statuses</button>
         <button class="chip" data-inj="out" aria-pressed="${state.injFilter === "out"}">Out or doubtful</button>
       </div>
-      ${blocks ? `<div class="grid">${blocks}</div>` : `<div class="empty">No players match.</div>`}`;
+      ${blocks ? `<div class="grid">${blocks}</div>` :
+        state.injFilter !== "all" && !q && !inj.players.some((p) => p.official)
+          ? `<div class="empty">No official game statuses yet. Out, Doubtful and Questionable come from the Friday injury report, which hadn't reached this data at the last update. Until then, use Everyone to see who missed or was limited in practice.</div>`
+          : `<div class="empty">No players match.</div>`}`;
   }
 
   function verdict(prob, key) {
