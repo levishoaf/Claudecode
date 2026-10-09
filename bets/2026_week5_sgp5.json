@@ -1,0 +1,17 @@
+{
+  "name": "5-leg Same Game Parlay+ (week 5, 2026)",
+  "saved": "2026-10-09",
+  "book": "FanDuel",
+  "season": 2026,
+  "week": 5,
+  "estimated_win_prob": 0.30,
+  "estimate_note": "~26-35%; ~18% if this season's stats model is right about Houston (45% to win)",
+  "odds": null,
+  "legs": [
+    {"type": "moneyline", "game_id": "2026_05_PHI_JAX", "team": "JAX", "label": "Jacksonville Jaguars moneyline"},
+    {"type": "passing_tds", "game_id": "2026_05_PHI_JAX", "player": "Trevor Lawrence", "min": 1, "label": "Trevor Lawrence 1+ passing TDs"},
+    {"type": "moneyline", "game_id": "2026_05_HOU_TEN", "team": "HOU", "label": "Houston Texans moneyline"},
+    {"type": "passing_tds", "game_id": "2026_05_HOU_TEN", "player": "C.J. Stroud", "min": 1, "label": "C.J. Stroud 1+ passing TDs"},
+    {"type": "moneyline", "game_id": "2026_05_CIN_MIA", "team": "CIN", "label": "Cincinnati Bengals moneyline"}
+  ]
+}
