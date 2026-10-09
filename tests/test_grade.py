@@ -21,6 +21,23 @@ class GradeTest(unittest.TestCase):
         self.assertEqual(grade_leg(dict(leg, min=3), GAMES, STATS)[0], "lost")
         self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "pending")
 
+    def test_spread_and_total(self):
+        spread = {"type": "spread", "game_id": "g1", "team": "TEN", "point": 7.5}
+        self.assertEqual(grade_leg(spread, GAMES, [])[0], "won")  # lost by 7
+        self.assertEqual(grade_leg(dict(spread, point=7), GAMES, [])[0], "push")
+        self.assertEqual(grade_leg(dict(spread, team="HOU", point=-7.5), GAMES, [])[0], "lost")
+        total = {"type": "total", "game_id": "g1", "side": "Over", "line": 40.5}
+        self.assertEqual(grade_leg(total, GAMES, [])[0], "won")  # 41 points
+        self.assertEqual(grade_leg(dict(total, side="Under"), GAMES, [])[0], "lost")
+        self.assertEqual(grade_leg(dict(total, line=41), GAMES, [])[0], "push")
+
+    def test_profit(self):
+        from nfl_edge.grade import profit_of
+        leg = {"odds": -115, "stake": 100}
+        self.assertAlmostEqual(profit_of(leg, "won"), 86.96, places=2)
+        self.assertEqual(profit_of(leg, "lost"), -100)
+        self.assertEqual(profit_of(leg, "push"), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

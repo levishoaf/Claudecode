@@ -2,9 +2,12 @@
 
     python -m nfl_edge.grade bets/2026_week5_sgp5.json
 
-Supported legs: moneyline (team wins) and passing_tds (player throws at
-least `min` passing touchdowns). Player stats usually post the day after
-a game.
+Supported legs: moneyline (team wins), spread (team + point), total
+(Over/Under a line) and passing_tds (player throws at least `min` passing
+touchdowns). Player stats usually post the day after a game.
+
+A file with "kind": "singles" grades each leg as its own bet, using each
+leg's "odds" and "stake"; otherwise the legs form one parlay.
 """
 
 from __future__ import annotations
@@ -15,13 +18,14 @@ import sys
 from pathlib import Path
 
 from . import data
+from .odds import american_to_decimal
 
 STATS_URL = ("https://github.com/nflverse/nflverse-data/releases/download/"
              "stats_player/stats_player_week_{season}.csv")
 
 
 def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str, str]:
-    """('won' | 'lost' | 'pending', detail)."""
+    """('won' | 'lost' | 'push' | 'pending', detail)."""
     g = games.get(leg["game_id"])
     if g is None:
         return "pending", "game not found"
@@ -34,6 +38,14 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
             return "lost", f"tie, {score}"
         winner = g["home_team"] if home > away else g["away_team"]
         return ("won" if winner == leg["team"] else "lost"), score
+    if leg["type"] == "spread":
+        margin = home - away if leg["team"] == g["home_team"] else away - home
+        covered = margin + leg["point"]
+        return ("won" if covered > 0 else "push" if covered == 0 else "lost"), score
+    if leg["type"] == "total":
+        total = home + away
+        diff = total - leg["line"] if leg["side"] == "Over" else leg["line"] - total
+        return ("won" if diff > 0 else "push" if diff == 0 else "lost"), f"{score} (total {total})"
     if leg["type"] == "passing_tds":
         row = next((s for s in stats if s["game_id"] == leg["game_id"]
                     and s["player_display_name"] == leg["player"]), None)
@@ -55,6 +67,14 @@ def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, s
     return [(leg, *grade_leg(leg, games, stats)) for leg in bet["legs"]]
 
 
+def profit_of(leg: dict, status: str) -> float:
+    if status == "won":
+        return leg["stake"] * (american_to_decimal(leg["odds"]) - 1)
+    if status == "lost":
+        return -leg["stake"]
+    return 0.0
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("bet", type=Path, help="saved bet JSON file")
@@ -64,13 +84,24 @@ def main() -> int:
 
     results = grade(bet, args.stats_file)
     print(bet["name"])
-    mark = {"won": "✓", "lost": "✗", "pending": "…"}
+    mark = {"won": "✓", "lost": "✗", "push": "=", "pending": "…"}
     for leg, status, detail in results:
         print(f"  {mark[status]} {leg['label']:<36} {status:<8} {detail}")
+
+    if bet.get("kind") == "singles":
+        settled = [(leg, s) for leg, s, _ in results if s != "pending"]
+        profit = sum(profit_of(leg, s) for leg, s in settled)
+        staked = sum(leg["stake"] for leg, _ in settled)
+        wins = sum(s == "won" for _, s in settled)
+        print(f"\nSettled {len(settled)}/{len(results)}: {wins} won, "
+              f"profit ${profit:+,.2f} on ${staked:,.0f} staked")
+        return 0
+
     statuses = {s for _, s, _ in results}
+    statuses.discard("push")  # a pushed leg drops out of the parlay
     if "lost" in statuses:
         verdict = "LOST"
-    elif statuses == {"won"}:
+    elif statuses <= {"won"}:
         verdict = "WON"
     else:
         verdict = "PENDING"
