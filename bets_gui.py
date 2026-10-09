@@ -14,6 +14,7 @@ import os
 import queue
 import sys
 import threading
+import time
 import tkinter as tk
 import tkinter.font as tkfont
 from datetime import date
@@ -141,6 +142,8 @@ class App:
         self.injuries: tuple = (None, [], "")
         self.week_values: dict[str, int | None] = {}
         self.results: queue.Queue = queue.Queue()
+        self.next_job = None  # pending automatic update
+        self.next_at: float | None = None  # when it runs (time.monotonic)
         root.title("Bet Builder")
         root.geometry(f"{W}x{H}")
         root.resizable(False, False)
@@ -162,6 +165,7 @@ class App:
         self.say("Loading this week's picks...")
         root.after(100, self.poll)
         root.after(150, lambda: (self.load_weeks(), self.build()))  # always start with the latest data
+        root.after(1000, self.tick)
 
     # -------------------------------------------------------------- layout
     def style(self) -> None:
@@ -183,8 +187,8 @@ class App:
         row1 = tk.Frame(top, bg=NAVY)
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
-        tk.Label(row1, text="   Free data  ·  odds shown are break-even: bet only if FanDuel pays that "
-                            "or better", bg=NAVY, fg="#9fb0c8", font=self.f["small"]).pack(side="left")
+        self.countdown = tk.StringVar(value="")
+        tk.Label(row1, text="   Free data  ·  odds shown are break-even", bg=NAVY, fg="#9fb0c8", font=self.f["small"]).pack(side="left")
 
         self.sport = tk.StringVar(value="nfl")
         seg = tk.Frame(row1, bg=NAVY_2)
@@ -194,6 +198,8 @@ class App:
             b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
             b.pack(side="left")
             self.seg_btns[key] = b
+        tk.Label(row1, textvariable=self.countdown, bg=NAVY, fg=WHITE,
+                 font=self.f["bold"]).pack(side="right", padx=(0, 14))
         self.pick_sport("nfl")
 
         row2 = tk.Frame(top, bg=NAVY)
@@ -202,7 +208,7 @@ class App:
         self.n_singles, self.n_parlays = tk.StringVar(value="30"), tk.StringVar(value="10")
         self.min_legs, self.max_legs = tk.StringVar(value="3"), tk.StringVar(value="5")
         self.stake, self.lo, self.hi, self.refresh = (tk.StringVar(value=v)
-                                                       for v in ("10", "60", "80", "0"))
+                                                       for v in ("10", "60", "80", "5"))
 
         def field(label, var, width, values=None):
             box = tk.Frame(row2, bg=NAVY)
@@ -241,13 +247,13 @@ class App:
         field("Wager $", self.stake, 4)
         pair("Chance %", self.lo, self.hi)
         field("Refresh", self.refresh, 3)
+        self.refresh.trace_add("write", lambda *_: self.schedule())
 
         btns = tk.Frame(row2, bg=NAVY)
         btns.pack(side="right", anchor="s")
         self.build_btn = FlatButton(btns, "Build bets", self.build, "primary", self.f["bold"])
         self.build_btn.pack(side="left", padx=(0, 6))
-        FlatButton(btns, "Save", self.save, "secondary", self.f["bold"]).pack(side="left", padx=(0, 6))
-        FlatButton(btns, "Grade", self.grade, "secondary", self.f["bold"]).pack(side="left")
+        FlatButton(btns, "Save", self.save, "secondary", self.f["bold"]).pack(side="left")
         c.create_window(W / 2, 72, window=top, width=PANEL_W)
 
     def pick_sport(self, key: str) -> None:
@@ -315,9 +321,11 @@ class App:
         self.check_entry.pack(side="left")
         self.check_entry.bind("<Return>", lambda e: self.check())
         FlatButton(chk, "Check", self.check, "primary", self.f["bold"]).pack(side="left", padx=8)
+        FlatButton(chk, "Grade saved bets", self.grade, "secondary",
+                   self.f["bold"]).pack(side="right")
         self.verdict = tk.Label(chk, text="e.g.  3 -150   or   P1 +240", bg=NAVY, fg="#9fb0c8",
                                 anchor="w", justify="left", font=self.f["small"],
-                                wraplength=int(PANEL_W) - 420)
+                                wraplength=int(PANEL_W) - 580)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
         c.create_window(W / 2, 818, window=bottom, width=PANEL_W, height=96)
 
@@ -674,6 +682,8 @@ class App:
             self.say("Please use numbers for singles, legs, parlays, wager and chance.")
             return
         self.build_btn.configure(text="Loading...")
+        self.cancel_update()
+        self.countdown.set("Updating...")
 
         def work():
             try:
@@ -686,6 +696,41 @@ class App:
                 self.results.put(("error", str(e)))
 
         threading.Thread(target=work, daemon=True).start()
+
+    def minutes(self) -> float:
+        try:
+            return max(float(self.refresh.get() or 0), 0)
+        except ValueError:
+            return 0
+
+    def cancel_update(self) -> None:
+        if self.next_job is not None:
+            self.root.after_cancel(self.next_job)
+        self.next_job = self.next_at = None
+
+    def schedule(self) -> None:
+        """Queue the next automatic update, Refresh minutes from now (0 = off)."""
+        if self.build_btn.cget("text") == "Loading...":
+            return  # an update is running; it schedules the next one when done
+        self.cancel_update()
+        minutes = self.minutes()
+        if minutes > 0:
+            # Downloads must be at least this fresh, injury reports included.
+            data.FRESH_SECONDS = min(data.FRESH_SECONDS, minutes * 60)
+            board.INJURY_MAX_AGE = min(board.INJURY_MAX_AGE, minutes * 60)
+            self.next_at = time.monotonic() + minutes * 60
+            self.next_job = self.root.after(int(minutes * 60_000), self.build)
+        self.tick(repeat=False)
+
+    def tick(self, repeat: bool = True) -> None:
+        """Show the countdown to the next automatic update."""
+        if self.next_at is not None:
+            left = max(int(self.next_at - time.monotonic() + 0.999), 0)
+            self.countdown.set(f"⟳  Next update in {left // 60}:{left % 60:02d}")
+        elif self.build_btn.cget("text") != "Loading...":
+            self.countdown.set("Auto-update off")
+        if repeat:
+            self.root.after(1000, self.tick)
 
     def poll(self) -> None:
         try:
@@ -707,10 +752,7 @@ class App:
                                    if k in {tuple(bets.label(b) for b in p.legs) for p in self.parlays}}
             self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
-            minutes = float(self.refresh.get() or 0)
-            if minutes > 0:
-                data.FRESH_SECONDS = min(data.FRESH_SECONDS, minutes * 60)
-                self.root.after(int(minutes * 60_000), self.build)
+        self.schedule()
         if self.selftest:
             print(f"{len(self.singles)} singles, {len(self.parlays)} parlays rendered")
             self.root.after(500, self.root.destroy)

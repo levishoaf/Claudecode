@@ -244,6 +244,15 @@ def price_checker(singles, parlays) -> None:
 
 # ---------------------------------------------------------------- main
 
+def countdown(seconds: int) -> None:
+    """Wait, showing the time left until the next update on one line."""
+    end = time.monotonic() + seconds
+    while (left := int(end - time.monotonic() + 0.999)) > 0:
+        print(f"\rNext update in {left // 60}:{left % 60:02d} ", end="", flush=True)
+        time.sleep(min(1, max(end - time.monotonic(), 0)))
+    print("\rUpdating...              ")
+
+
 def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         try:  # slips use box-drawing characters; never crash an old console on them
@@ -302,7 +311,7 @@ def main() -> int:
         args.legs = int(ask("Legs per parlay", "3"))
         args.parlays = int(ask("How many parlays (0 = none)", "3"))
         args.stake = float(ask("Parlay wager in dollars", "10"))
-        args.watch = int(ask("Refresh automatically every how many minutes? (0 = no)", "0"))
+        args.watch = int(ask("Refresh automatically every how many minutes? (0 = no)", "5"))
     args.sport = args.sport or "nfl"
     args.date = args.date or "week"
     args.singles = 10 if args.singles is None else args.singles
@@ -311,6 +320,7 @@ def main() -> int:
     args.stake = args.stake or 10.0
     if args.watch:
         data.FRESH_SECONDS = min(data.FRESH_SECONDS, args.watch * 60)
+        board.INJURY_MAX_AGE = min(board.INJURY_MAX_AGE, args.watch * 60)
 
     previous: dict[str, float] = {}
     saved = False
@@ -333,9 +343,9 @@ def main() -> int:
             saved = True
         if not args.watch:
             break
-        print(f"\nNext update in {args.watch} minutes. Press Ctrl+C to stop.")
+        print("\nPress Ctrl+C to stop.")
         try:
-            time.sleep(args.watch * 60)
+            countdown(args.watch * 60)
         except KeyboardInterrupt:
             print("\nStopped.")
             break

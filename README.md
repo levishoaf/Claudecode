@@ -116,8 +116,11 @@ with no account or key:
   `P1 +240`). It tells you the expected value and whether the bet is worth
   it.
 
-**Auto-refresh** (`--watch 30`) reloads injury reports, lines and weather on
-a timer and marks **NEW** picks, **chance moved** and **dropped** picks.
+**Auto-refresh** is on by default every 5 minutes, with a countdown to the
+next update (the **Refresh** box in the window; 0 turns it off, or
+`--watch 5` in the text version). Each update reloads injury reports
+(official statuses included), lines and weather, and marks **NEW** picks,
+**chance moved** and **dropped** picks.
 **Save** picks to grade later: start the program and choose **2**, or run
 `--grade`.
 
