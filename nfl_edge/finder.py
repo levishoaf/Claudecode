@@ -1,0 +1,139 @@
+"""Compare FanDuel prices against fair odds from reference books."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
+from .odds import (
+    DEVIG_METHODS,
+    decimal_to_american,
+    expected_value,
+    implied_probability,
+    kelly_fraction,
+)
+
+TARGET_BOOK = "fanduel"
+
+# Books whose lines are known to be efficient. Pinnacle (EU region) is the
+# industry benchmark; the rest are low-margin books that move quickly.
+SHARP_BOOKS = {"pinnacle": 3.0, "circasports": 2.0, "betonlineag": 1.5, "lowvig": 1.5}
+DEFAULT_WEIGHT = 1.0
+
+
+@dataclass
+class Bet:
+    game: str
+    commence_time: datetime
+    market: str
+    pick: str
+    point: float | None
+    fd_price: int
+    fair_prob: float
+    ev: float
+    kelly: float
+    books: list[str]
+
+    @property
+    def fair_american(self) -> int:
+        return decimal_to_american(1 / self.fair_prob)
+
+
+def _line_key(outcomes: list[dict]) -> frozenset:
+    """Two books offer the same line only if every (name, point) matches."""
+    return frozenset((o["name"], o.get("point")) for o in outcomes)
+
+
+def _parse_time(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def fair_probabilities(
+    reference: list[tuple[str, list[dict]]],
+    devig: str,
+    sharp_only: bool,
+) -> tuple[dict[str, float], list[str]] | None:
+    """Weighted average of each reference book's no-vig probabilities."""
+    if sharp_only:
+        sharp = [r for r in reference if r[0] in SHARP_BOOKS]
+        if sharp:
+            reference = sharp
+    if not reference:
+        return None
+
+    devig_fn = DEVIG_METHODS[devig]
+    totals: dict[str, float] = {}
+    weight_sum = 0.0
+    for book, outcomes in reference:
+        weight = SHARP_BOOKS.get(book, DEFAULT_WEIGHT)
+        probs = devig_fn([implied_probability(o["price"]) for o in outcomes])
+        for o, p in zip(outcomes, probs):
+            totals[o["name"]] = totals.get(o["name"], 0.0) + weight * p
+        weight_sum += weight
+    return {name: t / weight_sum for name, t in totals.items()}, [b for b, _ in reference]
+
+
+def find_bets(
+    events: list[dict],
+    *,
+    min_ev: float = 0.01,
+    min_books: int = 2,
+    devig: str = "power",
+    sharp_only: bool = True,
+    include_started: bool = False,
+    now: datetime | None = None,
+) -> list[Bet]:
+    now = now or datetime.now(timezone.utc)
+    bets: list[Bet] = []
+
+    for event in events:
+        start = _parse_time(event["commence_time"])
+        if start <= now and not include_started:
+            continue
+        game = f"{event['away_team']} @ {event['home_team']}"
+
+        # market key -> line key -> [(book, outcomes)]
+        lines: dict[str, dict[frozenset, list[tuple[str, list[dict]]]]] = {}
+        for bookmaker in event.get("bookmakers", []):
+            for market in bookmaker.get("markets", []):
+                outcomes = market["outcomes"]
+                if len(outcomes) != 2:  # skip 3-way markets
+                    continue
+                lines.setdefault(market["key"], {}).setdefault(
+                    _line_key(outcomes), []
+                ).append((bookmaker["key"], outcomes))
+
+        for market_key, by_line in lines.items():
+            for offers in by_line.values():
+                fd = next((o for b, o in offers if b == TARGET_BOOK), None)
+                if fd is None:
+                    continue
+                reference = [(b, o) for b, o in offers if b != TARGET_BOOK]
+                if len(reference) < min_books:
+                    continue
+                result = fair_probabilities(reference, devig, sharp_only)
+                if result is None:
+                    continue
+                fair, used = result
+                for outcome in fd:
+                    p = fair[outcome["name"]]
+                    ev = expected_value(p, outcome["price"])
+                    if ev < min_ev:
+                        continue
+                    bets.append(
+                        Bet(
+                            game=game,
+                            commence_time=start,
+                            market=market_key,
+                            pick=outcome["name"],
+                            point=outcome.get("point"),
+                            fd_price=outcome["price"],
+                            fair_prob=p,
+                            ev=ev,
+                            kelly=kelly_fraction(p, outcome["price"]),
+                            books=used,
+                        )
+                    )
+
+    bets.sort(key=lambda b: b.ev, reverse=True)
+    return bets

@@ -1,0 +1,568 @@
+[
+ {
+  "id": "demo1",
+  "sport_key": "americanfootball_nfl",
+  "commence_time": "2026-10-11T20:25:00Z",
+  "home_team": "Buffalo Bills",
+  "away_team": "Kansas City Chiefs",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "fanduel",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": 135
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -160
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": -110,
+        "point": 2.5
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -110,
+        "point": -2.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 47.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 47.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": 120
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -130
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": -102,
+        "point": 2.5
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -108,
+        "point": -2.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 47.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 47.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "betonlineag",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": 118
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -138
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": -105,
+        "point": 2.5
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -115,
+        "point": -2.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -108,
+        "point": 47.5
+       },
+       {
+        "name": "Under",
+        "price": -112,
+        "point": 47.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "draftkings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": 115
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -135
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Kansas City Chiefs",
+        "price": -108,
+        "point": 2.5
+       },
+       {
+        "name": "Buffalo Bills",
+        "price": -112,
+        "point": -2.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 48.0
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 48.0
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "demo2",
+  "sport_key": "americanfootball_nfl",
+  "commence_time": "2026-10-12T00:20:00Z",
+  "home_team": "Dallas Cowboys",
+  "away_team": "Philadelphia Eagles",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "fanduel",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -180
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": 150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -110,
+        "point": -3.5
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": -110,
+        "point": 3.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 110,
+        "point": 44.5
+       },
+       {
+        "name": "Under",
+        "price": -134,
+        "point": 44.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -170
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": 152
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -104,
+        "point": -3.5
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": -106,
+        "point": 3.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 102,
+        "point": 44.5
+       },
+       {
+        "name": "Under",
+        "price": -112,
+        "point": 44.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "betonlineag",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -175
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": 150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -105,
+        "point": -3.5
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": -115,
+        "point": 3.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 100,
+        "point": 44.5
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 44.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "draftkings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -185
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": 155
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Philadelphia Eagles",
+        "price": -110,
+        "point": -3.5
+       },
+       {
+        "name": "Dallas Cowboys",
+        "price": -110,
+        "point": 3.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 105,
+        "point": 44.5
+       },
+       {
+        "name": "Under",
+        "price": -125,
+        "point": 44.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "demo3",
+  "sport_key": "americanfootball_nfl",
+  "commence_time": "2026-10-11T17:00:00Z",
+  "home_team": "Green Bay Packers",
+  "away_team": "Detroit Lions",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "fanduel",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -125
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": 105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -110,
+        "point": -1.5
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": -110,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 50.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 50.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -122
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": 111
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -105,
+        "point": -1.5
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": -105,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -104,
+        "point": 50.5
+       },
+       {
+        "name": "Under",
+        "price": -106,
+        "point": 50.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "lowvig",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -120
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": 110
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "Detroit Lions",
+        "price": -104,
+        "point": -1.5
+       },
+       {
+        "name": "Green Bay Packers",
+        "price": -106,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 50.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 50.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]
