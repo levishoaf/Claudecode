@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Windowed bet builder: the same picks as bets.py, on a football-field
-background. No API key needed.
+"""Windowed bet builder in a modern sportsbook style: the same picks as
+bets.py, on a charcoal football field. No API key needed.
 
     python3 bets_gui.py
 """
@@ -15,6 +15,7 @@ import queue
 import sys
 import threading
 import tkinter as tk
+import tkinter.font as tkfont
 from datetime import date
 from tkinter import ttk
 
@@ -26,66 +27,102 @@ from nfl_edge.odds import decimal_to_american
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
 NUMBER_ROWS = (163, 792)  # yard numbers sit in the gaps between panels
-TURF = ("#2b2b2e", "#252528")  # charcoal, alternating 5-yard stripes
+
+# Field (charcoal)
+TURF = ("#2b2b2e", "#252528")
 ENDZONE = "#1c1c1f"
-CHALK, CHALK_SOFT = "#8e8e94", "#5c5c62"  # muted lines so the field stays in the background
-PANEL, PANEL_EDGE, INK, GOLD = "#141416", "#c9c6bc", "#f2f1ec", "#f2c14e"
-MONO = ("Menlo", 11) if sys.platform == "darwin" else ("Consolas", 10)
-CARD, CARD_EDGE, MUTED, SLIP_HEAD = "#202024", "#3c3c42", "#a8a8ae", "#1f3a8a"
-NEW_BADGE, MOVED_BADGE = "#2e7dd1", "#b8741a"
+CHALK, CHALK_SOFT = "#8e8e94", "#5c5c62"
+
+# Sportsbook-style UI
+NAVY, NAVY_2 = "#0c1b33", "#13284a"
+BLUE, BLUE_DARK, BLUE_SOFT = "#1677ff", "#0f5fd6", "#e8f1ff"
+BG, CARD, BORDER = "#eef1f5", "#ffffff", "#d9e0e8"
+TEXT, MUTED, WHITE = "#0d1b2a", "#5b6b7f", "#ffffff"
+GREEN, AMBER, RED, TRACK = "#22a352", "#e0a100", "#d64545", "#e3e8ef"
+NEW_BADGE, MOVED_BADGE = "#1677ff", "#e07b00"
+
+
+def pick_font() -> str:
+    """A modern system font that exists on this computer."""
+    available = set(tkfont.families())
+    for name in ("Segoe UI", "SF Pro Text", "Helvetica Neue", "Inter", "Roboto",
+                 "Noto Sans", "DejaVu Sans", "Helvetica"):
+        if name in available:
+            return name
+    return "TkDefaultFont"
 
 
 def chance_color(p: float) -> str:
-    """Green for likely, amber for middling, red for unlikely."""
-    if p >= 0.7:
-        return "#43a047"
-    if p >= 0.5:
-        return "#c0a030"
-    return "#c0503a"
-
-
-def chance_bar(parent: tk.Widget, p: float, bg: str, width: int = 150) -> tk.Frame:
-    row = tk.Frame(parent, bg=bg)
-    bar = tk.Canvas(row, width=width, height=10, bg="#0e0e10", highlightthickness=0)
-    bar.create_rectangle(0, 0, width * p, 10, fill=chance_color(p), outline="")
-    bar.pack(side="left")
-    tk.Label(row, text=f"{p:.0%} to win", bg=bg, fg=INK,
-             font=("Helvetica", 10, "bold")).pack(side="left", padx=6)
-    return row
-
-
-def pill(parent: tk.Widget, text: str, bg: str, fg: str = "white") -> tk.Label:
-    return tk.Label(parent, text=f" {text} ", bg=bg, fg=fg, font=("Helvetica", 9, "bold"))
+    return GREEN if p >= 0.7 else AMBER if p >= 0.5 else RED
 
 
 def draw_field(c: tk.Canvas) -> None:
     """An original football field: end zones, 5-yard stripes, yard lines,
     hash marks and yard numbers, drawn to fill the window."""
     zone = W * 0.08
-    play = W - 2 * zone
-    yard = play / 100
+    yard = (W - 2 * zone) / 100
     c.create_rectangle(0, 0, W, H, fill=TURF[0], outline="")
-    for i in range(20):  # 5-yard stripes
+    for i in range(20):
         x0 = zone + i * 5 * yard
         c.create_rectangle(x0, 0, x0 + 5 * yard, H, fill=TURF[i % 2], outline="")
-    for x0 in (0, W - zone):  # end zones
+    for x0 in (0, W - zone):
         c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="")
     for side, x in ((90, zone / 2), (-90, W - zone / 2)):
         c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6e6e74",
                       font=("Helvetica", 30, "bold"))
-    for i in range(0, 101, 5):  # yard lines
+    for i in range(0, 101, 5):
         x = zone + i * yard
         c.create_line(x, 0, x, H, fill=CHALK if i % 10 == 0 else CHALK_SOFT,
                       width=3 if i % 10 == 0 else 1)
-    for i in range(1, 100):  # hash marks
+    for i in range(1, 100):
         x = zone + i * yard
         for y in (H * 0.36, H * 0.64):
             c.create_line(x, y - 5, x, y + 5, fill=CHALK_SOFT)
-    for i in range(10, 100, 10):  # yard numbers
+    for i in range(10, 100, 10):
         x = zone + i * yard
         n = str(i if i <= 50 else 100 - i)
         for y, ang in zip(NUMBER_ROWS, (180, 0)):
             c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"))
+
+
+class FlatButton(tk.Label):
+    """A flat, modern button with a hover color."""
+
+    def __init__(self, parent, text, command, kind="primary", font=None, **kw):
+        colors = {"primary": (BLUE, WHITE, BLUE_DARK), "secondary": (WHITE, BLUE, BLUE_SOFT),
+                  "ghost": (NAVY_2, WHITE, "#1d3a66")}[kind]
+        self.bg, self.fg, self.hover = colors
+        super().__init__(parent, text=text, bg=self.bg, fg=self.fg, cursor="hand2",
+                         font=font, padx=13, pady=7, **kw)
+        self.command = command
+        self.bind("<Enter>", lambda e: self.configure(bg=self.hover))
+        self.bind("<Leave>", lambda e: self.configure(bg=self.bg))
+        self.bind("<Button-1>", lambda e: self.command())
+
+    def set_kind(self, kind: str) -> None:
+        self.bg, self.fg, self.hover = {"primary": (BLUE, WHITE, BLUE_DARK),
+                                        "ghost": (NAVY_2, "#b8c4d6", "#1d3a66")}[kind]
+        self.configure(bg=self.bg, fg=self.fg)
+
+
+def bar(parent, p: float, bg: str, width: int, font) -> tk.Frame:
+    """A rounded chance bar with its percentage."""
+    row = tk.Frame(parent, bg=bg)
+    c = tk.Canvas(row, width=width, height=10, bg=bg, highlightthickness=0)
+    c.create_line(5, 5, width - 5, 5, fill=TRACK, width=8, capstyle="round")
+    c.create_line(5, 5, 5 + (width - 10) * p, 5, fill=chance_color(p), width=8, capstyle="round")
+    c.pack(side="left")
+    tk.Label(row, text=f"{p:.0%} to win", bg=bg, fg=TEXT, font=font).pack(side="left", padx=8)
+    return row
+
+
+def odds_button(parent, text: str, caption: str, f_big, f_small, bg=BLUE_SOFT) -> tk.Frame:
+    """A sportsbook-style odds box: big price over a small caption."""
+    box = tk.Frame(parent, bg=bg, padx=12, pady=6, highlightbackground="#c7dbff",
+                   highlightthickness=1)
+    tk.Label(box, text=text, bg=bg, fg=BLUE, font=f_big).pack()
+    tk.Label(box, text=caption, bg=bg, fg=MUTED, font=f_small).pack()
+    return box
 
 
 class App:
@@ -93,98 +130,253 @@ class App:
         self.root, self.selftest = root, selftest
         self.singles, self.parlays, self.previous = [], [], {}
         self.results: queue.Queue = queue.Queue()
-        root.title("FanDuel Bet Builder")
+        root.title("Bet Builder")
         root.geometry(f"{W}x{H}")
         root.resizable(False, False)
+
+        fam = pick_font()
+        self.f = {k: (fam, size, *style) for k, (size, *style) in {
+            "title": (19, "bold"), "h2": (13, "bold"), "body": (11,), "bold": (11, "bold"),
+            "pick": (12, "bold"), "small": (9,), "tiny": (8,), "tinyb": (8, "bold"),
+            "odds": (15, "bold"), "label": (9, "bold")}.items()}
+        self.style()
 
         c = tk.Canvas(root, width=W, height=H, highlightthickness=0)
         c.pack(fill="both", expand=True)
         draw_field(c)
+        self.header(c)
+        self.output(c)
+        self.checker(c)
 
-        # Controls panel
-        top = tk.Frame(c, bg=PANEL, highlightbackground=PANEL_EDGE, highlightthickness=2)
-        tk.Label(top, text="FanDuel Bet Builder", bg=PANEL, fg=GOLD,
-                 font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=4, sticky="w",
-                                                      padx=10, pady=(8, 2))
-        tk.Label(top, text="Free data. Odds are break-even: bet only if FanDuel pays that or better.",
-                 bg=PANEL, fg=INK).grid(row=0, column=4, columnspan=8, sticky="w")
+        self.say("Press  Build bets  to load this week's picks.")
+        root.after(100, self.poll)
+        if selftest:
+            root.after(200, self.build)
+
+    # -------------------------------------------------------------- layout
+    def style(self) -> None:
+        s = ttk.Style(self.root)
+        s.theme_use("clam")
+        for name in ("TEntry", "TCombobox"):
+            s.configure(name, fieldbackground=WHITE, foreground=TEXT, bordercolor=BORDER,
+                        lightcolor=WHITE, darkcolor=WHITE, insertcolor=TEXT, padding=5,
+                        arrowcolor=BLUE, background=WHITE)
+        s.map("TCombobox", fieldbackground=[("readonly", WHITE)])
+        s.configure("Vertical.TScrollbar", troughcolor=BG, background="#c3ccd8",
+                    bordercolor=BG, arrowcolor=MUTED, lightcolor="#c3ccd8", darkcolor="#c3ccd8")
+
+    def header(self, c: tk.Canvas) -> None:
+        top = tk.Frame(c, bg=NAVY)
+        row1 = tk.Frame(top, bg=NAVY)
+        row1.pack(fill="x", padx=18, pady=(12, 4))
+        tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
+        tk.Label(row1, text="   Free data  ·  odds shown are break-even: bet only if FanDuel pays that "
+                            "or better", bg=NAVY, fg="#9fb0c8", font=self.f["small"]).pack(side="left")
 
         self.sport = tk.StringVar(value="nfl")
+        seg = tk.Frame(row1, bg=NAVY_2)
+        seg.pack(side="right")
+        self.seg_btns = {}
+        for key, text in (("nfl", "NFL"), ("ncaaf", "College")):
+            b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
+            b.pack(side="left")
+            self.seg_btns[key] = b
+        self.pick_sport("nfl")
+
+        row2 = tk.Frame(top, bg=NAVY)
+        row2.pack(fill="x", padx=18, pady=(6, 14))
         self.when = tk.StringVar(value="week")
-        self.n_singles = tk.StringVar(value="10")
-        self.legs = tk.StringVar(value="3")
-        self.n_parlays = tk.StringVar(value="3")
-        self.stake = tk.StringVar(value="10")
-        self.lo = tk.StringVar(value="60")
-        self.hi = tk.StringVar(value="80")
-        self.refresh = tk.StringVar(value="0")
+        self.n_singles, self.legs, self.n_parlays = (tk.StringVar(value=v) for v in ("10", "3", "3"))
+        self.stake, self.lo, self.hi, self.refresh = (tk.StringVar(value=v)
+                                                       for v in ("10", "60", "80", "0"))
 
-        def field(col, text, var, width=6, values=None):
-            tk.Label(top, text=text, bg=PANEL, fg=INK).grid(row=1, column=col, sticky="e", padx=(10, 2))
+        def field(label, var, width, values=None):
+            box = tk.Frame(row2, bg=NAVY)
+            box.pack(side="left", padx=(0, 8))
+            tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
+                     font=self.f["label"]).pack(anchor="w")
             if values:
-                w = ttk.Combobox(top, textvariable=var, values=values, width=width)
+                ttk.Combobox(box, textvariable=var, values=values, width=width,
+                             font=self.f["body"]).pack(anchor="w")
             else:
-                w = ttk.Entry(top, textvariable=var, width=width)
-            w.grid(row=1, column=col + 1, sticky="w", pady=6)
+                ttk.Entry(box, textvariable=var, width=width, font=self.f["body"]).pack(anchor="w")
 
-        field(0, "Sport", self.sport, 7, ["nfl", "ncaaf"])
-        field(2, "Games", self.when, 11, ["week", "today", date.today().isoformat()])
-        field(4, "Singles", self.n_singles, 4)
-        field(6, "Parlay legs", self.legs, 4)
-        field(8, "Parlays", self.n_parlays, 4)
-        field(10, "Wager $", self.stake, 6)
-        tk.Label(top, text="Chance %", bg=PANEL, fg=INK).grid(row=2, column=0, sticky="e", padx=(10, 2))
-        rng = tk.Frame(top, bg=PANEL)
-        ttk.Entry(rng, textvariable=self.lo, width=4).pack(side="left")
-        tk.Label(rng, text="to", bg=PANEL, fg=INK).pack(side="left", padx=3)
-        ttk.Entry(rng, textvariable=self.hi, width=4).pack(side="left")
-        rng.grid(row=2, column=1, sticky="w")
-        tk.Label(top, text="Refresh every (min, 0 = off)", bg=PANEL, fg=INK).grid(
-            row=2, column=2, columnspan=2, sticky="e")
-        ttk.Entry(top, textvariable=self.refresh, width=4).grid(row=2, column=4, sticky="w")
+        field("Games", self.when, 10, ["week", "today", date.today().isoformat()])
+        field("Singles", self.n_singles, 4)
+        field("Legs", self.legs, 3)
+        field("Parlays", self.n_parlays, 3)
+        field("Wager $", self.stake, 5)
+        field("Min %", self.lo, 3)
+        field("Max %", self.hi, 3)
+        field("Refresh", self.refresh, 3)
 
-        btns = tk.Frame(top, bg=PANEL)
-        self.build_btn = tk.Button(btns, text="Build bets", command=self.build, bg=GOLD,
-                                   fg="black", font=("Helvetica", 12, "bold"), padx=12)
-        self.build_btn.pack(side="left", padx=4)
-        tk.Button(btns, text="Save picks", command=self.save).pack(side="left", padx=4)
-        tk.Button(btns, text="Grade saved bets", command=self.grade).pack(side="left", padx=4)
-        btns.grid(row=2, column=5, columnspan=7, sticky="e", padx=10, pady=(0, 8))
+        btns = tk.Frame(row2, bg=NAVY)
+        btns.pack(side="right", anchor="s")
+        self.build_btn = FlatButton(btns, "Build bets", self.build, "primary", self.f["bold"])
+        self.build_btn.pack(side="left", padx=(0, 6))
+        FlatButton(btns, "Save", self.save, "secondary", self.f["bold"]).pack(side="left", padx=(0, 6))
+        FlatButton(btns, "Grade", self.grade, "secondary", self.f["bold"]).pack(side="left")
         c.create_window(W / 2, 72, window=top, width=PANEL_W)
 
-        # Output
-        out = tk.Frame(c, bg=PANEL, highlightbackground=PANEL_EDGE, highlightthickness=2)
-        self.view = tk.Canvas(out, bg=PANEL, highlightthickness=0)
+    def pick_sport(self, key: str) -> None:
+        self.sport.set(key)
+        for k, b in self.seg_btns.items():
+            b.set_kind("primary" if k == key else "ghost")
+
+    def output(self, c: tk.Canvas) -> None:
+        out = tk.Frame(c, bg=BG)
+        self.view = tk.Canvas(out, bg=BG, highlightthickness=0)
         scroll = ttk.Scrollbar(out, command=self.view.yview)
         self.view.configure(yscrollcommand=scroll.set)
         scroll.pack(side="right", fill="y")
         self.view.pack(side="left", fill="both", expand=True)
-        self.body = tk.Frame(self.view, bg=PANEL)
+        self.body = tk.Frame(self.view, bg=BG)
         self.view.create_window(0, 0, window=self.body, anchor="nw")
         self.body.bind("<Configure>",
                        lambda e: self.view.configure(scrollregion=self.view.bbox("all")))
         for seq, step in (("<MouseWheel>", None), ("<Button-4>", -1), ("<Button-5>", 1)):
-            root.bind_all(seq, lambda e, s=step: self.view.yview_scroll(
-                s if s else (-1 if e.delta > 0 else 1) * (1 if sys.platform == "darwin" else 1), "units"))
+            self.root.bind_all(seq, lambda e, s=step: self.view.yview_scroll(
+                s if s else (-1 if e.delta > 0 else 1), "units"))
         c.create_window(W / 2, 478, window=out, width=PANEL_W, height=570)
 
-        # Price checker
-        chk = tk.Frame(c, bg=PANEL, highlightbackground=PANEL_EDGE, highlightthickness=2)
-        tk.Label(chk, text="Check FanDuel's price  (e.g. 3 -150  or  P1 +240):",
-                 bg=PANEL, fg=GOLD, font=("Helvetica", 11, "bold")).pack(side="left", padx=8)
-        self.check_entry = ttk.Entry(chk, width=14)
+    def checker(self, c: tk.Canvas) -> None:
+        chk = tk.Frame(c, bg=NAVY)
+        tk.Label(chk, text="Check FanDuel's price", bg=NAVY, fg=WHITE,
+                 font=self.f["bold"]).pack(side="left", padx=(14, 8))
+        self.check_entry = ttk.Entry(chk, width=12, font=self.f["body"])
         self.check_entry.pack(side="left")
         self.check_entry.bind("<Return>", lambda e: self.check())
-        tk.Button(chk, text="Check", command=self.check).pack(side="left", padx=6)
-        self.verdict = tk.Label(chk, text="", bg=PANEL, fg=INK, anchor="w", justify="left",
-                                wraplength=int(PANEL_W) - 470)
+        FlatButton(chk, "Check", self.check, "primary", self.f["bold"]).pack(side="left", padx=8)
+        self.verdict = tk.Label(chk, text="e.g.  3 -150   or   P1 +240", bg=NAVY, fg="#9fb0c8",
+                                anchor="w", justify="left", font=self.f["small"],
+                                wraplength=int(PANEL_W) - 420)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
-        c.create_window(W / 2, 836, window=chk, width=PANEL_W, height=50)
+        c.create_window(W / 2, 836, window=chk, width=PANEL_W, height=52)
 
-        self.say("Press  Build bets  to load this week's picks.\n")
-        root.after(100, self.poll)
-        if selftest:
-            root.after(200, self.build)
+    # -------------------------------------------------------------- output
+    def clear(self) -> None:
+        for w in self.body.winfo_children():
+            w.destroy()
+        self.view.yview_moveto(0)
+
+    def say(self, text: str, clear: bool = True) -> None:
+        if clear:
+            self.clear()
+        mono = ("Menlo", 11) if sys.platform == "darwin" else ("Consolas", 10)
+        tk.Label(self.body, text=text, bg=BG, fg=TEXT, font=mono, justify="left",
+                 anchor="nw").pack(anchor="nw", padx=16, pady=14)
+
+    def render(self, args, singles, parlays, previous) -> None:
+        self.clear()
+        head = tk.Frame(self.body, bg=BG)
+        head.pack(fill="x", padx=16, pady=(14, 6))
+        sport = "NFL" if args.sport == "nfl" else "College Football"
+        tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
+                 font=self.f["h2"]).pack(side="left")
+        tk.Label(head, text=f"   {len(singles)} single bets  ·  {len(parlays)} parlays  ·  "
+                            f"{args.min_prob:.0f}–{args.max_prob:.0f}% chance, likeliest first",
+                 bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
+
+        cols = tk.Frame(self.body, bg=BG)
+        cols.pack(fill="both", padx=10)
+        left, right = tk.Frame(cols, bg=BG), tk.Frame(cols, bg=BG)
+        left.pack(side="left", anchor="n", padx=6)
+        right.pack(side="left", anchor="n", padx=6)
+        tk.Frame(left, bg=BG, width=468, height=1).pack()
+        tk.Frame(right, bg=BG, width=372, height=1).pack()
+
+        tk.Label(left, text="SINGLE BETS", bg=BG, fg=MUTED, font=self.f["label"]).pack(
+            anchor="w", pady=(6, 4))
+        if not singles:
+            tk.Label(left, text="None found. Try a wider chance range or another date.", bg=BG,
+                     fg=TEXT, font=self.f["body"]).pack(anchor="w")
+        for i, b in enumerate(singles, 1):
+            self.single_card(left, i, b, previous)
+
+        tk.Label(right, text=f"{args.legs}-LEG PARLAYS", bg=BG, fg=MUTED,
+                 font=self.f["label"]).pack(anchor="w", pady=(6, 4))
+        if args.parlays and not parlays:
+            tk.Label(right, text="Not enough games for that many legs.", bg=BG, fg=TEXT,
+                     font=self.f["body"]).pack(anchor="w")
+        for i, p in enumerate(parlays, 1):
+            self.parlay_card(right, i, p, args.stake)
+        tk.Label(self.body, text="Odds shown are break-even: bet only if FanDuel pays that or "
+                                 "better. Check any price at the bottom.",
+                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+
+    def card(self, parent) -> tk.Frame:
+        frame = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        frame.pack(fill="x", pady=5)
+        return frame
+
+    def single_card(self, parent, i: int, b, previous) -> None:
+        card = self.card(parent)
+        badge = tk.Canvas(card, width=30, height=30, bg=CARD, highlightthickness=0)
+        badge.create_oval(2, 2, 28, 28, fill=NAVY, outline="")
+        badge.create_text(15, 15, text=str(i), fill=WHITE, font=self.f["tinyb"])
+        badge.pack(side="left", anchor="n", padx=(12, 4), pady=12)
+
+        odds_button(card, _fmt_american(decimal_to_american(1 / b.fair_prob)), "break-even",
+                    self.f["odds"], self.f["tiny"]).pack(side="right", padx=12, pady=12)
+
+        mid = tk.Frame(card, bg=CARD)
+        mid.pack(side="left", fill="both", expand=True, padx=6, pady=10)
+        top = tk.Frame(mid, bg=CARD)
+        top.pack(fill="x")
+        tk.Label(top, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["pick"],
+                 wraplength=270, justify="left").pack(side="left")
+        old = previous.get(bets.label(b)) if previous else None
+        if previous and old is None:
+            tk.Label(top, text=" NEW ", bg=NEW_BADGE, fg=WHITE, font=self.f["tinyb"]).pack(
+                side="left", padx=6)
+        elif old is not None and abs(old - b.fair_prob) >= 0.02:
+            tk.Label(top, text=f" was {old:.0%} ", bg=MOVED_BADGE, fg=WHITE,
+                     font=self.f["tinyb"]).pack(side="left", padx=6)
+        tk.Label(mid, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
+        meta = f"{b.game}  ·  {_slip_time(b)}"
+        if b.priced:
+            meta += f"  ·  consensus {_fmt_american(b.fd_price)}"
+        tk.Label(mid, text=meta, bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=290,
+                 justify="left").pack(anchor="w")
+        bar(mid, b.fair_prob, CARD, 150, self.f["tinyb"]).pack(anchor="w", pady=(6, 0))
+
+    def parlay_card(self, parent, i: int, p, wager: float) -> None:
+        card = self.card(parent)
+        head = tk.Frame(card, bg=NAVY)
+        head.pack(fill="x")
+        tk.Label(head, text=f"Parlay {i}", bg=NAVY, fg=WHITE, font=self.f["bold"]).pack(
+            side="left", padx=(12, 4), pady=8)
+        tk.Label(head, text=f"{len(p.legs)} legs", bg=NAVY, fg="#9fb0c8",
+                 font=self.f["small"]).pack(side="left")
+        tk.Label(head, text=f" {_fmt_american(decimal_to_american(1 / p.win_prob))} ", bg=BLUE,
+                 fg=WHITE, font=self.f["bold"]).pack(side="right", padx=10)
+        for n, b in enumerate(p.legs):
+            if n:
+                tk.Frame(card, bg=BORDER, height=1).pack(fill="x", padx=12)
+            leg = tk.Frame(card, bg=CARD)
+            leg.pack(fill="x", padx=12, pady=7)
+            tk.Label(leg, text=_fmt_american(decimal_to_american(1 / b.fair_prob)), bg=CARD,
+                     fg=BLUE, font=self.f["bold"]).pack(side="right", anchor="n")
+            dot = tk.Canvas(leg, width=12, height=12, bg=CARD, highlightthickness=0)
+            dot.create_oval(1, 1, 11, 11, outline=BLUE, width=2)
+            dot.pack(side="left", anchor="n", pady=3)
+            txt = tk.Frame(leg, bg=CARD)
+            txt.pack(side="left", padx=8)
+            tk.Label(txt, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["bold"],
+                     wraplength=240, justify="left").pack(anchor="w")
+            tk.Label(txt, text=_slip_market(b), bg=CARD, fg=BLUE, font=self.f["tinyb"]).pack(anchor="w")
+            tk.Label(txt, text=f"{b.game}  ·  {_slip_time(b)}", bg=CARD, fg=MUTED,
+                     font=self.f["tiny"], wraplength=240, justify="left").pack(anchor="w")
+        foot = tk.Frame(card, bg="#f6f8fb")
+        foot.pack(fill="x")
+        payout = wager / p.win_prob
+        for title, value in (("Wager", f"${wager:,.2f}"), ("To win*", f"${payout - wager:,.2f}"),
+                             ("Payout*", f"${payout:,.2f}")):
+            box = tk.Frame(foot, bg="#f6f8fb")
+            box.pack(side="left", expand=True, pady=8)
+            tk.Label(box, text=title.upper(), bg="#f6f8fb", fg=MUTED, font=self.f["tinyb"]).pack()
+            tk.Label(box, text=value, bg="#f6f8fb", fg=TEXT, font=self.f["pick"]).pack()
+        bar(card, p.win_prob, CARD, 190, self.f["tinyb"]).pack(anchor="w", padx=12, pady=8)
 
     # -------------------------------------------------------------- actions
     def args(self) -> argparse.Namespace:
@@ -194,139 +386,18 @@ class App:
             stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
             max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None)
 
-    def clear(self) -> None:
-        for w in self.body.winfo_children():
-            w.destroy()
-        self.view.yview_moveto(0)
-
-    def say(self, text: str, clear: bool = True) -> None:
-        """Plain text (messages, grading results) in the output area."""
-        if clear:
-            self.clear()
-        tk.Label(self.body, text=text, bg=PANEL, fg=INK, font=MONO, justify="left",
-                 anchor="nw").pack(anchor="nw", padx=12, pady=10)
-
-    def render(self, args, singles, parlays, previous) -> None:
-        self.clear()
-        head = tk.Frame(self.body, bg=PANEL)
-        head.pack(fill="x", padx=12, pady=(10, 4))
-        tk.Label(head, text=f"{'NFL' if args.sport == 'nfl' else 'College'}  ·  "
-                            f"{bets.week_label(singles, parlays)}",
-                 bg=PANEL, fg=GOLD, font=("Helvetica", 14, "bold")).pack(side="left")
-        tk.Label(head, text=f"  ·  {len(singles)} single bets  ·  "
-                            f"{len(parlays)} parlays  ·  {args.min_prob:.0f}–{args.max_prob:.0f}% "
-                            "chance, likeliest first",
-                 bg=PANEL, fg=MUTED, font=("Helvetica", 10)).pack(side="left")
-        cols = tk.Frame(self.body, bg=PANEL)
-        cols.pack(fill="both", padx=8)
-        left, right = tk.Frame(cols, bg=PANEL), tk.Frame(cols, bg=PANEL)
-        left.pack(side="left", anchor="n", padx=4)
-        right.pack(side="left", anchor="n", padx=4)
-        # Invisible struts fix each column's width so both fit the window.
-        tk.Frame(left, bg=PANEL, width=470, height=1).pack()
-        tk.Frame(right, bg=PANEL, width=375, height=1).pack()
-
-        tk.Label(left, text="SINGLE BETS", bg=PANEL, fg=GOLD,
-                 font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(4, 6))
-        if not singles:
-            tk.Label(left, text="None found. Try a wider chance range or another date.",
-                     bg=PANEL, fg=INK).pack(anchor="w")
-        for i, b in enumerate(singles, 1):
-            self.single_card(left, i, b, previous)
-
-        tk.Label(right, text=f"{args.legs}-LEG PARLAYS", bg=PANEL, fg=GOLD,
-                 font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(4, 6))
-        if args.parlays and not parlays:
-            tk.Label(right, text="Not enough games for that many legs.", bg=PANEL,
-                     fg=INK).pack(anchor="w")
-        for i, p in enumerate(parlays, 1):
-            self.parlay_card(right, i, p, args.stake)
-        tk.Label(self.body, text="Odds shown are break-even: bet only if FanDuel pays that or "
-                                 "better. Check a price at the bottom.",
-                 bg=PANEL, fg=MUTED, font=("Helvetica", 9)).pack(anchor="w", padx=12, pady=8)
-
-    def single_card(self, parent, i: int, b, previous) -> None:
-        card = tk.Frame(parent, bg=CARD, highlightbackground=CARD_EDGE, highlightthickness=1)
-        card.pack(fill="x", pady=4)
-        tk.Label(card, text=str(i), bg=GOLD, fg="black", width=3,
-                 font=("Helvetica", 12, "bold")).pack(side="left", fill="y")
-        mid = tk.Frame(card, bg=CARD)
-        mid.pack(side="left", fill="both", expand=True, padx=10, pady=6)
-        top = tk.Frame(mid, bg=CARD)
-        top.pack(fill="x")
-        tk.Label(top, text=_slip_selection(b), bg=CARD, fg=INK,
-                 font=("Helvetica", 12, "bold")).pack(side="left")
-        old = previous.get(bets.label(b)) if previous else None
-        if previous and old is None:
-            pill(top, "NEW", NEW_BADGE).pack(side="left", padx=6)
-        elif old is not None and abs(old - b.fair_prob) >= 0.02:
-            pill(top, f"was {old:.0%}", MOVED_BADGE).pack(side="left", padx=6)
-        tk.Label(mid, text=f"{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}", bg=CARD,
-                 fg=MUTED, font=("Helvetica", 9), wraplength=300, justify="left").pack(anchor="w")
-        chance_bar(mid, b.fair_prob, CARD).pack(anchor="w", pady=(4, 0))
-        right = tk.Frame(card, bg=CARD)
-        right.pack(side="right", padx=10)
-        tk.Label(right, text=_fmt_american(decimal_to_american(1 / b.fair_prob)), bg=CARD,
-                 fg=GOLD, font=("Helvetica", 16, "bold")).pack(anchor="e")
-        tk.Label(right, text="break-even", bg=CARD, fg=MUTED,
-                 font=("Helvetica", 8)).pack(anchor="e")
-        if b.priced:
-            tk.Label(right, text=f"consensus {_fmt_american(b.fd_price)}", bg=CARD, fg=MUTED,
-                     font=("Helvetica", 8)).pack(anchor="e")
-
-    def parlay_card(self, parent, i: int, p, wager: float) -> None:
-        card = tk.Frame(parent, bg=CARD, highlightbackground=CARD_EDGE, highlightthickness=1)
-        card.pack(fill="x", pady=(4, 10))
-        odds = _fmt_american(decimal_to_american(1 / p.win_prob))
-        head = tk.Frame(card, bg=SLIP_HEAD)
-        head.pack(fill="x")
-        tk.Label(head, text=f"P{i}  ·  {len(p.legs)} Leg Parlay", bg=SLIP_HEAD, fg="white",
-                 font=("Helvetica", 12, "bold")).pack(side="left", padx=10, pady=6)
-        tk.Label(head, text=odds, bg=SLIP_HEAD, fg="white",
-                 font=("Helvetica", 15, "bold")).pack(side="right", padx=10)
-        for b in p.legs:
-            leg = tk.Frame(card, bg=CARD)
-            leg.pack(fill="x", padx=10, pady=5)
-            dot = tk.Canvas(leg, width=12, height=12, bg=CARD, highlightthickness=0)
-            dot.create_oval(1, 1, 11, 11, outline=MUTED, width=2)
-            dot.pack(side="left", anchor="n", pady=3)
-            tk.Label(leg, text=_fmt_american(decimal_to_american(1 / b.fair_prob)), bg=CARD,
-                     fg=INK, font=("Helvetica", 11, "bold")).pack(side="right", anchor="n")
-            txt = tk.Frame(leg, bg=CARD)
-            txt.pack(side="left", padx=8)
-            tk.Label(txt, text=_slip_selection(b), bg=CARD, fg=INK, wraplength=250,
-                     justify="left", font=("Helvetica", 11, "bold")).pack(anchor="w")
-            tk.Label(txt, text=_slip_market(b), bg=CARD, fg=MUTED,
-                     font=("Helvetica", 8, "bold")).pack(anchor="w")
-            tk.Label(txt, text=f"{b.game}  ·  {_slip_time(b)}", bg=CARD, fg=MUTED,
-                     font=("Helvetica", 8), wraplength=250, justify="left").pack(anchor="w")
-        foot = tk.Frame(card, bg="#0e0e10")
-        foot.pack(fill="x")
-        payout = wager / p.win_prob
-        for title, value in (("Wager", f"${wager:,.2f}"), ("To win*", f"${payout - wager:,.2f}"),
-                             ("Payout*", f"${payout:,.2f}")):
-            box = tk.Frame(foot, bg="#0e0e10")
-            box.pack(side="left", expand=True, pady=6)
-            tk.Label(box, text=title, bg="#0e0e10", fg=MUTED, font=("Helvetica", 8)).pack()
-            tk.Label(box, text=value, bg="#0e0e10", fg=INK,
-                     font=("Helvetica", 12, "bold")).pack()
-        chance_bar(card, p.win_prob, CARD, width=200).pack(anchor="w", padx=10, pady=6)
-
     def build(self) -> None:
         try:
             args = self.args()
         except ValueError:
-            self.say("Please use numbers for singles, legs, parlays, wager and chance.\n")
+            self.say("Please use numbers for singles, legs, parlays, wager and chance.")
             return
-        self.build_btn.configure(state="disabled", text="Loading...")
+        self.build_btn.configure(text="Loading...")
 
         def work():
             try:
                 _, singles, parlays = bets.build(args)
-                buf = io.StringIO()
-                with contextlib.redirect_stdout(buf):
-                    bets.show(args, singles, parlays, self.previous)
-                self.results.put(("ok", args, singles, parlays, buf.getvalue()))
+                self.results.put(("ok", args, singles, parlays))
             except (data.DataError, ValueError) as e:
                 self.results.put(("error", str(e)))
 
@@ -338,11 +409,11 @@ class App:
         except queue.Empty:
             self.root.after(150, self.poll)
             return
-        self.build_btn.configure(state="normal", text="Build bets")
+        self.build_btn.configure(text="Build bets")
         if item[0] == "error":
-            self.say(f"Couldn't load data: {item[1]}\n")
+            self.say(f"Couldn't load data: {item[1]}")
         else:
-            _, args, self.singles, self.parlays, text = item
+            _, args, self.singles, self.parlays = item
             self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
             minutes = float(self.refresh.get() or 0)
@@ -360,7 +431,7 @@ class App:
         if not self.singles and not self.parlays:
             self.verdict.configure(text="Build bets first.")
             return
-        self.verdict.configure(text=bets.check_price(self.singles, self.parlays, entry))
+        self.verdict.configure(text=bets.check_price(self.singles, self.parlays, entry), fg=WHITE)
 
     def save(self) -> None:
         if not self.singles and not self.parlays:
@@ -368,13 +439,13 @@ class App:
             return
         args = self.args()
         paths = bets.save(self.singles, self.parlays, args.sport, bets.season_for(date.today()))
-        self.verdict.configure(text=f"Saved {len(paths)} file(s) to {bets.ROOT / 'bets'}")
+        self.verdict.configure(text=f"Saved {len(paths)} file(s) to {bets.ROOT / 'bets'}", fg=WHITE)
 
     def grade(self) -> None:
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             bets.grade_saved("all")
-        self.say(buf.getvalue().lstrip("\n") or "No saved bets yet.\n")
+        self.say(buf.getvalue().strip() or "No saved bets yet.")
 
 
 def main() -> int:

@@ -254,7 +254,7 @@ def main() -> int:
 
     interactive = sys.stdin.isatty() and len(sys.argv) == 1
     if interactive:
-        print("FanDuel bet builder (free data, no API key)\n")
+        print("Bet Builder (free data, no API key)\n")
         if ask("1 = build bets, 2 = grade saved bets", "1") == "2":
             args.grade = "all"
     if args.grade:
