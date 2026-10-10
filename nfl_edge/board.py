@@ -347,8 +347,11 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
                 p = (p * prof.games + 1) / (prof.games + 2)  # small-sample shrink
                 if lo <= p <= hi:
                     found.append((p, market, k))
-        if not every_line:  # the player's likeliest prop only
-            found = sorted(found, key=lambda f: -f[0])[:1]
+        if not every_line:  # the player's likeliest line of each prop type
+            best = {}
+            for f in sorted(found, key=lambda f: -f[0]):
+                best.setdefault(f[1], f)
+            found = list(best.values())
         for p, market, k in found:
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"

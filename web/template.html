@@ -274,11 +274,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     return { ...wk, singles: t.singles, parlays: t.parlays };
   }
   function typeOptions(wk) {
-    const sure = DATA.sureTypes || [];
     return (DATA.betTypes || ["All bets"]).map((k) => {
       const has = k === "All bets" || (wk.types || {})[k];
       if (!has && state.sport === "ncaaf" && k !== state.betType) return "";  // college: moneylines only
-      const why = has ? "" : sure.includes(k) ? " (none this week)" : " (app FanDuel check)";
+      const why = has ? "" : " (none this week)";
       return `<option value="${esc(k)}"${k === state.betType ? " selected" : ""}${has ? "" : " disabled"}>${esc(k + why)}</option>`;
     }).join("");
   }
@@ -286,14 +285,14 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const k = state.betType;
     if (k === "All bets") return fallback;
     if (state.sport === "ncaaf" && k !== "Moneyline") return "College bets are moneylines only.";
-    if (!(DATA.sureTypes || []).includes(k)) return `${k} lines can't be confirmed on FanDuel from free data, so this page doesn't show them. The downloadable app's FanDuel check adds them once it finds them on FanDuel.`;
     return `No ${k.toLowerCase()} bets for this week.`;
   }
   function parlayId(p) { return "P:" + p.legs.map((l) => l.id).join(" | "); }
   function inSlip(id) { return state.slip.some((s) => s.id === id); }
   function save() { store.set("bb.slip", state.slip); store.set("bb.prices", state.prices); }
 
-  function badge(note) {
+  function badge(note, confirm) {
+    if (confirm) return '<span class="badge b-q">Confirm line</span>' + badge(note);
     if (note === "Questionable") return '<span class="badge b-q">Q</span>';
     if (note === "Did not practice") return '<span class="badge b-dnp">DNP</span>';
     return "";
@@ -307,7 +306,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const on = inSlip(b.id);
     return `<button class="lrow${on ? " on" : ""}" data-single="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : i + 1}</span>
-      <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note)}<small>${esc(b.game)} · ${esc(b.when)} ET</small></span>
+      <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note, b.confirm)}<small>${esc(b.game)} · ${esc(b.when)} ET</small></span>
       <span class="r lpct" style="color:${color(b.prob)}">${pct(b.prob)}</span>
       <span class="r lodds">${esc(b.breakeven)}<small class="show-sm">pays ${money(wager() / b.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / b.prob)}</span>
@@ -317,7 +316,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const on = inSlip(parlayId(p));
     return `<button class="lrow${on ? " on" : ""}" data-parlay="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : "P" + (i + 1)}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b><small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -602,7 +601,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
     if (state.tab === "history") html += historyView();
-    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. Bets are only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Spreads, totals and X+ props need FanDuel's own lines, which this page can't read; the downloadable app's FanDuel check adds them once it finds them on FanDuel. Confirm each bet in your slip before marking it placed.</p>`;
+    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet. Confirm each bet in your slip before marking it placed.</p>`;
     $("main").innerHTML = html;
 
     const c = combo();

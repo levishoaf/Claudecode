@@ -68,20 +68,31 @@ def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
     return [b for b in bets if not markets or b.market.startswith(markets)]
 
 
+def every_line_of(full: list[Bet], kind: str) -> list[Bet]:
+    """Every bet of a type that isn't sure to be on FanDuel (spreads, totals, yardage
+    props...): FanDuel-confirmed ones as they are, the rest marked `confirm_line`."""
+    out = of_type(full, kind)
+    for b in out:
+        b.confirm_line = not getattr(b, "on_fanduel", False)
+    return out
+
+
+CONFIRM_NOTE = ("{kind} lines marked CONFIRM LINE come from the model, not FanDuel: check "
+                "that FanDuel has that exact line before you bet.")
+
+
 def empty_type_note(kind: str, sport: str, checked: bool) -> str:
     """Why a chosen bet type has no bets."""
     if sport == "ncaaf" and kind not in ("All bets", "Moneyline"):
         return "College bets are moneylines only."
-    if kind not in SURE_TYPES and not checked:
-        return (f"{kind} lines can't be confirmed on FanDuel from free data, so they only "
-                "show with the FanDuel check on.")
     return f"No {kind.lower()} bets for this week."
 
 
 def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
                  rank_by: str = "ev", per_game: int | None = None,
-                 prop_share: float | None = None) -> list[Bet]:
-    """Best `count` singles, one per subject (see subject_key) and at most
+                 prop_share: float | None = None, every_line: bool = False) -> list[Bet]:
+    """Best `count` singles, one per subject (see subject_key; with `every_line`,
+    one per exact line, for showing every bet of one type) and at most
     `per_game` from any one game. With `prop_share` (e.g. 0.5), player props and
     game bets each fill at most that share of the list first, so the list mixes
     both; leftover places then go to the best of whichever remains."""
@@ -94,7 +105,7 @@ def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
         caps = {True: n_props, False: count - n_props}
 
     def take(b, capped: bool) -> None:
-        key = subject_key(b)
+        key = (b.game, b.market, b.pick, b.point) if every_line else subject_key(b)
         if key in seen or (per_game and games.get(b.game, 0) >= per_game):
             return
         if capped and caps is not None:
@@ -199,7 +210,12 @@ def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int 
     and `tolerance` above it, the band widens step by step up to 50% above.
     No bet appears in more than `max_uses` parlays when that can be avoided.
     """
-    pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
+    # The likeliest bets, plus the likeliest of those long enough that max_legs of
+    # them can reach the target (when every bet is very likely, e.g. 25+ yards).
+    cap = target ** (-1 / max_legs)
+    pool = rank_singles(bets, pool_size // 2, rank_by="prob", per_game=2)
+    pool += [b for b in rank_singles([b for b in bets if b.fair_prob <= cap and b not in pool],
+                                     pool_size - len(pool), rank_by="prob", per_game=2)]
 
     def pays(p: Parlay) -> float:
         """What it pays per $1, as shown: at FanDuel's prices, else at break-even."""

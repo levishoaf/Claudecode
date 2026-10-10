@@ -41,8 +41,9 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import (BET_TYPES, best_parlays, mixed_parlays, of_type,  # noqa: E402
-                            payout_parlays, rank_singles)
+from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, best_parlays,  # noqa: E402
+                            every_line_of, mixed_parlays, of_type, payout_parlays,
+                            rank_singles)
 
 
 def ask(question: str, default: str) -> str:
@@ -229,6 +230,7 @@ def build(args):
         bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
                                always_offered=not getattr(args, "fanduel_state", None)), "prob"
     state = getattr(args, "fanduel_state", None)
+    full = bets if state and not key else None  # every market, before the check drops any
     if state and not key:
         from nfl_edge import fdfeed
 
@@ -246,9 +248,21 @@ def build(args):
                 "FanDuel (moneylines and anytime TDs), at break-even odds; confirm each "
                 "one in your slip.")
     kind = getattr(args, "bet_type", None) or "All bets"
-    bets = of_type(bets, kind)
+    board.NOTES.pop("confirm_line", None)
+    if kind not in SURE_TYPES and args.sport == "nfl" and not key:
+        # Every line of the type: those FanDuel confirmed at its odds, the rest from the
+        # model, marked so their line gets confirmed on FanDuel before betting.
+        if full is None:
+            full = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
+                             always_offered=False)
+        bets, rank = every_line_of(full, kind), "prob"
+        if any(b.confirm_line for b in bets):
+            board.NOTES["confirm_line"] = CONFIRM_NOTE.format(kind=kind)
+    else:
+        bets = of_type(bets, kind)
     singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game,
-                           prop_share=0.5 if args.sport == "nfl" and kind == "All bets" else None)
+                           prop_share=0.5 if args.sport == "nfl" and kind == "All bets" else None,
+                           every_line=kind != "All bets")
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
     pays = getattr(args, "pays", None)
@@ -299,7 +313,7 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
         when = clock(b.commence_time.astimezone(EASTERN), with_date=False)
         extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)}  ({break_even(b.fair_prob)}{extra})"
-              f"  {b.game}, {when} ET{NOTE_TAGS.get(b.note, '')}{mark(b)}")
+              f"  {b.game}, {when} ET{NOTE_TAGS.get(b.note, '')}{'  [confirm line]' if b.confirm_line else ''}{mark(b)}")
     if previous:
         for gone in sorted(set(previous) - {label(b) for b in singles}):
             print(f"    dropped: {gone}")

@@ -92,7 +92,7 @@ class BetTypeTest(unittest.TestCase):
         from datetime import datetime, timedelta, timezone
 
         from nfl_edge.board import make_bet
-        from nfl_edge.picks import BET_TYPES, empty_type_note, of_type
+        from nfl_edge.picks import BET_TYPES, empty_type_note, every_line_of, of_type
 
         kick = datetime.now(timezone.utc) + timedelta(days=2)
         bets = [make_bet("A @ B", kick, "h2h", "A", None, 0.7, "g1", "x"),
@@ -105,7 +105,11 @@ class BetTypeTest(unittest.TestCase):
         self.assertEqual([b.pick for b in of_type(bets, "Rushing yards")], ["Sam Over"])
         self.assertEqual([b.pick for b in of_type(bets, "Receiving yards")], ["Al Over"])
         self.assertEqual(of_type(bets, "Spread"), [])
-        self.assertIn("FanDuel check", empty_type_note("Spread", "nfl", checked=False))
+        self.assertIn("No spread bets", empty_type_note("Spread", "nfl", checked=False))
+        lines = every_line_of(bets, "Rushing yards")
+        self.assertTrue(lines[0].confirm_line)  # the model's line: confirm it on FanDuel
+        bets[3].on_fanduel = True
+        self.assertFalse(every_line_of(bets, "Receiving yards")[0].confirm_line)
         self.assertIn("moneylines only", empty_type_note("Anytime TD", "ncaaf", checked=False))
         self.assertEqual(set(BET_TYPES) >= {"Moneyline", "Anytime TD", "Receptions"}, True)
         with self.assertRaises(ValueError):

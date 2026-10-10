@@ -43,6 +43,7 @@ class Bet:
     priced: bool = True  # False when fd_price is only the break-even price
     week: int | None = None  # schedule week, for display
     note: str = ""  # e.g. "Questionable" from the injury report
+    confirm_line: bool = False  # the line is the model's: confirm it's on FanDuel first
 
     @property
     def fair_american(self) -> int:

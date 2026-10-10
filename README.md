@@ -113,8 +113,10 @@ with no account or key:
   bets pay the least.
 - **Bet type** (the app's and web page's drop-down, `--type`, the bot's
   `bet_type:`) narrows singles and parlays to one kind of bet, such as
-  Moneyline or Anytime TD. Spreads, totals and yardage props need the
-  FanDuel check, since their lines can't be confirmed otherwise.
+  Moneyline or Anytime TD. For spreads, totals and props it shows every
+  line the model estimates: ones the FanDuel check found at FanDuel's odds,
+  the rest marked **Confirm line**, since FanDuel may not offer that exact
+  line. Check it on FanDuel before you bet.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

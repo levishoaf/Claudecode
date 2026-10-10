@@ -81,7 +81,10 @@ scorers for starters (`SURE_MARKETS`). Guessed lines (spreads, totals, team
 totals, "X+" prop ladders) were shown before and the user found many weren't
 on FanDuel, so they appear only through the FanDuel check
 (`always_offered=False`, then `fdfeed.verify`). Don't add guessed lines back to
-the default board. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
+the default board ("All bets"). The user asked for every bet when they choose a
+bet type, so the Bet type menu's other types (spreads, totals, yardage and other
+props) show every model line, FanDuel-confirmed ones at FanDuel's odds and the
+rest marked **Confirm line** (`Bet.confirm_line`, `picks.every_line_of`). The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
 `nfl_edge/fdfeed.py` checks bets against FanDuel's own site data

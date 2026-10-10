@@ -470,6 +470,9 @@ class App:
         elif board.NOTES.get("fanduel_error"):
             tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+        if board.NOTES.get("confirm_line"):
+            tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
+                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
             ready = "included for all" in board.NOTES["injuries"]
             tk.Label(self.body, text=("✓ " if ready else "⚠ ") + board.NOTES["injuries"],
@@ -543,7 +546,7 @@ class App:
         fd = getattr(self, "fd_mode", False)
         last_text = f"PAYS ${self.wager():g}" if last == "pays" else (last or "")
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
-                                  (3, "FANDUEL" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
+                                  (3, "ODDS" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
             tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
                 row=0, column=col, sticky=anchor, padx=6, pady=5)
         return table
@@ -620,9 +623,12 @@ class App:
                 title += "  · NEW"
             elif old is not None and abs(old - b.fair_prob) >= 0.02:
                 title += f"  · was {old:.0%}"
-            self.list_row(table, str(i), title, f"{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
+            on_fd = getattr(b, "on_fanduel", False)
+            tag = "CONFIRM LINE  ·  " if b.confirm_line else ""
+            self.list_row(table, str(i), title,
+                          f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b),
-                          price=b.fd_price, ev=b.ev)
+                          price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None)
 
     def parlays_tab(self, parent, parlays, stake) -> None:
         if not parlays:
@@ -635,9 +641,12 @@ class App:
             legs = "  ·  ".join(_slip_selection(b) + {"Questionable": " (Q)",
                                                       "Did not practice": " (DNP)"}.get(b.note, "")
                                 for b in p.legs)
+            if any(b.confirm_line for b in p.legs):
+                legs = "CONFIRM LINES  ·  " + legs
+            on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
             self.list_row(table, f"P{i}", f"{len(p.legs)}-leg parlay", legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
-                          price=p.american, ev=p.ev)
+                          price=p.american if on_fd else None, ev=p.ev if on_fd else None)
 
     def injuries_tab(self, parent) -> None:
         week, players, note = self.injuries
@@ -702,21 +711,21 @@ class App:
         table = self.list_table(parent, "", last="")
         for b in singles:
             self.list_row(table, "", _slip_selection(b), f"{b.game}  ·  {_slip_time(b)}",
-                          b.fair_prob, last="✕", price=b.fd_price)
+                          b.fair_prob, last="✕", price=b.fd_price if self.on_fd([b]) else None)
             self.remove_link(table, lambda b=b: self.toggle_single(b))
             if self.confirmed([b]):
                 self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob,
-                               prefill=b.fd_price if self.fd_mode else None)
+                               prefill=b.fd_price if self.on_fd([b]) else None)
             else:
                 self.confirm_row(table, [b], lambda b=b: self.toggle_single(b))
         for p in parlays:
             self.list_row(table, "", f"{len(p.legs)}-leg parlay",
                           "  ·  ".join(_slip_selection(b) for b in p.legs), p.win_prob, last="✕",
-                          price=p.american)
+                          price=p.american if self.on_fd(p.legs) else None)
             self.remove_link(table, lambda p=p: self.toggle_parlay(p))
             if self.confirmed(list(p.legs)):
                 self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob,
-                               prefill=p.american if self.fd_mode else None)
+                               prefill=p.american if self.on_fd(p.legs) else None)
             else:
                 self.confirm_row(table, list(p.legs), lambda p=p: self.toggle_parlay(p))
         combo = self.combined(singles) if self.confirmed(singles) else None
@@ -726,13 +735,18 @@ class App:
             table = self.list_table(parent, "", last="")
             self.list_row(table, "", f"{len(singles)}-leg parlay (your singles)",
                           "  ·  ".join(_slip_selection(b) for b in singles), combo.win_prob, last="",
-                          price=combo.american)
+                          price=combo.american if self.on_fd(singles) else None)
             self.place_row(table, self.entry_for([], [combo]), stake, bulk=False,
-                           prob=combo.win_prob, prefill=combo.american if self.fd_mode else None)
+                           prob=combo.win_prob, prefill=combo.american if self.on_fd(singles) else None)
 
     # -------------------------------------------------------------- FanDuel checks
     def checks(self) -> dict:
         return self.ledger.setdefault("checks", {})
+
+    @staticmethod
+    def on_fd(legs) -> bool:
+        """Every leg found on FanDuel by the FanDuel check, so its price is FanDuel's."""
+        return all(getattr(b, "on_fanduel", False) for b in legs)
 
     def confirmed(self, legs) -> bool:
         """Every leg confirmed on FanDuel (by you, or by the FanDuel feed)."""

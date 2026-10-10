@@ -27,7 +27,8 @@ from pathlib import Path
 
 import bets as launcher  # sets up paths and certificates, like the app
 from nfl_edge import botcore, data, fdfeed
-from nfl_edge.picks import BET_TYPES, empty_type_note, of_type
+from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, empty_type_note,
+                            every_line_of, of_type)
 
 ROOT = launcher.ROOT
 LEDGER = ROOT / "discord bets.json"
@@ -95,9 +96,20 @@ class Core:
                     f"Couldn't check against FanDuel ({e}), so these are only bets sure to be "
                     "on FanDuel, at break-even odds. Confirm each one before you bet.", False)
 
-    def bets(self, sport, count, lo, hi, week, wager, kind="All bets") -> str:
+    def _typed(self, sport, week, lo, hi, kind):
+        """(bets of the type, note, checked). Types that aren't sure to be on FanDuel
+        get every line: FanDuel-confirmed ones, and the model's marked to confirm."""
         pool, note, checked = self._pool(sport, week, lo, hi)
-        pool = of_type(pool, kind)
+        if kind in SURE_TYPES or sport != "nfl":
+            return of_type(pool, kind), note, checked
+        full = self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False)
+        out = every_line_of(full, kind)
+        if any(b.confirm_line for b in out):
+            note = CONFIRM_NOTE.format(kind=kind)
+        return out, note, checked
+
+    def bets(self, sport, count, lo, hi, week, wager, kind="All bets") -> str:
+        pool, note, checked = self._typed(sport, week, lo, hi, kind)
         if not pool and kind != "All bets":
             return empty_type_note(kind, sport, checked)
         singles = botcore.pick_singles(pool, count, rank_by="ev" if checked else "prob",
@@ -107,8 +119,7 @@ class Core:
 
     def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager,
                 pays=None, kind="All bets") -> list[str]:
-        pool, note, checked = self._pool(sport, week, lo, hi)
-        pool = of_type(pool, kind)
+        pool, note, checked = self._typed(sport, week, lo, hi, kind)
         if not pool and kind != "All bets":
             return [empty_type_note(kind, sport, checked)]
         parlays = botcore.pick_parlays(pool, count, min_legs, max_legs,
@@ -116,7 +127,7 @@ class Core:
         self.last_parlays[channel] = (sport, parlays)
         self._record(sport, week, [], parlays)
         out = botcore.parlays_text(parlays, sport, wager)
-        if note and not checked:
+        if note and (not checked or kind not in SURE_TYPES):
             out[0] += f"\n_{note}_"
         return out
 
@@ -357,6 +368,8 @@ def selftest() -> int:
         out = {"bets": core.bets("nfl", 10, 1, 99, None, 10.0),
                "td_bets": core.bets("nfl", 5, 1, 99, None, 10.0, "Anytime TD"),
                "rushing": core.bets("nfl", 5, 1, 99, None, 10.0, "Rushing yards"),
+               "spread parlays": core.parlays(1, "nfl", 2, 2, 6, 1, 99, None, 10.0, 40.0,
+                                              "Spread"),
                "parlays": core.parlays(1, "nfl", 3, 2, 6, 1, 99, None, 10.0, pays=40.0),
                "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0)}
         top = core.boards.get("nfl", None, 0.6, 0.8)

@@ -79,16 +79,17 @@ def singles_text(singles, sport: str, wager: float) -> str:
     lines = [f"**{SPORT_NAME[sport]} · {week_of(singles)} · top {len(singles)} single bets**",
              ("Every bet was found on FanDuel; odds are FanDuel's. Best value first."
               if on_fd else
-              "Odds are break-even: bet only if FanDuel pays that or better. Confirm each "
-              "bet on FanDuel before you place it.")]
+              "Odds are break-even unless marked FanDuel: bet only if FanDuel pays that or "
+              "better. Confirm each bet on FanDuel before you place it.")]
     for i, b in enumerate(singles, 1):
-        if on_fd:
+        if getattr(b, "on_fanduel", False):
             price = (f"FanDuel {_fmt_american(b.fd_price)} · EV {b.ev:+.1%} · ${wager:g} pays "
                      f"${wager * american_to_decimal(b.fd_price):,.2f}")
         else:
             price = (f"worst odds {break_even(b.fair_prob)} · ${wager:g} pays "
                      f"${wager / b.fair_prob:,.2f}")
-        lines.append(f"**{i}. {_describe(b)}**{NOTE_TAG.get(b.note, '')} — **{b.fair_prob:.0%}** · "
+        tag = NOTE_TAG.get(b.note, "") + (" · *confirm line*" if b.confirm_line else "")
+        lines.append(f"**{i}. {_describe(b)}**{tag} — **{b.fair_prob:.0%}** · "
                      f"{price}\n   {b.game} · {when(b)}")
     if not on_fd:
         lines.append("Expected value is 0 at break-even odds. Use `/chance` with FanDuel's price "
@@ -394,7 +395,7 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
 def pick_singles(bets, count: int, rank_by: str = "prob", mix: bool = True):
     """The top singles; with `mix`, half props and half game bets where possible."""
     return rank_singles(bets, count, rank_by=rank_by, per_game=3,
-                        prop_share=0.5 if mix else None)
+                        prop_share=0.5 if mix else None, every_line=not mix)
 
 
 def pick_parlays(bets, count: int, min_legs: int, max_legs: int,
