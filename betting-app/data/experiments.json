@@ -1,0 +1,780 @@
+[
+ {
+  "league": "NFL",
+  "baseline_params": {
+   "k": 0.12,
+   "sigma": 15.5,
+   "hfa": 2.0,
+   "reg": 0.3,
+   "cap": 24.0,
+   "rest_pts": 0.0,
+   "init_unseen": 0.0
+  },
+  "kept_changes": {},
+  "log": [
+   {
+    "change": "baseline",
+    "result": {
+     "overrides": {},
+     "prior": {
+      "n": 208,
+      "brier": 0.2249,
+      "log_loss": 0.638
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2194,
+      "log_loss": 0.6235
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2194,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2404,
+      "model_ll": 0.6235,
+      "blend_ll": 0.6722,
+      "market_ll": 0.6923
+     }
+    },
+    "kept": true
+   },
+   {
+    "change": "rest_pts=0.15",
+    "kept": false,
+    "why": "prior ll +0.0003, current ll -0.0028, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "rest_pts": 0.15
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2252,
+      "log_loss": 0.6383
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2182,
+      "log_loss": 0.6207
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2182,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2402,
+      "model_ll": 0.6207,
+      "blend_ll": 0.6718,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "rest_pts=0.3",
+    "kept": false,
+    "why": "prior ll +0.0011, current ll -0.0055, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "rest_pts": 0.3
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2256,
+      "log_loss": 0.6391
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2169,
+      "log_loss": 0.618
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2169,
+      "market_brier": 0.2493,
+      "blend_brier": 0.24,
+      "model_ll": 0.618,
+      "blend_ll": 0.6714,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "rest_pts=0.5",
+    "kept": false,
+    "why": "prior ll +0.0027, current ll -0.0090, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "rest_pts": 0.5
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2264,
+      "log_loss": 0.6407
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2154,
+      "log_loss": 0.6145
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2154,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2398,
+      "model_ll": 0.6145,
+      "blend_ll": 0.6708,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "hfa=1.0",
+    "kept": false,
+    "why": "prior ll -0.0024, current ll +0.0055, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "hfa": 1.0
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2235,
+      "log_loss": 0.6356
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2209,
+      "log_loss": 0.629
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2209,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2408,
+      "model_ll": 0.629,
+      "blend_ll": 0.673,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "hfa=1.5",
+    "kept": false,
+    "why": "prior ll -0.0016, current ll +0.0023, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "hfa": 1.5
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2241,
+      "log_loss": 0.6364
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.22,
+      "log_loss": 0.6258
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.22,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2406,
+      "model_ll": 0.6258,
+      "blend_ll": 0.6726,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "hfa=2.5",
+    "kept": false,
+    "why": "prior ll +0.0024, current ll -0.0014, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "hfa": 2.5
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2262,
+      "log_loss": 0.6404
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2191,
+      "log_loss": 0.6221
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2191,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2402,
+      "model_ll": 0.6221,
+      "blend_ll": 0.6718,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "hfa=3.0",
+    "kept": false,
+    "why": "prior ll +0.0056, current ll -0.0020, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "hfa": 3.0
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2278,
+      "log_loss": 0.6436
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2192,
+      "log_loss": 0.6215
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2192,
+      "market_brier": 0.2493,
+      "blend_brier": 0.24,
+      "model_ll": 0.6215,
+      "blend_ll": 0.6715,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "reg=0.2",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll -0.0022, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "reg": 0.2
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2249,
+      "log_loss": 0.638
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2183,
+      "log_loss": 0.6213
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2183,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2401,
+      "model_ll": 0.6213,
+      "blend_ll": 0.6714,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "reg=0.4",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll +0.0028, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "reg": 0.4
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2249,
+      "log_loss": 0.638
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2208,
+      "log_loss": 0.6263
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2208,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2407,
+      "model_ll": 0.6263,
+      "blend_ll": 0.6729,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "cap=17.0",
+    "kept": false,
+    "why": "prior ll +0.0048, current ll +0.0002, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "cap": 17.0
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2269,
+      "log_loss": 0.6428
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2192,
+      "log_loss": 0.6237
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2192,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2406,
+      "model_ll": 0.6237,
+      "blend_ll": 0.6726,
+      "market_ll": 0.6923
+     }
+    }
+   },
+   {
+    "change": "cap=35.0",
+    "kept": false,
+    "why": "prior ll -0.0007, current ll +0.0034, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "cap": 35.0
+     },
+     "prior": {
+      "n": 208,
+      "brier": 0.2248,
+      "log_loss": 0.6373
+     },
+     "current": {
+      "n": 33,
+      "brier": 0.2208,
+      "log_loss": 0.6269
+     },
+     "market_subset": {
+      "n": 33,
+      "model_brier": 0.2208,
+      "market_brier": 0.2493,
+      "blend_brier": 0.2405,
+      "model_ll": 0.6269,
+      "blend_ll": 0.6723,
+      "market_ll": 0.6923
+     }
+    }
+   }
+  ]
+ },
+ {
+  "league": "NCAAF",
+  "baseline_params": {
+   "k": 0.12,
+   "sigma": 10.5,
+   "hfa": 2.5,
+   "reg": 0.35,
+   "cap": 28.0,
+   "rest_pts": 0.0,
+   "init_unseen": 0.0
+  },
+  "kept_changes": {},
+  "log": [
+   {
+    "change": "baseline",
+    "result": {
+     "overrides": {},
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1769,
+      "log_loss": 0.53
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1908,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1564,
+      "model_ll": 0.5612,
+      "blend_ll": 0.4731,
+      "market_ll": 0.4624
+     }
+    },
+    "kept": true
+   },
+   {
+    "change": "init_unseen=-3.0",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll -0.0002, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "init_unseen": -3.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1768,
+      "log_loss": 0.5298
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1909,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1565,
+      "model_ll": 0.5612,
+      "blend_ll": 0.4731,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "init_unseen=-6.0",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll -0.0003, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "init_unseen": -6.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1767,
+      "log_loss": 0.5297
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1909,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1565,
+      "model_ll": 0.5612,
+      "blend_ll": 0.4732,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "init_unseen=-10.0",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll -0.0004, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "init_unseen": -10.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1766,
+      "log_loss": 0.5296
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1909,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1565,
+      "model_ll": 0.5612,
+      "blend_ll": 0.4732,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "rest_pts=0.15",
+    "kept": false,
+    "why": "prior ll +0.0020, current ll +0.0008, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "rest_pts": 0.15
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1878,
+      "log_loss": 0.553
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1775,
+      "log_loss": 0.5308
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1911,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1564,
+      "model_ll": 0.5602,
+      "blend_ll": 0.4732,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "rest_pts=0.3",
+    "kept": false,
+    "why": "prior ll +0.0055, current ll +0.0025, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "rest_pts": 0.3
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1891,
+      "log_loss": 0.5565
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1784,
+      "log_loss": 0.5325
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1916,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1564,
+      "model_ll": 0.5603,
+      "blend_ll": 0.4732,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "hfa=2.0",
+    "kept": false,
+    "why": "prior ll +0.0009, current ll +0.0026, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "hfa": 2.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1872,
+      "log_loss": 0.5519
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1785,
+      "log_loss": 0.5326
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1923,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1566,
+      "model_ll": 0.5626,
+      "blend_ll": 0.4736,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "hfa=3.0",
+    "kept": false,
+    "why": "prior ll +0.0007, current ll -0.0011, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "hfa": 3.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1874,
+      "log_loss": 0.5517
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1758,
+      "log_loss": 0.5289
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1901,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1563,
+      "model_ll": 0.5616,
+      "blend_ll": 0.4728,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "hfa=3.5",
+    "kept": false,
+    "why": "prior ll +0.0029, current ll -0.0008, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "hfa": 3.5
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1885,
+      "log_loss": 0.5539
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1753,
+      "log_loss": 0.5292
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.19,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1562,
+      "model_ll": 0.5636,
+      "blend_ll": 0.4725,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "reg=0.25",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll -0.0013, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "reg": 0.25
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1763,
+      "log_loss": 0.5287
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1906,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1565,
+      "model_ll": 0.5608,
+      "blend_ll": 0.4728,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "reg=0.45",
+    "kept": false,
+    "why": "prior ll -0.0000, current ll +0.0028, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "reg": 0.45
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.187,
+      "log_loss": 0.551
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.178,
+      "log_loss": 0.5328
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1914,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1565,
+      "model_ll": 0.5628,
+      "blend_ll": 0.4735,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "cap=21.0",
+    "kept": false,
+    "why": "prior ll +0.0014, current ll -0.0029, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "cap": 21.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1875,
+      "log_loss": 0.5524
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1756,
+      "log_loss": 0.5271
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1905,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1564,
+      "model_ll": 0.5628,
+      "blend_ll": 0.4745,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "cap=35.0",
+    "kept": false,
+    "why": "prior ll +0.0025, current ll +0.0045, blend-vs-market brier ok",
+    "result": {
+     "overrides": {
+      "cap": 35.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.188,
+      "log_loss": 0.5535
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1783,
+      "log_loss": 0.5345
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1917,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1564,
+      "model_ll": 0.5638,
+      "blend_ll": 0.4724,
+      "market_ll": 0.4624
+     }
+    }
+   },
+   {
+    "change": "cap=45.0",
+    "kept": false,
+    "why": "prior ll +0.0018, current ll +0.0121, blend-vs-market brier worse",
+    "result": {
+     "overrides": {
+      "cap": 45.0
+     },
+     "prior": {
+      "n": 566,
+      "brier": 0.1878,
+      "log_loss": 0.5528
+     },
+     "current": {
+      "n": 201,
+      "brier": 0.1792,
+      "log_loss": 0.5421
+     },
+     "market_subset": {
+      "n": 114,
+      "model_brier": 0.1966,
+      "market_brier": 0.1535,
+      "blend_brier": 0.1568,
+      "model_ll": 0.5786,
+      "blend_ll": 0.4729,
+      "market_ll": 0.4624
+     }
+    }
+   }
+  ]
+ }
+]

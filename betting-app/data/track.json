@@ -1,0 +1,52 @@
+{
+ "generated_at": "2026-10-10T05:42:37+00:00",
+ "paper_trading_only": true,
+ "unit": "1 unit = 1% of a notional bankroll",
+ "pending": 35,
+ "settled": 0,
+ "groups": {
+  "all": {
+   "n": 0,
+   "wins": 0,
+   "losses": 0,
+   "pushes": 0,
+   "flat_units_won": 0,
+   "flat_roi": null,
+   "kelly_units_staked": 0,
+   "kelly_units_won": 0,
+   "kelly_roi": null,
+   "avg_clv": null,
+   "clv_n": 0,
+   "avg_model_ev_claimed": null
+  },
+  "singles": {
+   "n": 0,
+   "wins": 0,
+   "losses": 0,
+   "pushes": 0,
+   "flat_units_won": 0,
+   "flat_roi": null,
+   "kelly_units_staked": 0,
+   "kelly_units_won": 0,
+   "kelly_roi": null,
+   "avg_clv": null,
+   "clv_n": 0,
+   "avg_model_ev_claimed": null
+  },
+  "parlays": {
+   "n": 0,
+   "wins": 0,
+   "losses": 0,
+   "pushes": 0,
+   "flat_units_won": 0,
+   "flat_roi": null,
+   "kelly_units_staked": 0,
+   "kelly_units_won": 0,
+   "kelly_roi": null,
+   "avg_clv": null,
+   "clv_n": 0,
+   "avg_model_ev_claimed": null
+  }
+ },
+ "recent": []
+}
