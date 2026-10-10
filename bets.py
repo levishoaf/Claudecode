@@ -187,15 +187,21 @@ STATE_FILE = ROOT / "fanduel state.txt"
 MIN_PROB, MAX_PROB = 1.0, 99.0
 
 
+DEFAULT_STATE = "in"  # Indiana: the FanDuel check is on unless it's turned off
+
+
 def fanduel_state() -> str | None:
-    """The state for checking bets against FanDuel's own site (saved by the app)."""
+    """The state to check bets against FanDuel's own site in (Indiana unless changed
+    in the app), or None when the check is turned off."""
     try:
-        return STATE_FILE.read_text().strip().lower() or None
+        saved = STATE_FILE.read_text().strip().lower()
     except OSError:
-        return None
+        saved = ""
+    return None if saved == "off" else (saved or DEFAULT_STATE)
 
 
 def save_fanduel_state(state: str) -> None:
+    """Save a two-letter state, or "off" to turn the FanDuel check off."""
     STATE_FILE.write_text(state.strip().lower() + "\n")
 
 
@@ -227,8 +233,18 @@ def build(args):
         from nfl_edge import fdfeed
 
         # Keep only bets found on FanDuel's own site, at FanDuel's prices.
-        bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
-        rank = "ev"
+        try:
+            bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
+            rank = "ev"
+        except fdfeed.FeedError as e:
+            # FanDuel can't be read: fall back to the bets sure to be on FanDuel.
+            if args.sport == "nfl":
+                bets = nfl_board(day, lo, hi, games_source=args.games_file, week=week)
+            args.fanduel_state = None
+            board.NOTES["fanduel_error"] = (
+                f"Couldn't check against FanDuel ({e}). Showing only bets sure to be on "
+                "FanDuel (moneylines and anytime TDs), at break-even odds; confirm each "
+                "one in your slip.")
     kind = getattr(args, "bet_type", None) or "All bets"
     bets = of_type(bets, kind)
     singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game,

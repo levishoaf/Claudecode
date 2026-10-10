@@ -84,6 +84,8 @@ on FanDuel, so they appear only through the FanDuel check
 the default board. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
-`nfl_edge/fdfeed.py` optionally checks bets against FanDuel's own site data
-(unofficial, no key; app "FanDuel check", bot `/fanduel-check`); it is
+`nfl_edge/fdfeed.py` checks bets against FanDuel's own site data
+(unofficial, no key; app "FanDuel check", bot `/fanduel-check`). It is on by
+default for Indiana (`bets.DEFAULT_STATE`; "off" in the state file turns it
+off), and falls back to the sure board with a note when FanDuel can't be read. It is
 blocked from this workspace, so it is tested only against sample feeds.

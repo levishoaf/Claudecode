@@ -42,11 +42,17 @@ class BotFanDuelCheckTest(unittest.TestCase):
         self.assertIn("FanDuel -150", text)
         self.assertIn("found on FanDuel", text)
 
-    def test_failed_check_shows_nothing(self):
+    def test_failed_check_falls_back_to_sure_bets(self):
+        core = self.core("in")
+        asked = []
+        core.boards.get = lambda *a, **k: asked.append(k.get("sure_only")) or bets()
         with mock.patch("nfl_edge.fdfeed.verify", side_effect=fdfeed.FeedError("blocked")):
-            text = self.core("nj").bets("nfl", 10, 1, 99, None, 10.0)
-        self.assertIn("no bets are shown", text)
-        self.assertNotIn("Falcons", text)
+            text = core.bets("nfl", 10, 1, 99, None, 10.0)
+        self.assertEqual(asked, [False, True])  # every market first, then only sure bets
+        self.assertIn("Couldn't check against FanDuel (blocked)", text)
+        self.assertIn("only bets sure to be on FanDuel", text)
+        self.assertIn("Falcons", text)
+        self.assertNotIn("FanDuel -150", text)  # break-even odds, not FanDuel's
 
     def test_place_refuses_bets_not_on_fanduel(self):
         core = self.core("nj")
@@ -67,3 +73,16 @@ class BotFanDuelCheckTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DefaultStateTest(unittest.TestCase):
+    def test_indiana_unless_changed_or_off(self):
+        import bets as launcher
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(launcher, "STATE_FILE", Path(d) / "fanduel state.txt"):
+            self.assertEqual(launcher.fanduel_state(), "in")
+            launcher.save_fanduel_state("NJ")
+            self.assertEqual(launcher.fanduel_state(), "nj")
+            launcher.save_fanduel_state("off")
+            self.assertIsNone(launcher.fanduel_state())

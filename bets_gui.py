@@ -182,7 +182,7 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        self.fanduel_on = bets.fanduel_state() is not None  # on once a state is chosen
+        self.fanduel_on = bets.fanduel_state() is not None  # on (Indiana) unless turned off
         self.mode_lbl = tk.Label(row1, text="", bg=NAVY, fg="#9fb0c8", font=self.f["small"])
         self.mode_lbl.pack(side="left")
 
@@ -266,28 +266,30 @@ class App:
     def show_mode(self) -> None:
         on = self.fanduel_on
         state = (bets.fanduel_state() or "").upper()
-        self.fd_btn.configure(text=f" FanDuel check: On ({state}) " if on else " FanDuel check: Off ")
+        self.fd_btn.configure(text=f" FanDuel check: {state} ▾ " if on else " FanDuel check: Off ▾ ")
         self.fd_btn.set_kind("primary" if on else "ghost")
         self.mode_lbl.configure(text="" if on else "   Free data  ·  break-even odds")
 
     def toggle_fanduel(self) -> None:
-        if not self.fanduel_on and bets.fanduel_state() is None:
-            from tkinter import simpledialog
+        """Change the FanDuel check's state, or turn it off (it's on, for Indiana, by default)."""
+        from tkinter import simpledialog
 
-            state = simpledialog.askstring(
-                "FanDuel check",
-                "Check every bet against FanDuel's own site and show only the ones it lists,\n"
-                "at FanDuel's odds. Which state do you bet in? (two letters, e.g. NJ)\n\n"
-                "This reads the odds FanDuel's website loads. It's unofficial: FanDuel may\n"
-                "change or block it, and automated reading may go against its terms.",
-                parent=self.root)
-            if not state or state.strip().lower() not in fdfeed.STATES:
-                if state:
-                    self.verdict.configure(text=f"FanDuel isn't available in {state.strip().upper()}.",
-                                           fg=WHITE)
-                return
-            bets.save_fanduel_state(state)
-        self.fanduel_on = not self.fanduel_on
+        state = simpledialog.askstring(
+            "FanDuel check",
+            "Every bet is checked against FanDuel's own site, and only the ones it lists\n"
+            "are shown, at FanDuel's odds. Which state do you bet in? (two letters, e.g. IN)\n"
+            "Type OFF to turn the check off.\n\n"
+            "This reads the odds FanDuel's website loads. It's unofficial: FanDuel may\n"
+            "change or block it, and automated reading may go against its terms.",
+            initialvalue=(bets.fanduel_state() or "off").upper(), parent=self.root)
+        if not state:
+            return
+        state = state.strip().lower()
+        if state != "off" and state not in fdfeed.STATES:
+            self.verdict.configure(text=f"FanDuel isn't available in {state.upper()}.", fg=WHITE)
+            return
+        bets.save_fanduel_state(state)
+        self.fanduel_on = bets.fanduel_state() is not None
         self.show_mode()
         self.build()
 
@@ -465,7 +467,7 @@ class App:
             tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
                      bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        elif board.NOTES.get("fanduel_error") and self.fd_mode:
+        elif board.NOTES.get("fanduel_error"):
             tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -1027,6 +1029,7 @@ class App:
         self.countdown.set("Updating...")
 
         def work():
+            board.NOTES.pop("fanduel_error", None)
             try:
                 try:
                     _, singles, parlays = bets.build(args)
@@ -1037,8 +1040,6 @@ class App:
                         f"Couldn't check against FanDuel ({e}), so no bets are shown. "
                         "Try again in a minute, or turn the FanDuel check off and confirm "
                         "bets yourself in the slip.")
-                else:
-                    board.NOTES.pop("fanduel_error", None)
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)

@@ -139,12 +139,14 @@ FanDuel's menu, so three things keep bets placeable:
    and it leaves the slip and is hidden from the lists (with **Show again** to
    undo). Only confirmed bets can be marked placed, so Bet History only holds
    bets you could actually make.
-3. **FanDuel check (optional, app and Discord bot).** Click **FanDuel check**
-   in the window (or run `/fanduel-check state:NJ` in Discord) and choose the
-   state you bet in. Every bet is then checked against the odds FanDuel's own
-   website loads: only bets found on FanDuel are shown, at FanDuel's odds, with
-   their expected value, and they need no manual confirmation. If FanDuel can't
-   be read, no bets are shown rather than unconfirmed ones. This reads FanDuel's
+3. **FanDuel check (automatic in the app and Discord bot, Indiana by
+   default).** Every bet is checked against the odds FanDuel's own website
+   loads for Indiana: only bets found on FanDuel are shown, at FanDuel's odds,
+   with their expected value, and they need no manual confirmation. To use
+   another state or turn it off, click **FanDuel check: IN** in the window and
+   type a state or OFF (in Discord, `/fanduel-check state:NJ` or `state:off`).
+   If FanDuel can't be read, only the bets sure to be on FanDuel are shown
+   (moneylines and anytime TDs), with a note saying so. This reads FanDuel's
    site data unofficially: FanDuel can change or block it, and automated
    reading may go against its terms of use.
 
