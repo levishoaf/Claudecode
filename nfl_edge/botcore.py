@@ -47,7 +47,8 @@ class Boards:
             if hit and time.monotonic() - hit[0] < self.ttl:
                 return hit[1]
         bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
-                else nfl_board(None, lo, hi, week=week, every_line=every_line))
+                else nfl_board(None, lo, hi, week=week, every_line=every_line,
+                               always_offered=not every_line))
         with self._lock:
             self._cache[key] = (time.monotonic(), bets)
         return bets
@@ -74,15 +75,24 @@ def week_of(bets) -> str:
 def singles_text(singles, sport: str, wager: float) -> str:
     if not singles:
         return "No bets in that chance range. Try a wider range."
+    on_fd = all(getattr(b, "on_fanduel", False) for b in singles)
     lines = [f"**{SPORT_NAME[sport]} · {week_of(singles)} · top {len(singles)} single bets**",
-             f"Odds are break-even: bet only if FanDuel pays that or better. "
-             f"Payout is what ${wager:g} returns at those odds."]
+             ("Every bet was found on FanDuel; odds are FanDuel's. Best value first."
+              if on_fd else
+              "Odds are break-even: bet only if FanDuel pays that or better. Confirm each "
+              "bet on FanDuel before you place it.")]
     for i, b in enumerate(singles, 1):
+        if on_fd:
+            price = (f"FanDuel {_fmt_american(b.fd_price)} · EV {b.ev:+.1%} · ${wager:g} pays "
+                     f"${wager * american_to_decimal(b.fd_price):,.2f}")
+        else:
+            price = (f"worst odds {break_even(b.fair_prob)} · ${wager:g} pays "
+                     f"${wager / b.fair_prob:,.2f}")
         lines.append(f"**{i}. {_describe(b)}**{NOTE_TAG.get(b.note, '')} — **{b.fair_prob:.0%}** · "
-                     f"worst odds {break_even(b.fair_prob)} · ${wager:g} pays "
-                     f"${wager / b.fair_prob:,.2f}\n   {b.game} · {when(b)}")
-    lines.append("Expected value is 0 at break-even odds. Use `/chance` with FanDuel's price "
-                 "to see the real value.")
+                     f"{price}\n   {b.game} · {when(b)}")
+    if not on_fd:
+        lines.append("Expected value is 0 at break-even odds. Use `/chance` with FanDuel's price "
+                     "to see the real value.")
     return "\n".join(lines)
 
 
@@ -93,9 +103,12 @@ def parlays_text(parlays, sport: str, wager: float) -> list[str]:
     out = [f"**{SPORT_NAME[sport]} · {week_of([b for p in parlays for b in p.legs])} · "
            f"top {len(parlays)} parlays** (place one with `/place bet:P1`)"]
     for i, p in enumerate(parlays, 1):
-        slip = "\n".join(format_slip(p, wager, break_even=True))
-        out.append(f"**P{i}** · {len(p.legs)} legs · **{p.win_prob:.0%}** to win · worst odds "
-                   f"{break_even(p.win_prob)}\n```\n{slip}\n```")
+        on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
+        slip = "\n".join(format_slip(p, wager, break_even=not on_fd))
+        odds = (f"FanDuel {_fmt_american(p.american)} · EV {p.ev:+.1%}" if on_fd
+                else f"worst odds {break_even(p.win_prob)}")
+        out.append(f"**P{i}** · {len(p.legs)} legs · **{p.win_prob:.0%}** to win · {odds}"
+                   f"\n```\n{slip}\n```")
     return out
 
 
@@ -378,8 +391,8 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
     return out
 
 
-def pick_singles(bets, count: int):
-    return rank_singles(bets, count, rank_by="prob", per_game=3)
+def pick_singles(bets, count: int, rank_by: str = "prob"):
+    return rank_singles(bets, count, rank_by=rank_by, per_game=3)
 
 
 def pick_parlays(bets, count: int, min_legs: int, max_legs: int) -> list[Parlay]:

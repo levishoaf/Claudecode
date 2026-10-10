@@ -23,7 +23,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, fanduel, tracker
+from nfl_edge import board, data, fanduel, fdfeed, tracker
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import decimal_to_american
@@ -181,7 +181,7 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        self.fanduel_on = bets.odds_api_key() is not None  # on whenever a key is saved
+        self.fanduel_on = bets.fanduel_state() is not None  # on once a state is chosen
         self.mode_lbl = tk.Label(row1, text="", bg=NAVY, fg="#9fb0c8", font=self.f["small"])
         self.mode_lbl.pack(side="left")
 
@@ -256,21 +256,28 @@ class App:
 
     def show_mode(self) -> None:
         on = self.fanduel_on
-        self.fd_btn.configure(text=" FanDuel lines: On " if on else " FanDuel lines: Off ")
+        state = (bets.fanduel_state() or "").upper()
+        self.fd_btn.configure(text=f" FanDuel check: On ({state}) " if on else " FanDuel check: Off ")
         self.fd_btn.set_kind("primary" if on else "ghost")
         self.mode_lbl.configure(text="" if on else "   Free data  ·  break-even odds")
 
     def toggle_fanduel(self) -> None:
-        if not self.fanduel_on and bets.odds_api_key() is None:
+        if not self.fanduel_on and bets.fanduel_state() is None:
             from tkinter import simpledialog
 
-            key = simpledialog.askstring(
-                "FanDuel lines", "Paste your key from the-odds-api.com.\n"
-                "It's saved next to this program. A full NFL week uses about 200 credits;\n"
-                "results are reused for 30 minutes.", parent=self.root)
-            if not key or not key.strip():
+            state = simpledialog.askstring(
+                "FanDuel check",
+                "Check every bet against FanDuel's own site and show only the ones it lists,\n"
+                "at FanDuel's odds. Which state do you bet in? (two letters, e.g. NJ)\n\n"
+                "This reads the odds FanDuel's website loads. It's unofficial: FanDuel may\n"
+                "change or block it, and automated reading may go against its terms.",
+                parent=self.root)
+            if not state or state.strip().lower() not in fdfeed.STATES:
+                if state:
+                    self.verdict.configure(text=f"FanDuel isn't available in {state.strip().upper()}.",
+                                           fg=WHITE)
                 return
-            bets.save_odds_api_key(key)
+            bets.save_fanduel_state(state)
         self.fanduel_on = not self.fanduel_on
         self.show_mode()
         self.build()
@@ -438,16 +445,17 @@ class App:
         sport = "NFL" if args.sport == "nfl" else "College Football"
         tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        order = "best value first" if getattr(args, "fanduel_key", None) else "likeliest first"
+        checked = getattr(args, "fanduel_state", None) or getattr(args, "fanduel_key", None)
+        order = "best value first" if checked else "likeliest first"
         tk.Label(head, text=f"   {args.min_prob:.0f}–{args.max_prob:.0f}% chance, {order}"
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
-        self.fd_mode = bool(getattr(args, "fanduel_key", None))
+        self.fd_mode = bool(getattr(args, "fanduel_key", None) or getattr(args, "fanduel_state", None))
         if self.fd_mode and board.NOTES.get("fanduel") and not board.NOTES.get("fanduel_error"):
-            tk.Label(self.body, text="FanDuel: " + board.NOTES["fanduel"].replace("FanDuel lines ", "")
-                     + "  ·  ranked by expected value", bg=BG, fg=BLUE,
+            tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
+                     bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        elif board.NOTES.get("fanduel_error") and getattr(args, "fanduel_key", None):
+        elif board.NOTES.get("fanduel_error") and self.fd_mode:
             tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -478,9 +486,11 @@ class App:
         grid = tk.Frame(self.body, bg=BG)
         grid.pack(fill="both", padx=10, pady=(6, 0))
         if self.tab == "singles":
-            self.singles_tab(grid, singles, previous)
+            self.hidden_note(grid, singles, parlays)
+            self.singles_tab(grid, [b for b in singles if self.shown(b)], previous)
         elif self.tab == "parlays":
-            self.parlays_tab(grid, parlays, args.stake)
+            self.hidden_note(grid, singles, parlays)
+            self.parlays_tab(grid, [p for p in parlays if self.shown_parlay(p)], args.stake)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
         elif self.tab == "history":
@@ -488,8 +498,8 @@ class App:
         else:
             self.slip_tab(grid)
         self.refresh_cards()
-        tk.Label(self.body, text=("Odds are FanDuel's, from the last check. EV is the expected "
-                                  "profit per $1 at those odds." if self.fd_mode else
+        tk.Label(self.body, text=("Every bet here was found on FanDuel; odds are FanDuel's from "
+                                  "the last check. EV is the expected profit per $1." if self.fd_mode else
                                   "Odds shown are break-even: bet only if FanDuel pays that or "
                                   "better. Check any price at the bottom."),
                  bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
@@ -662,7 +672,8 @@ class App:
         top.pack(fill="x", padx=6, pady=(6, 0))
         FlatButton(top, "Placed all", self.mark_all_placed, "primary",
                    self.f["tinyb"]).pack(side="left")
-        tk.Label(top, text="  Marks every bet below as placed, at the odds and stake next to it.",
+        tk.Label(top, text="  Marks every confirmed bet below as placed, at the odds and stake "
+                           "next to it.",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
         stake = self.wager()
         table = self.list_table(parent, "", last="")
@@ -670,16 +681,22 @@ class App:
             self.list_row(table, "", _slip_selection(b), f"{b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, last="✕", price=b.fd_price)
             self.remove_link(table, lambda b=b: self.toggle_single(b))
-            self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob,
-                           prefill=b.fd_price if self.fd_mode else None)
+            if self.confirmed([b]):
+                self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob,
+                               prefill=b.fd_price if self.fd_mode else None)
+            else:
+                self.confirm_row(table, [b], lambda b=b: self.toggle_single(b))
         for p in parlays:
             self.list_row(table, "", f"{len(p.legs)}-leg parlay",
                           "  ·  ".join(_slip_selection(b) for b in p.legs), p.win_prob, last="✕",
                           price=p.american)
             self.remove_link(table, lambda p=p: self.toggle_parlay(p))
-            self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob,
-                           prefill=p.american if self.fd_mode else None)
-        combo = self.combined(singles)
+            if self.confirmed(list(p.legs)):
+                self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob,
+                               prefill=p.american if self.fd_mode else None)
+            else:
+                self.confirm_row(table, list(p.legs), lambda p=p: self.toggle_parlay(p))
+        combo = self.combined(singles) if self.confirmed(singles) else None
         if combo:
             tk.Label(parent, text=f"Or bet your {len(singles)} singles as one parlay:", bg=BG,
                      fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=(10, 0))
@@ -689,6 +706,79 @@ class App:
                           price=combo.american)
             self.place_row(table, self.entry_for([], [combo]), stake, bulk=False,
                            prob=combo.win_prob, prefill=combo.american if self.fd_mode else None)
+
+    # -------------------------------------------------------------- FanDuel checks
+    def checks(self) -> dict:
+        return self.ledger.setdefault("checks", {})
+
+    def confirmed(self, legs) -> bool:
+        """Every leg confirmed on FanDuel (by you, or by the FanDuel feed)."""
+        return bool(legs) and all(self.checks().get(bets.label(b)) is True
+                                  or getattr(b, "on_fanduel", False) for b in legs)
+
+    def shown(self, b) -> bool:
+        return self.checks().get(bets.label(b)) is not False
+
+    def shown_parlay(self, p) -> bool:
+        return all(self.shown(b) for b in p.legs)
+
+    def set_checks(self, keys: list[str], on: bool | None) -> None:
+        def change(ledger):
+            for k in keys:
+                if on is None:
+                    ledger["checks"].pop(k, None)
+                else:
+                    ledger["checks"][k] = on
+        with self.ledger_lock:
+            ledger = tracker.load(self.ledger_path)
+            change(ledger)
+            tracker.save(ledger, self.ledger_path)
+        self.ledger = ledger
+
+    def confirm_row(self, parent, legs, remove) -> None:
+        """'Is this on FanDuel?  [✓ On FanDuel]  [✗ Not on FanDuel]' under a slip row."""
+        row = tk.Frame(parent, bg=CARD)
+        row.pack(fill="x", padx=(48, 8), pady=(0, 7))
+        todo = [b for b in legs if self.checks().get(bets.label(b)) is not True]
+        what = ("Find this bet on FanDuel. Is it there?" if len(legs) == 1 else
+                f"Find {'these legs' if len(todo) > 1 else 'this leg'} on FanDuel: "
+                + "; ".join(_slip_selection(b) for b in todo) + ". All there?")
+        tk.Label(row, text=what, bg=CARD, fg=TEXT, font=self.f["tiny"], wraplength=330,
+                 justify="left").pack(side="left")
+
+        def yes():
+            self.set_checks([bets.label(b) for b in todo], True)
+            self.show_tab("slip")
+
+        def no():
+            # With one leg left to check, that's the missing one; otherwise hide them all.
+            self.set_checks([bets.label(b) for b in todo], False)
+            remove()
+            # Parlays that need a missing leg can't be placed either.
+            self.picked_parlays = {k for k in self.picked_parlays
+                                   if all(self.checks().get(leg) is not False for leg in k)}
+            self.after_toggle()
+        FlatButton(row, "✗ Not on FanDuel", no, "secondary", self.f["tinyb"]).pack(side="right")
+        FlatButton(row, "✓ On FanDuel", yes, "primary", self.f["tinyb"]).pack(side="right", padx=6)
+
+    def hidden_note(self, parent, singles, parlays) -> None:
+        hidden = [b for b in singles if not self.shown(b)]
+        hidden_p = [p for p in parlays if not self.shown_parlay(p)]
+        if not hidden and not hidden_p:
+            return
+        row = tk.Frame(parent, bg=BG)
+        row.pack(fill="x", padx=6, pady=(6, 0))
+        parts = [f"{len(hidden)} bet{'s' * (len(hidden) != 1)}" if hidden else "",
+                 f"{len(hidden_p)} parla{'ys' if len(hidden_p) != 1 else 'y'} with "
+                 f"{'them' if len(hidden) != 1 else 'it'}" if hidden_p else ""]
+        tk.Label(row, text=" and ".join(x for x in parts if x).capitalize()
+                 + " hidden: marked not on FanDuel.", bg=BG, fg=MUTED,
+                 font=self.f["small"]).pack(side="left")
+        link = tk.Label(row, text="Show again", bg=BG, fg=BLUE, cursor="hand2",
+                        font=self.f["small"])
+        link.pack(side="left", padx=6)
+        keys = [k for k, v in self.checks().items() if v is False]
+        link.bind("<Button-1>", lambda e: (self.set_checks(keys, None), self.show_tab(self.tab)))
 
     def remove_link(self, table, command) -> None:
         """Make the ✕ at the end of the row just added remove it from the slip."""
@@ -901,7 +991,7 @@ class App:
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
             max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None,
-            fanduel_key=bets.odds_api_key() if self.fanduel_on else None)
+            fanduel_state=bets.fanduel_state() if self.fanduel_on else None)
 
     def build(self) -> None:
         try:
@@ -917,12 +1007,13 @@ class App:
             try:
                 try:
                     _, singles, parlays = bets.build(args)
-                except fanduel.OddsAPIError as e:
-                    # Never show bets FanDuel hasn't confirmed while FanDuel lines is on.
+                except (fanduel.OddsAPIError, fdfeed.FeedError) as e:
+                    # Never show bets FanDuel hasn't confirmed while the FanDuel check is on.
                     singles, parlays = [], []
                     board.NOTES["fanduel_error"] = (
-                        f"Couldn't confirm FanDuel's lines ({e}), so no bets are shown. "
-                        "Try again in a minute, or turn FanDuel lines off for estimates.")
+                        f"Couldn't check against FanDuel ({e}), so no bets are shown. "
+                        "Try again in a minute, or turn the FanDuel check off and confirm "
+                        "bets yourself in the slip.")
                 else:
                     board.NOTES.pop("fanduel_error", None)
                 injuries = (None, [], "College injury reports aren't in the free data.")

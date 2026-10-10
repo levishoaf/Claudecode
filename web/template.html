@@ -116,6 +116,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .sx { border: 0; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 14px; }
 .srow .placerow { border-top: 0; padding-top: 0; }
 .pverdict { font-weight: 700; }
+.btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
+.placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
 @media (max-width: 520px) {
   .lrow { grid-template-columns: 30px minmax(0, 1fr) 50px 58px; }
@@ -345,6 +347,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   state.histFilter = "all";
   let db = null;
   state.placed = [];
+  state.checks = {};  // bet id -> true (on FanDuel) / false (not on FanDuel)
+  state.localChecks = store.get("bb.checks", {});  // kept here too when signed out
   state.dbState = "loading";
   function entryId(kind, lids) { return kind + ":" + [...lids].sort().join(" + "); }
   function docId(s) {  // two FNV-1a hashes: a short id the store accepts
@@ -484,11 +488,46 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     window.claude.use("db").then((d) => {
       db = d;
       if (!db) { state.dbState = "off"; render(); return; }
+      db.collection("checks").onSnapshot((snap) => {
+        state.checks = {};
+        snap.docs.forEach((d) => { const v = d.data(); state.checks[v.key] = v.on; });
+        render();
+      }, () => {});
       db.collection("placed").onSnapshot((snap) => {
         state.placed = snap.docs.map((d) => ({ docId: d.id, ...d.data() }));
         state.dbState = "on"; render();
       }, () => { state.dbState = "error"; render(); });
     }, () => { state.dbState = "off"; render(); });
+  }
+
+  // ---- confirming bets on FanDuel (the free data can't see FanDuel's menu)
+  function checkOf(id) { return id in state.checks ? state.checks[id] : state.localChecks[id]; }
+  function isHidden(b) { return checkOf(b.id) === false; }
+  function confirmedAll(legs) { return legs.length > 0 && legs.every((l) => checkOf(l.id) === true); }
+  async function setChecks(ids, on) {
+    ids.forEach((id) => { if (on === null) delete state.localChecks[id]; else state.localChecks[id] = on; });
+    store.set("bb.checks", state.localChecks);
+    if (db) {
+      for (const id of ids) {
+        const ref = db.collection("checks").doc(docId(id));
+        try { if (on === null) await ref.delete(); else await ref.set({ key: id, on }); } catch (e) {}
+      }
+    } else render();
+  }
+  function slipLegs(key) { return key === "combo" ? state.slip.filter((s) => s.kind === "single") : (state.slip[+key].kind === "single" ? [state.slip[+key]] : state.slip[+key].legs); }
+  function confirmRow(key, legs) {
+    const todo = legs.filter((l) => checkOf(l.id) !== true);
+    const what = legs.length === 1 ? "Find this bet on FanDuel. Is it there?"
+      : `Find ${todo.length > 1 ? "these legs" : "this leg"} on FanDuel: ${todo.map((l) => esc(l.label)).join("; ")}. All there?`;
+    return `<div class="placerow"><span class="grow">${what}</span>
+      <button class="btn btn-primary" data-fdyes="${key}">✓ On FanDuel</button>
+      <button class="btn btn-light" data-fdno="${key}">✗ Not on FanDuel</button></div>`;
+  }
+  function hiddenNote(wk) {
+    const s = wk.singles.filter(isHidden).length, p = wk.parlays.filter((x) => x.legs.some(isHidden)).length;
+    if (!s && !p) return "";
+    const parts = [s ? `${s} bet${s === 1 ? "" : "s"}` : "", p ? `${p} parla${p === 1 ? "y" : "ys"} with ${s === 1 ? "it" : "them"}` : ""].filter(Boolean);
+    return `<p class="foot" style="margin:0">${parts.join(" and ")} hidden: marked not on FanDuel. <button class="x" data-unhide="1" style="color:var(--on-dark)">Show again</button></p>`;
   }
 
   function slipView() {
@@ -497,10 +536,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <div class="stop"><span class="lbet"><b>${title}</b><small>${sub}</small></span>
         <span class="r lpct" style="color:${color(prob)}">${pct(prob)}</span><span class="r lodds">${esc(fmtAm(decToAm(1 / prob)))}</span>
         ${removable ? `<button class="sx" data-remove="${key}" aria-label="Remove from slip">✕</button>` : `<span class="sx"></span>`}</div>
-      ${placeRow(key, legs, kind, prob)}</div>`;
+      ${confirmedAll(legs) ? placeRow(key, legs, kind, prob) : confirmRow(key, legs)}</div>`;
     const singles = state.slip.filter((s) => s.kind === "single");
-    const c = combo();
-    let html = state.dbState === "on" ? `<div class="slipbar2"><button class="btn btn-primary" data-placeall="1">Placed all</button><span>Marks every bet below as placed, at the odds and stake next to it.</span></div>` : "";
+    const c = confirmedAll(singles) ? combo() : null;
+    let html = state.dbState === "on" ? `<div class="slipbar2"><button class="btn btn-primary" data-placeall="1">Placed all</button><span>Marks every confirmed bet below as placed, at the odds and stake next to it.</span></div>` : "";
     html += `<div id="placemsg" class="foot" role="status"></div><div class="blist">`;
     html += state.slip.map((s, i) => s.kind === "single"
       ? row(i, esc(s.label), `${esc(s.game)} · ${esc(s.when)} ET`, s.prob, [s], "single", true)
@@ -529,12 +568,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
     }
-    if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">No bets in the 60–80% range for this week.</div>`;
-    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
+    if (state.tab === "singles") html += wk.singles.length ? `${hiddenNote(wk)}<div class="blist">${listHead("#")}${wk.singles.map((b, i) => isHidden(b) ? "" : singleRow(b, i)).join("")}</div>` : `<div class="empty">No bets in the 60–80% range for this week.</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `${hiddenNote(wk)}<div class="blist">${listHead("")}${wk.parlays.map((p, i) => p.legs.some(isHidden) ? "" : parlayRow(p, i)).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
     if (state.tab === "history") html += historyView();
-    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. Lines are kept to what FanDuel usually posts (alternate lines near the main line, props in FanDuel's steps), but a few may not be on FanDuel; the downloadable app's FanDuel lines mode shows only FanDuel's real bets.</p>`;
+    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. Bets come only from markets FanDuel posts for every game: moneylines, main spreads and totals, team totals and anytime touchdown scorers. FanDuel's line can differ by a half point, so confirm each bet on FanDuel in your slip before marking it placed. The downloadable app can also check bets against FanDuel's site automatically.</p>`;
     $("main").innerHTML = html;
 
     const c = combo();
@@ -563,6 +602,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     else if (t.id === "viewslip") { state.tab = "slip"; render(); window.scrollTo({ top: 0 }); }
     else if (t.id === "clearslip") { state.slip = []; save(); render(); }
     else if (t.dataset.placeall) { placeAll(); }
+    else if (t.dataset.fdyes != null) { setChecks(slipLegs(t.dataset.fdyes).filter((l) => checkOf(l.id) !== true).map((l) => l.id), true).then(render); }
+    else if (t.dataset.fdno != null) {
+      const ids = slipLegs(t.dataset.fdno).filter((l) => checkOf(l.id) !== true).map((l) => l.id);
+      setChecks(ids, false);
+      // drop the bet, and any parlay that needs a missing leg, from the slip
+      state.slip = state.slip.filter((s) => !(s.kind === "single" ? [s] : s.legs).some((l) => ids.includes(l.id)));
+      save(); render();
+    }
+    else if (t.dataset.unhide) { setChecks(Object.keys({ ...state.localChecks, ...state.checks }).filter((k) => checkOf(k) === false), null).then(render); }
     else if (t.dataset.place != null) { placeBet(t.dataset.place); }
   });
   $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });

@@ -181,6 +181,21 @@ def save_odds_api_key(key: str) -> None:
     ODDS_KEY_FILE.write_text(key.strip() + "\n")
 
 
+STATE_FILE = ROOT / "fanduel state.txt"
+
+
+def fanduel_state() -> str | None:
+    """The state for checking bets against FanDuel's own site (saved by the app)."""
+    try:
+        return STATE_FILE.read_text().strip().lower() or None
+    except OSError:
+        return None
+
+
+def save_fanduel_state(state: str) -> None:
+    STATE_FILE.write_text(state.strip().lower() + "\n")
+
+
 def build(args):
     """Candidate bets, picked singles and parlays for the chosen sport and day.
 
@@ -201,6 +216,13 @@ def build(args):
         bets, rank = cfb_board(day, lo, hi, week=week), "prob"
     else:
         bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
+    state = getattr(args, "fanduel_state", None)
+    if state and not key:
+        from nfl_edge import fdfeed
+
+        # Keep only bets found on FanDuel's own site, at FanDuel's prices.
+        bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
+        rank = "ev"
     singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs

@@ -118,17 +118,27 @@ with no account or key:
   `P1 +240`). It tells you the expected value and whether the bet is worth
   it.
 
-**FanDuel lines.** The free data doesn't include FanDuel's menu, so the free
-board keeps to lines FanDuel usually posts: alternate spreads and totals
-within 10 points of the main line, team totals within 4 points, and props in
-FanDuel's steps (yards in 25s, receptions from 3+) for players with a real
-role. Most picks will be on FanDuel, but not all. For an exact match, click
-**FanDuel lines** in the window and paste a key from
-[the-odds-api.com](https://the-odds-api.com): the app then shows only bets
-FanDuel actually lists, at FanDuel's odds, with each bet's expected value,
-best value first, and the slip fills in FanDuel's price. A full NFL week costs
-about 200 API credits per check, so results are reused for 30 minutes. The key
-is saved as `odds api key.txt` next to the program.
+**Making sure every bet is on FanDuel.** The free data doesn't include
+FanDuel's menu, so three things keep bets placeable:
+
+1. **Only markets FanDuel always posts.** Bets come from moneylines, each
+   game's main spread and total, each team's main team total, and anytime
+   touchdown scorers. Deep alternate lines and "X+" prop ladders, which FanDuel
+   may not list at every line, are left out. FanDuel's main line can differ from
+   the public consensus by a half point.
+2. **Confirm in the slip.** Each bet in your slip asks *Is this on FanDuel?*
+   Tap **✓ On FanDuel** and it can be marked placed; tap **✗ Not on FanDuel**
+   and it leaves the slip and is hidden from the lists (with **Show again** to
+   undo). Only confirmed bets can be marked placed, so Bet History only holds
+   bets you could actually make.
+3. **FanDuel check (optional, app and Discord bot).** Click **FanDuel check**
+   in the window (or run `/fanduel-check state:NJ` in Discord) and choose the
+   state you bet in. Every bet is then checked against the odds FanDuel's own
+   website loads: only bets found on FanDuel are shown, at FanDuel's odds, with
+   their expected value, and they need no manual confirmation. If FanDuel can't
+   be read, no bets are shown rather than unconfirmed ones. This reads FanDuel's
+   site data unofficially: FanDuel can change or block it, and automated
+   reading may go against its terms of use.
 
 **Auto-refresh** is on by default every 5 minutes, with a countdown to the
 next update (the **Refresh** box in the window; 0 turns it off, or

@@ -55,6 +55,7 @@ def load(path: Path) -> dict:
     ledger.setdefault("placed", [])
     ledger.setdefault("generated", [])
     ledger.setdefault("saved", [])
+    ledger.setdefault("checks", {})  # bet -> True (on FanDuel) / False (not on FanDuel)
     return ledger
 
 

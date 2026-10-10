@@ -26,7 +26,7 @@ import tempfile
 from pathlib import Path
 
 import bets as launcher  # sets up paths and certificates, like the app
-from nfl_edge import botcore, data
+from nfl_edge import botcore, data, fdfeed
 
 ROOT = launcher.ROOT
 LEDGER = ROOT / "discord bets.json"
@@ -64,7 +64,8 @@ def save_settings(settings: dict) -> None:
 class Core:
     """Everything the commands do, without Discord (so --selftest can run it)."""
 
-    def __init__(self, ledger_path: Path):
+    def __init__(self, ledger_path: Path, state=lambda: None):
+        self.state = state  # the FanDuel state to check bets against, or None
         self.boards = botcore.Boards()
         self.ledger = botcore.ServerLedger(ledger_path)
         self.last_parlays: dict[int, tuple[str, list]] = {}  # channel -> (sport, parlays)
@@ -74,13 +75,27 @@ class Core:
             self.ledger.record_shown(launcher.tracker_entries(singles, parlays, sport,
                                                               botcore.season_now()))
 
+    def _checked(self, sport, bets):
+        """(bets, note): with a FanDuel state set, only the bets found on FanDuel."""
+        state = self.state()
+        if not state:
+            return list(bets), None
+        return fdfeed.verify(list(bets), state, sport)
+
     def bets(self, sport, count, lo, hi, week, wager) -> str:
-        singles = botcore.pick_singles(self.boards.get(sport, week, lo / 100, hi / 100), count)
+        try:
+            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100))
+        except fdfeed.FeedError as e:
+            return f"Couldn't check against FanDuel ({e}), so no bets are shown. Try again soon."
+        singles = botcore.pick_singles(pool, count, rank_by="ev" if note else "prob")
         self._record(sport, week, singles, [])
-        return botcore.singles_text(singles, sport, wager)
+        return botcore.singles_text(singles, sport, wager) + (f"\n_{note}_" if note else "")
 
     def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager) -> list[str]:
-        pool = self.boards.get(sport, week, lo / 100, hi / 100)
+        try:
+            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100))
+        except fdfeed.FeedError as e:
+            return [f"Couldn't check against FanDuel ({e}), so no parlays are shown."]
         parlays = botcore.pick_parlays(pool, count, min_legs, max_legs)
         self.last_parlays[channel] = (sport, parlays)
         self._record(sport, week, [], parlays)
@@ -95,7 +110,18 @@ class Core:
             odds = botcore.parse_odds(odds_text)
         except ValueError:
             return "Odds look like -150 or +240."
-        return botcore.chance_text(self.find(sport, query), odds, wager)
+        matches = self.find(sport, query)
+        if self.state() and matches:
+            try:
+                found, _ = self._checked(sport, matches)
+            except fdfeed.FeedError as e:
+                return f"Couldn't check against FanDuel ({e})."
+            if not found:
+                return (f"**{botcore._describe(matches[0])}** isn't on FanDuel at that line right "
+                        "now, so it can't be placed there.")
+            matches = found
+            odds = odds if odds is not None else matches[0].fd_price
+        return botcore.chance_text(matches, odds, wager)
 
     def place(self, channel, sport, query, odds_text, stake, user_id, user_name) -> str:
         try:
@@ -117,6 +143,14 @@ class Core:
             matches = self.find(sport, query)
             if not matches:
                 return "Couldn't find that bet. Try the team or player name and the line."
+            if self.state():
+                try:
+                    matches, _ = self._checked(sport, matches[:1])
+                except fdfeed.FeedError as e:
+                    return f"Couldn't check against FanDuel ({e}), so the bet wasn't logged."
+                if not matches:
+                    return "That bet isn't on FanDuel at that line, so it wasn't logged."
+                odds = odds if odds is not None else matches[0].fd_price
             entries = launcher.tracker_entries([matches[0]], [], sport, season)
             what = botcore._describe(matches[0])
         if not entries:
@@ -144,8 +178,8 @@ def run_bot(token: str) -> None:
     from discord import app_commands
     from discord.ext import tasks
 
-    core = Core(LEDGER)
     settings = load_settings()
+    core = Core(LEDGER, state=lambda: settings.get("fanduel_state"))
     intents = discord.Intents.default()
     client = discord.Client(intents=intents)
     tree = app_commands.CommandTree(client)
@@ -227,6 +261,27 @@ def run_bot(token: str) -> None:
     @app_commands.describe(team="Team name or code, e.g. Bills or BUF (optional)")
     async def injuries_cmd(interaction: discord.Interaction, team: str | None = None):
         await work(interaction, botcore.injuries_text, team)
+
+    @tree.command(name="fanduel-check",
+                  description="Only show bets found on FanDuel's site (your state), or 'off'")
+    @app_commands.default_permissions(manage_guild=True)
+    @app_commands.describe(state="Two-letter state you bet in, e.g. NJ, or off")
+    async def fanduel_check(interaction: discord.Interaction, state: str):
+        s = state.strip().lower()
+        if s == "off":
+            settings.pop("fanduel_state", None)
+            msg = ("FanDuel check is off. Bets come from markets FanDuel posts for every game, "
+                   "but confirm each one on FanDuel before you bet.")
+        elif s in fdfeed.STATES:
+            settings["fanduel_state"] = s
+            msg = (f"FanDuel check is on ({s.upper()}): /bets, /parlays, /chance and /place "
+                   "only use bets found on FanDuel's site, at FanDuel's odds. This reads "
+                   "FanDuel's website data unofficially; it can stop working if FanDuel "
+                   "changes or blocks it.")
+        else:
+            msg = f"FanDuel isn't available in {state.strip().upper()}. Use a state like NJ, or off."
+        save_settings(settings)
+        await interaction.response.send_message(msg)
 
     @tree.command(name="results-here", description="Post bet results in this channel")
     @app_commands.default_permissions(manage_guild=True)

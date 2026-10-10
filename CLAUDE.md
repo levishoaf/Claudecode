@@ -72,3 +72,14 @@ reachable from this workspace, so check changes with
 `python3 discord_bot.py --selftest`, which runs every command's logic against
 live data without connecting. The token lives in `discord token.txt` on the
 user's machine; never ask for it here or commit it.
+
+## Making sure bets are on FanDuel
+
+The free board (`nfl_board`, `always_offered=True` by default) only builds
+markets FanDuel posts for every game: moneylines, main spreads and totals,
+main team totals and anytime TDs. In the app and on the web page each slip
+bet must be confirmed **On FanDuel** before it can be marked placed
+(`ledger["checks"]` in the app, the `checks` db collection on the page).
+`nfl_edge/fdfeed.py` optionally checks bets against FanDuel's own site data
+(unofficial, no key; app "FanDuel check", bot `/fanduel-check`); it is
+blocked from this workspace, so it is tested only against sample feeds.
