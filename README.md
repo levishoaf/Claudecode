@@ -123,6 +123,10 @@ with no account or key:
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is
   usually a 3-leg parlay with about a 24% chance to win.
+- **Money Maker** (a tab in the app and on the web page, `/moneymaker` in
+  Discord): riskier parlays that hang on one leg. Two or three strong legs
+  (60%+) plus one coin-flip "make or break" leg (35-55%) that the regular
+  parlays never use. About 1 in 5 win, paying about $50 on $10.
 - **Odds shown are break-even prices,** the worst price still worth taking,
   because FanDuel's own prices aren't public. At the end, a **price
   checker** lets you type a pick number and FanDuel's odds (`3 -150` or
@@ -182,8 +186,9 @@ on your computer, so it answers while the bot program is open.
 |---|---|
 | `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL or College football), `count`, `min_chance`, `max_chance`, `week`, `wager`. |
 | `/parlays` | Top parlays as bet slips (P1, P2, …). Options: `count`, `min_legs`, `max_legs`, `week`, `wager`. |
+| `/moneymaker` | Money makers (M1, M2, …): riskier parlays that hang on one coin-flip leg, paying about 5× the wager. |
 | `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, any line or prop threshold, and whether FanDuel's price is worth it. |
-| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places parlay P1 from the last `/parlays` in that channel). |
+| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places parlay P1 from the last `/parlays` in that channel, `bet:M1` money maker M1 from the last `/moneymaker`). |
 | `/remove bet:Ravens` | Removes one of your logged bets. |
 | `/history` | The server's bet history by sport and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. Options: `sport`, `week`, `show_picks`. |
 | `/injuries team:Bills` | This week's NFL injury report. |

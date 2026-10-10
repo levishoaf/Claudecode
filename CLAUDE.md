@@ -88,7 +88,9 @@ the default board ("All bets"). The user asked for every bet when they choose a
 bet type, so the Bet type menu's other types (spreads, totals, yardage and other
 props) show every model line, FanDuel-confirmed ones at FanDuel's odds and the
 rest marked **Confirm line** (`Bet.confirm_line`, `picks.every_line_of`). Receiving yards bets are only listed at -300 or better (`picks.TYPE_MIN_ODDS`):
-each player's likeliest line within that limit. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
+each player's likeliest line within that limit. The **Money Maker** tab (`picks.money_maker_parlays`, bot `/moneymaker`) holds riskier
+parlays the user asked for: 2-3 strong legs plus one coin-flip "make or break" leg
+the regular parlays don't use, about 20% to win for about 5x the wager. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
 `nfl_edge/fdfeed.py` checks bets against FanDuel's own site data

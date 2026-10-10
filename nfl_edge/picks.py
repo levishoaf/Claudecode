@@ -272,3 +272,63 @@ def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int 
         if len(chosen) == count or len(chosen) == len(near):
             break
     return sorted(chosen, key=key, reverse=True)
+
+
+def _leg_key(b: Bet) -> tuple:
+    return (b.game, b.market, b.pick, b.point)
+
+
+def money_maker_parlays(bets: list[Bet], count: int, avoid: list[Parlay] = (), *,
+                        swing: tuple[float, float] = (0.35, 0.55), anchor_min: float = 0.60,
+                        max_anchors: int = 3, win: tuple[float, float] = (0.14, 0.20),
+                        max_uses: int = 2, pool_size: int = 16) -> list[Parlay]:
+    """Riskier parlays that hang on one leg: two or three strong legs (`anchor_min`
+    or better) plus one coin-flip "make or break" leg in the `swing` range, from
+    different games, winning `win` of the time. Unlike the parlays in `avoid`, the
+    swing leg is one they don't use, and no money maker shares more than half its
+    legs with any of them. Likeliest first; each swing leg is used once."""
+    taken = {_leg_key(b) for p in avoid for b in p.legs}
+    avoid_sets = [{_leg_key(b) for b in p.legs} for p in avoid]
+    anchors = rank_singles([b for b in bets if b.fair_prob >= anchor_min], pool_size,
+                           rank_by="prob", per_game=2)
+    swings = rank_singles([b for b in bets if swing[0] <= b.fair_prob <= swing[1]
+                           and _leg_key(b) not in taken], pool_size, rank_by="prob", per_game=2)
+    lo_win, hi_win = win
+    found: list[Parlay] = []
+    while True:
+        found = []
+        for s in swings:
+            others = [a for a in anchors if a.game != s.game]
+            for n in range(2, max_anchors + 1):
+                for combo in combinations(others, n):
+                    if len({a.game for a in combo}) < n:
+                        continue
+                    p = Parlay((*combo, s))
+                    if not lo_win <= p.win_prob <= hi_win:
+                        continue
+                    keys = {_leg_key(b) for b in p.legs}
+                    if any(len(keys & a) > len(keys) // 2 for a in avoid_sets):
+                        continue  # too close to a regular parlay
+                    found.append(p)
+        if len(found) >= count or lo_win <= 0.06:
+            break
+        lo_win -= 0.03  # too few: allow a little more risk
+    found.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
+    chosen, swing_used, uses = [], set(), {}
+    for p in found:
+        s = make_or_break(p)
+        if len(chosen) == count:
+            break
+        if _leg_key(s) in swing_used or any(uses.get(_leg_key(b), 0) >= max_uses
+                                            for b in p.legs if b is not s):
+            continue
+        chosen.append(p)
+        swing_used.add(_leg_key(s))
+        for b in p.legs:
+            uses[_leg_key(b)] = uses.get(_leg_key(b), 0) + 1
+    return chosen
+
+
+def make_or_break(p: Parlay) -> Bet:
+    """The parlay's riskiest leg: the one it hangs on."""
+    return min(p.legs, key=lambda b: b.fair_prob)

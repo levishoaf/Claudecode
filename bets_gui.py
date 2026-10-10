@@ -28,7 +28,7 @@ from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_tim
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
-from nfl_edge.picks import BET_TYPES, empty_type_note
+from nfl_edge.picks import BET_TYPES, empty_type_note, make_or_break, money_maker_parlays
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -123,6 +123,7 @@ class App:
     def __init__(self, root: tk.Tk, selftest: bool = False):
         self.root, self.selftest = root, selftest
         self.singles, self.parlays, self.previous = [], [], {}
+        self.money: list = []  # Money Maker parlays
         self.picked: set[str] = set()  # labels of singles on your slip
         self.picked_parlays: set[tuple] = set()  # parlays on your slip
         self.last_args = None
@@ -397,7 +398,7 @@ class App:
 
     def slip_bets(self) -> tuple[list, list]:
         singles = [b for b in self.singles if bets.label(b) in self.picked]
-        parlays = [p for p in self.parlays
+        parlays = [p for p in self.parlays + self.money
                    if tuple(bets.label(b) for b in p.legs) in self.picked_parlays]
         return singles, parlays
 
@@ -479,11 +480,13 @@ class App:
                      bg=BG, fg=GREEN if ready else MOVED_BADGE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
 
+        money = getattr(args, "money_makers", [])
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
         self.tab_labels = {}
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
+                          ("money", f"Money Maker ({len(money)})"),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
             on = key == self.tab
@@ -506,6 +509,15 @@ class App:
         elif self.tab == "parlays":
             self.hidden_note(grid, singles, parlays)
             self.parlays_tab(grid, [p for p in parlays if self.shown_parlay(p)], args.stake)
+        elif self.tab == "money":
+            tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
+                                 "plus one coin-flip leg (⚡ MAKE OR BREAK) that decides it. "
+                                 "About 1 in 5 win, paying about 5x your wager. The make-or-break "
+                                 "leg is never in the regular parlays."),
+                     bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+                     justify="left").pack(anchor="w", padx=6, pady=(6, 0))
+            self.parlays_tab(grid, [p for p in money if self.shown_parlay(p)], args.stake,
+                             swing=True)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
         elif self.tab == "history":
@@ -630,21 +642,26 @@ class App:
                           b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None)
 
-    def parlays_tab(self, parent, parlays, stake) -> None:
+    def parlays_tab(self, parent, parlays, stake, swing: bool = False) -> None:
         if not parlays:
-            tk.Label(parent, text=self.empty_text("Not enough games for these parlays this week."),
+            empty = ("No money makers here: this pick needs coin-flip legs (35-55% to win), "
+                     "and there aren't enough this week. Try All bets." if swing else
+                     self.empty_text("Not enough games for these parlays this week."))
+            tk.Label(parent, text=empty,
                      bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         table = self.list_table(parent, "")
         for i, p in enumerate(parlays, 1):
-            legs = "  ·  ".join(_slip_selection(b) + {"Questionable": " (Q)",
-                                                      "Did not practice": " (DNP)"}.get(b.note, "")
-                                for b in p.legs)
+            key = make_or_break(p) if swing else None
+            legs = "  ·  ".join(_slip_selection(b) for b in p.legs if b is not key)
+            if key is not None:
+                legs += f"  ·  ⚡ MAKE OR BREAK: {_slip_selection(key)} ({key.fair_prob:.0%})"
             if any(b.confirm_line for b in p.legs):
                 legs = "CONFIRM LINES  ·  " + legs
             on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
-            self.list_row(table, f"P{i}", f"{len(p.legs)}-leg parlay", legs, p.win_prob,
+            self.list_row(table, f"M{i}" if swing else f"P{i}", f"{len(p.legs)}-leg parlay",
+                          legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None)
 
@@ -1046,10 +1063,11 @@ class App:
             board.NOTES.pop("fanduel_error", None)
             try:
                 try:
-                    _, singles, parlays = bets.build(args)
+                    pool, singles, parlays = bets.build(args)
+                    args.money_makers = money_maker_parlays(pool, 10, parlays)
                 except (fanduel.OddsAPIError, fdfeed.FeedError) as e:
                     # Never show bets FanDuel hasn't confirmed while the FanDuel check is on.
-                    singles, parlays = [], []
+                    singles, parlays, args.money_makers = [], [], []
                     board.NOTES["fanduel_error"] = (
                         f"Couldn't check against FanDuel ({e}), so no bets are shown. "
                         "Try again in a minute, or turn the FanDuel check off and confirm "
@@ -1058,7 +1076,7 @@ class App:
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
                 self.results.put(("ok", args, singles, parlays, injuries,
-                                  self.track(args, singles, parlays)))
+                                  self.track(args, singles, parlays + args.money_makers)))
             except (data.DataError, ValueError) as e:
                 self.results.put(("error", str(e)))
 
@@ -1110,18 +1128,22 @@ class App:
             self.say(f"Couldn't load data: {item[1]}")
         else:
             _, args, self.singles, self.parlays, self.injuries, self.ledger = item
+            self.money = getattr(args, "money_makers", [])
             if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
                 self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args
             labels = {bets.label(b) for b in self.singles}
             self.picked &= labels
             self.picked_parlays = {k for k in self.picked_parlays
-                                   if k in {tuple(bets.label(b) for b in p.legs) for p in self.parlays}}
+                                   if k in {tuple(bets.label(b) for b in p.legs)
+                                            for p in self.parlays + self.money}}
             self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
         self.schedule()
         if self.selftest:
-            print(f"{len(self.singles)} singles, {len(self.parlays)} parlays rendered")
+            self.show_tab("money")
+            print(f"{len(self.singles)} singles, {len(self.parlays)} parlays, "
+                  f"{len(self.money)} money makers rendered")
             self.root.after(500, self.root.destroy)
             return
         self.root.after(150, self.poll)

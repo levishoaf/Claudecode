@@ -134,3 +134,31 @@ class OddsLimitTest(unittest.TestCase):
         self.assertIsNone(type_max_prob("Rushing yards"))
         self.assertEqual([b.pick for b in every_line_of(bets, "Receiving yards")],
                          ["Bo Over", "Cy Over", "Di Over"])
+
+
+class MoneyMakerTest(unittest.TestCase):
+    def test_hangs_on_one_new_leg(self):
+        from datetime import datetime, timedelta, timezone
+
+        from nfl_edge.board import make_bet
+        from nfl_edge.picks import make_or_break, money_maker_parlays, payout_parlays
+
+        kick = datetime.now(timezone.utc) + timedelta(days=2)
+        probs = [0.80, 0.78, 0.76, 0.72, 0.70, 0.66, 0.62, 0.55, 0.50, 0.46, 0.42, 0.38]
+        bets = [make_bet(f"T{i} @ H{i}", kick, "h2h", f"T{i}", None, p, f"g{i}", "x")
+                for i, p in enumerate(probs)]
+        regular = payout_parlays(bets, 4.0, 5)
+        money = money_maker_parlays(bets, 5, regular)
+        self.assertTrue(money)
+        used = {b.pick for p in regular for b in p.legs}
+        swings = [make_or_break(p) for p in money]
+        for p, s in zip(money, swings):
+            self.assertTrue(0.14 <= p.win_prob <= 0.20)  # riskier than the $40 parlays
+            self.assertTrue(0.35 <= s.fair_prob <= 0.55)  # the coin-flip leg
+            self.assertTrue(all(b.fair_prob >= 0.60 for b in p.legs if b is not s))
+            self.assertNotIn(s.pick, used)  # never a leg of the regular parlays
+            self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
+            for r in regular:
+                self.assertLessEqual(len({b.pick for b in p.legs} & {b.pick for b in r.legs}),
+                                     len(p.legs) // 2)
+        self.assertEqual(len({s.pick for s in swings}), len(swings))  # each swing once

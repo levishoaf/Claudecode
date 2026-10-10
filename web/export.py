@@ -22,7 +22,8 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, every_line_of, of_type,  # noqa: E402
-                            payout_parlays, rank_singles, type_max_prob)
+                            make_or_break, money_maker_parlays, payout_parlays,
+                            rank_singles, type_max_prob)
 
 LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
 PARLAY_PAYS = 4.0  # parlays pay at least 4x the wager: $40 on $10
@@ -58,13 +59,20 @@ def run(sport, week, label, ledger, this_week=False):
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))
-    def picks(singles, parlays):
-        return {"singles": [bet(b, sport) for b in singles],
-                "parlays": [{"legs": [bet(b, sport) for b in p.legs],
-                             "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob)}
-                            for p in parlays]}
+    def parlay(p, swing=False):
+        out = {"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
+               "breakeven": be(p.win_prob)}
+        if swing:  # the leg a money maker hangs on
+            out["swing"] = p.legs.index(make_or_break(p))
+        return out
 
-    out = {"label": label, "week": week, **picks(singles, parlays),
+    def picks(singles, parlays, pool):
+        money = money_maker_parlays(pool, 10, parlays)
+        return {"singles": [bet(b, sport) for b in singles],
+                "parlays": [parlay(p) for p in parlays],
+                "money": [parlay(p, swing=True) for p in money]}
+
+    out = {"label": label, "week": week, **picks(singles, parlays, bets),
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {}}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
     full = nfl_board(None, LO, HI, week=week, always_offered=False) if sport == "nfl" else []
@@ -76,9 +84,9 @@ def run(sport, week, label, ledger, this_week=False):
         else:
             some = of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind)
         if kind != "All bets" and some:
+            regular = payout_parlays(some, PARLAY_PAYS, 10)
             out["types"][kind] = picks(rank_singles(some, 30, rank_by="prob", per_game=3,
-                                                    every_line=True),
-                                       payout_parlays(some, PARLAY_PAYS, 10))
+                                                    every_line=True), regular, some)
     if sport == "nfl":
         try:
             _, players, note = board.injury_report(week)

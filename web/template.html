@@ -119,6 +119,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+.swing { color: var(--warn); font-weight: 700; }
 .show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 520px) {
   .hide-sm { display: none; }
@@ -214,6 +215,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Single bets<span class="count" id="n-singles"></span></button>
       <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="count" id="n-parlays"></span></button>
+      <button role="tab" id="tab-money" data-tab="money" aria-selected="false">Money Maker<span class="count" id="n-money"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="count" id="n-injuries"></span></button>
       <button role="tab" id="tab-history" data-tab="history" aria-selected="false">Bet History<span class="count" id="n-history"></span></button>
     </nav>
@@ -249,7 +251,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     injSearch: ""
   };
   if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
-  if (!["singles", "parlays", "injuries", "history", "slip"].includes(state.tab)) state.tab = "singles";
+  if (!["singles", "parlays", "money", "injuries", "history", "slip"].includes(state.tab)) state.tab = "singles";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
@@ -270,8 +272,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function current() {
     const wk = weekData();
     if (state.betType === "All bets") return wk;
-    const t = (wk.types || {})[state.betType] || { singles: [], parlays: [] };
-    return { ...wk, singles: t.singles, parlays: t.parlays };
+    const t = (wk.types || {})[state.betType] || { singles: [], parlays: [], money: [] };
+    return { ...wk, singles: t.singles, parlays: t.parlays, money: t.money || [] };
   }
   function typeOptions(wk) {
     return (DATA.betTypes || ["All bets"]).map((k) => {
@@ -317,6 +319,20 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     return `<button class="lrow${on ? " on" : ""}" data-parlay="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : "P" + (i + 1)}</span>
       <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
+      <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
+      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
+      <span class="r hide-sm">${money(wager() / p.prob)}</span>
+    </button>`;
+  }
+
+  // A money maker: its strong legs, then the one leg it hangs on.
+  function moneyRow(p, i) {
+    const on = inSlip(parlayId(p));
+    const s = p.legs[p.swing];
+    const rest = p.legs.filter((l, j) => j !== p.swing).map((l) => esc(l.label)).join(" · ");
+    return `<button class="lrow${on ? " on" : ""}" data-money="${i}" aria-pressed="${on}">
+      <span class="lnum">${on ? "✓" : "M" + (i + 1)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${esc(s.label)} (${pct(s.prob)})</span></small></span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -587,17 +603,19 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
     $("n-singles").textContent = wk.singles.length;
     $("n-parlays").textContent = wk.parlays.length;
+    $("n-money").textContent = (wk.money || []).length;
     $("n-injuries").textContent = wk.injuries ? wk.injuries.players.length : "–";
     $("n-history").textContent = historyList().length;
 
     let html = "";
     const future = /no lines yet/.test(wk.label);
-    if (state.tab === "singles" || state.tab === "parlays") {
+    if (state.tab === "singles" || state.tab === "parlays" || state.tab === "money") {
       if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
     }
     if (state.tab === "singles") html += wk.singles.length ? `${hiddenNote(wk)}<div class="blist">${listHead("#")}${wk.singles.map((b, i) => isHidden(b) ? "" : singleRow(b, i)).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
     if (state.tab === "parlays") html += wk.parlays.length ? `${hiddenNote(wk)}<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.</div><div class="blist">${listHead("")}${wk.parlays.map((p, i) => p.legs.some(isHidden) ? "" : parlayRow(p, i)).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
+    if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">Riskier parlays that hang on one leg: two or three strong legs plus one coin-flip leg (⚡ make or break) that decides it. About 1 in 5 win, paying about 5× your wager. The make-or-break leg is never in the regular parlays.</div><div class="blist">${listHead("")}${wk.money.map((p, i) => p.legs.some(isHidden) ? "" : moneyRow(p, i)).join("")}</div>` : `<div class="empty">No money makers here: they need coin-flip legs (35–55% to win), and there aren't enough this week. Try All bets.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
     if (state.tab === "history") html += historyView();
@@ -623,6 +641,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (t.dataset.sport) { state.sport = t.dataset.sport; store.set("bb.sport", state.sport); render(); }
     else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
     else if (t.dataset.single) { const b = wk.singles[+t.dataset.single]; toggle({ kind: "single", sport: state.sport, ...b }); }
+    else if (t.dataset.money) { const p = wk.money[+t.dataset.money]; toggle({ kind: "parlay", sport: state.sport, id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
     else if (t.dataset.parlay) { const p = wk.parlays[+t.dataset.parlay]; toggle({ kind: "parlay", sport: state.sport, id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
     else if (t.dataset.hist) { state.histFilter = t.dataset.hist; render(); }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
