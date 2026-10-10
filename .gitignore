@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 web/bet-builder.html
+discord token.txt
+discord bets.json
+discord bot settings.json

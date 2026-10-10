@@ -5,6 +5,7 @@ name: Build executables
 # run's "Artifacts" section on the Actions tab.
 #   Bet Builder by Levi Shoaf            the windowed app
 #   Bet Builder by Levi Shoaf (Console)  the same picks in a text console (supports --watch etc.)
+#   Bet Builder by Levi Shoaf (Discord Bot)  the Discord bot (see README)
 on:
   push:
     branches: [claude/fanduel-nfl-ev-finder, main]
@@ -39,6 +40,7 @@ jobs:
           COMMON="--onefile --collect-data tzdata --collect-data certifi"
           pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Console)" bets.py
           pyinstaller $COMMON --windowed --name "Bet Builder by Levi Shoaf" bets_gui.py
+          pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Discord Bot)" discord_bot.py
 
       - name: Smoke test the builds
         shell: bash
@@ -52,6 +54,9 @@ jobs:
           "$CONSOLE" --grade
           APP="Bet Builder by Levi Shoaf"
           if [ -d "$APP.app" ]; then "./$APP.app/Contents/MacOS/$APP" --selftest; else "./$APP.exe" --selftest; fi
+          BOT="./Bet Builder by Levi Shoaf (Discord Bot)"
+          [ -f "$BOT.exe" ] && BOT="$BOT.exe"
+          "$BOT" --selftest
 
       - name: Package (Mac keeps file permissions inside a zip)
         if: runner.os == 'macOS'
@@ -59,6 +64,8 @@ jobs:
           ditto -c -k --keepParent "dist/Bet Builder by Levi Shoaf.app" "Bet Builder by Levi Shoaf - Mac App.zip"
           chmod +x "dist/Bet Builder by Levi Shoaf (Console)"
           ditto -c -k "dist/Bet Builder by Levi Shoaf (Console)" "Bet Builder by Levi Shoaf - Mac Console.zip"
+          chmod +x "dist/Bet Builder by Levi Shoaf (Discord Bot)"
+          ditto -c -k "dist/Bet Builder by Levi Shoaf (Discord Bot)" "Bet Builder by Levi Shoaf - Mac Discord Bot.zip"
 
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Windows'
@@ -67,6 +74,7 @@ jobs:
           path: |
             dist/Bet Builder by Levi Shoaf.exe
             dist/Bet Builder by Levi Shoaf (Console).exe
+            dist/Bet Builder by Levi Shoaf (Discord Bot).exe
           retention-days: 90
 
       - uses: actions/upload-artifact@v4
@@ -76,4 +84,5 @@ jobs:
           path: |
             Bet Builder by Levi Shoaf - Mac App.zip
             Bet Builder by Levi Shoaf - Mac Console.zip
+            Bet Builder by Levi Shoaf - Mac Discord Bot.zip
           retention-days: 90

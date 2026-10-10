@@ -81,6 +81,14 @@ def _pick_line(prob_at, lines, lo: float, hi: float) -> tuple[float, float] | No
     return best
 
 
+def _lines(prob_at, lines, lo: float, hi: float, every: bool) -> list[tuple[float, float]]:
+    """The best line in [lo, hi], or with `every` all of them (for looking a bet up)."""
+    if every:
+        return [(line, p) for line in lines if lo <= (p := prob_at(line)) <= hi]
+    best = _pick_line(prob_at, lines, lo, hi)
+    return [best] if best else []
+
+
 def has_lines(g: dict) -> bool:
     return bool(g["spread_line"] and g["total_line"] and g["home_moneyline"] and g["away_moneyline"])
 
@@ -111,7 +119,10 @@ def cfb_weeks(now: datetime | None = None, ahead: int = 4) -> list[int]:
 
 
 def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = None,
-              games_source: str | None = None, week: int | None = None) -> list[Bet]:
+              games_source: str | None = None, week: int | None = None,
+              every_line: bool = False) -> list[Bet]:
+    """Candidate bets for the week. Alternate lines are the best one per side, or
+    with `every_line` every line in [lo, hi] (for looking up a specific bet)."""
     from .cli import build_model  # heavy import, only when needed
 
     now = now or datetime.now(EASTERN)
@@ -173,25 +184,22 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
             def cover(L, sign=sign):
                 return home_by_more(-L) if sign == 1 else 1 - home_by_more(L) - dist.outcome("margin", sp, L)[1]
             for lines in ([L for L in HALF_POINTS], [-L for L in HALF_POINTS]):
-                best = _pick_line(cover, lines, lo, hi)
-                if best:
-                    bets.append(make_bet(game, kick, "alternate_spreads", team, best[0], best[1],
+                for line, p in _lines(cover, lines, lo, hi, every_line):
+                    bets.append(make_bet(game, kick, "alternate_spreads", team, line, p,
                                          gid, "market line"))
         over = lambda L: dist.outcome("total", tot, L)[0]  # noqa: E731
         for side, prob_at in (("Over", over), ("Under", lambda L: 1 - over(L))):
-            best = _pick_line(prob_at, [L + 20 for L in HALF_POINTS], lo, hi)
-            if best:
-                bets.append(make_bet(game, kick, "alternate_totals", side, best[0], best[1],
+            for line, p in _lines(prob_at, [L + 20 for L in HALF_POINTS], lo, hi, every_line):
+                bets.append(make_bet(game, kick, "alternate_totals", side, line, p,
                                      gid, "market line"))
         for team, pts in ((home, tot / 2 + sp / 2), (away, tot / 2 - sp / 2)):
-            best = _pick_line(lambda L, pts=pts: 1 - normal_cdf((L - pts) / 9.1),
-                              HALF_POINTS, lo, hi)
-            if best:
-                bets.append(make_bet(game, kick, "team_totals", f"{team} Over", best[0], best[1],
+            for line, p in _lines(lambda L, pts=pts: 1 - normal_cdf((L - pts) / 9.1),
+                                  HALF_POINTS, lo, hi, every_line):
+                bets.append(make_bet(game, kick, "team_totals", f"{team} Over", line, p,
                                      gid, "market line"))
 
     # 3) Player props.
-    bets += _props(rows, all_games, season, lo, hi)
+    bets += _props(rows, all_games, season, lo, hi, every_line)
     weeks = {g["game_id"]: int(g["week"]) for g in rows}
     for b in bets:
         b.week = weeks.get(b.game_id)
@@ -224,7 +232,7 @@ def _model_only_week(rows, season, lo, hi, games_source) -> list[Bet]:
     return out
 
 
-def _props(rows, all_games, season, lo, hi) -> list[Bet]:
+def _props(rows, all_games, season, lo, hi, every_line: bool = False) -> list[Bet]:
     players = load_player_model(season, all_games)
     implied, info = {}, {}
     for g in rows:
@@ -292,7 +300,7 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             continue  # didn't play his team's latest game
         factor = implied[team] / (pts[team][0] / pts[team][1])
         name = players.names[key]
-        best = None
+        found = []  # (chance, market, threshold)
         for stat, market, dist, ladder in PROP_LADDERS.get(players.position.get(key, ""), []):
             prof = players.profile(name, stat)
             if prof is None:
@@ -301,10 +309,11 @@ def _props(rows, all_games, season, lo, hi) -> list[Bet]:
             for k in ladder:
                 p = p_over(dist, mean, prof.sd, k - 0.5)
                 p = (p * prof.games + 1) / (prof.games + 2)  # small-sample shrink
-                if lo <= p <= hi and (best is None or p > best[0]):
-                    best = (p, market, k)
-        if best:
-            p, market, k = best
+                if lo <= p <= hi:
+                    found.append((p, market, k))
+        if not every_line:  # the player's likeliest prop only
+            found = sorted(found, key=lambda f: -f[0])[:1]
+        for p, market, k in found:
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"
             bet = make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs")

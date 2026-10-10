@@ -135,6 +135,48 @@ python3 bets.py --sport nfl --watch 30 --save
 The advanced command-line tool (`python -m nfl_edge`, below) can still
 compare live FanDuel prices with an Odds API key.
 
+## Discord bot
+
+The same picks, win chances and bet history in your Discord server. It runs
+on your computer, so it answers while the bot program is open.
+
+**Commands**
+
+| Command | What it does |
+|---|---|
+| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL or College football), `count`, `min_chance`, `max_chance`, `week`, `wager`. |
+| `/parlays` | Top parlays as bet slips (P1, P2, …). Options: `count`, `min_legs`, `max_legs`, `week`, `wager`. |
+| `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, any line or prop threshold, and whether FanDuel's price is worth it. |
+| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places parlay P1 from the last `/parlays` in that channel). |
+| `/remove bet:Ravens` | Removes one of your logged bets. |
+| `/history` | The server's bet history by sport and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. Options: `sport`, `week`, `show_picks`. |
+| `/injuries team:Bills` | This week's NFL injury report. |
+| `/results-here` | (Server managers) Posts results in this channel as games finish. |
+
+The whole server shares one history, saved in `discord bets.json` next to the
+program. Placed bets and the picks the bot showed are graded every 10 minutes
+once their games are final.
+
+**Set it up (once, about 10 minutes)**
+
+1. Go to <https://discord.com/developers/applications>, click **New
+   Application**, and name it (e.g. *Bet Builder*).
+2. Open **Bot** in the left menu. Click **Reset Token**, then **Copy**. This
+   is the bot's password: never share it or post it anywhere.
+3. Open **OAuth2 → URL Generator**. Tick **bot** and **applications.commands**;
+   under bot permissions tick **Send Messages**, **Embed Links** and **Read
+   Message History**. Open the generated link and add the bot to your server.
+4. Download **Bet Builder by Levi Shoaf (Discord Bot)** from the latest build
+   (see *Download the standalone program* above), put it in its own folder and
+   run it. The first time, it asks for the token and saves it as
+   `discord token.txt` in that folder. Keep that file private.
+5. In Discord, type `/` and the bot's commands appear. In the channel where you
+   want results posted, run `/results-here`.
+
+Keep the program running (and the computer awake) for the bot to answer. Close
+the window or press Ctrl+C to stop it. With Python installed you can run it
+from source instead: `pip install discord.py` then `python3 discord_bot.py`.
+
 ## Setup
 
 Requires Python 3.10+ and no third-party packages.

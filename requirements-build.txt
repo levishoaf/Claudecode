@@ -1,3 +1,4 @@
 pyinstaller==6.10.0
 tzdata==2024.2
 certifi==2024.8.30
+discord.py==2.5.2

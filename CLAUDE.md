@@ -62,3 +62,13 @@ capability, so omit `capabilities` when republishing to keep it.
 
 The app keeps its own placed and not-placed bets in
 `~/Bet Builder/my bets.json` and grades them on every refresh.
+
+## Discord bot
+
+`discord_bot.py` (logic in `nfl_edge/botcore.py`) is the same bet builder as a
+Discord bot that runs on the user's computer, with one shared bet history for
+the whole server (`discord bets.json` next to the program). Discord is not
+reachable from this workspace, so check changes with
+`python3 discord_bot.py --selftest`, which runs every command's logic against
+live data without connecting. The token lives in `discord token.txt` on the
+user's machine; never ask for it here or commit it.
