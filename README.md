@@ -111,6 +111,10 @@ with no account or key:
 - **Single bets** are the 30 likeliest, likeliest first, with no chance
   limit (`--min-prob` / `--max-prob` can still narrow it). The likeliest
   bets pay the least.
+- **Bet type** (the app's and web page's drop-down, `--type`, the bot's
+  `bet_type:`) narrows singles and parlays to one kind of bet, such as
+  Moneyline or Anytime TD. Spreads, totals and yardage props need the
+  FanDuel check, since their lines can't be confirmed otherwise.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

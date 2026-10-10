@@ -41,7 +41,8 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import best_parlays, mixed_parlays, payout_parlays, rank_singles  # noqa: E402
+from nfl_edge.picks import (BET_TYPES, best_parlays, mixed_parlays, of_type,  # noqa: E402
+                            payout_parlays, rank_singles)
 
 
 def ask(question: str, default: str) -> str:
@@ -228,8 +229,10 @@ def build(args):
         # Keep only bets found on FanDuel's own site, at FanDuel's prices.
         bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
         rank = "ev"
+    kind = getattr(args, "bet_type", None) or "All bets"
+    bets = of_type(bets, kind)
     singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game,
-                           prop_share=0.5 if args.sport == "nfl" else None)
+                           prop_share=0.5 if args.sport == "nfl" and kind == "All bets" else None)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
     pays = getattr(args, "pays", None)
@@ -357,7 +360,9 @@ def main() -> int:
     p.add_argument("--parlays", type=int, help="how many parlays (0 for none)")
     p.add_argument("--stake", type=float, help="parlay wager shown on the slips")
     p.add_argument("--pays", type=float,
-                   help="build parlays that pay about this many dollars on the wager, e.g. 40")
+                   help="build parlays that pay at least this many dollars on the wager, e.g. 40")
+    p.add_argument("--type", dest="bet_type", default="All bets", choices=list(BET_TYPES),
+                   help='only one type of bet, e.g. "Anytime TD" (default: all bets)')
     p.add_argument("--min-prob", type=float, default=MIN_PROB,
                    help="lowest win chance in %% (default: no limit)")
     p.add_argument("--max-prob", type=float, default=MAX_PROB,

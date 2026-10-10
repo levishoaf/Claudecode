@@ -27,6 +27,7 @@ from pathlib import Path
 
 import bets as launcher  # sets up paths and certificates, like the app
 from nfl_edge import botcore, data, fdfeed
+from nfl_edge.picks import BET_TYPES, empty_type_note, of_type
 
 ROOT = launcher.ROOT
 LEDGER = ROOT / "discord bets.json"
@@ -82,23 +83,30 @@ class Core:
             return list(bets), None
         return fdfeed.verify(list(bets), state, sport)
 
-    def bets(self, sport, count, lo, hi, week, wager) -> str:
+    def bets(self, sport, count, lo, hi, week, wager, kind="All bets") -> str:
         try:
             pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
                                                               sure_only=not self.state()))
         except fdfeed.FeedError as e:
             return f"Couldn't check against FanDuel ({e}), so no bets are shown. Try again soon."
-        singles = botcore.pick_singles(pool, count, rank_by="ev" if note else "prob")
+        pool = of_type(pool, kind)
+        if not pool and kind != "All bets":
+            return empty_type_note(kind, sport, bool(self.state()))
+        singles = botcore.pick_singles(pool, count, rank_by="ev" if note else "prob",
+                                       mix=kind == "All bets")
         self._record(sport, week, singles, [])
         return botcore.singles_text(singles, sport, wager) + (f"\n_{note}_" if note else "")
 
     def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager,
-                pays=None) -> list[str]:
+                pays=None, kind="All bets") -> list[str]:
         try:
             pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
                                                               sure_only=not self.state()))
         except fdfeed.FeedError as e:
             return [f"Couldn't check against FanDuel ({e}), so no parlays are shown."]
+        pool = of_type(pool, kind)
+        if not pool and kind != "All bets":
+            return [empty_type_note(kind, sport, bool(self.state()))]
         parlays = botcore.pick_parlays(pool, count, min_legs, max_legs,
                                        pays=pays / wager if pays else None)
         self.last_parlays[channel] = (sport, parlays)
@@ -188,6 +196,7 @@ def run_bot(token: str) -> None:
     client = discord.Client(intents=intents)
     tree = app_commands.CommandTree(client)
     sport_choices = [app_commands.Choice(name=v, value=k) for k, v in SPORTS.items()]
+    type_choices = [app_commands.Choice(name=k, value=k) for k in BET_TYPES]
 
     async def send(interaction, text):
         parts = text if isinstance(text, list) else [text]
@@ -207,27 +216,31 @@ def run_bot(token: str) -> None:
         await send(interaction, text)
 
     @tree.command(name="bets", description="Top single bets, likeliest first")
-    @app_commands.choices(sport=sport_choices)
+    @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many bets (1-30)",
-                           week="NFL or college week (default: this week)", wager="Wager in $")
+                           week="NFL or college week (default: this week)", wager="Wager in $",
+                           bet_type="Only one type of bet, e.g. Anytime TD (default: all)")
     async def bets_cmd(interaction: discord.Interaction, sport: str = "nfl",
                        count: app_commands.Range[int, 1, 30] = 10,
-                       week: int | None = None, wager: float = 10.0):
-        await work(interaction, core.bets, sport, count, 1, 99, week, wager)
+                       week: int | None = None, wager: float = 10.0,
+                       bet_type: str = "All bets"):
+        await work(interaction, core.bets, sport, count, 1, 99, week, wager, bet_type)
 
     @tree.command(name="parlays", description="Top parlays as bet slips")
-    @app_commands.choices(sport=sport_choices)
+    @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many parlays (1-10)", min_legs="Fewest legs",
                            max_legs="Most legs", week="Week (default: this week)",
                            wager="Wager in $",
-                           pays="Build parlays that pay at least this much back (default $40; 0 = any)")
+                           pays="Build parlays that pay at least this much back (default $40; 0 = any)",
+                           bet_type="Only one type of bet, e.g. Anytime TD (default: all)")
     async def parlays_cmd(interaction: discord.Interaction, sport: str = "nfl",
                           count: app_commands.Range[int, 1, 10] = 3,
                           min_legs: app_commands.Range[int, 2, 8] = 2,
                           max_legs: app_commands.Range[int, 2, 8] = 6,
-                          week: int | None = None, wager: float = 10.0, pays: float = 40.0):
+                          week: int | None = None, wager: float = 10.0, pays: float = 40.0,
+                          bet_type: str = "All bets"):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
-                   min_legs, max(min_legs, max_legs), 1, 99, week, wager, pays or None)
+                   min_legs, max(min_legs, max_legs), 1, 99, week, wager, pays or None, bet_type)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
@@ -330,6 +343,8 @@ def selftest() -> int:
     with tempfile.TemporaryDirectory() as d:
         core = Core(Path(d) / "ledger.json")
         out = {"bets": core.bets("nfl", 10, 1, 99, None, 10.0),
+               "td_bets": core.bets("nfl", 5, 1, 99, None, 10.0, "Anytime TD"),
+               "rushing": core.bets("nfl", 5, 1, 99, None, 10.0, "Rushing yards"),
                "parlays": core.parlays(1, "nfl", 3, 2, 6, 1, 99, None, 10.0, pays=40.0),
                "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0)}
         top = core.boards.get("nfl", None, 0.6, 0.8)

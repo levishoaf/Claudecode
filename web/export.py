@@ -21,7 +21,7 @@ from nfl_edge import board, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
-from nfl_edge.picks import payout_parlays, rank_singles  # noqa: E402
+from nfl_edge.picks import BET_TYPES, SURE_TYPES, of_type, payout_parlays, rank_singles  # noqa: E402
 
 LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
 PARLAY_PAYS = 4.0  # parlays pay at least 4x the wager: $40 on $10
@@ -56,10 +56,19 @@ def run(sport, week, label, ledger, this_week=False):
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))
-    out = {"label": label, "week": week, "singles": [bet(b, sport) for b in singles],
-           "parlays": [{"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
-                        "breakeven": be(p.win_prob)} for p in parlays],
-           "note": board.NOTES.get("injuries", "") if sport == "nfl" else ""}
+    def picks(singles, parlays):
+        return {"singles": [bet(b, sport) for b in singles],
+                "parlays": [{"legs": [bet(b, sport) for b in p.legs],
+                             "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob)}
+                            for p in parlays]}
+
+    out = {"label": label, "week": week, **picks(singles, parlays),
+           "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {}}
+    for kind in BET_TYPES:  # each type's own top 30 and parlays, for the Bet type menu
+        some = of_type(bets, kind)
+        if kind != "All bets" and some:
+            out["types"][kind] = picks(rank_singles(some, 30, rank_by="prob", per_game=3),
+                                       payout_parlays(some, PARLAY_PAYS, 10))
     if sport == "nfl":
         try:
             _, players, note = board.injury_report(week)
@@ -95,7 +104,7 @@ def main():
     ledger = tracker.load(HISTORY)
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
-              "nfl": [], "ncaaf": []}
+              "nfl": [], "ncaaf": [], "betTypes": list(BET_TYPES), "sureTypes": list(SURE_TYPES)}
     weeks = board.nfl_weeks()
     current = weeks[0][0] if weeks else None
     for w, posted in weeks:

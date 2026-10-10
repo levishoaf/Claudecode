@@ -28,6 +28,7 @@ from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_tim
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
+from nfl_edge.picks import BET_TYPES, empty_type_note
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -209,7 +210,7 @@ class App:
 
         def field(label, var, width, values=None):
             box = tk.Frame(row2, bg=NAVY)
-            box.pack(side="left", padx=(0, 8))
+            box.pack(side="left", padx=(0, 5))
             tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
                      font=self.f["label"]).pack(anchor="w")
             if values:
@@ -222,7 +223,7 @@ class App:
 
         def pair(label, a, b):
             box = tk.Frame(row2, bg=NAVY)
-            box.pack(side="left", padx=(0, 8))
+            box.pack(side="left", padx=(0, 5))
             tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
                      font=self.f["label"]).pack(anchor="w")
             inner = tk.Frame(box, bg=NAVY)
@@ -238,20 +239,28 @@ class App:
             self.build()
 
         self.games_box.bind("<<ComboboxSelected>>", chose_week)
+        self.bet_type = tk.StringVar(value="All bets")
+        self.type_box = field("Bet type", self.bet_type, 12, list(BET_TYPES))
+
+        def chose_type(_event):
+            self.type_box.selection_clear()
+            self.root.focus_set()
+            self.build()
+
+        self.type_box.bind("<<ComboboxSelected>>", chose_type)
         field("Singles", self.n_singles, 3)
         field("Parlays", self.n_parlays, 3)
         pair("Legs", self.min_legs, self.max_legs)
-        field("Wager $", self.stake, 4)
+        field("Wager $", self.stake, 3)
         self.pays = tk.StringVar(value="40")
-        field("Pays $", self.pays, 4)
+        field("Pays $", self.pays, 3)
         field("Refresh", self.refresh, 3)
         self.refresh.trace_add("write", lambda *_: self.schedule())
 
         btns = tk.Frame(row2, bg=NAVY)
         btns.pack(side="right", anchor="s")
         self.build_btn = FlatButton(btns, "Build bets", self.build, "primary", self.f["bold"])
-        self.build_btn.pack(side="left", padx=(0, 6))
-        FlatButton(btns, "Save", self.save, "secondary", self.f["bold"]).pack(side="left")
+        self.build_btn.pack(side="left")
         c.create_window(W / 2, 72, window=top, width=PANEL_W)
 
     def show_mode(self) -> None:
@@ -447,7 +456,8 @@ class App:
                  font=self.f["h2"]).pack(side="left")
         checked = getattr(args, "fanduel_state", None) or getattr(args, "fanduel_key", None)
         order = "best value first" if checked else "likeliest first"
-        tk.Label(head, text=f"   {order}"
+        kind = getattr(args, "bet_type", "All bets")
+        tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None) or getattr(args, "fanduel_state", None))
@@ -587,9 +597,16 @@ class App:
             self.row_widgets[key] = (row, num_lbl, num)
         return row
 
+    def empty_text(self, default: str) -> str:
+        """What to say when nothing is found: why, if a bet type was chosen."""
+        kind = self.bet_type.get()
+        if kind == "All bets":
+            return default
+        return empty_type_note(kind, self.sport.get(), self.fanduel_on)
+
     def singles_tab(self, parent, singles, previous) -> None:
         if not singles:
-            tk.Label(parent, text="None found. Try another week.", bg=BG,
+            tk.Label(parent, text=self.empty_text("None found. Try another week."), bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         table = self.list_table(parent, "#")
@@ -607,7 +624,8 @@ class App:
 
     def parlays_tab(self, parent, parlays, stake) -> None:
         if not parlays:
-            tk.Label(parent, text="Not enough games for these parlays this week.", bg=BG,
+            tk.Label(parent, text=self.empty_text("Not enough games for these parlays this week."),
+                     bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         table = self.list_table(parent, "")
@@ -995,6 +1013,7 @@ class App:
             stake=float(self.stake.get() or 10), min_prob=bets.MIN_PROB,
             max_prob=bets.MAX_PROB, per_game=3, allow_overlap=False, games_file=None,
             fanduel_state=bets.fanduel_state() if self.fanduel_on else None,
+            bet_type=self.bet_type.get(),
             pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
     def build(self) -> None:

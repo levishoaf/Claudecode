@@ -391,8 +391,10 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
     return out
 
 
-def pick_singles(bets, count: int, rank_by: str = "prob"):
-    return rank_singles(bets, count, rank_by=rank_by, per_game=3, prop_share=0.5)
+def pick_singles(bets, count: int, rank_by: str = "prob", mix: bool = True):
+    """The top singles; with `mix`, half props and half game bets where possible."""
+    return rank_singles(bets, count, rank_by=rank_by, per_game=3,
+                        prop_share=0.5 if mix else None)
 
 
 def pick_parlays(bets, count: int, min_legs: int, max_legs: int,

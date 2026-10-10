@@ -85,3 +85,28 @@ class PayoutParlaysTest(unittest.TestCase):
             self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
         probs = [p.win_prob for p in parlays]
         self.assertEqual(probs, sorted(probs, reverse=True))
+
+
+class BetTypeTest(unittest.TestCase):
+    def test_of_type_keeps_only_that_type(self):
+        from datetime import datetime, timedelta, timezone
+
+        from nfl_edge.board import make_bet
+        from nfl_edge.picks import BET_TYPES, empty_type_note, of_type
+
+        kick = datetime.now(timezone.utc) + timedelta(days=2)
+        bets = [make_bet("A @ B", kick, "h2h", "A", None, 0.7, "g1", "x"),
+                make_bet("A @ B", kick, "player_anytime_td", "Joe Yes", None, 0.5, "g1", "x"),
+                make_bet("C @ D", kick, "player_rush_yds_alternate", "Sam Over", 49.5, 0.6, "g2", "x"),
+                make_bet("C @ D", kick, "player_reception_yds_alternate", "Al Over", 24.5, 0.6, "g2", "x")]
+        self.assertEqual(len(of_type(bets, "All bets")), 4)
+        self.assertEqual([b.pick for b in of_type(bets, "Moneyline")], ["A"])
+        self.assertEqual([b.pick for b in of_type(bets, "Anytime TD")], ["Joe Yes"])
+        self.assertEqual([b.pick for b in of_type(bets, "Rushing yards")], ["Sam Over"])
+        self.assertEqual([b.pick for b in of_type(bets, "Receiving yards")], ["Al Over"])
+        self.assertEqual(of_type(bets, "Spread"), [])
+        self.assertIn("FanDuel check", empty_type_note("Spread", "nfl", checked=False))
+        self.assertIn("moneylines only", empty_type_note("Anytime TD", "ncaaf", checked=False))
+        self.assertEqual(set(BET_TYPES) >= {"Moneyline", "Anytime TD", "Receptions"}, True)
+        with self.assertRaises(ValueError):
+            of_type(bets, "Corners")

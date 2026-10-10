@@ -43,6 +43,41 @@ def is_prop(b: Bet) -> bool:
     return b.market.startswith("player_")
 
 
+# Bet types to choose from, by the start of their market keys ("All bets": everything).
+BET_TYPES = {
+    "All bets": (),
+    "Moneyline": ("h2h",),
+    "Spread": ("spreads", "alternate_spreads"),
+    "Total points": ("totals", "alternate_totals", "team_totals", "alternate_team_totals"),
+    "Anytime TD": ("player_anytime_td",),
+    "Passing yards": ("player_pass_yds",),
+    "Passing TDs": ("player_pass_tds",),
+    "Rushing yards": ("player_rush_yds",),
+    "Receiving yards": ("player_reception_yds",),
+    "Receptions": ("player_receptions",),
+}
+# Types on the free board, which only has bets sure to be on FanDuel.
+SURE_TYPES = ("All bets", "Moneyline", "Anytime TD")
+
+
+def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
+    """Only the bets of one type from BET_TYPES; every bet for "All bets" or None."""
+    markets = BET_TYPES.get(kind or "All bets")
+    if markets is None:
+        raise ValueError(f"unknown bet type {kind!r}")
+    return [b for b in bets if not markets or b.market.startswith(markets)]
+
+
+def empty_type_note(kind: str, sport: str, checked: bool) -> str:
+    """Why a chosen bet type has no bets."""
+    if sport == "ncaaf" and kind not in ("All bets", "Moneyline"):
+        return "College bets are moneylines only."
+    if kind not in SURE_TYPES and not checked:
+        return (f"{kind} lines can't be confirmed on FanDuel from free data, so they only "
+                "show with the FanDuel check on.")
+    return f"No {kind.lower()} bets for this week."
+
+
 def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
                  rank_by: str = "ev", per_game: int | None = None,
                  prop_share: float | None = None) -> list[Bet]:
