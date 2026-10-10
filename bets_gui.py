@@ -1259,7 +1259,7 @@ def check_update_cli() -> int:
     """--check-update: print this build and the newest one on GitHub."""
     print(f"This build: {updater.BUILD or 'running from source'}")
     try:
-        found = updater.latest()
+        found = updater.latest(sys.platform if sys.platform in updater.ASSETS else "win32")
     except updater.UpdateError as e:
         print(f"Couldn't check: {e}")
         return 0
