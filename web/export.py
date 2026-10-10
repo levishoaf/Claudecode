@@ -21,9 +21,10 @@ from nfl_edge import board, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
-from nfl_edge.picks import mixed_parlays, rank_singles  # noqa: E402
+from nfl_edge.picks import payout_parlays, rank_singles  # noqa: E402
 
 LO, HI = 0.60, 0.80
+PARLAY_PAYS = 4.0  # parlays pay about 4x the wager: $40 on $10
 HISTORY = ROOT / "web" / "history.json"
 
 
@@ -51,7 +52,7 @@ def run(sport, week, label, ledger, this_week=False):
             else nfl_board(None, LO, HI, week=week))
     singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
                            prop_share=0.5 if sport == "nfl" else None)
-    parlays = mixed_parlays(bets, 3, 5, 10)
+    parlays = payout_parlays(bets, PARLAY_PAYS, 10)  # about $40 back on $10
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))

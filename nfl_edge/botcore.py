@@ -19,7 +19,7 @@ from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
 from .parlays import Parlay
-from .picks import mixed_parlays, rank_singles
+from .picks import mixed_parlays, payout_parlays, rank_singles
 
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
@@ -395,7 +395,11 @@ def pick_singles(bets, count: int, rank_by: str = "prob"):
     return rank_singles(bets, count, rank_by=rank_by, per_game=3, prop_share=0.5)
 
 
-def pick_parlays(bets, count: int, min_legs: int, max_legs: int) -> list[Parlay]:
+def pick_parlays(bets, count: int, min_legs: int, max_legs: int,
+                 pays: float | None = None) -> list[Parlay]:
+    """Parlays of min-max legs, or with `pays` (times the wager) ones that pay about that."""
+    if pays:
+        return payout_parlays(bets, pays, count, min_legs=min_legs, max_legs=max_legs)
     return mixed_parlays(bets, min_legs, max_legs, count)
 
 

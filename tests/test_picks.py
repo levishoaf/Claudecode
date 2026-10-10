@@ -65,3 +65,22 @@ class MixedParlaysTest(unittest.TestCase):
                 uses[id(b)] = uses.get(id(b), 0) + 1
         self.assertLessEqual(max(uses.values()), 3)
         self.assertEqual(len({frozenset(id(b) for b in p.legs) for p in parlays}), 10)
+
+
+class PayoutParlaysTest(unittest.TestCase):
+    def test_pays_about_the_target_likeliest_first(self):
+        from datetime import datetime, timedelta, timezone
+
+        from nfl_edge.board import make_bet
+        from nfl_edge.picks import payout_parlays
+
+        kick = datetime.now(timezone.utc) + timedelta(days=2)
+        bets = [make_bet(f"Team{i} @ Home{i}", kick, "h2h", f"Team{i}", None, p, f"g{i}", "x")
+                for i, p in enumerate([0.78, 0.75, 0.72, 0.7, 0.66, 0.63, 0.6, 0.55])]
+        parlays = payout_parlays(bets, 4.0, 5)
+        self.assertEqual(len(parlays), 5)
+        for p in parlays:
+            self.assertLessEqual(abs(p.decimal / 4.0 - 1), 0.05)  # $38-42 back on $10
+            self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
+        probs = [p.win_prob for p in parlays]
+        self.assertEqual(probs, sorted(probs, reverse=True))

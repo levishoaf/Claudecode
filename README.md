@@ -110,8 +110,10 @@ with no account or key:
 
 - **Single bets** come likeliest first, within a 60–80% chance range
   (`--min-prob` / `--max-prob`). Higher than 80% pays very little.
-- **Parlays** print as FanDuel-style slips. Legs come from different games,
-  and no two parlays share a game.
+- **Parlays** print as FanDuel-style slips, with legs from different games.
+  They are built to pay about $40 back on a $10 wager (`--pays 40`; the
+  app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is
+  usually a 3-leg parlay with about a 24% chance to win.
 - **Odds shown are break-even prices,** the worst price still worth taking,
   because FanDuel's own prices aren't public. At the end, a **price
   checker** lets you type a pick number and FanDuel's odds (`3 -150` or

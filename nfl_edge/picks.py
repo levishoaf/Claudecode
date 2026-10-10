@@ -151,3 +151,44 @@ def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
         limit += 1
     chosen.sort(key=lambda p: (len(p.legs), -p.win_prob))
     return chosen
+
+
+def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int = 2,
+                   max_legs: int = 6, tolerance: float = 0.05, rank_by: str = "prob",
+                   max_uses: int = 3, pool_size: int = 20) -> list[Parlay]:
+    """`count` parlays that each pay about `target` times the wager (stake
+    included), likeliest to win first (best value first with rank_by="ev").
+
+    Legs come from different games. If too few parlays land within
+    `tolerance` of the target, the band widens step by step up to 50%.
+    No bet appears in more than `max_uses` parlays when that can be avoided.
+    """
+    pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
+    candidates = [Parlay(c) for n in range(min_legs, max_legs + 1)
+                  for c in combinations(pool, n) if len({b.game for b in c}) == n]
+    if rank_by == "prob":
+        key = lambda p: (p.win_prob, -abs(p.decimal / target - 1))  # noqa: E731
+    else:
+        key = lambda p: (*value_key(p.ev, p.win_prob), -abs(p.decimal / target - 1))  # noqa: E731
+    band = tolerance
+    near: list[Parlay] = []
+    while band <= 0.5 + 1e-9:
+        near = sorted((p for p in candidates if abs(p.decimal / target - 1) <= band),
+                      key=key, reverse=True)
+        if len(near) >= count:
+            break
+        band += 0.05
+    chosen: list[Parlay] = []
+    uses: dict[int, int] = {}
+    for limit in range(max_uses, count + max_uses + 1):  # relax reuse only if needed
+        for p in near:
+            if len(chosen) == count:
+                break
+            if p in chosen or any(uses.get(id(b), 0) >= limit for b in p.legs):
+                continue
+            chosen.append(p)
+            for b in p.legs:
+                uses[id(b)] = uses.get(id(b), 0) + 1
+        if len(chosen) == count or len(chosen) == len(near):
+            break
+    return sorted(chosen, key=key, reverse=True)

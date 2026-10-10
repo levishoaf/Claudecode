@@ -41,7 +41,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import best_parlays, mixed_parlays, rank_singles  # noqa: E402
+from nfl_edge.picks import best_parlays, mixed_parlays, payout_parlays, rank_singles  # noqa: E402
 
 
 def ask(question: str, default: str) -> str:
@@ -230,8 +230,13 @@ def build(args):
                            prop_share=0.5 if args.sport == "nfl" else None)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
+    pays = getattr(args, "pays", None)
     if not args.parlays:
         parlays = []
+    elif pays:  # parlays that pay about this much on the wager, likeliest first
+        parlays = payout_parlays(bets, pays / (args.stake or 10), args.parlays,
+                                 min_legs=min(lo_legs, 2), max_legs=max(hi_legs, 6),
+                                 rank_by=rank)
     elif hi_legs > lo_legs:  # a spread of sizes; parlays may share games
         parlays = mixed_parlays(bets, lo_legs, hi_legs, args.parlays)
     else:
@@ -349,6 +354,8 @@ def main() -> int:
     p.add_argument("--max-legs", type=int, help="largest parlay")
     p.add_argument("--parlays", type=int, help="how many parlays (0 for none)")
     p.add_argument("--stake", type=float, help="parlay wager shown on the slips")
+    p.add_argument("--pays", type=float,
+                   help="build parlays that pay about this many dollars on the wager, e.g. 40")
     p.add_argument("--min-prob", type=float, default=60.0, help="lowest win chance in %% (default 60)")
     p.add_argument("--max-prob", type=float, default=80.0,
                    help="highest win chance in %% (default 80; higher pays very little)")

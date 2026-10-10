@@ -92,13 +92,15 @@ class Core:
         self._record(sport, week, singles, [])
         return botcore.singles_text(singles, sport, wager) + (f"\n_{note}_" if note else "")
 
-    def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager) -> list[str]:
+    def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager,
+                pays=None) -> list[str]:
         try:
             pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
                                                               sure_only=not self.state()))
         except fdfeed.FeedError as e:
             return [f"Couldn't check against FanDuel ({e}), so no parlays are shown."]
-        parlays = botcore.pick_parlays(pool, count, min_legs, max_legs)
+        parlays = botcore.pick_parlays(pool, count, min_legs, max_legs,
+                                       pays=pays / wager if pays else None)
         self.last_parlays[channel] = (sport, parlays)
         self._record(sport, week, [], parlays)
         return botcore.parlays_text(parlays, sport, wager)
@@ -220,14 +222,15 @@ def run_bot(token: str) -> None:
     @app_commands.choices(sport=sport_choices)
     @app_commands.describe(count="How many parlays (1-10)", min_legs="Fewest legs",
                            max_legs="Most legs", week="Week (default: this week)",
-                           wager="Wager in $")
+                           wager="Wager in $",
+                           pays="Build parlays that pay about this much back (default $40; 0 = any)")
     async def parlays_cmd(interaction: discord.Interaction, sport: str = "nfl",
                           count: app_commands.Range[int, 1, 10] = 3,
-                          min_legs: app_commands.Range[int, 2, 8] = 3,
-                          max_legs: app_commands.Range[int, 2, 8] = 5,
-                          week: int | None = None, wager: float = 10.0):
+                          min_legs: app_commands.Range[int, 2, 8] = 2,
+                          max_legs: app_commands.Range[int, 2, 8] = 6,
+                          week: int | None = None, wager: float = 10.0, pays: float = 40.0):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
-                   min_legs, max(min_legs, max_legs), 60, 80, week, wager)
+                   min_legs, max(min_legs, max_legs), 60, 80, week, wager, pays or None)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
@@ -330,7 +333,7 @@ def selftest() -> int:
     with tempfile.TemporaryDirectory() as d:
         core = Core(Path(d) / "ledger.json")
         out = {"bets": core.bets("nfl", 10, 60, 80, None, 10.0),
-               "parlays": core.parlays(1, "nfl", 3, 3, 5, 60, 80, None, 10.0),
+               "parlays": core.parlays(1, "nfl", 3, 2, 6, 60, 80, None, 10.0, pays=40.0),
                "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0)}
         top = core.boards.get("nfl", None, 0.6, 0.8)
         query = botcore._describe(botcore.pick_singles(top, 1)[0])

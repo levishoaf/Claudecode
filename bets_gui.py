@@ -243,6 +243,8 @@ class App:
         field("Parlays", self.n_parlays, 3)
         pair("Legs", self.min_legs, self.max_legs)
         field("Wager $", self.stake, 4)
+        self.pays = tk.StringVar(value="40")
+        field("Pays $", self.pays, 4)
         pair("Chance %", self.lo, self.hi)
         field("Refresh", self.refresh, 3)
         self.refresh.trace_add("write", lambda *_: self.schedule())
@@ -991,7 +993,8 @@ class App:
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
             max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None,
-            fanduel_state=bets.fanduel_state() if self.fanduel_on else None)
+            fanduel_state=bets.fanduel_state() if self.fanduel_on else None,
+            pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
     def build(self) -> None:
         try:
