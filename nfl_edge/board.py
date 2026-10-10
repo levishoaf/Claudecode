@@ -288,7 +288,8 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
             if g["season"] == str(season):
                 latest[t] = max(latest.get(t, 0), int(g["week"]))
 
-    # This week's injury report: Out/Doubtful players are dropped, Questionable flagged.
+    # This week's injury report: anyone listed (Out, Doubtful or Questionable), or who
+    # missed practice before statuses post, is left out so no bet rides on him.
     week = int(rows[0]["week"])
     status, missed_practice = {}, set()
     for (team_code, player_key), report in espn_official().items():
@@ -316,7 +317,7 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
                              "teams; refresh after they post (usually Friday afternoon)")
     elif missed_practice:
         NOTES["injuries"] = (f"Week {week} game statuses aren't out yet (usually Friday "
-                             "afternoon); players who missed practice are flagged")
+                             "afternoon); players who missed practice are left out")
     else:
         NOTES["injuries"] = (f"Week {week} injury reports not posted yet "
                              "(usually Wednesday to Friday); refresh later")
@@ -325,9 +326,8 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
     for key, team in players.current_team.items():
         if team not in implied or team not in pts:
             continue
-        injury = status.get((team, key), "")
-        if injury in ("Out", "Doubtful"):
-            continue
+        if status.get((team, key)) or (team, key) in missed_practice:
+            continue  # injured or questionable: he may not play
         apps = players.appearances.get((key, season), set())
         if (team, str(latest.get(team, 0))) not in apps:
             continue  # didn't play his team's latest game
@@ -356,8 +356,6 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"
             bet = make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs")
-            bet.note = ("Questionable" if injury == "Questionable" else
-                        "Did not practice" if (team, key) in missed_practice and not injury else "")
             out.append(bet)
     return out
 

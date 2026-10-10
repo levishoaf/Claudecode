@@ -45,8 +45,9 @@ on the schedule, labeled with what's known right now:
   parlays without overlap. Each parlay still uses different games for its
   own legs, and no bet appears in more than three parlays.
 - **Stays current:** every time it builds, it pulls the latest schedule,
-  lines, injury reports and stats. Players listed **Out** or **Doubtful**
-  are dropped, **Questionable** players get a **Q** badge, and a status
+  lines, injury reports and stats. Players listed **Out**, **Doubtful**
+  or **Questionable**, or who missed practice before game statuses post,
+  are left out of every bet and parlay, and a status
   line says whether this week's injury reports are in yet. It moves to the
   next week automatically once the current games are played.
 
@@ -64,8 +65,8 @@ grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
 - **Before Friday:** until a team's official statuses post, the tab lists
   that team's players who missed (**No practice**) or were **Limited** in
   practice, and says so.
-- **On bet cards:** props get a **Q** or **DNP** badge when the player is
-  questionable or missed practice. Players ruled Out or Doubtful are dropped.
+- **On bets:** any player listed Out, Doubtful or Questionable, or who
+  missed practice, is left out, so no bet rides on someone who may not play.
 - **Console:** `python3 bets.py --injuries` prints the same list.
 
 ![Injuries tab](docs/bet-builder-injuries.png)

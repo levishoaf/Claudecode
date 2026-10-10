@@ -17080,6 +17080,70 @@
     }
    ],
    "week": 5
+  },
+  {
+   "id": "single:2026_05_CHI_GB|D'Andre Swift Anytime TD (Chicago Bears @ Green Bay Packers)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T17:30:51+00:00",
+   "win_prob": 0.4564,
+   "odds": 119,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_CHI_GB",
+     "odds": 119,
+     "stake": 100,
+     "win_prob": 0.4564,
+     "label": "D'Andre Swift Anytime TD (Chicago Bears @ Green Bay Packers)",
+     "type": "player_stat",
+     "player": "D'Andre Swift",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "D'Andre Swift Anytime TD",
+     "game": "Chicago Bears @ Green Bay Packers",
+     "id": "2026_05_CHI_GB|D'Andre Swift Anytime TD (Chicago Bears @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "single:2026_05_IND_PIT|Roman Wilson Anytime TD (Indianapolis Colts @ Pittsburgh Steelers)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T17:30:51+00:00",
+   "win_prob": 0.4514,
+   "odds": 122,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_IND_PIT",
+     "odds": 122,
+     "stake": 100,
+     "win_prob": 0.4514,
+     "label": "Roman Wilson Anytime TD (Indianapolis Colts @ Pittsburgh Steelers)",
+     "type": "player_stat",
+     "player": "Roman Wilson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Roman Wilson Anytime TD",
+     "game": "Indianapolis Colts @ Pittsburgh Steelers",
+     "id": "2026_05_IND_PIT|Roman Wilson Anytime TD (Indianapolis Colts @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
   }
  ],
  "saved": [

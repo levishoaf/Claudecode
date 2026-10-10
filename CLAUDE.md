@@ -43,6 +43,9 @@ Every bet the user asks for, singles and parlays alike, must aim for the
   in half or fewer of his team's games this season or last season. A player
   traded mid-season counts against one season's schedule, not two. Rookies
   are judged on the current season only.
+- **Skip injured players.** Leave out any player listed Out, Doubtful or
+  Questionable, or who missed practice before game statuses post, from
+  every single and parlay leg.
 
 ## Web version
 
