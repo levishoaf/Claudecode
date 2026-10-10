@@ -15,6 +15,7 @@ import queue
 import tempfile
 import sys
 import threading
+import traceback
 import time
 import tkinter as tk
 import tkinter.font as tkfont
@@ -1085,6 +1086,10 @@ class App:
                                   self.track(args, singles, parlays + args.money_makers)))
             except (data.DataError, ValueError) as e:
                 self.results.put(("error", str(e)))
+            except Exception as e:  # never leave the window stuck on "Loading..."
+                traceback.print_exc()
+                self.results.put(("error", f"Something went wrong building bets ({e}). "
+                                           "Try Build bets again."))
 
         threading.Thread(target=work, daemon=True).start()
 

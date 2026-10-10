@@ -19,6 +19,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as FuturesTimeout
 from dataclasses import dataclass
 
 from .odds import american_to_decimal
@@ -32,6 +34,8 @@ EVENT_TABS = ("td-scorer-props", "passing-props", "receiving-props", "rushing-pr
 STATES = ("az", "co", "ct", "dc", "ia", "il", "in", "ks", "ky", "la", "ma", "md", "me", "mi",
           "nc", "nj", "ny", "oh", "pa", "tn", "va", "vt", "wv", "wy")
 CACHE_SECONDS = 15 * 60
+TIMEOUT = 12  # seconds per request
+TIME_BUDGET = 40  # seconds for all of a check's game pages together
 HEADERS = {"User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"),
            "Accept": "application/json", "Origin": "https://sportsbook.fanduel.com",
@@ -61,7 +65,7 @@ def _get(url: str, opener=None):
         return hit[1]
     req = urllib.request.Request(url, headers=HEADERS)
     try:
-        with (opener or urllib.request.urlopen)(req, timeout=20) as resp:
+        with (opener or urllib.request.urlopen)(req, timeout=TIMEOUT) as resp:
             payload = json.load(resp)
     except urllib.error.HTTPError as e:
         raise FeedError(f"FanDuel answered {e.code}"
@@ -214,7 +218,18 @@ def find(b, sels: list[Selection]) -> Selection | None:
 
 
 def verify(bets: list, state: str, sport: str = "nfl", opener=None) -> tuple[list, str]:
-    """(only the bets found on FanDuel, at FanDuel's price; a note). Raises FeedError."""
+    """(only the bets found on FanDuel, at FanDuel's price; a note). Raises FeedError
+    when FanDuel can't be read, its data can't be understood, or nothing matches, so
+    the caller can fall back instead of showing an empty or half-checked board."""
+    try:
+        return _verify(bets, state, sport, opener)
+    except FeedError:
+        raise
+    except Exception as e:  # FanDuel's data in a shape we don't expect
+        raise FeedError(f"FanDuel's data wasn't in the expected format ({type(e).__name__})")
+
+
+def _verify(bets: list, state: str, sport: str, opener) -> tuple[list, str]:
     state = state.lower()
     if state not in STATES:
         raise FeedError(f"FanDuel isn't available in {state.upper()}")
@@ -225,14 +240,22 @@ def verify(bets: list, state: str, sport: str = "nfl", opener=None) -> tuple[lis
     # Props and team totals live on each game's own page; only fetch games we need.
     need = {b.game for b in bets if b.market.startswith("player_")
             or b.market in ("team_totals", "alternate_team_totals")}
-    for eid, name in events.items():
-        if not any(same_event(g, name) for g in need):
-            continue
-        for tab in EVENT_TABS:
+    pages = [event_url(state, eid, tab) for eid, name in events.items()
+             if any(same_event(g, name) for g in need) for tab in EVENT_TABS]
+    # Fetch the game pages side by side, within a time budget: a slow or throttled
+    # connection confirms fewer props rather than holding up the whole board.
+    pool = ThreadPoolExecutor(max_workers=8)
+    futures = [pool.submit(_get, url, opener) for url in pages]
+    try:
+        for f in as_completed(futures, timeout=TIME_BUDGET):
             try:
-                sels += selections(_get(event_url(state, eid, tab), opener))[0]
+                sels += selections(f.result())[0]
             except FeedError:
                 continue  # a missing tab only means fewer bets confirmed
+    except FuturesTimeout:
+        pass
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
     kept = []
     for b in bets:
         s = find(b, sels)
@@ -241,6 +264,9 @@ def verify(bets: list, state: str, sport: str = "nfl", opener=None) -> tuple[lis
         b.fd_price, b.priced, b.on_fanduel = s.odds, True, True
         b.ev = b.fair_prob * american_to_decimal(s.odds) - 1
         kept.append(b)
+    if bets and not kept:
+        raise FeedError("none of the bets matched FanDuel's listings (its format may have "
+                        "changed)")
     dropped = len(bets) - len(kept)
     from .board import EASTERN
     from datetime import datetime

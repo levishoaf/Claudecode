@@ -133,3 +133,76 @@ class VerifyTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RobustTest(unittest.TestCase):
+    """The check must never hang the app or leave it with no bets."""
+
+    def setUp(self):
+        fdfeed._cache.clear()
+
+    def test_unexpected_data_is_a_feed_error(self):
+        odd = {"attachments": {"events": {"101": {"eventId": 101, "name": GAME}},
+                               "markets": {"1": {"eventId": 101, "marketName": "Moneyline",
+                                                 "marketType": "MONEY_LINE",
+                                                 "runners": ["not a runner"]}}}}
+        with self.assertRaises(fdfeed.FeedError) as e:
+            fdfeed.verify([bet("h2h", "Atlanta Falcons", None, 0.6)], "in",
+                          opener=opener({"league": odd}))
+        self.assertIn("expected format", str(e.exception))
+
+    def test_nothing_matching_is_a_feed_error(self):
+        with self.assertRaises(fdfeed.FeedError) as e:
+            fdfeed.verify([bet("h2h", "Kansas City Chiefs", None, 0.6)], "in",
+                          opener=opener({"league": LEAGUE}))
+        self.assertIn("none of the bets matched", str(e.exception))
+
+    def test_slow_game_pages_dont_hold_up_the_check(self):
+        import time
+        from unittest import mock
+
+        fast = opener({"league": LEAGUE})
+
+        def slow(req, timeout=0):
+            if "event-page" in req.full_url:
+                time.sleep(3)
+            return fast(req, timeout)
+
+        start = time.monotonic()
+        with mock.patch.object(fdfeed, "TIME_BUDGET", 0.5):
+            kept, _ = fdfeed.verify([bet("h2h", "Atlanta Falcons", None, 0.6),
+                                     bet("player_anytime_td", "Derrick Henry Yes", 0.5, 0.6)],
+                                    "in", opener=slow)
+        self.assertLess(time.monotonic() - start, 2.5)
+        self.assertEqual([b.market for b in kept], ["h2h"])  # props unconfirmed, not waited on
+
+
+class BuildFallbackTest(unittest.TestCase):
+    def test_build_falls_back_to_sure_bets_when_the_check_fails(self):
+        import argparse
+        from unittest import mock
+
+        import bets as launcher
+        from nfl_edge import board
+
+        sure = [bet("h2h", "Atlanta Falcons", None, 0.62)]
+        args = argparse.Namespace(sport="nfl", date="week", week=5, singles=5, legs=2,
+                                  min_legs=2, max_legs=3, parlays=0, stake=10, min_prob=1,
+                                  max_prob=99, per_game=3, allow_overlap=False,
+                                  games_file=None, fanduel_state="in", bet_type="All bets",
+                                  pays=None)
+        boards = []
+
+        def fake_board(*a, always_offered=True, **k):
+            boards.append(always_offered)
+            return list(sure)
+
+        with mock.patch.object(launcher, "nfl_board", side_effect=fake_board), \
+                mock.patch("nfl_edge.fdfeed.verify",
+                           side_effect=fdfeed.FeedError("couldn't reach FanDuel")):
+            _, singles, _ = launcher.build(args)
+        self.assertEqual(boards, [False, True])  # every market, then the sure board
+        self.assertEqual([b.pick for b in singles], ["Atlanta Falcons"])
+        self.assertIn("Couldn't check against FanDuel", board.NOTES["fanduel_error"])
+        self.assertIsNone(args.fanduel_state)  # shown as break-even odds, not FanDuel's
+        board.NOTES.pop("fanduel_error", None)
