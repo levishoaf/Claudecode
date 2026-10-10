@@ -15,7 +15,7 @@ ap.add_argument("--host", default="127.0.0.1")
 ap.add_argument("--no-model", action="store_true")
 ap.add_argument("--ttl", type=int, default=6 * 3600)
 args = ap.parse_args()
-INDEX = (pipeline.ROOT / "web" / "index.html").read_bytes()
+INDEX_PATH = pipeline.ROOT / "web" / "index.html"
 PICKS = pipeline.DATA / "picks_sample.json" if args.sample else pipeline.DATA / "picks.json"
 
 
@@ -27,8 +27,9 @@ def current() -> bytes:
 
 class H(BaseHTTPRequestHandler):
     def do_GET(self):
+        self.path = self.path.split("?", 1)[0] or "/"
         if self.path in ("/", "/index.html"):
-            body, ctype = INDEX, "text/html; charset=utf-8"
+            body, ctype = INDEX_PATH.read_bytes(), "text/html; charset=utf-8"
         elif self.path.startswith("/picks.json"):
             body, ctype = current(), "application/json"
         elif self.path in ("/track.json", "/backtest.json"):

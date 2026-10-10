@@ -1,0 +1,71 @@
+{
+ "checked_at": "2026-10-10T05:31:20+00:00",
+ "results": [
+  {
+   "name": "ESPN site API scoreboard",
+   "host": "site.api.espn.com",
+   "status": 200,
+   "reachable": true
+  },
+  {
+   "name": "ESPN site.web header (odds block)",
+   "host": "site.web.api.espn.com",
+   "status": 200,
+   "reachable": true
+  },
+  {
+   "name": "ESPN core API per-event odds",
+   "host": "sports.core.api.espn.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "ESPN cdn scoreboard",
+   "host": "cdn.espn.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "FanDuel sportsbook API",
+   "host": "sbapi.nj.sportsbook.fanduel.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "DraftKings sportsbook API",
+   "host": "sportsbook-nash.draftkings.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "Action Network scoreboard",
+   "host": "api.actionnetwork.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "VegasInsider odds page",
+   "host": "www.vegasinsider.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "Covers matchups page",
+   "host": "www.covers.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "OddsShark odds page",
+   "host": "www.oddsshark.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  },
+  {
+   "name": "Sportsbook Review odds page",
+   "host": "www.sportsbookreview.com",
+   "status": "network error: Tunnel connection failed: 403 Forbidden",
+   "reachable": false
+  }
+ ]
+}

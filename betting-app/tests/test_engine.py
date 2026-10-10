@@ -119,3 +119,65 @@ class Providers(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def leg(eid, prob=0.55, dec=1.95, market="h2h", name="X", conf="high", edge=0.05):
+    ev = prob * dec - 1
+    return {"event_id": eid, "league": "NFL", "game": eid, "market_label": market, "selection": f"{eid} {name}", "best_book": "b",
+            "best_odds": 100, "best_decimal": dec, "model_prob": prob, "commence_time": "2999", "bet": {"market": market, "name": name, "point": None},
+            "ev_per_dollar": ev, "edge": edge, "confidence": conf, "stake_pct": 0.01}
+
+
+class ParlayTests(unittest.TestCase):
+    P = {**engine.DEFAULTS, "min_parlay_prob": 0.0}
+
+    def test_exact_enumeration_counts_all_combos_one_leg_per_game(self):
+        pool = [leg(f"g{i}") for i in range(6)]
+        top, n = engine.enumerate_parlays(pool, self.P, keep=10 ** 6)
+        from math import comb
+        self.assertEqual(n, comb(6, 3) + comb(6, 4) + comb(6, 5))
+        self.assertEqual(len(top), n)
+        # two legs from the same game never combine
+        pool = [leg("g0", name="A"), leg("g0", name="B"), leg("g1"), leg("g2")]
+        top, n = engine.enumerate_parlays(pool, self.P, keep=100)
+        self.assertEqual(n, 2)  # {A,g1,g2} and {B,g1,g2}
+        for _, combo, _ in top:
+            self.assertEqual(len({c["event_id"] for c in combo}), len(combo))
+
+    def test_totals_direction_cap(self):
+        pool = [leg(f"g{i}", market="totals", name="Over") for i in range(4)] + [leg("g9", market="totals", name="Under")]
+        top, _ = engine.enumerate_parlays(pool, self.P, keep=100)
+        for _, combo, _ in top:
+            self.assertLessEqual(sum(1 for c in combo if c["bet"]["name"] == "Over"), engine.MAX_SAME_TOTAL_DIRECTION)
+
+    def test_vig_compounds_and_stake_cap(self):
+        # fair 50/50 legs priced at -110 each: single EV is -4.5%, a 4-leg parlay is much worse
+        dec = om_dec(-110)
+        legs = [leg(f"g{i}", prob=0.5, dec=dec, edge=-0.02) for i in range(6)]
+        out = engine.build_parlays(legs, {**self.P, "min_prob": 0.0})
+        single_ev = 0.5 * dec - 1
+        self.assertTrue(out)
+        for pl in out:
+            self.assertLess(pl["ev_per_dollar"], single_ev)
+            self.assertEqual(pl["stake_pct"], 0.0)  # negative EV -> no stake
+            self.assertIn("NEGATIVE EV", pl["notes"][0])
+        # a hugely +EV parlay still never exceeds the 0.5% cap
+        rich = [leg(f"h{i}", prob=0.9, dec=2.5) for i in range(5)]
+        pl = engine.build_parlays(rich, self.P)[0]
+        self.assertGreater(pl["ev_per_dollar"], 0)
+        self.assertLessEqual(pl["stake_pct"], 0.005)
+
+    def test_qualifying_legs_first_and_watchlist_topup(self):
+        good = [leg(f"q{i}") for i in range(3)]
+        weak = [leg(f"w{i}", prob=0.5, dec=1.9, edge=0.0) for i in range(4)]  # EV < 0: does not qualify
+        out = engine.build_parlays(good + weak, {**self.P, "min_prob": 0.0, "n_parlays": 3})
+        self.assertTrue(out[0]["all_legs_qualify"])
+        self.assertEqual({l["event_id"] for l in out[0]["legs"]}, {"q0", "q1", "q2"})
+        self.assertTrue(all(not pl["all_legs_qualify"] for pl in out[1:]))
+        ex = engine.allocate([], out, {**self.P})
+        self.assertEqual([pl["tier"] for pl in out][1:], ["watchlist"] * (len(out) - 1))
+
+
+def om_dec(a):
+    from app import odds_math
+    return odds_math.american_to_decimal(a)

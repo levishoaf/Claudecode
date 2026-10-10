@@ -6,9 +6,9 @@
 <title>Weekly Football Picks</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--ink:#16191d;--mute:#5d6672;--line:#dfe3e8;--acc:#0b6bcb;--good:#0a7a3d;--bad:#b3261e;--warn-bg:#fff4d6;--warn-ink:#5c4400;--red-bg:#fde8e7;--red-ink:#7a1612;--blue-bg:#e6f0fb}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101316;--card:#181c21;--ink:#e8ebee;--mute:#9aa4af;--line:#2b323a;--acc:#5aa6ff;--good:#4cc784;--bad:#ff7b72;--warn-bg:#3a3010;--warn-ink:#f3dc8a;--red-bg:#3b1816;--red-ink:#ffb4ad;--blue-bg:#14283f}}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101316;--card:#181c21;--ink:#e8ebee;--mute:#9aa4af;--line:#2b323a;--acc:#5aa6ff;--good:#4cc784;--bad:#ff7b72;--warn-bg:#3a3010;--warn-ink:#f3dc8a;--red-bg:#3b1816;--red-ink:#ffb4ad;--blue-bg:#14283f}}:root[data-theme=dark]{--bg:#101316;--card:#181c21;--ink:#e8ebee;--mute:#9aa4af;--line:#2b323a;--acc:#5aa6ff;--good:#4cc784;--bad:#ff7b72;--warn-bg:#3a3010;--warn-ink:#f3dc8a;--red-bg:#3b1816;--red-ink:#ffb4ad;--blue-bg:#14283f}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-html,body{overflow-x:hidden}main{max-width:1200px;margin:0 auto;padding:16px}.tw{max-width:100%;-webkit-overflow-scrolling:touch}table{min-width:980px}#sources,#track{min-width:0}#sources td,#track td{white-space:normal}
+html,body{overflow-x:hidden}main{max-width:1200px;margin:0 auto;padding:16px}.tw{max-width:100%;-webkit-overflow-scrolling:touch}table{min-width:0}@media(max-width:1180px){#singles{min-width:1080px}}#singles td.l{white-space:normal;max-width:230px}#singles th{white-space:normal}#singles td,#singles th{padding:7px 7px}#sources,#track{min-width:0}#sources td,#track td{white-space:normal}
 h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:1.1rem;margin:28px 0 8px}
 .sub{color:var(--mute);font-size:.9rem}
 .banner{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:.92rem}
@@ -26,6 +26,13 @@ td.sel{font-weight:600}.pos{color:var(--good);font-weight:600}.neg{color:var(--b
 .card ul{margin:6px 0;padding-left:18px}.card .k{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;margin:6px 0}
 .small{font-size:.8rem;color:var(--mute)}.bl{border:2px solid var(--line);border-radius:10px;background:var(--card);padding:14px 16px;margin:12px 0}.bl.go{border-color:var(--good)}.bl.pass{border-color:var(--warn-ink)}.bl h2{margin:0 0 6px}.bl .big{font-size:1.05rem;font-weight:600}tr.wl td{opacity:.62}.tag.bet{color:var(--good);border-color:var(--good)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.stat{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px}.stat b{display:block;font-size:1.05rem}details{margin:6px 0}
 @media(max-width:600px){main{padding:12px}}
+.drawer{position:fixed;top:0;right:0;height:100%;width:100%;max-width:440px;background:var(--card);border-left:1px solid var(--line);transform:translateX(105%);transition:transform .18s;overflow-y:auto;overflow-x:hidden;padding:16px;z-index:30;box-shadow:-6px 0 24px #0004}.drawer.open{transform:none}@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.scrim{position:fixed;inset:0;background:#0006;display:none;z-index:20}.scrim.open{display:block}
+.drawer h3{margin:0 0 4px;font-size:1.05rem}.drawer dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:10px 0;font-size:.88rem}.drawer dt{color:var(--mute)}.drawer dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.drawer .x{float:right;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:4px 10px;font:inherit}
+tbody tr[data-i]{cursor:pointer}tbody tr[data-i]:hover td,tbody tr[data-i]:focus td{background:var(--blue-bg)}
+.help{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:10px 0}.help summary{cursor:pointer;font-weight:600}.help dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-size:.88rem}.help dt{font-weight:600}.help dd{margin:0;color:var(--mute)}
+@media(max-width:600px){.help dl{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -38,6 +45,20 @@ td.sel{font-weight:600}.pos{color:var(--good);font-weight:600}.neg{color:var(--b
 
 <div class="bl" id="bl"><h2>Bottom line this week</h2><div id="bltext" class="big">Loading...</div><div id="blmore" class="small"></div></div>
 
+<details class="help"><summary>How to read this page</summary>
+<dl>
+<dt>Bottom line</dt><dd>How many picks clear the discipline bar (edge at least 3%, EV above 0, confidence at least "low"). PASS means nothing does; skipping is a valid decision.</dd>
+<dt>BET / watchlist</dt><dd>BET rows have a suggested stake. Watchlist rows are shown for context with no stake.</dd>
+<dt>Est. win %</dt><dd>Our estimate of the chance the bet wins: the market's no-vig probability (vig removed from the book's prices, averaged over books when several exist). It is an estimate, not a guarantee.</dd>
+<dt>Implied %</dt><dd>The win chance the price itself implies, including the book's margin.</dd>
+<dt>Edge</dt><dd>Est. win % minus implied %. Positive means the price is better than the estimate says it should be.</dd>
+<dt>EV / $1</dt><dd>Expected profit per dollar staked if the estimate is right. +0.05 means 5 cents per dollar on average, with a lot of variance.</dd>
+<dt>Stake</dt><dd>Quarter-Kelly of your bankroll, capped at 2% per bet, 2% per game, and 10% per week across everything.</dd>
+<dt>Confidence</dt><dd>none = one source only; low = few books; medium = 4+ books; high = a sharp book plus 3+ books. Keyless live data rarely goes above "none"/"low".</dd>
+<dt>Ratings % and FPI %</dt><dd>Reference numbers from a simple team-ratings model and ESPN's matchup predictor. They are not used in EV. When they disagree strongly with the market, they are usually the ones that are wrong.</dd>
+<dt>Parlays</dt><dd>Several bets that must all win. The book's margin compounds, legs are assumed independent, and a real parlay must be placed at one book, so treat them as entertainment unless EV is clearly positive.</dd>
+<dt>Track record</dt><dd>Paper trading only: picks logged each week and graded from final scores. No real money.</dd>
+</dl></details>
 <div class="controls">
   <label>Bankroll ($)<input id="bankroll" type="number" min="0" step="100" value="1000"></label>
   <label>Show<select id="tier"><option value="">Bets + watchlist</option><option value="bet">Bets only</option></select></label>
@@ -51,10 +72,15 @@ td.sel{font-weight:600}.pos{color:var(--good);font-weight:600}.neg{color:var(--b
 <div class="tw"><table id="singles"><thead><tr>
 <th class="l">#</th><th class="l">Game</th><th class="l">Bet</th><th class="l">Best book</th><th data-s="best_odds">Odds</th><th data-s="profit_per_100">Win on $100</th>
 <th data-s="model_prob">Est. win %</th><th data-s="implied_prob">Implied %</th><th data-s="edge">Edge</th><th data-s="ev_per_dollar">EV / $1</th><th>Stake</th><th class="l">Confidence</th><th data-s="power_prob">Ratings %<br><span class="small">(reference)</span></th></tr></thead><tbody></tbody></table></div>
-<p class="small"><strong>BET</strong> = clears the discipline rules (estimated edge at least <span id="medge">3</span>%, positive EV, confidence at least "low"). Everything else is <strong>watchlist</strong>: shown faintly, no stake. Est. win % is the probability used for EV; it is a market no-vig consensus unless the footer says the ratings blend is on. "Ratings %" is a simple team-strength model shown for reference; when it disagrees strongly with the market, the model is usually the one that is wrong. Stake = fractional Kelly, capped per bet (2%), per game, and by the weekly exposure cap. Click a column header to sort.</p>
+<p class="small"><strong>BET</strong> = clears the discipline rules (estimated edge at least <span id="medge">3</span>%, positive EV, confidence at least "low"). Everything else is <strong>watchlist</strong>: shown faintly, no stake. Est. win % is the probability used for EV; it is a market no-vig consensus unless the footer says the ratings blend is on. "Ratings %" is a simple team-strength model shown for reference; when it disagrees strongly with the market, the model is usually the one that is wrong. Stake = fractional Kelly, capped per bet (2%), per game, and by the weekly exposure cap. Click a column header to sort, or a row for details.</p>
 
 <h2>5 parlays (3-5 legs)</h2>
 <div class="banner warn">Parlays multiply each leg's sportsbook margin, so they usually carry <strong>more</strong> vig than the same bets placed singly. Legs are from different games and assumed independent (no same-game legs). Best prices may be at different books; a real parlay is placed at one book and pays less than shown. Parlay stake cap 0.5%.</div>
+<div class="controls" id="pcontrols">
+  <label>Sort parlays by<select id="psort"><option value="ev_per_dollar">EV per $1</option><option value="win_prob">Win probability</option><option value="payout_per_100">Payout</option><option value="n_legs">Legs</option></select></label>
+  <label>Legs<select id="plegs"><option value="">3-5</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+  <label>Show<select id="ptier"><option value="">Bets + watchlist</option><option value="bet">Bets only</option></select></label>
+</div>
 <div class="cards" id="parlays"></div>
 
 <h2>Track record <span class="small">(paper trading, not real money)</span></h2>
@@ -67,8 +93,11 @@ td.sel{font-weight:600}.pos{color:var(--good);font-weight:600}.neg{color:var(--b
 <div class="tw"><table id="sources"><thead><tr><th class="l">Source</th><th class="l">League</th><th class="l">Status</th><th class="l">Detail</th></tr></thead><tbody></tbody></table></div>
 <p class="small" id="method">Method: implied probability from each book's two-way prices, vig removed (power method), then a weighted average across books (Pinnacle/other sharps weighted highest when present). A bet is "+EV" only when the best available price beats that consensus. Without several independent books this is a weak test: a single book's own no-vig line can never show a real edge against itself.</p>
 </main>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle" aria-hidden="true"><button class="x" id="dclose" aria-label="Close details">Close</button><div id="dbody"></div></aside>
 <script>
-const $=id=>document.getElementById(id);let D=null,T=null,B=null,sortKey="ev_per_dollar",sortDir=-1;
+try{const t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+const $=id=>document.getElementById(id);let CUR=[],D=null,T=null,B=null,sortKey="ev_per_dollar",sortDir=-1;
 const pct=x=>x==null?"-":(x*100).toFixed(1)+"%",odds=o=>o>0?"+"+o:""+o,money=x=>"$"+x.toFixed(2);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
@@ -83,6 +112,7 @@ async function load(){
   $("medge").textContent=Math.round(D.params.min_edge*100);
   $("meta").textContent=`Generated ${new Date(D.generated_at).toLocaleString()} | ${D.n_events} games | ${D.n_markets_evaluated} markets evaluated | mode: ${D.mode.toUpperCase()}`;
   bottom();banners();sources();track();backtest();render();
+  try{const o=new URLSearchParams(location.search).get('open');if(o!==null&&CUR[+o]){$('drawer').style.transition='none';openDrawer(CUR[+o])}}catch(e){}
 }
 function bottom(){
   const bl=D.bottom_line,ex=D.exposure,none=bl.n_singles+bl.n_parlays===0;
@@ -118,25 +148,48 @@ function render(){
   let rows=D.top_singles.filter(c=>c.model_prob>=minp&&(!lg||c.league===lg)&&(!mk||c.market_label===mk)&&(!tier||c.tier===tier));
   rows=rows.slice().sort((a,b)=>sortDir*((a[sortKey]??-1)-(b[sortKey]??-1)));
   $("cnt").textContent=`(${D.top_singles.filter(r=>r.tier==="bet").length} bets, ${D.top_singles.filter(r=>r.tier!=="bet").length} watchlist)`;
+  CUR=rows;
   $("singles").tBodies[0].innerHTML=rows.map((c,i)=>{const s=c.stake_pct,bet=c.tier==="bet";
     const tips=c.flags&&c.flags.length?` title="${esc(c.flags.join(" "))}"`:"";
-    return `<tr class="${bet?"":"wl"}"><td class="l">${i+1}</td><td class="l">${esc(c.game)}<br><span class="small">${esc(c.league)} | ${esc(when(c.commence_time))}</span></td>
+    return `<tr class="${bet?"":"wl"}" data-i="${i}" tabindex="0" aria-label="Details for ${esc(c.selection)}"><td class="l">${i+1}</td><td class="l">${esc(c.game)}<br><span class="small">${esc(c.league)} | ${esc(when(c.commence_time))}</span></td>
 <td class="l sel">${esc(c.selection)}<br><span class="tag ${bet?"bet":""}">${bet?"BET":"watchlist"}</span> <span class="tag">${esc(c.market_label)}</span></td><td class="l">${esc(c.best_book)}</td>
 <td>${odds(c.best_odds)}</td><td>${money(c.profit_per_100)}</td><td>${pct(c.model_prob)}</td><td>${pct(c.implied_prob)}</td>
 <td class="${c.edge>0?"pos":"neg"}">${(c.edge*100).toFixed(1)}%</td><td class="${c.ev_per_dollar>0?"pos":"neg"}">${c.ev_per_dollar>=0?"+":""}${c.ev_per_dollar.toFixed(3)}</td>
 <td>${s>0?(s*100).toFixed(2)+"%<br><span class='small'>"+money(s*bank)+"</span>":"<span class='small'>none</span>"}</td>
 <td class="l"${tips}>${esc(c.confidence)} <span class="small">(${c.n_books} src${c.has_sharp?", sharp":""})</span>${c.ev_per_dollar>D.params.flag_ev?" <span class='tag'>verify line</span>":""}${c.disagree?" <span class='tag'>model disagrees</span>":""}</td>
 <td>${pct(c.power_prob)}</td></tr>`}).join("")||`<tr><td class="l" colspan="13">No bets match the filters.</td></tr>`;
-  $("parlays").innerHTML=D.parlays.map((p,i)=>{const s=p.stake_pct,bet=p.tier==="bet";
+  const pl=D.parlays.filter(p=>(!$("plegs").value||p.n_legs==+$("plegs").value)&&(!$("ptier").value||p.tier===$("ptier").value))
+    .sort((a,b)=>(b[$("psort").value]-a[$("psort").value]));
+  $("parlays").innerHTML=pl.map((p,i)=>{const s=p.stake_pct,bet=p.tier==="bet";
     return `<div class="card"><strong>Parlay ${i+1}</strong> <span class="tag ${bet?"bet":""}">${bet?"BET":"watchlist"}</span> <span class="tag">${p.n_legs} legs</span> <span class="tag">confidence: ${esc(p.confidence)}</span>
 <ul>${p.legs.map(l=>`<li>${esc(l.selection)} <span class="small">${odds(l.best_odds)} @ ${esc(l.best_book)} | ${esc(l.game)} | est. ${pct(l.model_prob)}</span></li>`).join("")}</ul>
 <div class="k"><span>Payout: <b>${odds(p.combined_odds)}</b> (${money(p.payout_per_100)} on $100)</span><span>Est. win: <b>${pct(p.win_prob)}</b></span><span>Implied: ${pct(p.implied_prob)}</span>
 <span>EV/$1: <b class="${p.ev_per_dollar>0?"pos":"neg"}">${p.ev_per_dollar>=0?"+":""}${p.ev_per_dollar.toFixed(3)}</b></span><span>Stake: ${s>0?(s*100).toFixed(2)+"% ("+money(s*bank)+")":"none"}</span></div>
-<details><summary class="small">Notes</summary><ul class="small">${p.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details></div>`}).join("")||'<div class="card">No valid parlays could be built from current data.</div>';
+<details><summary class="small">Notes</summary><ul class="small">${p.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details></div>`}).join("")||'<div class="card">No parlays match (or none could be built from current data).</div>';
 }
-["bankroll","minp","league","market","tier"].forEach(id=>$(id).addEventListener("input",()=>D&&render()));
+["bankroll","minp","league","market","tier","psort","plegs","ptier"].forEach(id=>$(id).addEventListener("input",()=>D&&render()));
 $("sort").addEventListener("input",e=>{sortKey=e.target.value;sortDir=-1;render()});
 document.querySelectorAll("th[data-s]").forEach(th=>th.addEventListener("click",()=>{const k=th.dataset.s;sortDir=k===sortKey?-sortDir:-1;sortKey=k;render()}));
+function row(k,v){return `<dt>${k}</dt><dd>${v}</dd>`}
+function openDrawer(c){
+  const others=Object.entries(c.other_prices||{}).map(([b,o])=>`${esc(b)} ${odds(o)}`).join(", ")||"n/a";
+  $("dbody").innerHTML=`<h3 id="dtitle">${esc(c.selection)}</h3><div class="small">${esc(c.game)} | ${esc(c.league)} | ${esc(new Date(c.commence_time).toLocaleString())}</div>
+<span class="tag ${c.tier==="bet"?"bet":""}">${c.tier==="bet"?"BET":"watchlist"}</span> <span class="tag">${esc(c.market_label)}</span>
+<dl>${row("Best price",odds(c.best_odds)+" @ "+esc(c.best_book))}${row("Win on $100",money(c.profit_per_100))}${row("Prices seen",others)}
+${row("Est. win % (used)",pct(c.model_prob))}${row("Market no-vig %",pct(c.market_prob))}${row("Ratings model %",pct(c.power_prob))}${row("ESPN predictor %",pct(c.fpi_prob))}
+${row("Implied % (price)",pct(c.implied_prob))}${row("Edge",(c.edge*100).toFixed(2)+"%")}${row("EV per $1",(c.ev_per_dollar>=0?"+":"")+c.ev_per_dollar.toFixed(3))}
+${row("Kelly (full)",pct(c.kelly_full))}${row("Stake (after caps)",c.stake_pct>0?(c.stake_pct*100).toFixed(2)+"% / "+money(c.stake_pct*(+$("bankroll").value||0)):"none")}
+${row("Confidence",esc(c.confidence)+" ("+c.n_books+" source"+(c.n_books==1?"":"s")+(c.has_sharp?", sharp":"")+")")}${row("Probability basis",esc(c.basis||""))}</dl>
+<div class="small"><b>Sources:</b> ${esc((c.sources||[]).join("; ")||"n/a")}</div>
+${(c.flags&&c.flags.length)?`<div class="banner warn small"><b>Flags</b><ul>${c.flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul></div>`:""}
+<p class="small">All numbers are estimates. Informational only; no guarantee. 1-800-GAMBLER.</p>`;
+  $("drawer").classList.add("open");$("scrim").classList.add("open");$("drawer").setAttribute("aria-hidden","false");$("dclose").focus();
+}
+function closeDrawer(){$("drawer").classList.remove("open");$("scrim").classList.remove("open");$("drawer").setAttribute("aria-hidden","true")}
+$("dclose").addEventListener("click",closeDrawer);$("scrim").addEventListener("click",closeDrawer);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+$("singles").tBodies[0].addEventListener("click",e=>{const tr=e.target.closest("tr[data-i]");if(tr)openDrawer(CUR[+tr.dataset.i])});
+$("singles").tBodies[0].addEventListener("keydown",e=>{if(e.key==="Enter"){const tr=e.target.closest("tr[data-i]");if(tr)openDrawer(CUR[+tr.dataset.i])}});
 load();
 </script>
 </body>

@@ -284,3 +284,75 @@ class FanDuelDebugTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SnapshotTests(unittest.TestCase):
+    EV = {"id": "espn-1", "sport_key": "americanfootball_nfl", "league": "NFL", "home_team": "Team A", "away_team": "Team B",
+          "commence_time": "2026-10-11T17:00:00Z", "bookmakers": [{"key": "dk", "title": "DraftKings", "source": "x", "markets": [
+              {"key": "h2h", "outcomes": [{"name": "Team A", "price": -200}, {"name": "Team B", "price": 170}]},
+              {"key": "spreads", "outcomes": [{"name": "Team A", "price": -110, "point": -3.5}, {"name": "Team B", "price": -110, "point": 3.5}]},
+              {"key": "player_pass_yds", "outcomes": []}]}]}
+
+    def test_append_and_closing_selection(self):
+        from app import snapshots
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "s.jsonl"
+            early = datetime(2026, 10, 8, 12, tzinfo=timezone.utc)
+            late = datetime(2026, 10, 11, 16, tzinfo=timezone.utc)
+            after = datetime(2026, 10, 11, 18, tzinfo=timezone.utc)
+            moved = json.loads(json.dumps(self.EV))
+            moved["bookmakers"][0]["markets"][0]["outcomes"][0]["price"] = -300
+            self.assertEqual(snapshots.append(p, [self.EV], early), 1)
+            self.assertEqual(snapshots.append(p, [moved], late), 1)
+            snapshots.append(p, [self.EV], after)  # after kickoff: must be ignored for closing
+            c = snapshots.closing_snapshots(p)["espn-1"]
+            self.assertEqual(c["ts"], "2026-10-11T16:00:00Z")
+            self.assertNotIn("player_pass_yds", c["e"]["b"]["dk"]["m"])
+            fair = snapshots.fair_prob({"market": "h2h", "name": "Team A"}, c["e"], "DraftKings")
+            self.assertTrue(0.7 < fair < 0.8)
+            self.assertIsNone(snapshots.fair_prob({"market": "spreads", "name": "Team A", "point": -3.0}, c["e"], "DraftKings"))  # line moved
+            self.assertIsNone(snapshots.fair_prob({"market": "h2h", "name": "Team A"}, c["e"], "FanDuel"))
+
+    def test_grade_prefers_own_snapshot_for_clv(self):
+        from app import snapshots
+        info = lambda lg, eid: (("Team A", "Team B", 27, 20), None)  # no ESPN closing odds available
+        e = {"type": "single", "league": "NFL", "event_id": "espn-1", "bet": {"market": "h2h", "name": "Team A", "point": None},
+             "decimal": 1.8, "book": "DraftKings"}
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "s.jsonl"
+            snapshots.append(p, [self.EV], datetime(2026, 10, 11, 16, tzinfo=timezone.utc))
+            r = ledger.grade_entry(e, info, snapshots.closing_snapshots(p))
+            self.assertEqual(r["result"], "win")
+            self.assertIsNotNone(r["clv"])
+            self.assertIn("own snapshot", r["clv_source"])
+            self.assertIsNone(ledger.grade_entry(e, info, {})["clv"])
+
+
+class ModelVariantTests(unittest.TestCase):
+    def test_rest_adjustment_off_by_default_and_signed_when_on(self):
+        off = ratings.Rater("americanfootball_nfl")
+        on = ratings.Rater("americanfootball_nfl", rest_pts=0.5)
+        for r in (off, on):
+            r.update({**game(1, "A", "B", 20, 10), "date": "2026-09-01T18:00Z"})
+            r.update({**game(2, "C", "D", 20, 10), "date": "2026-09-08T18:00Z"})
+        day = ratings.to_day("2026-09-15")
+        self.assertEqual(off.rest_adj("A", "C", day), 0.0)
+        # A rested 14 days, C rested 7 days -> A (home) gains 0.5 * 7
+        self.assertAlmostEqual(on.rest_adj("A", "C", day), 0.5 * (14 - 7))
+        self.assertAlmostEqual(on.rest_adj("C", "A", day), -0.5 * 7)
+        self.assertEqual(on.rest_adj("A", "C", None), 0.0)
+
+    def test_init_unseen_starts_new_teams_lower(self):
+        r = ratings.Rater("americanfootball_ncaaf", init_unseen=-8.0)
+        r.update(game(1, "A", "NEW", 30, 10))
+        self.assertLess(r.r["NEW"], r.r["A"])
+        self.assertLess(r.r["NEW"], 0)
+        self.assertEqual(ratings.to_day("garbage"), None)
+
+    def test_accept_rule_needs_gain_on_both_seasons_and_no_market_regression(self):
+        from app.backtest import accept
+        base = {"prior": {"log_loss": 0.60}, "current": {"log_loss": 0.60}, "market_subset": {"blend_brier": 0.20}}
+        good = {"prior": {"log_loss": 0.595}, "current": {"log_loss": 0.596}, "market_subset": {"blend_brier": 0.199}}
+        self.assertTrue(accept(base, good)[0])
+        self.assertFalse(accept(base, {**good, "current": {"log_loss": 0.60}})[0])  # no gain in-season
+        self.assertFalse(accept(base, {**good, "market_subset": {"blend_brier": 0.21}})[0])  # worse vs market

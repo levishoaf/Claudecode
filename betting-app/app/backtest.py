@@ -8,7 +8,7 @@ from pathlib import Path
 
 from . import odds_math as om
 from .providers import DiskCache, polite_get_json
-from .ratings import LEAGUES, SUMMARY, Rater, blend, brier, current_season, fetch_season, log_loss, phi
+from .ratings import LEAGUES, SUMMARY, Rater, blend, brier, current_season, fetch_season, log_loss, phi, to_day
 
 
 def walk_forward(sport: str, by_season: dict[int, list[dict]], eval_season: int, min_week: int, **overrides):
@@ -22,7 +22,7 @@ def walk_forward(sport: str, by_season: dict[int, list[dict]], eval_season: int,
             r.new_season()
         for g in sorted((g for g in by_season[season] if g["completed"]), key=lambda g: g["date"]):
             if season == eval_season and g["week"] >= min_week:
-                d = r.diff(g["home_id"], g["away_id"], g["neutral"])
+                d = r.diff(g["home_id"], g["away_id"], g["neutral"], to_day(g["date"]))
                 known = min(r.n_total.get(g["home_id"], 0), r.n_total.get(g["away_id"], 0)) >= 2
                 if known:
                     margin = g["home_score"] - g["away_score"]
@@ -62,26 +62,28 @@ def closing_line(sport: str, event_id: str, cache: DiskCache, fetch=polite_get_j
             return None
         if cache:
             cache.put(key, data)
-    pc = (data.get("pickcenter") or [])
-    if not pc:
+    pc = data.get("pickcenter") if isinstance(data, dict) else None
+    if not isinstance(pc, list) or not pc or not isinstance(pc[0], dict):
         return None
     return parse_pickcenter(pc[0])
 
 
 def parse_pickcenter(p: dict):
+    if not isinstance(p, dict):
+        return None
     try:
         home, away = p["homeTeamOdds"], p["awayTeamOdds"]
         out = {"book": (p.get("provider") or {}).get("name"), "spread_home": p.get("spread"), "total": p.get("overUnder"),
                "ml_home": home.get("moneyLine"), "ml_away": away.get("moneyLine"),
                "spread_odds_home": home.get("spreadOdds"), "spread_odds_away": away.get("spreadOdds"),
                "over_odds": p.get("overOdds"), "under_odds": p.get("underOdds")}
-    except (KeyError, AttributeError):
+    except (KeyError, AttributeError, TypeError):
         return None
     return out
 
 
 def market_p_home(cl: dict, method="power"):
-    if not cl or not cl.get("ml_home") or not cl.get("ml_away"):
+    if not isinstance(cl, dict) or not cl.get("ml_home") or not cl.get("ml_away"):
         return None
     try:
         imp = [om.implied_prob_from_american(cl["ml_home"]), om.implied_prob_from_american(cl["ml_away"])]
@@ -145,3 +147,56 @@ def run_backtest(sport: str, cache: DiskCache, now: datetime | None = None, fetc
 def save(results: list[dict], path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "leagues": results}, indent=1))
+
+
+# ---------------------------------------------------------------- model-change experiments
+def evaluate_variant(sport, by_season, cache, cur, overrides, base_params, max_closing=120):
+    """Score one parameter set: log loss on last season, on this season, and Brier vs the market closing line."""
+    prm = {**base_params, **overrides}
+    p_rows, _ = walk_forward(sport, by_season, cur - 1, 5, **prm)
+    c_rows, _ = walk_forward(sport, by_season, cur, 3, **prm)
+    mk = []
+    for x in sorted(c_rows, key=lambda r: -r["week"])[:max_closing]:
+        pm = market_p_home(closing_line(sport, x["id"], cache))  # served from the cache populated by run_backtest
+        if pm is not None:
+            mk.append(dict(x, pm=pm, pb=blend(pm, x["p"], 0.8)))
+    out = {"overrides": overrides, "prior": metrics(p_rows), "current": metrics(c_rows) if c_rows else None}
+    if mk:
+        out["market_subset"] = {"n": len(mk), "model_brier": metrics(mk, "p")["brier"], "market_brier": metrics(mk, "pm")["brier"],
+                                "blend_brier": metrics(mk, "pb")["brier"], "model_ll": metrics(mk, "p")["log_loss"],
+                                "blend_ll": metrics(mk, "pb")["log_loss"], "market_ll": metrics(mk, "pm")["log_loss"]}
+    return out
+
+
+def accept(base: dict, cand: dict, min_gain: float = 0.002) -> tuple[bool, str]:
+    """Keep a change only if log loss improves on BOTH seasons and the blend-vs-market Brier does not get worse."""
+    g1 = base["prior"]["log_loss"] - cand["prior"]["log_loss"]
+    g2 = base["current"]["log_loss"] - cand["current"]["log_loss"]
+    ms_b, ms_c = base.get("market_subset"), cand.get("market_subset")
+    ms_ok = (not ms_b or not ms_c) or ms_c["blend_brier"] <= ms_b["blend_brier"] + 1e-9
+    ok = g1 >= min_gain and g2 >= min_gain and ms_ok
+    return ok, f"prior ll {-g1:+.4f}, current ll {-g2:+.4f}, blend-vs-market brier {'ok' if ms_ok else 'worse'}"
+
+
+GRIDS = {
+    "americanfootball_nfl": [("rest_pts", [0.15, 0.3, 0.5]), ("hfa", [1.0, 1.5, 2.5, 3.0]), ("reg", [0.2, 0.4]), ("cap", [17.0, 35.0])],
+    "americanfootball_ncaaf": [("init_unseen", [-3.0, -6.0, -10.0]), ("rest_pts", [0.15, 0.3]), ("hfa", [2.0, 3.0, 3.5]), ("reg", [0.25, 0.45]), ("cap", [21.0, 35.0, 45.0])],
+}
+
+
+def run_experiments(sport: str, cache: DiskCache, now: datetime | None = None, fetch=polite_get_json) -> dict:
+    now = now or datetime.now(timezone.utc)
+    cur = current_season(now)
+    by_season = {s: fetch_season(sport, s, cache, fetch, now) for s in (cur - 1, cur)}
+    base_params = {k: LEAGUES[sport][k] for k in ("k", "sigma", "hfa", "reg", "cap", "rest_pts", "init_unseen")}
+    best = evaluate_variant(sport, by_season, cache, cur, {}, {})
+    log = [{"change": "baseline", "result": best, "kept": True}]
+    kept = {}
+    for name, values in GRIDS[sport]:
+        for v in values:
+            cand = evaluate_variant(sport, by_season, cache, cur, {**kept, name: v}, {})
+            ok, why = accept(best, cand)
+            log.append({"change": f"{name}={v}", "kept": ok, "why": why, "result": cand})
+            if ok:
+                best, kept = cand, {**kept, name: v}
+    return {"league": LEAGUES[sport]["label"], "baseline_params": base_params, "kept_changes": kept, "log": log}

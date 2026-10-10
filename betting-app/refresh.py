@@ -18,11 +18,12 @@ ap.add_argument("--no-fanduel", action="store_true")
 ap.add_argument("--state", default="nj", help="FanDuel state subdomain (default nj)")
 ap.add_argument("--ttl", type=int, default=6 * 3600, help="cache TTL seconds")
 ap.add_argument("--no-model", action="store_true", help="skip the ratings model")
+ap.add_argument("--no-fpi", action="store_true", help="skip ESPN matchup-predictor reference lookups")
 ap.add_argument("--debug-dump", metavar="DIR", help="save raw FanDuel responses/errors to DIR for parser debugging (one fresh request per league)")
 ap.add_argument("--static", metavar="DIR")
 a = ap.parse_args()
 
-payload = pipeline.build_payload(a.sample, a.ttl, a.state, not a.no_fanduel, not a.no_model, a.debug_dump)
+payload = pipeline.build_payload(a.sample, a.ttl, a.state, not a.no_fanduel, not a.no_model, a.debug_dump, not a.no_fpi)
 out = pipeline.save(payload, pipeline.DATA / "picks_sample.json") if a.sample else pipeline.save(payload)
 print(f"mode={payload['mode']} events={payload['n_events']} markets={payload['n_markets_evaluated']} "
       f"+EV={payload['positive_ev_count']} max_books/market={payload['max_books_per_market']}")

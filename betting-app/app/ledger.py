@@ -35,7 +35,7 @@ def entries_from_payload(payload: dict, now: datetime) -> list[dict]:
                     "league": s["league"], "event_id": s["event_id"], "game": s["game"], "commence_time": s["commence_time"],
                     "selection": s["selection"], "market": s["market_label"], "bet": s["bet"], "book": s["best_book"],
                     "odds": s["best_odds"], "decimal": s["best_decimal"], "model_prob": s["model_prob"],
-                    "market_prob": s.get("market_prob"), "power_prob": s.get("power_prob"), "ev": s["ev_per_dollar"],
+                    "market_prob": s.get("market_prob"), "power_prob": s.get("power_prob"), "fpi_prob": s.get("fpi_prob"), "ev": s["ev_per_dollar"],
                     "confidence": s["confidence"], "tier": s.get("tier", "bet"), "units": round(s["stake_pct"] * 100, 2), "flat_units": 1.0})
     for p in payload.get("parlays", []):
         legs = [{k: l[k] for k in ("event_id", "game", "selection", "bet", "best_odds", "best_decimal", "league", "commence_time")} for l in p["legs"]]
@@ -55,9 +55,11 @@ def read_ledger(path: Path) -> list[dict]:
         line = line.strip()
         if line:
             try:
-                rows.append(json.loads(line))
+                row = json.loads(line)
             except ValueError:
-                pass
+                continue
+            if isinstance(row, dict) and "id" in row:
+                rows.append(row)
     return rows
 
 
@@ -97,13 +99,15 @@ def settle_bet(bet: dict, home: str, away: str, hs: float, as_: float) -> str:
 
 
 def final_score(data: dict):
+    if not isinstance(data, dict):
+        return None
     try:
         c = data["header"]["competitions"][0]
         if not c["status"]["type"]["completed"]:
             return None
         sc = {x["homeAway"]: (x["team"]["displayName"], float(x["score"])) for x in c["competitors"]}
         return sc["home"][0], sc["away"][0], sc["home"][1], sc["away"][1]
-    except (KeyError, TypeError, ValueError, IndexError):
+    except (KeyError, TypeError, ValueError, IndexError, AttributeError):
         return None
 
 
@@ -182,8 +186,8 @@ def grade(ledger_path: Path, grades_path: Path, cache: DiskCache | None = None, 
 
 
 def parse_pc(raw):
-    pc = (raw or {}).get("pickcenter") or []
-    return parse_pickcenter(pc[0]) if pc else None
+    pc = raw.get("pickcenter") if isinstance(raw, dict) else None
+    return parse_pickcenter(pc[0]) if isinstance(pc, list) and pc and isinstance(pc[0], dict) else None
 
 
 def grade_entry(e: dict, event_info, closing: dict | None = None) -> dict | None:

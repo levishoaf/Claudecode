@@ -51,9 +51,13 @@ class DiskCache:
             obj = json.loads(p.read_text())
         except (OSError, ValueError):
             return None
-        age = time.time() - obj.get("saved_at", 0)
+        try:
+            age = time.time() - float(obj.get("saved_at", 0))
+            data = obj["data"]
+        except (AttributeError, TypeError, ValueError, KeyError):
+            return None  # corrupt cache entry: treat as a miss
         if age <= self.ttl or allow_stale:
-            return obj["data"], age
+            return data, age
         return None
 
     def put(self, key: str, data) -> None:
@@ -134,48 +138,60 @@ def _num(s) -> float | None:
 
 
 def parse_espn_scoreboard(data: dict, sport_key: str) -> list[dict]:
-    """ESPN public scoreboard JSON -> normalised events (pre-game only)."""
+    """ESPN public scoreboard JSON -> normalised events (pre-game only). Malformed events are skipped, never raised."""
     events = []
-    for ev in data.get("events", []):
-        comp = (ev.get("competitions") or [{}])[0]
-        if (ev.get("status") or {}).get("type", {}).get("state") != "pre":
+    if not isinstance(data, dict) or not isinstance(data.get("events"), list):
+        return events
+    for ev in data["events"]:
+        try:
+            parsed = _parse_espn_event(ev, sport_key)
+        except (AttributeError, TypeError, KeyError, ValueError, IndexError):
             continue
-        teams = {c["homeAway"]: c["team"]["displayName"] for c in comp.get("competitors", []) if "team" in c}
-        if "home" not in teams or "away" not in teams:
-            continue
-        books = []
-        for o in comp.get("odds") or []:
-            prov = (o.get("provider") or {}).get("name") or "ESPN"
-            markets = []
-            ml = o.get("moneyline") or {}
-            h, a = _a(((ml.get("home") or {}).get("close") or {}).get("odds")), _a(((ml.get("away") or {}).get("close") or {}).get("odds"))
-            if h and a:
-                markets.append({"key": "h2h", "outcomes": [{"name": teams["home"], "price": h}, {"name": teams["away"], "price": a}]})
-            ps = o.get("pointSpread") or {}
-            hs, as_ = (ps.get("home") or {}).get("close") or {}, (ps.get("away") or {}).get("close") or {}
-            hp, ap, hl, al = _a(hs.get("odds")), _a(as_.get("odds")), _num(hs.get("line")), _num(as_.get("line"))
-            if hp and ap and hl is not None and al is not None:
-                markets.append({"key": "spreads", "outcomes": [
-                    {"name": teams["home"], "price": hp, "point": hl}, {"name": teams["away"], "price": ap, "point": al}]})
-            tot = o.get("total") or {}
-            ov, un = (tot.get("over") or {}).get("close") or {}, (tot.get("under") or {}).get("close") or {}
-            op, up, line = _a(ov.get("odds")), _a(un.get("odds")), _num(ov.get("line"))
-            if op and up and line is not None and line == _num(un.get("line")):
-                markets.append({"key": "totals", "outcomes": [
-                    {"name": "Over", "price": op, "point": line}, {"name": "Under", "price": up, "point": line}]})
-            if markets:
-                books.append({"key": re.sub(r"\W+", "", prov.lower()), "title": prov,
-                              "source": f"ESPN public scoreboard ({prov} lines)", "markets": markets})
-        if books:
-            events.append({"id": f"espn-{ev.get('id')}", "sport_key": sport_key, "league": SPORTS[sport_key],
-                           "home_team": teams["home"], "away_team": teams["away"],
-                           "commence_time": _iso(ev.get("date")), "bookmakers": books,
-                           "neutral": bool(comp.get("neutralSite"))})
+        if parsed:
+            events.append(parsed)
     return events
 
 
+def _parse_espn_event(ev: dict, sport_key: str):
+    comp = (ev.get("competitions") or [{}])[0]
+    if (ev.get("status") or {}).get("type", {}).get("state") != "pre":
+        return None
+    teams = {c["homeAway"]: c["team"]["displayName"] for c in comp.get("competitors", []) if "team" in c}
+    if "home" not in teams or "away" not in teams:
+        return None
+    books = []
+    for o in comp.get("odds") or []:
+        prov = (o.get("provider") or {}).get("name") or "ESPN"
+        markets = []
+        ml = o.get("moneyline") or {}
+        h, a = _a(((ml.get("home") or {}).get("close") or {}).get("odds")), _a(((ml.get("away") or {}).get("close") or {}).get("odds"))
+        if h and a:
+            markets.append({"key": "h2h", "outcomes": [{"name": teams["home"], "price": h}, {"name": teams["away"], "price": a}]})
+        ps = o.get("pointSpread") or {}
+        hs, as_ = (ps.get("home") or {}).get("close") or {}, (ps.get("away") or {}).get("close") or {}
+        hp, ap, hl, al = _a(hs.get("odds")), _a(as_.get("odds")), _num(hs.get("line")), _num(as_.get("line"))
+        if hp and ap and hl is not None and al is not None:
+            markets.append({"key": "spreads", "outcomes": [
+                {"name": teams["home"], "price": hp, "point": hl}, {"name": teams["away"], "price": ap, "point": al}]})
+        tot = o.get("total") or {}
+        ov, un = (tot.get("over") or {}).get("close") or {}, (tot.get("under") or {}).get("close") or {}
+        op, up, line = _a(ov.get("odds")), _a(un.get("odds")), _num(ov.get("line"))
+        if op and up and line is not None and line == _num(un.get("line")):
+            markets.append({"key": "totals", "outcomes": [
+                {"name": "Over", "price": op, "point": line}, {"name": "Under", "price": up, "point": line}]})
+        if markets:
+            books.append({"key": re.sub(r"\W+", "", prov.lower()), "title": prov,
+                          "source": f"ESPN public scoreboard ({prov} lines)", "markets": markets})
+    if books:
+        return {"id": f"espn-{ev.get('id')}", "sport_key": sport_key, "league": SPORTS[sport_key],
+                "home_team": teams["home"], "away_team": teams["away"],
+                "commence_time": _iso(ev.get("date")), "bookmakers": books,
+                "neutral": bool(comp.get("neutralSite"))}
+    return None
+
+
 def _iso(s: str | None) -> str:
-    if not s:
+    if not s or not isinstance(s, str):
         return ""
     s = s.replace("Z", "+00:00")
     try:
@@ -260,6 +276,13 @@ def _fd_kind(m: dict):
 
 
 def _fd_market(m: dict):
+    try:
+        return _fd_market_unsafe(m)
+    except (AttributeError, TypeError, KeyError, ValueError, IndexError):
+        return None
+
+
+def _fd_market_unsafe(m: dict):
     kind = _fd_kind(m)
     if not kind or str(m.get("marketStatus", "OPEN")).upper() not in ("OPEN", "ACTIVE"):
         return None
@@ -303,15 +326,19 @@ def parse_fanduel_page(data: dict, sport_key: str) -> list[dict]:
     (runners + eventId). NOTE: written from the publicly observable layout; never verified against
     live data from the build sandbox. Use `refresh.py --debug-dump DIR` locally to capture a real
     response so the parser can be fixed. Unrecognised shapes yield no events, never guesses."""
-    att = (data or {}).get("attachments") or {}
-    evs, mks = att.get("events") or {}, att.get("markets") or {}
+    if not isinstance(data, (dict, list)):
+        return []
+    att = data.get("attachments") if isinstance(data, dict) else None
+    att = att if isinstance(att, dict) else {}
+    evs = att.get("events") if isinstance(att.get("events"), dict) else {}
+    mks = att.get("markets") if isinstance(att.get("markets"), dict) else {}
     events = {str(k): v for k, v in evs.items() if isinstance(v, dict)}
     markets = [m for m in mks.values() if isinstance(m, dict)]
     if not events or not markets:  # tolerant fallback
         events, markets = {}, []
         for d in _walk(data):
             eid = d.get("eventId", d.get("id"))
-            if eid is not None and _fd_split(d.get("name")) and (d.get("openDate") or d.get("startTime") or d.get("startDate")):
+            if eid is not None and isinstance(d.get("name"), str) and _fd_split(d.get("name")) and (d.get("openDate") or d.get("startTime") or d.get("startDate")):
                 events.setdefault(str(eid), d)
             if isinstance(d.get("runners"), list) and d.get("eventId") is not None:
                 markets.append(d)
@@ -320,7 +347,7 @@ def parse_fanduel_page(data: dict, sport_key: str) -> list[dict]:
         by_event.setdefault(str(m.get("eventId")), []).append(m)
     out = []
     for eid, ev in events.items():
-        teams = _fd_split(ev.get("name"))
+        teams = _fd_split(ev.get("name")) if isinstance(ev.get("name"), str) else None
         if not teams:
             continue
         away, home = teams
@@ -390,11 +417,24 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]", "", s.lower())
 
 
+def valid_event(ev) -> bool:
+    """Minimal shape check so one malformed event from any provider cannot crash the run."""
+    try:
+        return (isinstance(ev, dict) and isinstance(ev["id"], str) and isinstance(ev["sport_key"], str) and ev["sport_key"] in SPORTS
+                and isinstance(ev["home_team"], str) and isinstance(ev["away_team"], str)
+                and isinstance(ev.get("commence_time", ""), str) and isinstance(ev["bookmakers"], list)
+                and all(isinstance(b, dict) and isinstance(b.get("markets"), list) and "key" in b and "title" in b for b in ev["bookmakers"]))
+    except (KeyError, TypeError):
+        return False
+
+
 def merge_events(event_lists: list[list[dict]]) -> list[dict]:
     """Merge events from several providers: same sport + same home/away (normalised) + start within 12h."""
     merged: list[dict] = []
     for events in event_lists:
         for ev in events:
+            if not valid_event(ev):
+                continue
             target = None
             for m in merged:
                 if (m["sport_key"] == ev["sport_key"] and _norm(m["home_team"]) == _norm(ev["home_team"])

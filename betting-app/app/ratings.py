@@ -21,9 +21,9 @@ from .providers import DiskCache, polite_get_json
 
 LEAGUES = {
     "americanfootball_nfl": dict(label="NFL", path="nfl", extra="", max_week=18,
-                                 hfa=2.0, k=0.12, sigma=15.5, reg=0.30, cap=24.0),
+                                 hfa=2.0, k=0.12, sigma=15.5, reg=0.30, cap=24.0, rest_pts=0.0, init_unseen=0.0),
     "americanfootball_ncaaf": dict(label="NCAAF", path="college-football", extra="&groups=80&limit=200", max_week=15,
-                                   hfa=2.5, k=0.12, sigma=10.5, reg=0.35, cap=28.0),
+                                   hfa=2.5, k=0.12, sigma=10.5, reg=0.35, cap=28.0, rest_pts=0.0, init_unseen=0.0),
 }
 SB = "https://site.api.espn.com/apis/site/v2/sports/football/{path}/scoreboard?dates={season}&seasontype=2&week={week}{extra}"
 SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/{path}/summary?event={eid}"
@@ -31,6 +31,14 @@ SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/{path}/summary
 
 def norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]", "", s.lower())
+
+
+def to_day(date) -> int | None:
+    """ISO date string -> ordinal day (None if unparseable)."""
+    try:
+        return datetime.fromisoformat(str(date)[:10]).toordinal()
+    except ValueError:
+        return None
 
 
 def phi(x: float) -> float:
@@ -43,22 +51,33 @@ def current_season(now: datetime) -> int:
 
 def parse_games(data: dict, season: int, week: int) -> list[dict]:
     games = []
-    for ev in data.get("events", []):
-        comp = (ev.get("competitions") or [{}])[0]
-        cs = {c.get("homeAway"): c for c in comp.get("competitors", []) if c.get("team")}
-        if "home" not in cs or "away" not in cs:
-            continue
-        done = bool((ev.get("status") or {}).get("type", {}).get("completed"))
+    if not isinstance(data, dict) or not isinstance(data.get("events"), list):
+        return games
+    for ev in data["events"]:
         try:
-            hs, as_ = float(cs["home"].get("score")), float(cs["away"].get("score"))
-        except (TypeError, ValueError):
-            hs = as_ = None
-        games.append({"id": str(ev.get("id")), "date": ev.get("date", ""), "season": season, "week": week,
-                      "home_id": cs["home"]["team"]["id"], "away_id": cs["away"]["team"]["id"],
-                      "home": cs["home"]["team"]["displayName"], "away": cs["away"]["team"]["displayName"],
-                      "home_score": hs, "away_score": as_, "completed": done and hs is not None,
-                      "neutral": bool(comp.get("neutralSite"))})
+            g = _parse_game(ev, season, week)
+        except (AttributeError, TypeError, KeyError, ValueError, IndexError):
+            continue
+        if g:
+            games.append(g)
     return games
+
+
+def _parse_game(ev: dict, season: int, week: int):
+    comp = (ev.get("competitions") or [{}])[0]
+    cs = {c.get("homeAway"): c for c in comp.get("competitors", []) if c.get("team")}
+    if "home" not in cs or "away" not in cs:
+        return None
+    done = bool((ev.get("status") or {}).get("type", {}).get("completed"))
+    try:
+        hs, as_ = float(cs["home"].get("score")), float(cs["away"].get("score"))
+    except (TypeError, ValueError):
+        hs = as_ = None
+    return {"id": str(ev.get("id")), "date": str(ev.get("date", "")), "season": season, "week": week,
+            "home_id": str(cs["home"]["team"]["id"]), "away_id": str(cs["away"]["team"]["id"]),
+            "home": cs["home"]["team"]["displayName"], "away": cs["away"]["team"]["displayName"],
+            "home_score": hs, "away_score": as_, "completed": done and hs is not None,
+            "neutral": bool(comp.get("neutralSite"))}
 
 
 def fetch_season(sport_key: str, season: int, cache: DiskCache | None, fetch=polite_get_json,
@@ -108,27 +127,38 @@ class Rater:
         self.n_total: dict[str, int] = {}
         self.n_season: dict[str, int] = {}
         self.names: dict[str, str] = {}  # normalised displayName -> team id
+        self.last_day: dict[str, int] = {}  # team id -> ordinal day of its most recent game
 
     # ----- prediction
-    def diff(self, home_id: str, away_id: str, neutral: bool = False) -> float:
-        return self.r.get(home_id, 0.0) - self.r.get(away_id, 0.0) + (0.0 if neutral else self.cfg["hfa"])
+    def rest_adj(self, home_id: str, away_id: str, day: int | None) -> float:
+        """Points for a rest advantage (days since last game, capped at 14, default 7). 0 unless rest_pts is set."""
+        if not self.cfg["rest_pts"] or day is None:
+            return 0.0
+        rh = min(14, day - self.last_day[home_id]) if home_id in self.last_day else 7
+        ra = min(14, day - self.last_day[away_id]) if away_id in self.last_day else 7
+        return self.cfg["rest_pts"] * (rh - ra)
+
+    def diff(self, home_id: str, away_id: str, neutral: bool = False, day: int | None = None) -> float:
+        return (self.r.get(home_id, 0.0) - self.r.get(away_id, 0.0) + (0.0 if neutral else self.cfg["hfa"])
+                + self.rest_adj(home_id, away_id, day))
 
     def win_prob(self, d: float) -> float:
         return phi(d / self.cfg["sigma"])
 
-    def margin_for(self, home: str, away: str, neutral: bool = False):
+    def margin_for(self, home: str, away: str, neutral: bool = False, day: int | None = None):
         h, a = self.names.get(norm(home)), self.names.get(norm(away))
         if h is None or a is None:
             return None
         if self.n_total.get(h, 0) + self.n_total.get(a, 0) < 4:
             return None  # too little history to say anything
-        return self.diff(h, a, neutral)
+        return self.diff(h, a, neutral, day)
 
     # ----- learning
     def new_season(self):
         for t in self.r:
             self.r[t] *= (1 - self.cfg["reg"])
         self.n_season = {}
+        self.last_day = {}
 
     def update(self, g: dict):
         h, a = g["home_id"], g["away_id"]
@@ -137,7 +167,11 @@ class Rater:
         margin = g["home_score"] - g["away_score"]
         cap = self.cfg["cap"]
         margin = max(-cap, min(cap, margin))
-        err = margin - self.diff(h, a, g["neutral"])
+        day = to_day(g.get("date"))
+        for t in (h, a):  # unseen teams (for NCAAF often FCS opponents) can start below average
+            if t not in self.r and self.cfg["init_unseen"]:
+                self.r[t] = self.cfg["init_unseen"]
+        err = margin - self.diff(h, a, g["neutral"], day)
         nmin = min(self.n_season.get(h, 0), self.n_season.get(a, 0))
         k = self.cfg["k"] * (1 + 1.5 / (1 + nmin))  # faster learning early in a season
         # a team we know nothing about (e.g. an FCS opponent) should not drag an established team around
@@ -145,6 +179,8 @@ class Rater:
         self.r[h] = self.r.get(h, 0.0) + w * k * err
         self.r[a] = self.r.get(a, 0.0) - w * k * err
         for t in (h, a):
+            if day is not None:
+                self.last_day[t] = day
             self.n_total[t] = self.n_total.get(t, 0) + 1
             self.n_season[t] = self.n_season.get(t, 0) + 1
 

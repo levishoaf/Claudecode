@@ -46,7 +46,11 @@ def closing_snapshots(path: Path) -> dict[str, dict]:
                 s = json.loads(line)
             except ValueError:
                 continue
-            for e in s.get("events", []):
+            if not isinstance(s, dict) or not isinstance(s.get("events"), list) or not isinstance(s.get("ts"), str):
+                continue
+            for e in s["events"]:
+                if not isinstance(e, dict) or not isinstance(e.get("t"), str) or not isinstance(e.get("id"), str):
+                    continue
                 if s["ts"] <= e["t"] and (e["id"] not in best or s["ts"] >= best[e["id"]]["ts"]):
                     best[e["id"]] = {"ts": s["ts"], "e": e}
     return best

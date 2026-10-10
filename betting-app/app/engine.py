@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from . import odds_math as om
 from .providers import SPORTS, merge_events
-from .ratings import phi
+from .ratings import phi, to_day
 
 SHARP_WEIGHTS = {"pinnacle": 5.0, "circasports": 3.0, "betfair_ex_us": 3.0, "betcris": 2.0, "matchbook": 2.0, "lowvig": 2.0, "betonlineag": 2.0}
 SHARP_KEYS = {"pinnacle", "circasports", "betfair_ex_us"}
@@ -15,7 +15,7 @@ MARKET_LABELS = {"h2h": "Moneyline", "spreads": "Spread", "totals": "Total",
                  "player_pass_yds": "Pass Yds", "player_rush_yds": "Rush Yds", "player_reception_yds": "Rec Yds"}
 
 DEFAULTS = dict(use_ratings=False, min_edge=0.03, min_conf="low", weekly_cap=0.10, game_cap=0.02, w_market=0.80, disagree_flag=0.08, min_prob=0.25, kelly_fraction=0.25, stake_cap=0.02, parlay_stake_cap=0.005, devig="power",
-                top_n=30, n_parlays=5, parlay_pool=22, min_parlay_prob=0.05, max_ev_sanity=0.25, flag_ev=0.08, candidates=200)
+                top_n=30, n_parlays=5, parlay_pool=34, min_parlay_prob=0.05, max_ev_sanity=0.25, flag_ev=0.08, candidates=200)
 
 
 def book_weight(key: str) -> float:
@@ -35,6 +35,13 @@ def confidence(n_books: int, has_sharp: bool) -> str:
     return "medium" if n_books >= 4 else "low"
 
 
+def _ok_outcome(o) -> bool:
+    return (isinstance(o, dict) and isinstance(o.get("name"), str) and isinstance(o.get("price"), (int, float))
+            and not isinstance(o.get("price"), bool) and abs(o["price"]) >= 100
+            and (o.get("point") is None or (isinstance(o["point"], (int, float)) and not isinstance(o["point"], bool)))
+            and (o.get("description") is None or isinstance(o["description"], str)))
+
+
 def _groups(event: dict) -> dict:
     """(market, description, outcome-signature) -> {book_key: {'title','source','prices': {(name, point): american}}}.
     Books are only compared on the identical set of lines."""
@@ -42,12 +49,16 @@ def _groups(event: dict) -> dict:
     for bk in event["bookmakers"]:
         for m in bk["markets"]:
             by_desc: dict = {}
+            if not isinstance(m, dict) or not isinstance(m.get("key"), str) or not isinstance(m.get("outcomes"), list):
+                continue
             for o in m["outcomes"]:
+                if not _ok_outcome(o):
+                    continue
                 by_desc.setdefault(o.get("description"), []).append(o)
             for desc, outs in by_desc.items():
                 if len(outs) != 2:
                     continue
-                sig = tuple(sorted((o["name"], o.get("point")) for o in outs))
+                sig = tuple(sorted(((o["name"], o.get("point")) for o in outs), key=lambda t: (t[0], t[1] is None, t[1] or 0)))
                 g = groups.setdefault((m["key"], desc, sig), {})
                 g[bk["key"]] = {"title": bk["title"], "source": bk.get("source", ""),
                                 "prices": {(o["name"], o.get("point")): o["price"] for o in outs}}
@@ -72,7 +83,7 @@ def power_probs(event: dict, market: str, outcomes: list, models: dict | None):
     rater = models.get(event["sport_key"])
     if rater is None:
         return None
-    d = rater.margin_for(event["home_team"], event["away_team"], event.get("neutral", False))
+    d = rater.margin_for(event["home_team"], event["away_team"], event.get("neutral", False), to_day(event.get("commence_time")))
     if d is None:
         return None
     sigma = rater.cfg["sigma"]
@@ -160,44 +171,92 @@ def engine_blend(market: float, model: float, w_market: float) -> float:
     return w_market * market + (1 - w_market) * model
 
 
-def build_parlays(candidates: list[dict], p: dict) -> list[dict]:
-    """Search 3-5 leg combos from the top candidates. One leg per game (so legs are independent
-    under our assumption and never same-game correlated); no duplicate legs."""
-    pool = [c for c in candidates if c["model_prob"] >= max(p["min_prob"], 0.35)]
-    pool = sorted(pool, key=lambda c: -c["ev_per_dollar"])[: p["parlay_pool"]]
-    scored = []
-    for n in (3, 4, 5):
-        for combo in itertools.combinations(pool, n):
-            if len({c["event_id"] for c in combo}) != n:
+MAX_SAME_TOTAL_DIRECTION = 2  # correlation proxy: Over/Under legs across games share scoring environment and weather systems
+
+
+def enumerate_parlays(pool: list[dict], p: dict, keep: int = 400):
+    """EXACT enumeration of every 3-5 leg combination with at most one leg per game (no sampling).
+    Rules: no duplicate legs, no same-game legs, at most MAX_SAME_TOTAL_DIRECTION legs of the same
+    totals direction, combined win probability >= min_parlay_prob. Returns (top `keep` by EV, n_enumerated)."""
+    import heapq
+    heap, count, seq = [], 0, itertools.count()
+    n = len(pool)
+
+    def rec(start, chosen, games, prob, dec, dirs):
+        nonlocal count
+        k = len(chosen)
+        if k >= 3 and prob >= p["min_parlay_prob"]:
+            count += 1
+            ev = prob * dec - 1
+            item = (ev, next(seq), tuple(chosen), prob, dec)
+            if len(heap) < keep:
+                heapq.heappush(heap, item)
+            elif ev > heap[0][0]:
+                heapq.heapreplace(heap, item)
+        if k == 5:
+            return
+        for i in range(start, n):
+            c = pool[i]
+            if c["event_id"] in games:
                 continue
-            s = om.parlay_summary([(c["model_prob"], c["best_decimal"]) for c in combo])
-            if s["prob"] < p["min_parlay_prob"]:
+            d = c["bet"]["name"] if c["bet"]["market"] == "totals" else None
+            if d and dirs.get(d, 0) >= MAX_SAME_TOTAL_DIRECTION:
                 continue
-            scored.append((s["ev"], combo, s))
-    scored.sort(key=lambda t: -t[0])
-    chosen, out = [], []
-    for ev, combo, s in scored:
-        ids = {c["event_id"] + c["selection"] for c in combo}
-        if any(len(ids & prev) > 2 for prev in chosen):
-            continue  # keep the 5 parlays meaningfully different
-        chosen.append(ids)
-        confs = [c["confidence"] for c in combo]
-        order = ["none", "low", "medium", "high"]
-        notes = ["Legs are from different games and treated as independent; one leg per game, no duplicates.",
-                 "Parlay vig compounds: each leg's vig multiplies, so parlays are usually worse value than the same legs as singles.",
-                 "Best prices may sit at different books; a real parlay must be placed at ONE book, so its payout will be lower than shown."]
-        if ev <= 0:
-            notes.insert(0, "NEGATIVE EV: no positive-EV parlay exists from the current data. This is only the least-bad combination; skipping it is the better bet.")
-        out.append({
-            "legs": [{k: c[k] for k in ("event_id", "league", "game", "market_label", "selection", "best_book", "best_odds", "best_decimal", "model_prob", "commence_time", "bet")} for c in combo],
-            "n_legs": len(combo), "combined_decimal": round(s["decimal"], 3), "combined_odds": s["american"],
-            "payout_per_100": round((s["decimal"] - 1) * 100, 2), "win_prob": round(s["prob"], 4),
-            "implied_prob": round(s["implied_prob"], 4), "ev_per_dollar": round(s["ev"], 4),
-            "stake_pct": round(om.kelly_stake(s["prob"], s["decimal"], p["kelly_fraction"], p["parlay_stake_cap"]), 4),
-            "confidence": min(confs, key=order.index), "notes": notes,
-        })
+            nd = dict(dirs)
+            if d:
+                nd[d] = nd.get(d, 0) + 1
+            rec(i + 1, chosen + [c], games | {c["event_id"]}, prob * c["model_prob"], dec * c["best_decimal"], nd)
+    rec(0, [], frozenset(), 1.0, 1.0, {})
+    top = sorted(heap, key=lambda t: (-t[0], t[1]))
+    return [(ev, combo, om.parlay_summary([(c["model_prob"], c["best_decimal"]) for c in combo])) for ev, _, combo, _, _ in top], count
+
+
+def build_parlays(candidates: list[dict], p: dict, info: dict | None = None) -> list[dict]:
+    """Pick the 5 best, mutually different 3-5 leg parlays by EV.
+    If at least 3 games have legs that clear the single-bet bar, ONLY those legs are used (so a BET parlay is
+    made of BET legs). Otherwise the least-bad combinations are shown as watchlist, clearly labelled."""
+    liquid = [c for c in candidates if c["model_prob"] >= max(p["min_prob"], 0.35)]
+    qual = [c for c in liquid if qualifies(c, p)]
+    stages = []
+    if len({c["event_id"] for c in qual}) >= 3:
+        stages.append((True, sorted(qual, key=lambda c: -c["ev_per_dollar"])[: p["parlay_pool"]]))
+    stages.append((False, sorted(liquid, key=lambda c: -c["ev_per_dollar"])[: p["parlay_pool"]]))  # watchlist top-up
+    chosen, out, enumerated = [], [], 0
+    for use_qual, pool in stages:
+        scored, n_enum = enumerate_parlays(pool, p)
+        enumerated += n_enum
+        for ev, combo, s in scored:
+            ids = {c["event_id"] + c["selection"] for c in combo}
+            if any(len(ids & prev) > 2 for prev in chosen):
+                continue  # keep the parlays meaningfully different
+            if not use_qual and any(ids == prev for prev in chosen):
+                continue
+            chosen.append(ids)
+            confs = [c["confidence"] for c in combo]
+            order = ["none", "low", "medium", "high"]
+            notes = ["Legs are from different games and treated as independent; one leg per game, no duplicates. Correlation proxy: at most "
+                     f"{MAX_SAME_TOTAL_DIRECTION} legs on the same totals direction (shared scoring environment/weather). Real correlation (conference, weather, pace) is not modelled.",
+                     "Parlay vig compounds: each leg's vig multiplies, so parlays are usually worse value than the same legs as singles.",
+                     "Best prices may sit at different books; a real parlay must be placed at ONE book, so its payout will be lower than shown."]
+            if ev <= 0:
+                notes.insert(0, "NEGATIVE EV: no positive-EV parlay exists from the current data. This is only the least-bad combination; skipping it is the better bet.")
+            elif not use_qual:
+                notes.insert(0, "Not every leg clears the single-bet bar, so this is watchlist only.")
+            out.append({
+                "legs": [{k: c[k] for k in ("event_id", "league", "game", "market_label", "selection", "best_book", "best_odds", "best_decimal", "model_prob", "commence_time", "bet")} for c in combo],
+                "n_legs": len(combo), "combined_decimal": round(s["decimal"], 3), "combined_odds": s["american"],
+                "payout_per_100": round((s["decimal"] - 1) * 100, 2), "win_prob": round(s["prob"], 4),
+                "implied_prob": round(s["implied_prob"], 4), "ev_per_dollar": round(s["ev"], 4),
+                "all_legs_qualify": use_qual,
+                "stake_pct": round(om.kelly_stake(s["prob"], s["decimal"], p["kelly_fraction"], p["parlay_stake_cap"]), 4),
+                "confidence": min(confs, key=order.index), "notes": notes,
+            })
+            if len(out) >= p["n_parlays"]:
+                break
         if len(out) >= p["n_parlays"]:
             break
+    if info is not None:
+        info.update({"pool": len(stages[-1][1]), "qualifying_legs": len(qual), "combos_enumerated": enumerated})
     return out
 
 
@@ -231,7 +290,7 @@ def allocate(singles: list[dict], parlays: list[dict], p: dict) -> dict:
                 r["flags"] = r.get("flags", []) + ["Stake reduced: bets on the same game are correlated, so combined stake per game is capped."]
     for pl in parlays:
         pl["stake_pct_raw"] = pl["stake_pct"]
-        ok = pl["ev_per_dollar"] > 0 and CONF_ORDER.index(pl["confidence"]) >= CONF_ORDER.index(p["min_conf"])
+        ok = pl["ev_per_dollar"] > 0 and pl.get("all_legs_qualify", True) and CONF_ORDER.index(pl["confidence"]) >= CONF_ORDER.index(p["min_conf"])
         pl["tier"] = "bet" if ok else "watchlist"
         if not ok:
             pl["stake_pct"] = 0.0
@@ -266,10 +325,18 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
     statuses, lists = [], []
     for prov in providers:
         for sport in SPORTS:
-            ev, st = prov.fetch_events(sport)
+            try:
+                ev, st = prov.fetch_events(sport)
+                st = dict(st) if isinstance(st, dict) else {}
+            except Exception as exc:  # a failing provider must never take down the whole run
+                ev, st = [], {"name": getattr(prov, "label", prov.__class__.__name__), "ok": False,
+                              "detail": f"{type(exc).__name__}: {exc}", "events": 0}
+            st.setdefault("name", getattr(prov, "label", "?"))
+            st.setdefault("ok", False)
+            st.setdefault("detail", "")
             st["league"] = SPORTS[sport]
             statuses.append(st)
-            if ev:
+            if ev and isinstance(ev, list):
                 lists.append(ev)
     events = merge_events(lists)
     events = [e for e in events if not e["commence_time"] or e["commence_time"] > now.strftime("%Y-%m-%dT%H:%M:%SZ")]
@@ -280,7 +347,8 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
     top = eligible[: p["top_n"]]
     is_sample = any(getattr(pr, "is_sample", False) for pr in providers)
     max_books = max((c["n_books"] for c in picks), default=0)
-    parlays = build_parlays(cands, p)
+    parlay_info: dict = {}
+    parlays = build_parlays(cands, p, parlay_info)
     exposure = allocate(top, parlays, p)
     basis = ("Probabilities = market no-vig consensus; the ratings model is shown for reference only (the backtest did not justify blending it)."
              if not p["use_ratings"] else f"Probabilities = {int(p['w_market']*100)}% market / {100-int(p['w_market']*100)}% ratings model blend.")
@@ -289,6 +357,7 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
         "generated_at": now.isoformat(timespec="seconds"),
         "bottom_line": bottom_line(top, parlays, exposure, p, basis),
         "exposure": exposure,
+        "parlay_search": parlay_info,
         "mode": "sample" if is_sample else "live",
         "sample_reason": force_sample_reason,
         "params": p,
