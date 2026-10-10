@@ -116,7 +116,8 @@ with no account or key:
   Moneyline or Anytime TD. For spreads, totals and props it shows every
   line the model estimates: ones the FanDuel check found at FanDuel's odds,
   the rest marked **Confirm line**, since FanDuel may not offer that exact
-  line. Check it on FanDuel before you bet.
+  line. Check it on FanDuel before you bet. Receiving yards bets are only listed at
+  -300 or better: each player's likeliest line at those odds.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

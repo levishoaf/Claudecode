@@ -28,7 +28,7 @@ from pathlib import Path
 import bets as launcher  # sets up paths and certificates, like the app
 from nfl_edge import botcore, data, fdfeed
 from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, empty_type_note,
-                            every_line_of, of_type)
+                            every_line_of, of_type, type_max_prob)
 
 ROOT = launcher.ROOT
 LEDGER = ROOT / "discord bets.json"
@@ -102,7 +102,16 @@ class Core:
         pool, note, checked = self._pool(sport, week, lo, hi)
         if kind in SURE_TYPES or sport != "nfl":
             return of_type(pool, kind), note, checked
-        full = self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False)
+        cap = type_max_prob(kind)
+        if cap is not None and cap < hi / 100:  # likeliest lines within the odds limit
+            full = self.boards.get(sport, week, lo / 100, cap, sure_only=False)
+            if checked:
+                try:
+                    self._checked(sport, of_type(full, kind))
+                except fdfeed.FeedError:
+                    pass
+        else:
+            full = self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False)
         out = every_line_of(full, kind)
         if any(b.confirm_line for b in out):
             note = CONFIRM_NOTE.format(kind=kind)
@@ -368,6 +377,7 @@ def selftest() -> int:
         out = {"bets": core.bets("nfl", 10, 1, 99, None, 10.0),
                "td_bets": core.bets("nfl", 5, 1, 99, None, 10.0, "Anytime TD"),
                "rushing": core.bets("nfl", 5, 1, 99, None, 10.0, "Rushing yards"),
+               "receiving": core.bets("nfl", 5, 1, 99, None, 10.0, "Receiving yards"),
                "spread parlays": core.parlays(1, "nfl", 2, 2, 6, 1, 99, None, 10.0, 40.0,
                                               "Spread"),
                "parlays": core.parlays(1, "nfl", 3, 2, 6, 1, 99, None, 10.0, pays=40.0),

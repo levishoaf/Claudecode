@@ -10,6 +10,7 @@ from __future__ import annotations
 from itertools import combinations
 from math import comb
 
+from .odds import american_to_decimal
 from .finder import Bet
 from .parlays import Parlay
 
@@ -56,6 +57,27 @@ BET_TYPES = {
     "Receiving yards": ("player_reception_yds",),
     "Receptions": ("player_receptions",),
 }
+# Worst odds a bet type may have, e.g. receiving yards only at -300 or better.
+TYPE_MIN_ODDS = {"Receiving yards": -300}
+
+
+def type_max_prob(kind: str | None) -> float | None:
+    """The highest win chance a type's bets may have (its odds limit), or None."""
+    odds = TYPE_MIN_ODDS.get(kind or "")
+    return None if odds is None else 1 / american_to_decimal(odds) + 5e-4  # rounding
+
+
+def within_odds(bets: list[Bet], kind: str | None) -> list[Bet]:
+    """Only bets at the type's odds limit or better: FanDuel's odds when it was
+    found there, else the break-even odds."""
+    odds = TYPE_MIN_ODDS.get(kind or "")
+    if odds is None:
+        return list(bets)
+    cap = type_max_prob(kind)
+    return [b for b in bets if (b.fd_price >= odds if getattr(b, "on_fanduel", False)
+                                else b.fair_prob <= cap)]
+
+
 # Types on the free board, which only has bets sure to be on FanDuel.
 SURE_TYPES = ("All bets", "Moneyline", "Anytime TD")
 
@@ -71,7 +93,7 @@ def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
 def every_line_of(full: list[Bet], kind: str) -> list[Bet]:
     """Every bet of a type that isn't sure to be on FanDuel (spreads, totals, yardage
     props...): FanDuel-confirmed ones as they are, the rest marked `confirm_line`."""
-    out = of_type(full, kind)
+    out = within_odds(of_type(full, kind), kind)
     for b in out:
         b.confirm_line = not getattr(b, "on_fanduel", False)
     return out

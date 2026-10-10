@@ -43,7 +43,7 @@ from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, best_parlays,  # noqa: E402
                             every_line_of, mixed_parlays, of_type, payout_parlays,
-                            rank_singles)
+                            rank_singles, type_max_prob)
 
 
 def ask(question: str, default: str) -> str:
@@ -252,7 +252,17 @@ def build(args):
     if kind not in SURE_TYPES and args.sport == "nfl" and not key:
         # Every line of the type: those FanDuel confirmed at its odds, the rest from the
         # model, marked so their line gets confirmed on FanDuel before betting.
-        if full is None:
+        cap = type_max_prob(kind)
+        if cap is not None and cap < hi:
+            # Each player's likeliest line within the type's odds limit, checked on FanDuel.
+            full = nfl_board(day, lo, cap, games_source=args.games_file, week=week,
+                             always_offered=False)
+            if state and args.fanduel_state:
+                try:
+                    fdfeed.verify(of_type(full, kind), state, args.sport)
+                except fdfeed.FeedError:
+                    pass  # not confirmed: shown at break-even odds, marked Confirm line
+        elif full is None:
             full = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
                              always_offered=False)
         bets, rank = every_line_of(full, kind), "prob"

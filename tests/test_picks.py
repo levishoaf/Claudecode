@@ -114,3 +114,23 @@ class BetTypeTest(unittest.TestCase):
         self.assertEqual(set(BET_TYPES) >= {"Moneyline", "Anytime TD", "Receptions"}, True)
         with self.assertRaises(ValueError):
             of_type(bets, "Corners")
+
+
+class OddsLimitTest(unittest.TestCase):
+    def test_receiving_yards_only_at_minus_300_or_better(self):
+        from datetime import datetime, timedelta, timezone
+
+        from nfl_edge.board import make_bet
+        from nfl_edge.picks import every_line_of, type_max_prob
+
+        kick = datetime.now(timezone.utc) + timedelta(days=2)
+        m = "player_reception_yds_alternate"
+        bets = [make_bet("A @ B", kick, m, "Al Over", 24.5, 0.90, "g1", "x"),   # -900
+                make_bet("A @ B", kick, m, "Bo Over", 49.5, 0.75, "g1", "x"),   # -300
+                make_bet("C @ D", kick, m, "Cy Over", 49.5, 0.60, "g2", "x"),   # -150
+                make_bet("C @ D", kick, m, "Di Over", 24.5, 0.92, "g2", "x")]
+        bets[3].on_fanduel, bets[3].fd_price = True, -250  # FanDuel's odds count
+        self.assertAlmostEqual(type_max_prob("Receiving yards"), 0.75, places=3)
+        self.assertIsNone(type_max_prob("Rushing yards"))
+        self.assertEqual([b.pick for b in every_line_of(bets, "Receiving yards")],
+                         ["Bo Over", "Cy Over", "Di Over"])
