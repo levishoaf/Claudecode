@@ -205,8 +205,7 @@ class App:
         self.when = tk.StringVar(value="Loading weeks...")
         self.n_singles, self.n_parlays = tk.StringVar(value="30"), tk.StringVar(value="10")
         self.min_legs, self.max_legs = tk.StringVar(value="3"), tk.StringVar(value="5")
-        self.stake, self.lo, self.hi, self.refresh = (tk.StringVar(value=v)
-                                                       for v in ("10", "60", "80", "5"))
+        self.stake, self.refresh = tk.StringVar(value="10"), tk.StringVar(value="5")
 
         def field(label, var, width, values=None):
             box = tk.Frame(row2, bg=NAVY)
@@ -245,7 +244,6 @@ class App:
         field("Wager $", self.stake, 4)
         self.pays = tk.StringVar(value="40")
         field("Pays $", self.pays, 4)
-        pair("Chance %", self.lo, self.hi)
         field("Refresh", self.refresh, 3)
         self.refresh.trace_add("write", lambda *_: self.schedule())
 
@@ -449,7 +447,7 @@ class App:
                  font=self.f["h2"]).pack(side="left")
         checked = getattr(args, "fanduel_state", None) or getattr(args, "fanduel_key", None)
         order = "best value first" if checked else "likeliest first"
-        tk.Label(head, text=f"   {args.min_prob:.0f}–{args.max_prob:.0f}% chance, {order}"
+        tk.Label(head, text=f"   {order}"
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None) or getattr(args, "fanduel_state", None))
@@ -588,7 +586,7 @@ class App:
 
     def singles_tab(self, parent, singles, previous) -> None:
         if not singles:
-            tk.Label(parent, text="None found. Try a wider chance range or another week.", bg=BG,
+            tk.Label(parent, text="None found. Try another week.", bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         table = self.list_table(parent, "#")
@@ -991,8 +989,8 @@ class App:
             singles=int(self.n_singles.get() or 30),
             legs=int(self.min_legs.get() or 3), min_legs=int(self.min_legs.get() or 3),
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
-            stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
-            max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None,
+            stake=float(self.stake.get() or 10), min_prob=bets.MIN_PROB,
+            max_prob=bets.MAX_PROB, per_game=3, allow_overlap=False, games_file=None,
             fanduel_state=bets.fanduel_state() if self.fanduel_on else None,
             pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
@@ -1000,7 +998,7 @@ class App:
         try:
             args = self.args()
         except ValueError:
-            self.say("Please use numbers for singles, legs, parlays, wager and chance.")
+            self.say("Please use numbers for singles, legs, parlays, wager and payout.")
             return
         self.build_btn.configure(text="Loading...")
         self.cancel_update()

@@ -208,15 +208,12 @@ def run_bot(token: str) -> None:
 
     @tree.command(name="bets", description="Top single bets, likeliest first")
     @app_commands.choices(sport=sport_choices)
-    @app_commands.describe(count="How many bets (1-30)", min_chance="Lowest win % (default 60)",
-                           max_chance="Highest win % (default 80)",
+    @app_commands.describe(count="How many bets (1-30)",
                            week="NFL or college week (default: this week)", wager="Wager in $")
     async def bets_cmd(interaction: discord.Interaction, sport: str = "nfl",
                        count: app_commands.Range[int, 1, 30] = 10,
-                       min_chance: app_commands.Range[int, 1, 99] = 60,
-                       max_chance: app_commands.Range[int, 1, 99] = 80,
                        week: int | None = None, wager: float = 10.0):
-        await work(interaction, core.bets, sport, count, min_chance, max_chance, week, wager)
+        await work(interaction, core.bets, sport, count, 1, 99, week, wager)
 
     @tree.command(name="parlays", description="Top parlays as bet slips")
     @app_commands.choices(sport=sport_choices)
@@ -230,7 +227,7 @@ def run_bot(token: str) -> None:
                           max_legs: app_commands.Range[int, 2, 8] = 6,
                           week: int | None = None, wager: float = 10.0, pays: float = 40.0):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
-                   min_legs, max(min_legs, max_legs), 60, 80, week, wager, pays or None)
+                   min_legs, max(min_legs, max_legs), 1, 99, week, wager, pays or None)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
@@ -332,8 +329,8 @@ def selftest() -> int:
     """Run every command's logic against live data, without connecting to Discord."""
     with tempfile.TemporaryDirectory() as d:
         core = Core(Path(d) / "ledger.json")
-        out = {"bets": core.bets("nfl", 10, 60, 80, None, 10.0),
-               "parlays": core.parlays(1, "nfl", 3, 2, 6, 60, 80, None, 10.0, pays=40.0),
+        out = {"bets": core.bets("nfl", 10, 1, 99, None, 10.0),
+               "parlays": core.parlays(1, "nfl", 3, 2, 6, 1, 99, None, 10.0, pays=40.0),
                "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0)}
         top = core.boards.get("nfl", None, 0.6, 0.8)
         query = botcore._describe(botcore.pick_singles(top, 1)[0])
@@ -343,7 +340,7 @@ def selftest() -> int:
         out["remove"] = core.remove(1, query.split()[0])
         out["results"] = core.check_results() or "(nothing settled)"
         out["injuries"] = botcore.injuries_text("BUF")
-        out["college"] = core.bets("ncaaf", 5, 60, 80, None, 10.0)
+        out["college"] = core.bets("ncaaf", 5, 1, 99, None, 10.0)
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]

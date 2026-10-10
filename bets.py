@@ -182,6 +182,8 @@ def save_odds_api_key(key: str) -> None:
 
 
 STATE_FILE = ROOT / "fanduel state.txt"
+# Win chance range in %: no limit, so the board shows the likeliest bets.
+MIN_PROB, MAX_PROB = 1.0, 99.0
 
 
 def fanduel_state() -> str | None:
@@ -268,7 +270,7 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
 
     print(f"\n{args.sport.upper()} | {week_label(singles, parlays)} | "
           f"updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
-          f"bets with a {args.min_prob:.0f}-{args.max_prob:.0f}% chance, likeliest first\n")
+          "likeliest first\n")
     if args.sport == "nfl" and board.NOTES.get("injuries"):
         print(f"Injuries: {board.NOTES['injuries']}\n")
     print("SINGLE BETS  (odds = break-even: bet only if FanDuel pays this or better)")
@@ -356,9 +358,10 @@ def main() -> int:
     p.add_argument("--stake", type=float, help="parlay wager shown on the slips")
     p.add_argument("--pays", type=float,
                    help="build parlays that pay about this many dollars on the wager, e.g. 40")
-    p.add_argument("--min-prob", type=float, default=60.0, help="lowest win chance in %% (default 60)")
-    p.add_argument("--max-prob", type=float, default=80.0,
-                   help="highest win chance in %% (default 80; higher pays very little)")
+    p.add_argument("--min-prob", type=float, default=MIN_PROB,
+                   help="lowest win chance in %% (default: no limit)")
+    p.add_argument("--max-prob", type=float, default=MAX_PROB,
+                   help="highest win chance in %% (default: no limit)")
     p.add_argument("--per-game", type=int, default=3, help="max single bets per game (default 3)")
     p.add_argument("--allow-overlap", action="store_true", help="let parlays share games")
     p.add_argument("--injuries", action="store_true",

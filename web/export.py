@@ -23,7 +23,7 @@ from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import payout_parlays, rank_singles  # noqa: E402
 
-LO, HI = 0.60, 0.80
+LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
 PARLAY_PAYS = 4.0  # parlays pay about 4x the wager: $40 on $10
 HISTORY = ROOT / "web" / "history.json"
 
