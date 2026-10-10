@@ -15,6 +15,12 @@ on:
 permissions:
   contents: read
 
+# A newer push replaces a build still running for an older one, so an older
+# build can never finish last and become the latest release.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
@@ -122,5 +128,9 @@ jobs:
           cp "$M/Bet Builder by Levi Shoaf - Mac Discord Bot.zip" out/BetBuilder-Mac-DiscordBot.zip
           printf '%s\n\n%s\n' "${MESSAGE%%$'\n'*}" \
             "Windows: BetBuilder-Windows.exe (the app). Mac: BetBuilder-Mac-App.zip. The app installs later builds by itself." > notes.md
+          # Only a newer build than the current latest release becomes "latest".
+          CURRENT=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
+          LATEST=true
+          [ -n "$CURRENT" ] && [ "${CURRENT#build-}" -gt "$BUILD" ] 2>/dev/null && LATEST=false
           gh release create "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "Bet Builder build $BUILD" --notes-file notes.md --latest
+            --title "Bet Builder build $BUILD" --notes-file notes.md --latest=$LATEST
