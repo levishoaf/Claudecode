@@ -1904,7 +1904,7 @@
    "win_prob": 0.7419,
    "odds": -288,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869843",
@@ -1919,8 +1919,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     }
    ],
    "week": 6
@@ -1950,7 +1950,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -1964,7 +1964,7 @@
    "win_prob": 0.7305,
    "odds": -271,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858481",
@@ -1979,8 +1979,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     }
    ],
    "week": 6
@@ -2010,7 +2010,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2054,7 +2054,7 @@
    "win_prob": 0.7227,
    "odds": -261,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401864519",
@@ -2069,8 +2069,8 @@
      "pick": "San Jos\u00e9 State ML",
      "game": "Wyoming @ San Jos\u00e9 State",
      "id": "401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Wyoming 16 - San Jos\u00e9 State 13"
     }
    ],
    "week": 6
@@ -2100,7 +2100,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2190,7 +2190,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2204,7 +2204,7 @@
    "win_prob": 0.6878,
    "odds": -220,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856826",
@@ -2219,8 +2219,8 @@
      "pick": "BYU ML",
      "game": "Iowa State @ BYU",
      "id": "401856826|BYU ML (Iowa State @ BYU)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Iowa State 10 - BYU 24"
     }
    ],
    "week": 6
@@ -2250,7 +2250,7 @@
      "game": "South Carolina @ Florida",
      "id": "401856714|Florida ML (South Carolina @ Florida)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2280,7 +2280,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2294,7 +2294,7 @@
    "win_prob": 0.6566,
    "odds": -191,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856823",
@@ -2309,8 +2309,8 @@
      "pick": "Arizona ML",
      "game": "Arizona @ West Virginia",
      "id": "401856823|Arizona ML (Arizona @ West Virginia)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Arizona 52 - West Virginia 31"
     }
    ],
    "week": 6
@@ -2324,7 +2324,7 @@
    "win_prob": 0.6573,
    "odds": -192,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401862795",
@@ -2339,8 +2339,8 @@
      "pick": "Army ML",
      "game": "Tulane @ Army",
      "id": "401862795|Army ML (Tulane @ Army)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Tulane 17 - Army 20"
     }
    ],
    "week": 6
@@ -2370,7 +2370,7 @@
      "game": "Central Michigan @ Ohio",
      "id": "401866438|Ohio ML (Central Michigan @ Ohio)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2460,7 +2460,7 @@
      "game": "Virginia Tech @ California",
      "id": "401858259|Virginia Tech ML (Virginia Tech @ California)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2490,7 +2490,7 @@
      "game": "Houston @ Kansas State",
      "id": "401856825|Kansas State ML (Houston @ Kansas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2534,7 +2534,7 @@
    "win_prob": 0.3799,
    "odds": 163,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856717",
@@ -2550,7 +2550,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -2581,8 +2581,8 @@
      "pick": "San Jos\u00e9 State ML",
      "game": "Wyoming @ San Jos\u00e9 State",
      "id": "401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Wyoming 16 - San Jos\u00e9 State 13"
     }
    ],
    "week": 6
@@ -2596,7 +2596,7 @@
    "win_prob": 0.3753,
    "odds": 166,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401864519",
@@ -2611,8 +2611,8 @@
      "pick": "San Jos\u00e9 State ML",
      "game": "Wyoming @ San Jos\u00e9 State",
      "id": "401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Wyoming 16 - San Jos\u00e9 State 13"
     },
     {
      "game_id": "401866435",
@@ -2628,7 +2628,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864517",
@@ -2674,7 +2674,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864517",
@@ -2768,7 +2768,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2782,7 +2782,7 @@
    "win_prob": 0.2882,
    "odds": 247,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869843",
@@ -2797,8 +2797,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858484",
@@ -2814,7 +2814,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858481",
@@ -2829,8 +2829,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856717",
@@ -2846,7 +2846,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -2860,7 +2860,7 @@
    "win_prob": 0.2874,
    "odds": 248,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869843",
@@ -2875,8 +2875,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858484",
@@ -2892,7 +2892,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858481",
@@ -2907,8 +2907,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -2938,7 +2938,7 @@
    "win_prob": 0.2742,
    "odds": 265,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856717",
@@ -2954,7 +2954,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -2985,8 +2985,8 @@
      "pick": "San Jos\u00e9 State ML",
      "game": "Wyoming @ San Jos\u00e9 State",
      "id": "401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Wyoming 16 - San Jos\u00e9 State 13"
     },
     {
      "game_id": "401866435",
@@ -3002,7 +3002,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -3016,7 +3016,7 @@
    "win_prob": 0.2589,
    "odds": 286,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401862797",
@@ -3095,8 +3095,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     }
    ],
    "week": 6
@@ -3190,7 +3190,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -3283,8 +3283,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     }
    ],
    "week": 6
@@ -4080,7 +4080,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -4112,7 +4112,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -4158,7 +4158,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856826",
@@ -4173,8 +4173,8 @@
      "pick": "BYU ML",
      "game": "Iowa State @ BYU",
      "id": "401856826|BYU ML (Iowa State @ BYU)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Iowa State 10 - BYU 24"
     }
    ],
    "week": 6
@@ -4204,7 +4204,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -4236,7 +4236,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864517",
@@ -6888,7 +6888,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856714",
@@ -6904,7 +6904,7 @@
      "game": "South Carolina @ Florida",
      "id": "401856714|Florida ML (South Carolina @ Florida)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -8796,7 +8796,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858255",
@@ -8812,7 +8812,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -8858,7 +8858,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864516",
@@ -8889,8 +8889,8 @@
      "pick": "Arizona ML",
      "game": "Arizona @ West Virginia",
      "id": "401856823|Arizona ML (Arizona @ West Virginia)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Arizona 52 - West Virginia 31"
     }
    ],
    "week": 6
@@ -8935,8 +8935,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401864516",
@@ -8967,8 +8967,8 @@
      "pick": "Arizona ML",
      "game": "Arizona @ West Virginia",
      "id": "401856823|Arizona ML (Arizona @ West Virginia)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Arizona 52 - West Virginia 31"
     }
    ],
    "week": 6
@@ -9030,7 +9030,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856714",
@@ -9046,7 +9046,7 @@
      "game": "South Carolina @ Florida",
      "id": "401856714|Florida ML (South Carolina @ Florida)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -9123,8 +9123,8 @@
      "pick": "Arizona ML",
      "game": "Arizona @ West Virginia",
      "id": "401856823|Arizona ML (Arizona @ West Virginia)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Arizona 52 - West Virginia 31"
     }
    ],
    "week": 6
@@ -9170,7 +9170,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -9186,7 +9186,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401860902",
@@ -9248,7 +9248,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858481",
@@ -9263,8 +9263,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401869965",
@@ -9294,7 +9294,7 @@
    "win_prob": 0.2629,
    "odds": 280,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856808",
@@ -9325,8 +9325,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401864517",
@@ -9357,8 +9357,8 @@
      "pick": "Army ML",
      "game": "Tulane @ Army",
      "id": "401862795|Army ML (Tulane @ Army)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Tulane 17 - Army 20"
     }
    ],
    "week": 6
@@ -9404,7 +9404,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -9420,7 +9420,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858255",
@@ -9436,7 +9436,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -9450,7 +9450,7 @@
    "win_prob": 0.2627,
    "odds": 281,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856713",
@@ -9481,8 +9481,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401862799",
@@ -9498,7 +9498,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856714",
@@ -9514,7 +9514,7 @@
      "game": "South Carolina @ Florida",
      "id": "401856714|Florida ML (South Carolina @ Florida)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -10780,7 +10780,7 @@
    "win_prob": 0.9722,
    "odds": -3491,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858482",
@@ -10795,8 +10795,8 @@
      "pick": "Northwestern ML",
      "game": "Ball State @ Northwestern",
      "id": "401858482|Northwestern ML (Ball State @ Northwestern)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Ball State 14 - Northwestern 45"
     }
    ],
    "week": 6
@@ -10826,7 +10826,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -10856,7 +10856,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -10886,7 +10886,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -10990,7 +10990,7 @@
    "win_prob": 0.8159,
    "odds": -443,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858256",
@@ -11005,8 +11005,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     }
    ],
    "week": 6
@@ -11052,7 +11052,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862797",
@@ -11083,8 +11083,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -11224,7 +11224,7 @@
    "win_prob": 0.2633,
    "odds": 280,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858483",
@@ -11271,8 +11271,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401856808",
@@ -11334,7 +11334,7 @@
    "win_prob": 0.2633,
    "odds": 280,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866439",
@@ -11350,7 +11350,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -11397,8 +11397,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401858481",
@@ -11413,8 +11413,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401864517",
@@ -11444,7 +11444,7 @@
    "win_prob": 0.2632,
    "odds": 280,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866437",
@@ -11460,7 +11460,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -11491,8 +11491,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401862797",
@@ -11540,7 +11540,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -11554,7 +11554,7 @@
    "win_prob": 0.2632,
    "odds": 280,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401862796",
@@ -11570,7 +11570,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862798",
@@ -11601,8 +11601,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401856713",
@@ -11633,8 +11633,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856717",
@@ -11650,7 +11650,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -11680,7 +11680,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856808",
@@ -11712,7 +11712,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858481",
@@ -11727,8 +11727,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856717",
@@ -11744,7 +11744,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -11774,7 +11774,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -11854,7 +11854,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -11868,7 +11868,7 @@
    "win_prob": 0.2628,
    "odds": 281,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858482",
@@ -11883,8 +11883,8 @@
      "pick": "Northwestern ML",
      "game": "Ball State @ Northwestern",
      "id": "401858482|Northwestern ML (Ball State @ Northwestern)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Ball State 14 - Northwestern 45"
     },
     {
      "game_id": "401856827",
@@ -11931,8 +11931,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858484",
@@ -11948,7 +11948,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -11964,7 +11964,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -11978,7 +11978,7 @@
    "win_prob": 0.2593,
    "odds": 286,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869949",
@@ -12025,8 +12025,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858484",
@@ -12042,7 +12042,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -12058,7 +12058,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -12742,7 +12742,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866439",
@@ -12758,7 +12758,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856713",
@@ -12789,8 +12789,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -12852,7 +12852,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401869949",
@@ -12915,8 +12915,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -13010,7 +13010,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864517",
@@ -13040,7 +13040,7 @@
    "win_prob": 0.2501,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401862798",
@@ -13087,8 +13087,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401856715",
@@ -13149,8 +13149,8 @@
      "pick": "Northwestern ML",
      "game": "Ball State @ Northwestern",
      "id": "401858482|Northwestern ML (Ball State @ Northwestern)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Ball State 14 - Northwestern 45"
     },
     {
      "game_id": "401862798",
@@ -13213,8 +13213,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856717",
@@ -13230,7 +13230,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -13244,7 +13244,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866437",
@@ -13260,7 +13260,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -13291,8 +13291,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401856713",
@@ -13323,8 +13323,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401864517",
@@ -13354,7 +13354,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856827",
@@ -13401,8 +13401,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401862797",
@@ -13450,7 +13450,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -13464,7 +13464,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866439",
@@ -13480,7 +13480,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -13511,8 +13511,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401856713",
@@ -13560,7 +13560,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -13574,7 +13574,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869949",
@@ -13621,8 +13621,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858481",
@@ -13637,8 +13637,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856717",
@@ -13654,7 +13654,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -13668,7 +13668,7 @@
    "win_prob": 0.2495,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401862796",
@@ -13684,7 +13684,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401869949",
@@ -13731,8 +13731,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401856717",
@@ -13748,7 +13748,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -13764,7 +13764,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -14390,7 +14390,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862798",
@@ -14454,7 +14454,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864517",
@@ -14484,7 +14484,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866439",
@@ -14500,7 +14500,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401869949",
@@ -14531,8 +14531,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401856713",
@@ -14563,8 +14563,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401864517",
@@ -14594,7 +14594,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858256",
@@ -14609,8 +14609,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401858258",
@@ -14658,7 +14658,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -14674,7 +14674,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -14703,8 +14703,8 @@
      "pick": "Northwestern ML",
      "game": "Ball State @ Northwestern",
      "id": "401858482|Northwestern ML (Ball State @ Northwestern)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Ball State 14 - Northwestern 45"
     },
     {
      "game_id": "401862798",
@@ -14768,7 +14768,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -14894,7 +14894,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -14908,7 +14908,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866437",
@@ -14924,7 +14924,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866439",
@@ -14940,7 +14940,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858256",
@@ -14955,8 +14955,8 @@
      "pick": "Pittsburgh ML",
      "game": "North Carolina @ Pittsburgh",
      "id": "401858256|Pittsburgh ML (North Carolina @ Pittsburgh)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "North Carolina 21 - Pittsburgh 17"
     },
     {
      "game_id": "401858481",
@@ -14971,8 +14971,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -15050,7 +15050,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856713",
@@ -15082,7 +15082,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -15176,7 +15176,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858481",
@@ -15191,8 +15191,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401866435",
@@ -15208,7 +15208,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -15222,7 +15222,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401862796",
@@ -15238,7 +15238,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -15285,8 +15285,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858481",
@@ -15301,8 +15301,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401856715",
@@ -15332,7 +15332,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858482",
@@ -15347,8 +15347,8 @@
      "pick": "Northwestern ML",
      "game": "Ball State @ Northwestern",
      "id": "401858482|Northwestern ML (Ball State @ Northwestern)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Ball State 14 - Northwestern 45"
     },
     {
      "game_id": "401856827",
@@ -15395,8 +15395,8 @@
      "pick": "App State ML",
      "game": "Old Dominion @ App State",
      "id": "401869843|App State ML (Old Dominion @ App State)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Old Dominion 10 - App State 3"
     },
     {
      "game_id": "401858481",
@@ -15411,8 +15411,8 @@
      "pick": "Indiana ML",
      "game": "Indiana @ Nebraska",
      "id": "401858481|Indiana ML (Indiana @ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     },
     {
      "game_id": "401866435",
@@ -15428,7 +15428,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -16076,7 +16076,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856713",
@@ -16108,7 +16108,7 @@
      "game": "UCLA @ Oregon",
      "id": "401858484|Oregon ML (UCLA @ Oregon)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856715",
@@ -16186,7 +16186,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401869949",
@@ -16218,7 +16218,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862799",
@@ -16234,7 +16234,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858255",
@@ -16250,7 +16250,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -16280,7 +16280,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866437",
@@ -16296,7 +16296,7 @@
      "game": "Buffalo @ Toledo",
      "id": "401866437|Toledo ML (Buffalo @ Toledo)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862797",
@@ -16360,7 +16360,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -16406,7 +16406,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858255",
@@ -16422,7 +16422,7 @@
      "game": "Duke @ Georgia Tech",
      "id": "401858255|Duke ML (Duke @ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866438",
@@ -16438,7 +16438,7 @@
      "game": "Central Michigan @ Ohio",
      "id": "401866438|Ohio ML (Central Michigan @ Ohio)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -16468,7 +16468,7 @@
      "game": "Charlotte @ North Texas",
      "id": "401862796|North Texas ML (Charlotte @ North Texas)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401869949",
@@ -16516,7 +16516,7 @@
      "game": "Texas @ Oklahoma",
      "id": "401856717|Texas ML (Texas @ Oklahoma)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866435",
@@ -16532,7 +16532,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864516",
@@ -16626,7 +16626,7 @@
      "game": "Eastern Michigan @ Akron",
      "id": "401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864516",
@@ -16672,7 +16672,7 @@
      "game": "Kent State @ Western Michigan",
      "id": "401866439|Western Michigan ML (Kent State @ Western Michigan)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856827",
@@ -16720,7 +16720,7 @@
      "game": "Tulsa @ Navy",
      "id": "401862799|Navy ML (Tulsa @ Navy)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866438",
@@ -16736,7 +16736,7 @@
      "game": "Central Michigan @ Ohio",
      "id": "401866438|Ohio ML (Central Michigan @ Ohio)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 6
@@ -17144,6 +17144,1138 @@
     }
    ],
    "week": 5
+  },
+  {
+   "id": "parlay:2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams) + 2026_05_CIN_MIA|Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins) + 2026_05_DET_ARI|Jahmyr Gibbs Anytime TD (Detroit Lions @ Arizona Cardinals) + 2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_CIN_MIA",
+     "odds": -345,
+     "stake": 100,
+     "win_prob": 0.7511,
+     "label": "Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins)",
+     "type": "moneyline",
+     "team": "CIN",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Cincinnati Bengals ML",
+     "game": "Cincinnati Bengals @ Miami Dolphins",
+     "id": "2026_05_CIN_MIA|Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_HOU_TEN",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7497,
+     "label": "Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "type": "moneyline",
+     "team": "HOU",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Houston Texans ML",
+     "game": "Houston Texans @ Tennessee Titans",
+     "id": "2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_DET_ARI",
+     "odds": -252,
+     "stake": 100,
+     "win_prob": 0.7163,
+     "label": "Jahmyr Gibbs Anytime TD (Detroit Lions @ Arizona Cardinals)",
+     "type": "player_stat",
+     "player": "Jahmyr Gibbs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jahmyr Gibbs Anytime TD",
+     "game": "Detroit Lions @ Arizona Cardinals",
+     "id": "2026_05_DET_ARI|Jahmyr Gibbs Anytime TD (Detroit Lions @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_BUF_LA",
+     "odds": -180,
+     "stake": 100,
+     "win_prob": 0.6195,
+     "label": "Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-13T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Buffalo Bills @ Los Angeles Rams",
+     "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:2026_05_DET_ARI|Detroit Lions ML (Detroit Lions @ Arizona Cardinals) + 2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans) + 2026_05_IND_PIT|Jonathan Taylor Anytime TD (Indianapolis Colts @ Pittsburgh Steelers) + 2026_05_PHI_JAX|Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2497,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_PHI_JAX",
+     "odds": -410,
+     "stake": 100,
+     "win_prob": 0.7883,
+     "label": "Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-10-11T13:30:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Philadelphia Eagles @ Jacksonville Jaguars",
+     "id": "2026_05_PHI_JAX|Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_HOU_TEN",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7497,
+     "label": "Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "type": "moneyline",
+     "team": "HOU",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Houston Texans ML",
+     "game": "Houston Texans @ Tennessee Titans",
+     "id": "2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_DET_ARI",
+     "odds": -258,
+     "stake": 100,
+     "win_prob": 0.6934,
+     "label": "Detroit Lions ML (Detroit Lions @ Arizona Cardinals)",
+     "type": "moneyline",
+     "team": "DET",
+     "kickoff": "2026-10-11T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Detroit Lions @ Arizona Cardinals",
+     "id": "2026_05_DET_ARI|Detroit Lions ML (Detroit Lions @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_IND_PIT",
+     "odds": -156,
+     "stake": 100,
+     "win_prob": 0.6094,
+     "label": "Jonathan Taylor Anytime TD (Indianapolis Colts @ Pittsburgh Steelers)",
+     "type": "player_stat",
+     "player": "Jonathan Taylor",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jonathan Taylor Anytime TD",
+     "game": "Indianapolis Colts @ Pittsburgh Steelers",
+     "id": "2026_05_IND_PIT|Jonathan Taylor Anytime TD (Indianapolis Colts @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams) + 2026_05_CLE_NYJ|New York Jets ML (Cleveland Browns @ New York Jets) + 2026_05_PHI_JAX|Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2491,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_PHI_JAX",
+     "odds": -410,
+     "stake": 100,
+     "win_prob": 0.7883,
+     "label": "Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-10-11T13:30:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Philadelphia Eagles @ Jacksonville Jaguars",
+     "id": "2026_05_PHI_JAX|Jacksonville Jaguars ML (Philadelphia Eagles @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_BUF_LA",
+     "odds": -133,
+     "stake": 100,
+     "win_prob": 0.57,
+     "label": "Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
+     "type": "player_stat",
+     "player": "Davante Adams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-12T20:15:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Davante Adams Anytime TD",
+     "game": "Buffalo Bills @ Los Angeles Rams",
+     "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_CLE_NYJ",
+     "odds": -135,
+     "stake": 100,
+     "win_prob": 0.5545,
+     "label": "New York Jets ML (Cleveland Browns @ New York Jets)",
+     "type": "moneyline",
+     "team": "NYJ",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New York Jets ML",
+     "game": "Cleveland Browns @ New York Jets",
+     "id": "2026_05_CLE_NYJ|New York Jets ML (Cleveland Browns @ New York Jets)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons) + 2026_05_CIN_MIA|Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins) + 2026_05_MIN_NO|Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_CIN_MIA",
+     "odds": -345,
+     "stake": 100,
+     "win_prob": 0.7511,
+     "label": "Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins)",
+     "type": "moneyline",
+     "team": "CIN",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Cincinnati Bengals ML",
+     "game": "Cincinnati Bengals @ Miami Dolphins",
+     "id": "2026_05_CIN_MIA|Cincinnati Bengals ML (Cincinnati Bengals @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_BAL_ATL",
+     "odds": -147,
+     "stake": 100,
+     "win_prob": 0.5949,
+     "label": "Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Baltimore Ravens @ Atlanta Falcons",
+     "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_MIN_NO",
+     "odds": -135,
+     "stake": 100,
+     "win_prob": 0.5568,
+     "label": "Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+     "type": "moneyline",
+     "team": "MIN",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota Vikings ML",
+     "game": "Minnesota Vikings @ New Orleans Saints",
+     "id": "2026_05_MIN_NO|Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons) + 2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans) + 2026_05_MIN_NO|Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2483,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_HOU_TEN",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7497,
+     "label": "Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "type": "moneyline",
+     "team": "HOU",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Houston Texans ML",
+     "game": "Houston Texans @ Tennessee Titans",
+     "id": "2026_05_HOU_TEN|Houston Texans ML (Houston Texans @ Tennessee Titans)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_BAL_ATL",
+     "odds": -147,
+     "stake": 100,
+     "win_prob": 0.5949,
+     "label": "Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-11T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Baltimore Ravens @ Atlanta Falcons",
+     "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_MIN_NO",
+     "odds": -135,
+     "stake": 100,
+     "win_prob": 0.5568,
+     "label": "Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+     "type": "moneyline",
+     "team": "MIN",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota Vikings ML",
+     "game": "Minnesota Vikings @ New Orleans Saints",
+     "id": "2026_05_MIN_NO|Minnesota Vikings ML (Minnesota Vikings @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams) + 2026_05_DET_ARI|Detroit Lions ML (Detroit Lions @ Arizona Cardinals) + 2026_05_LV_NE|New England Patriots ML (Las Vegas Raiders @ New England Patriots)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-10T21:46:45+00:00",
+   "win_prob": 0.2482,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_05_DET_ARI",
+     "odds": -258,
+     "stake": 100,
+     "win_prob": 0.6934,
+     "label": "Detroit Lions ML (Detroit Lions @ Arizona Cardinals)",
+     "type": "moneyline",
+     "team": "DET",
+     "kickoff": "2026-10-11T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Detroit Lions @ Arizona Cardinals",
+     "id": "2026_05_DET_ARI|Detroit Lions ML (Detroit Lions @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_LV_NE",
+     "odds": -192,
+     "stake": 100,
+     "win_prob": 0.628,
+     "label": "New England Patriots ML (Las Vegas Raiders @ New England Patriots)",
+     "type": "moneyline",
+     "team": "NE",
+     "kickoff": "2026-10-11T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New England Patriots ML",
+     "game": "Las Vegas Raiders @ New England Patriots",
+     "id": "2026_05_LV_NE|New England Patriots ML (Las Vegas Raiders @ New England Patriots)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_05_BUF_LA",
+     "odds": -133,
+     "stake": 100,
+     "win_prob": 0.57,
+     "label": "Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
+     "type": "player_stat",
+     "player": "Davante Adams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-12T20:15:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Davante Adams Anytime TD",
+     "game": "Buffalo Bills @ Los Angeles Rams",
+     "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 5
+  },
+  {
+   "id": "parlay:401860902|San Diego State ML (San Diego State @ Oregon State) + 401864516|Air Force ML (Air Force @ Northern Illinois)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401864516",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6972,
+     "label": "Air Force ML (Air Force @ Northern Illinois)",
+     "type": "moneyline",
+     "team": "Air Force",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Air Force ML",
+     "game": "Air Force @ Northern Illinois",
+     "id": "401864516|Air Force ML (Air Force @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860902",
+     "odds": 179,
+     "stake": 100,
+     "win_prob": 0.3586,
+     "label": "San Diego State ML (San Diego State @ Oregon State)",
+     "type": "moneyline",
+     "team": "San Diego State",
+     "kickoff": "2026-10-10T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Diego State ML",
+     "game": "San Diego State @ Oregon State",
+     "id": "401860902|San Diego State ML (San Diego State @ Oregon State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856712|Alabama ML (Georgia @ Alabama) + 401856715|LSU ML (LSU @ Kentucky) + 401856827|Utah ML (Kansas @ Utah) + 401864517|Nevada ML (Nevada @ UTEP)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856827",
+     "odds": -502,
+     "stake": 100,
+     "win_prob": 0.8338,
+     "label": "Utah ML (Kansas @ Utah)",
+     "type": "moneyline",
+     "team": "Utah",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Utah ML",
+     "game": "Kansas @ Utah",
+     "id": "401856827|Utah ML (Kansas @ Utah)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856715",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7229,
+     "label": "LSU ML (LSU @ Kentucky)",
+     "type": "moneyline",
+     "team": "LSU",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "LSU ML",
+     "game": "LSU @ Kentucky",
+     "id": "401856715|LSU ML (LSU @ Kentucky)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864517",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7227,
+     "label": "Nevada ML (Nevada @ UTEP)",
+     "type": "moneyline",
+     "team": "Nevada",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Nevada ML",
+     "game": "Nevada @ UTEP",
+     "id": "401864517|Nevada ML (Nevada @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856712",
+     "odds": -135,
+     "stake": 100,
+     "win_prob": 0.5737,
+     "label": "Alabama ML (Georgia @ Alabama)",
+     "type": "moneyline",
+     "team": "Alabama",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alabama ML",
+     "game": "Georgia @ Alabama",
+     "id": "401856712|Alabama ML (Georgia @ Alabama)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856808|Arizona State ML (Hawai'i @ Arizona State) + 401856827|Utah ML (Kansas @ Utah) + 401862798|Memphis ML (UAB @ Memphis) + 401864518|North Dakota State ML (North Dakota State @ UNLV) + 401869949|James Madison ML (James Madison @ Georgia Southern)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2498,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869949",
+     "odds": -570,
+     "stake": 100,
+     "win_prob": 0.8508,
+     "label": "James Madison ML (James Madison @ Georgia Southern)",
+     "type": "moneyline",
+     "team": "James Madison",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "James Madison ML",
+     "game": "James Madison @ Georgia Southern",
+     "id": "401869949|James Madison ML (James Madison @ Georgia Southern)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856827",
+     "odds": -502,
+     "stake": 100,
+     "win_prob": 0.8338,
+     "label": "Utah ML (Kansas @ Utah)",
+     "type": "moneyline",
+     "team": "Utah",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Utah ML",
+     "game": "Kansas @ Utah",
+     "id": "401856827|Utah ML (Kansas @ Utah)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862798",
+     "odds": -461,
+     "stake": 100,
+     "win_prob": 0.8218,
+     "label": "Memphis ML (UAB @ Memphis)",
+     "type": "moneyline",
+     "team": "Memphis",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Memphis ML",
+     "game": "UAB @ Memphis",
+     "id": "401862798|Memphis ML (UAB @ Memphis)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856808",
+     "odds": -297,
+     "stake": 100,
+     "win_prob": 0.748,
+     "label": "Arizona State ML (Hawai'i @ Arizona State)",
+     "type": "moneyline",
+     "team": "Arizona State",
+     "kickoff": "2026-10-10T22:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Arizona State ML",
+     "game": "Hawai'i @ Arizona State",
+     "id": "401856808|Arizona State ML (Hawai'i @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864518",
+     "odds": -134,
+     "stake": 100,
+     "win_prob": 0.5728,
+     "label": "North Dakota State ML (North Dakota State @ UNLV)",
+     "type": "moneyline",
+     "team": "North Dakota State",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "North Dakota State ML",
+     "game": "North Dakota State @ UNLV",
+     "id": "401864518|North Dakota State ML (North Dakota State @ UNLV)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401858485|Penn State ML (USC @ Penn State) + 401862798|Memphis ML (UAB @ Memphis) + 401864518|North Dakota State ML (North Dakota State @ UNLV) + 401869949|James Madison ML (James Madison @ Georgia Southern)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2497,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869949",
+     "odds": -570,
+     "stake": 100,
+     "win_prob": 0.8508,
+     "label": "James Madison ML (James Madison @ Georgia Southern)",
+     "type": "moneyline",
+     "team": "James Madison",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "James Madison ML",
+     "game": "James Madison @ Georgia Southern",
+     "id": "401869949|James Madison ML (James Madison @ Georgia Southern)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862798",
+     "odds": -461,
+     "stake": 100,
+     "win_prob": 0.8218,
+     "label": "Memphis ML (UAB @ Memphis)",
+     "type": "moneyline",
+     "team": "Memphis",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Memphis ML",
+     "game": "UAB @ Memphis",
+     "id": "401862798|Memphis ML (UAB @ Memphis)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858485",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6235,
+     "label": "Penn State ML (USC @ Penn State)",
+     "type": "moneyline",
+     "team": "Penn State",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Penn State ML",
+     "game": "USC @ Penn State",
+     "id": "401858485|Penn State ML (USC @ Penn State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864518",
+     "odds": -134,
+     "stake": 100,
+     "win_prob": 0.5728,
+     "label": "North Dakota State ML (North Dakota State @ UNLV)",
+     "type": "moneyline",
+     "team": "North Dakota State",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "North Dakota State ML",
+     "game": "North Dakota State @ UNLV",
+     "id": "401864518|North Dakota State ML (North Dakota State @ UNLV)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856715|LSU ML (LSU @ Kentucky) + 401856827|Utah ML (Kansas @ Utah) + 401862798|Memphis ML (UAB @ Memphis) + 401864516|Air Force ML (Air Force @ Northern Illinois) + 401864517|Nevada ML (Nevada @ UTEP)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2496,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856827",
+     "odds": -502,
+     "stake": 100,
+     "win_prob": 0.8338,
+     "label": "Utah ML (Kansas @ Utah)",
+     "type": "moneyline",
+     "team": "Utah",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Utah ML",
+     "game": "Kansas @ Utah",
+     "id": "401856827|Utah ML (Kansas @ Utah)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862798",
+     "odds": -461,
+     "stake": 100,
+     "win_prob": 0.8218,
+     "label": "Memphis ML (UAB @ Memphis)",
+     "type": "moneyline",
+     "team": "Memphis",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Memphis ML",
+     "game": "UAB @ Memphis",
+     "id": "401862798|Memphis ML (UAB @ Memphis)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856715",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7229,
+     "label": "LSU ML (LSU @ Kentucky)",
+     "type": "moneyline",
+     "team": "LSU",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "LSU ML",
+     "game": "LSU @ Kentucky",
+     "id": "401856715|LSU ML (LSU @ Kentucky)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864517",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7227,
+     "label": "Nevada ML (Nevada @ UTEP)",
+     "type": "moneyline",
+     "team": "Nevada",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Nevada ML",
+     "game": "Nevada @ UTEP",
+     "id": "401864517|Nevada ML (Nevada @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864516",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6972,
+     "label": "Air Force ML (Air Force @ Northern Illinois)",
+     "type": "moneyline",
+     "team": "Air Force",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Air Force ML",
+     "game": "Air Force @ Northern Illinois",
+     "id": "401864516|Air Force ML (Air Force @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401858258|Virginia ML (Syracuse @ Virginia) + 401869943|Marshall ML (Coastal Carolina @ Marshall) + 401869949|James Madison ML (James Madison @ Georgia Southern) + 401869965|Louisiana Tech ML (Louisiana @ Louisiana Tech)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869949",
+     "odds": -570,
+     "stake": 100,
+     "win_prob": 0.8508,
+     "label": "James Madison ML (James Madison @ Georgia Southern)",
+     "type": "moneyline",
+     "team": "James Madison",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "James Madison ML",
+     "game": "James Madison @ Georgia Southern",
+     "id": "401869949|James Madison ML (James Madison @ Georgia Southern)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858258",
+     "odds": -344,
+     "stake": 100,
+     "win_prob": 0.7747,
+     "label": "Virginia ML (Syracuse @ Virginia)",
+     "type": "moneyline",
+     "team": "Virginia",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Virginia ML",
+     "game": "Syracuse @ Virginia",
+     "id": "401858258|Virginia ML (Syracuse @ Virginia)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401869965",
+     "odds": -185,
+     "stake": 100,
+     "win_prob": 0.6485,
+     "label": "Louisiana Tech ML (Louisiana @ Louisiana Tech)",
+     "type": "moneyline",
+     "team": "Louisiana Tech",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana Tech ML",
+     "game": "Louisiana @ Louisiana Tech",
+     "id": "401869965|Louisiana Tech ML (Louisiana @ Louisiana Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401869943",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5836,
+     "label": "Marshall ML (Coastal Carolina @ Marshall)",
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Coastal Carolina @ Marshall",
+     "id": "401869943|Marshall ML (Coastal Carolina @ Marshall)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856712|Alabama ML (Georgia @ Alabama) + 401858485|Penn State ML (USC @ Penn State) + 401864516|Air Force ML (Air Force @ Northern Illinois)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401864516",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6972,
+     "label": "Air Force ML (Air Force @ Northern Illinois)",
+     "type": "moneyline",
+     "team": "Air Force",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Air Force ML",
+     "game": "Air Force @ Northern Illinois",
+     "id": "401864516|Air Force ML (Air Force @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858485",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6235,
+     "label": "Penn State ML (USC @ Penn State)",
+     "type": "moneyline",
+     "team": "Penn State",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Penn State ML",
+     "game": "USC @ Penn State",
+     "id": "401858485|Penn State ML (USC @ Penn State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856712",
+     "odds": -135,
+     "stake": 100,
+     "win_prob": 0.5737,
+     "label": "Alabama ML (Georgia @ Alabama)",
+     "type": "moneyline",
+     "team": "Alabama",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alabama ML",
+     "game": "Georgia @ Alabama",
+     "id": "401856712|Alabama ML (Georgia @ Alabama)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856715|LSU ML (LSU @ Kentucky) + 401858486|Minnesota ML (Minnesota @ Purdue) + 401869943|Marshall ML (Coastal Carolina @ Marshall)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2485,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856715",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7229,
+     "label": "LSU ML (LSU @ Kentucky)",
+     "type": "moneyline",
+     "team": "LSU",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "LSU ML",
+     "game": "LSU @ Kentucky",
+     "id": "401856715|LSU ML (LSU @ Kentucky)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858486",
+     "odds": -143,
+     "stake": 100,
+     "win_prob": 0.5891,
+     "label": "Minnesota ML (Minnesota @ Purdue)",
+     "type": "moneyline",
+     "team": "Minnesota",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota ML",
+     "game": "Minnesota @ Purdue",
+     "id": "401858486|Minnesota ML (Minnesota @ Purdue)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401869943",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5836,
+     "label": "Marshall ML (Coastal Carolina @ Marshall)",
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Coastal Carolina @ Marshall",
+     "id": "401869943|Marshall ML (Coastal Carolina @ Marshall)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401858486|Minnesota ML (Minnesota @ Purdue) + 401864517|Nevada ML (Nevada @ UTEP) + 401869943|Marshall ML (Coastal Carolina @ Marshall)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2485,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401864517",
+     "odds": -261,
+     "stake": 100,
+     "win_prob": 0.7227,
+     "label": "Nevada ML (Nevada @ UTEP)",
+     "type": "moneyline",
+     "team": "Nevada",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Nevada ML",
+     "game": "Nevada @ UTEP",
+     "id": "401864517|Nevada ML (Nevada @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858486",
+     "odds": -143,
+     "stake": 100,
+     "win_prob": 0.5891,
+     "label": "Minnesota ML (Minnesota @ Purdue)",
+     "type": "moneyline",
+     "team": "Minnesota",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota ML",
+     "game": "Minnesota @ Purdue",
+     "id": "401858486|Minnesota ML (Minnesota @ Purdue)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401869943",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5836,
+     "label": "Marshall ML (Coastal Carolina @ Marshall)",
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-10T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Coastal Carolina @ Marshall",
+     "id": "401869943|Marshall ML (Coastal Carolina @ Marshall)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401858258|Virginia ML (Syracuse @ Virginia) + 401858486|Minnesota ML (Minnesota @ Purdue) + 401860901|Fresno State ML (Boise State @ Fresno State)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-10T21:47:04+00:00",
+   "win_prob": 0.2463,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858258",
+     "odds": -344,
+     "stake": 100,
+     "win_prob": 0.7747,
+     "label": "Virginia ML (Syracuse @ Virginia)",
+     "type": "moneyline",
+     "team": "Virginia",
+     "kickoff": "2026-10-10T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Virginia ML",
+     "game": "Syracuse @ Virginia",
+     "id": "401858258|Virginia ML (Syracuse @ Virginia)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858486",
+     "odds": -143,
+     "stake": 100,
+     "win_prob": 0.5891,
+     "label": "Minnesota ML (Minnesota @ Purdue)",
+     "type": "moneyline",
+     "team": "Minnesota",
+     "kickoff": "2026-10-10T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota ML",
+     "game": "Minnesota @ Purdue",
+     "id": "401858486|Minnesota ML (Minnesota @ Purdue)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860901",
+     "odds": -117,
+     "stake": 100,
+     "win_prob": 0.5398,
+     "label": "Fresno State ML (Boise State @ Fresno State)",
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-10-10T22:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Boise State @ Fresno State",
+     "id": "401860901|Fresno State ML (Boise State @ Fresno State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
   }
  ],
  "saved": [
@@ -17156,7 +18288,7 @@
    "win_prob": 0.396,
    "odds": 154,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "moneyline",
@@ -17170,8 +18302,8 @@
      "game": "Iowa @ Washington",
      "pick": "Iowa moneyline (@ Washington)",
      "id": "401858487|Iowa moneyline (@ Washington)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Iowa 41 - Washington 24"
     }
    ],
    "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
@@ -17186,7 +18318,7 @@
    "win_prob": 0.67,
    "odds": -226,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "moneyline",
@@ -17200,8 +18332,8 @@
      "game": "Indiana @ Nebraska",
      "pick": "Indiana moneyline (@ Nebraska)",
      "id": "401858481|Indiana moneyline (@ Nebraska)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Indiana 20 - Nebraska 17"
     }
    ],
    "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
@@ -17231,7 +18363,7 @@
      "pick": "Ole Miss moneyline (@ Vanderbilt)",
      "id": "401856718|Ole Miss moneyline (@ Vanderbilt)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
@@ -17261,7 +18393,7 @@
      "pick": "Oregon moneyline (vs UCLA)",
      "id": "401858484|Oregon moneyline (vs UCLA)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
@@ -17291,7 +18423,7 @@
      "pick": "Duke moneyline (@ Georgia Tech)",
      "id": "401858255|Duke moneyline (@ Georgia Tech)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",

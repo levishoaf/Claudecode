@@ -141,6 +141,7 @@ class App:
                    + (f"  ·  build {updater.BUILD}" if updater.BUILD else ""))
         self.updating: str | None = None  # status text while an update installs
         self.offered = 0  # newest build already offered this session
+        self.updates = None  # set by Updates
         root.geometry(f"{W}x{H}")
         root.resizable(False, False)
 
@@ -358,13 +359,15 @@ class App:
         chk.pack(fill="x", padx=14, pady=(4, 8))
         tk.Label(chk, text="Check FanDuel's price", bg=NAVY, fg=WHITE,
                  font=self.f["bold"]).pack(side="left", padx=(0, 8))
-        self.check_entry = ttk.Entry(chk, width=12, font=self.f["body"])
+        self.check_entry = ttk.Entry(chk, width=9, font=self.f["body"])
         self.check_entry.pack(side="left")
         self.check_entry.bind("<Return>", lambda e: self.check())
         FlatButton(chk, "Check", self.check, "primary", self.f["bold"]).pack(side="left", padx=8)
         FlatButton(chk, "Grade saved bets", self.grade, "secondary",
                    self.f["bold"]).pack(side="right")
-        self.verdict = tk.Label(chk, text="e.g.  3 -150   or   P1 +240", bg=NAVY, fg="#9fb0c8",
+        FlatButton(chk, "Check for updates", lambda: self.updates and self.updates.check(manual=True),
+                   "secondary", self.f["bold"]).pack(side="right", padx=(0, 8))
+        self.verdict = tk.Label(chk, text="e.g. 3 -150 or P1 +240", bg=NAVY, fg="#9fb0c8",
                                 anchor="w", justify="left", font=self.f["small"],
                                 wraplength=int(PANEL_W) - 580)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
@@ -1187,6 +1190,7 @@ class Updates:
 
     def __init__(self, app: "App"):
         self.app = app
+        app.updates = self
         if updater.can_update() and not app.selftest:
             app.root.after(5000, self.check)
 
@@ -1215,12 +1219,43 @@ class Updates:
         threading.Thread(target=run, daemon=True).start()
         wait()
 
-    def check(self) -> None:
-        def done(kind, update):
-            if kind == "ok" and update and update.build > self.app.offered:
-                self.offer(update)
-            self.app.root.after(updater.CHECK_HOURS * 3_600_000, self.check)
-        self._background(lambda q: updater.available(), done)
+    def check(self, manual: bool = False) -> None:
+        """Look for a newer build: on a timer (quiet unless there is one), or from the
+        Check for updates button (always says what it found)."""
+        from tkinter import messagebox
+
+        if manual and self.app.updating:
+            return  # an update is already installing
+        if not manual:
+            def done(kind, update):
+                if kind == "ok" and update and update.build > self.app.offered:
+                    self.offer(update)
+                self.app.root.after(updater.CHECK_HOURS * 3_600_000, self.check)
+            self._background(lambda q: updater.available(), done)
+            return
+
+        self.app.verdict.configure(text="Checking for updates…", fg=WHITE)
+        platform = sys.platform if sys.platform in updater.ASSETS else "win32"
+
+        def done(kind, found):
+            self.app.verdict.configure(text="")
+            if kind == "error":
+                messagebox.showerror("Check for updates", f"Couldn't check for updates: {found}."
+                                     "\n\nCheck your internet connection and try again.",
+                                     parent=self.app.root)
+            elif not updater.can_update():
+                newest = f"The newest build is {found.build}." if found else ""
+                messagebox.showinfo("Check for updates",
+                                    "This copy is running from its source code, so it doesn't "
+                                    f"update itself. {newest}\n\nDownload the app from "
+                                    "github.com/levishoaf/Claudecode/releases/latest.",
+                                    parent=self.app.root)
+            elif found and found.build > updater.BUILD:
+                self.offer(found)
+            else:
+                messagebox.showinfo("Check for updates", "You're on the latest version "
+                                    f"(build {updater.BUILD}).", parent=self.app.root)
+        self._background(lambda q: updater.latest(platform), done)
 
     def offer(self, update) -> None:
         from tkinter import messagebox

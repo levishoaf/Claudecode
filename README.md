@@ -94,7 +94,9 @@ The first time you open it:
 as a new release ("build 42" and so on; the window title shows yours). The
 app checks for a newer build when it opens and every 6 hours, asks before
 installing it, then closes and reopens on the new version. Your bets and
-settings are kept. Running from source (below) doesn't auto-update; pull the
+settings are kept. To check right away, click **Check for updates** at the
+bottom of the window: it says if you're on the latest build or offers the new
+one. Running from source (below) doesn't auto-update; pull the
 latest code instead. The console and Discord bot don't update themselves;
 download them again from the latest release.
 
