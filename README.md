@@ -121,13 +121,12 @@ with no account or key:
 **Making sure every bet is on FanDuel.** The free data doesn't include
 FanDuel's menu, so three things keep bets placeable:
 
-1. **Only markets FanDuel posts.** Bets come from moneylines, each game's
-   main spread and total, each team's main team total, anytime touchdown
-   scorers, and "X+" player props in FanDuel's steps (yards in 25s, receptions
-   from 3+) for players with a clear starting role. Deep alternate lines are
-   left out. FanDuel's main line can differ from the public consensus by a half
-   point. The top singles mix player props and game bets (props fill at most
-   half while there are game bets to fill the rest).
+1. **Only bets FanDuel is sure to list.** Without FanDuel's data, the free
+   board shows only bets with no line that could differ on FanDuel:
+   moneylines and anytime touchdown scorers for starters. Spreads, totals,
+   team totals and "X+" player props appear only with the FanDuel check (3),
+   which finds them on FanDuel at FanDuel's exact line. The top singles mix
+   player props and game bets.
 2. **Confirm in the slip.** Each bet in your slip asks *Is this on FanDuel?*
    Tap **✓ On FanDuel** and it can be marked placed; tap **✗ Not on FanDuel**
    and it leaves the slip and is hidden from the lists (with **Show again** to

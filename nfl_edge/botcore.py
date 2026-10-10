@@ -40,15 +40,15 @@ class Boards:
         self._lock = threading.Lock()
 
     def get(self, sport: str, week: int | None, lo: float, hi: float,
-            every_line: bool = False) -> list:
-        key = (sport, week, round(lo, 3), round(hi, 3), every_line)
+            every_line: bool = False, sure_only: bool = True) -> list:
+        key = (sport, week, round(lo, 3), round(hi, 3), every_line, sure_only)
         with self._lock:
             hit = self._cache.get(key)
             if hit and time.monotonic() - hit[0] < self.ttl:
                 return hit[1]
         bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
                 else nfl_board(None, lo, hi, week=week, every_line=every_line,
-                               always_offered=not every_line))
+                               always_offered=sure_only and not every_line))
         with self._lock:
             self._cache[key] = (time.monotonic(), bets)
         return bets

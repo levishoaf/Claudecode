@@ -84,7 +84,8 @@ class Core:
 
     def bets(self, sport, count, lo, hi, week, wager) -> str:
         try:
-            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100))
+            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
+                                                              sure_only=not self.state()))
         except fdfeed.FeedError as e:
             return f"Couldn't check against FanDuel ({e}), so no bets are shown. Try again soon."
         singles = botcore.pick_singles(pool, count, rank_by="ev" if note else "prob")
@@ -93,7 +94,8 @@ class Core:
 
     def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager) -> list[str]:
         try:
-            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100))
+            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
+                                                              sure_only=not self.state()))
         except fdfeed.FeedError as e:
             return [f"Couldn't check against FanDuel ({e}), so no parlays are shown."]
         parlays = botcore.pick_parlays(pool, count, min_legs, max_legs)

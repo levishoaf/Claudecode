@@ -76,11 +76,12 @@ user's machine; never ask for it here or commit it.
 ## Making sure bets are on FanDuel
 
 The free board (`nfl_board`, `always_offered=True` by default) only builds
-markets FanDuel posts for every game: moneylines, main spreads and totals,
-main team totals and anytime TDs, plus "X+" prop ladders in FanDuel's steps
-for players with a clear starting role (`FEATURED_MIN_AVERAGE`). The top
-singles are a mix: props fill at most half (`prop_share=0.5`) while game bets
-are available. In the app and on the web page each slip
+bets with no line that could differ on FanDuel: moneylines and anytime TD
+scorers for starters (`SURE_MARKETS`). Guessed lines (spreads, totals, team
+totals, "X+" prop ladders) were shown before and the user found many weren't
+on FanDuel, so they appear only through the FanDuel check
+(`always_offered=False`, then `fdfeed.verify`). Don't add guessed lines back to
+the default board. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
 `nfl_edge/fdfeed.py` optionally checks bets against FanDuel's own site data

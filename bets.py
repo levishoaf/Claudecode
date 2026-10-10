@@ -215,7 +215,10 @@ def build(args):
     elif args.sport == "ncaaf":
         bets, rank = cfb_board(day, lo, hi, week=week), "prob"
     else:
-        bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
+        # With the FanDuel check on, start from every market; the check keeps only
+        # what FanDuel lists. Without it, only bets that are sure to be on FanDuel.
+        bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
+                               always_offered=not getattr(args, "fanduel_state", None)), "prob"
     state = getattr(args, "fanduel_state", None)
     if state and not key:
         from nfl_edge import fdfeed

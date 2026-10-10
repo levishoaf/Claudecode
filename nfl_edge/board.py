@@ -52,6 +52,8 @@ PROP_LADDERS = {
 # offered only if the player averages at least this much of it.
 PROP_MIN_AVERAGE = {"passing_yards": 150, "passing_tds": 0.8, "rushing_yards": 25,
                     "receptions": 2.5, "receiving_yards": 25, "rushing_tds+receiving_tds": 0.15}
+# Markets the free board can be sure FanDuel lists: no line that could differ.
+SURE_MARKETS = {"h2h", "player_anytime_td"}
 # FanDuel posts "X+" prop ladders for players with a clear starting role.
 # With always_offered, a ladder is used only if the player averages this much.
 FEATURED_MIN_AVERAGE = {"passing_yards": 190, "passing_tds": 1.0, "rushing_yards": 45,
@@ -140,10 +142,11 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
     """Candidate bets for the week. Alternate lines are the best one per side, or
     with `every_line` every line in [lo, hi] (for looking up a specific bet).
 
-    With `always_offered` (the default), only markets FanDuel posts for every NFL
-    game: moneylines, the main spread and total, each team's main team total,
-    and anytime touchdown scorers. Alternate lines and "X+" prop ladders, which
-    FanDuel may not list at every line, are left out."""
+    With `always_offered` (the default), only bets that have no line to get
+    wrong and that FanDuel posts for every game: moneylines and anytime
+    touchdown scorers (starters only). Spreads, totals, team totals and "X+"
+    props need FanDuel's own line, so they come only from the FanDuel check
+    (`always_offered=False`, then nfl_edge.fdfeed.verify)."""
     from .cli import build_model  # heavy import, only when needed
 
     now = now or datetime.now(EASTERN)
@@ -192,18 +195,6 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 
     # 2) Alternate spreads, totals and team totals from the lines.
     dist = LineDistribution("nfl", all_games)
-    for g in (rows if always_offered else []):
-        # Only each team's main team total (FanDuel's line may differ by a half point).
-        home, away = ABBR_NAME[g["home_team"]], ABBR_NAME[g["away_team"]]
-        game, kick, gid = f"{away} @ {home}", kickoff_of(g), g["game_id"]
-        sp, tot = float(g["spread_line"]), float(g["total_line"])
-        for team, pts in ((home, tot / 2 + sp / 2), (away, tot / 2 - sp / 2)):
-            line = math.floor(pts) + 0.5
-            p_over = 1 - normal_cdf((line - pts) / 9.1)
-            for side, p in (("Over", p_over), ("Under", 1 - p_over)):
-                if lo <= p <= hi:
-                    bets.append(make_bet(game, kick, "team_totals", f"{team} {side}", line, p,
-                                         gid, "market line"))
     for g in ([] if always_offered else rows):
         home, away = ABBR_NAME[g["home_team"]], ABBR_NAME[g["away_team"]]
         game, kick, gid = f"{away} @ {home}", kickoff_of(g), g["game_id"]
@@ -238,10 +229,12 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 
     # 3) Player props.
     bets += _props(rows, all_games, season, lo, hi, every_line,
-                   featured=always_offered)
+                   only={"player_anytime_td"} if always_offered else None, featured=always_offered)
     weeks = {g["game_id"]: int(g["week"]) for g in rows}
     for b in bets:
         b.week = weeks.get(b.game_id)
+    if always_offered:  # only bets with no line that could differ on FanDuel
+        bets = [b for b in bets if b.market in SURE_MARKETS]
     return [b for b in bets if lo <= b.fair_prob <= hi]
 
 
