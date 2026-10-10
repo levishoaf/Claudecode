@@ -124,6 +124,9 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .p-push { background: #8a93a3; }
 .p-pending { background: var(--blue); }
 .rgrid { align-items: start; }
+.hist-section { display: grid; gap: 10px; }
+.hist-head { margin: 8px 0 0; font-family: var(--display); font-size: 24px; letter-spacing: .03em; text-transform: uppercase; color: #fff; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; border-bottom: 2px solid var(--blue); padding-bottom: 4px; }
+.hist-head span { font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--on-dark-2); }
 .rlegs { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .rlegs li { display: grid; grid-template-columns: 18px 1fr; gap: 6px; font-size: 12.5px; }
 .rlegs .mk { font-weight: 800; text-align: center; }
@@ -431,23 +434,31 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       .concat(SAVED.filter((e) => !ids.has(e.id)).map((e) => ["Saved earlier", e]));
   }
   function historyView() {
-    const all = historyList();
-    const count = { won: 0, lost: 0, push: 0, pending: 0 };
-    all.forEach(([, e]) => { count[entryStatus(e.legs)]++; });
+    const all = historyList().map(([src, e]) => [src, e, entryStatus(e.legs)]);
+    const tally = (list) => {
+      const c = { won: 0, lost: 0, push: 0, pending: 0 };
+      list.forEach(([, , s]) => { c[s]++; });
+      return `${c.won} won · ${c.lost} lost${c.push ? ` · ${c.push} pushed` : ""} · ${c.pending} pending`;
+    };
     const placedOnes = all.filter(([src]) => src === "Placed").map(([, e]) => e);
-    let html = `<div class="notice summary"><div><b>${count.won} won · ${count.lost} lost${count.push ? ` · ${count.push} pushed` : ""} · ${count.pending} pending</b><br>
+    let html = `<div class="notice summary"><div><b>${tally(all)}</b><br>
       Every bet: ones you placed, the builder's picks you didn't, and bets saved earlier. Placed bets: ${esc(summaryOf(placedOnes, true))}.</div></div>`;
     const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
     html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
-    let list = all.map(([src, e]) => [src, e, entryStatus(e.legs)]);
-    if (state.histFilter !== "all") list = list.filter(([, , s]) => s === state.histFilter);
     const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
-    const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
-    const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
-    const shown = done.concat(pend).slice(0, 100);
-    if (!shown.length) return html + `<div class="empty">${state.histFilter === "all" ? "No bets yet." : "None yet. Results come in after each game."}</div>`;
-    html += `<div class="grid rgrid">${shown.map(([src, e]) => resultCard(e, src === "Placed", src)).join("")}</div>`;
-    if (list.length > shown.length) html += `<p class="foot">Showing ${shown.length} of ${list.length}, settled bets first.</p>`;
+    for (const [sport, name] of [["nfl", "NFL"], ["ncaaf", "College football"]]) {
+      const group = all.filter(([, e]) => (e.sport || "nfl") === sport);
+      const list = state.histFilter === "all" ? group : group.filter(([, , s]) => s === state.histFilter);
+      const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
+      const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
+      const shown = done.concat(pend).slice(0, 60);
+      const placedHere = group.filter(([src]) => src === "Placed").map(([, e]) => e);
+      html += `<section class="hist-section"><h2 class="hist-head">${name}<span>${tally(group)}${placedHere.length ? ` · placed: ${esc(summaryOf(placedHere, true))}` : ""}</span></h2>`;
+      if (!shown.length) html += `<div class="empty">${group.length ? "None match this filter yet." : `No ${name} bets yet.`}</div>`;
+      else html += `<div class="grid rgrid">${shown.map(([src, e]) => resultCard(e, src === "Placed", src)).join("")}</div>`;
+      if (list.length > shown.length) html += `<p class="foot">Showing ${shown.length} of ${list.length}, settled bets first.</p>`;
+      html += `</section>`;
+    }
     return html + `<p class="foot">Results come in after each game (player stats usually the next morning) and appear when this page is next updated.</p>`;
   }
   function placeRow(key, legs, kind, prob) {

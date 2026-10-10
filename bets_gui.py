@@ -762,22 +762,37 @@ class App:
                                + tracker.summary(placed, money=True) + "."),
                  bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                  justify="left").pack(anchor="w", padx=6, pady=(0, 4))
-        if not items:
-            return
-        done = sorted((x for x in items if x[1]["status"] != "pending"),
-                      key=lambda x: tracker.first_kickoff(x[1]), reverse=True)
-        pending = sorted((x for x in items if x[1]["status"] == "pending"),
-                         key=lambda x: tracker.first_kickoff(x[1]))
-        shown = (done + pending)[:80]
-        holder = tk.Frame(parent, bg=BG)
-        holder.pack(fill="both")
-        cols = self.columns(holder)
-        for i, (src, e) in enumerate(shown):
-            self.result_card(cols[i % 2], e, src == "placed", tag=src.capitalize()
-                             if src != "saved" else "Saved earlier")
-        if len(items) > len(shown):
-            tk.Label(parent, text=f"Showing the latest {len(shown)} of {len(items)}.", bg=BG,
-                     fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
+        for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
+            group = [x for x in items if x[1].get("sport", "nfl") == sport]
+            counts = {s: sum(e["status"] == s for _, e in group) for s in RESULT_STYLE}
+            head = tk.Frame(parent, bg=BG)
+            head.pack(fill="x", padx=6, pady=(12, 2))
+            tk.Label(head, text=name, bg=BG, fg=NAVY, font=self.f["h2"]).pack(side="left")
+            placed_here = [e for src, e in group if src == "placed"]
+            tk.Label(head, text=f"   {counts['won']} won  ·  {counts['lost']} lost  ·  "
+                                f"{counts['pending']} pending"
+                                + (f"  ·  placed: {tracker.summary(placed_here, money=True)}"
+                                   if placed_here else ""),
+                     bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
+            tk.Frame(parent, bg=BLUE, height=2).pack(fill="x", padx=6, pady=(0, 4))
+            if not group:
+                tk.Label(parent, text=f"No {name.title().replace('Nfl', 'NFL')} bets yet.", bg=BG,
+                         fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
+                continue
+            done = sorted((x for x in group if x[1]["status"] != "pending"),
+                          key=lambda x: tracker.first_kickoff(x[1]), reverse=True)
+            pending = sorted((x for x in group if x[1]["status"] == "pending"),
+                             key=lambda x: tracker.first_kickoff(x[1]))
+            shown = (done + pending)[:40]
+            holder = tk.Frame(parent, bg=BG)
+            holder.pack(fill="x")
+            cols = self.columns(holder)
+            for i, (src, e) in enumerate(shown):
+                self.result_card(cols[i % 2], e, src == "placed", tag=src.capitalize()
+                                 if src != "saved" else "Saved earlier")
+            if len(group) > len(shown):
+                tk.Label(parent, text=f"Showing {len(shown)} of {len(group)}, settled bets first.",
+                         bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
 
     def result_card(self, parent, e: dict, placed: bool, tag: str | None = None) -> None:
         card = self.card(parent)
