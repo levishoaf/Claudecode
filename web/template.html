@@ -572,7 +572,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
     }
     if (state.tab === "singles") html += wk.singles.length ? `${hiddenNote(wk)}<div class="blist">${listHead("#")}${wk.singles.map((b, i) => isHidden(b) ? "" : singleRow(b, i)).join("")}</div>` : `<div class="empty">No bets for this week yet.</div>`;
-    if (state.tab === "parlays") html += wk.parlays.length ? `${hiddenNote(wk)}<div class="pnote">Parlays built to pay about $40 back on a $10 wager (about 4× your stake), likeliest first.</div><div class="blist">${listHead("")}${wk.parlays.map((p, i) => p.legs.some(isHidden) ? "" : parlayRow(p, i)).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `${hiddenNote(wk)}<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.</div><div class="blist">${listHead("")}${wk.parlays.map((p, i) => p.legs.some(isHidden) ? "" : parlayRow(p, i)).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
     if (state.tab === "history") html += historyView();

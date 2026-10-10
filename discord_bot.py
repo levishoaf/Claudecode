@@ -220,7 +220,7 @@ def run_bot(token: str) -> None:
     @app_commands.describe(count="How many parlays (1-10)", min_legs="Fewest legs",
                            max_legs="Most legs", week="Week (default: this week)",
                            wager="Wager in $",
-                           pays="Build parlays that pay about this much back (default $40; 0 = any)")
+                           pays="Build parlays that pay at least this much back (default $40; 0 = any)")
     async def parlays_cmd(interaction: discord.Interaction, sport: str = "nfl",
                           count: app_commands.Range[int, 1, 10] = 3,
                           min_legs: app_commands.Range[int, 2, 8] = 2,

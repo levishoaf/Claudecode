@@ -68,7 +68,7 @@ class MixedParlaysTest(unittest.TestCase):
 
 
 class PayoutParlaysTest(unittest.TestCase):
-    def test_pays_about_the_target_likeliest_first(self):
+    def test_pays_at_least_the_target_likeliest_first(self):
         from datetime import datetime, timedelta, timezone
 
         from nfl_edge.board import make_bet
@@ -80,7 +80,8 @@ class PayoutParlaysTest(unittest.TestCase):
         parlays = payout_parlays(bets, 4.0, 5)
         self.assertEqual(len(parlays), 5)
         for p in parlays:
-            self.assertLessEqual(abs(p.decimal / 4.0 - 1), 0.05)  # $38-42 back on $10
+            self.assertGreaterEqual(1 / p.win_prob, 4.0)  # at least $40 back on $10
+            self.assertLessEqual(1 / p.win_prob, 4.0 * 1.05)  # and not much more
             self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
         probs = [p.win_prob for p in parlays]
         self.assertEqual(probs, sorted(probs, reverse=True))

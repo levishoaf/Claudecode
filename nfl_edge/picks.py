@@ -156,24 +156,31 @@ def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
 def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int = 2,
                    max_legs: int = 6, tolerance: float = 0.05, rank_by: str = "prob",
                    max_uses: int = 3, pool_size: int = 20) -> list[Parlay]:
-    """`count` parlays that each pay about `target` times the wager (stake
-    included), likeliest to win first (best value first with rank_by="ev").
+    """`count` parlays that each pay at least `target` times the wager (stake
+    included) and as little over it as possible, likeliest to win first (best
+    value first with rank_by="ev").
 
-    Legs come from different games. If too few parlays land within
-    `tolerance` of the target, the band widens step by step up to 50%.
+    Legs come from different games. If too few parlays pay between the target
+    and `tolerance` above it, the band widens step by step up to 50% above.
     No bet appears in more than `max_uses` parlays when that can be avoided.
     """
     pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
+
+    def pays(p: Parlay) -> float:
+        """What it pays per $1, as shown: at FanDuel's prices, else at break-even."""
+        return p.decimal if all(b.priced for b in p.legs) else 1 / p.win_prob
+
     candidates = [Parlay(c) for n in range(min_legs, max_legs + 1)
                   for c in combinations(pool, n) if len({b.game for b in c}) == n]
     if rank_by == "prob":
-        key = lambda p: (p.win_prob, -abs(p.decimal / target - 1))  # noqa: E731
+        key = lambda p: (p.win_prob, -pays(p))  # noqa: E731
     else:
-        key = lambda p: (*value_key(p.ev, p.win_prob), -abs(p.decimal / target - 1))  # noqa: E731
+        key = lambda p: (*value_key(p.ev, p.win_prob), -pays(p))  # noqa: E731
+    over = lambda p: pays(p) / target - 1  # noqa: E731  (never below the target)
     band = tolerance
     near: list[Parlay] = []
     while band <= 0.5 + 1e-9:
-        near = sorted((p for p in candidates if abs(p.decimal / target - 1) <= band),
+        near = sorted((p for p in candidates if 0 <= over(p) <= band),
                       key=key, reverse=True)
         if len(near) >= count:
             break

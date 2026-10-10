@@ -24,7 +24,7 @@ from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import payout_parlays, rank_singles  # noqa: E402
 
 LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
-PARLAY_PAYS = 4.0  # parlays pay about 4x the wager: $40 on $10
+PARLAY_PAYS = 4.0  # parlays pay at least 4x the wager: $40 on $10
 HISTORY = ROOT / "web" / "history.json"
 
 
@@ -52,12 +52,12 @@ def run(sport, week, label, ledger, this_week=False):
             else nfl_board(None, LO, HI, week=week))
     singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
                            prop_share=0.5 if sport == "nfl" else None)
-    parlays = payout_parlays(bets, PARLAY_PAYS, 10)  # about $40 back on $10
+    parlays = payout_parlays(bets, PARLAY_PAYS, 10)  # at least $40 back on $10
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))
     out = {"label": label, "week": week, "singles": [bet(b, sport) for b in singles],
-           "parlays": [{"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 4),
+           "parlays": [{"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
                         "breakeven": be(p.win_prob)} for p in parlays],
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else ""}
     if sport == "nfl":

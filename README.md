@@ -112,7 +112,7 @@ with no account or key:
   limit (`--min-prob` / `--max-prob` can still narrow it). The likeliest
   bets pay the least.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
-  They are built to pay about $40 back on a $10 wager (`--pays 40`; the
+  They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is
   usually a 3-leg parlay with about a 24% chance to win.
 - **Odds shown are break-even prices,** the worst price still worth taking,
