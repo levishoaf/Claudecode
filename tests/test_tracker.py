@@ -26,7 +26,7 @@ class TrackerTest(unittest.TestCase):
         self.assertEqual(ledger["generated"][0]["win_prob"], 0.6)
 
     def test_place_and_save_round_trip(self):
-        ledger = {"placed": [], "generated": []}
+        ledger = {"placed": [], "generated": [], "saved": []}
         e = tracker.make_entry("parlay", [leg("A"), leg("B", game="g2")], 0.36, "nfl", 2026)
         tracker.place(ledger, e, 180, 25)
         tracker.place(ledger, e, 175, 20)  # placing again replaces it
@@ -36,7 +36,7 @@ class TrackerTest(unittest.TestCase):
             path = Path(d) / "sub" / "ledger.json"
             tracker.save(ledger, path)
             self.assertEqual(tracker.load(path), ledger)
-            self.assertEqual(tracker.load(Path(d) / "missing.json"), {"placed": [], "generated": []})
+            self.assertEqual(tracker.load(Path(d) / "missing.json"), {"placed": [], "generated": [], "saved": []})
 
     def test_combine_and_profit(self):
         self.assertEqual(tracker.combine(["won", "lost", "pending"]), "lost")
