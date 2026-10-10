@@ -747,52 +747,67 @@ class App:
 
     def history_tab(self, parent) -> None:
         items = tracker.history(self.ledger)
+
+        def tally(group) -> str:
+            n = {s: sum(e["status"] == s for _, e in group) for s in RESULT_STYLE}
+            return (f"{n['won']} won  ·  {n['lost']} lost"
+                    + (f"  ·  {n['push']} pushed" if n["push"] else "") + f"  ·  {n['pending']} pending")
+
         top = tk.Frame(parent, bg=BG)
-        top.pack(fill="x", padx=6, pady=(6, 2))
-        count = {s: sum(e["status"] == s for _, e in items) for s in RESULT_STYLE}
-        text = (f"{count['won']} won  ·  {count['lost']} lost"
-                + (f"  ·  {count['push']} pushed" if count["push"] else "")
-                + f"  ·  {count['pending']} pending")
-        tk.Label(top, text=text, bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
+        top.pack(fill="x", padx=6, pady=(6, 0))
+        tk.Label(top, text=tally(items), bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
         FlatButton(top, "Check results now", self.build, "secondary",
                    self.f["tinyb"]).pack(side="right")
-        placed = [e for src, e in items if src == "placed"]
-        tk.Label(parent, text=("Every bet: ones you placed, the builder's picks you didn't, and "
-                               "bets saved earlier. Placed bets: "
-                               + tracker.summary(placed, money=True) + "."),
-                 bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
-                 justify="left").pack(anchor="w", padx=6, pady=(0, 4))
         for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
             group = [x for x in items if x[1].get("sport", "nfl") == sport]
-            counts = {s: sum(e["status"] == s for _, e in group) for s in RESULT_STYLE}
             head = tk.Frame(parent, bg=BG)
-            head.pack(fill="x", padx=6, pady=(12, 2))
+            head.pack(fill="x", padx=6, pady=(10, 0))
             tk.Label(head, text=name, bg=BG, fg=NAVY, font=self.f["h2"]).pack(side="left")
-            placed_here = [e for src, e in group if src == "placed"]
-            tk.Label(head, text=f"   {counts['won']} won  ·  {counts['lost']} lost  ·  "
-                                f"{counts['pending']} pending"
-                                + (f"  ·  placed: {tracker.summary(placed_here, money=True)}"
-                                   if placed_here else ""),
-                     bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
+            tk.Label(head, text="   " + tally(group), bg=BG, fg=MUTED,
+                     font=self.f["small"]).pack(side="left", pady=(3, 0))
             tk.Frame(parent, bg=BLUE, height=2).pack(fill="x", padx=6, pady=(0, 4))
             if not group:
-                tk.Label(parent, text=f"No {name.title().replace('Nfl', 'NFL')} bets yet.", bg=BG,
-                         fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
+                tk.Label(parent, text="No bets yet.", bg=BG, fg=MUTED,
+                         font=self.f["small"]).pack(anchor="w", padx=6)
                 continue
-            done = sorted((x for x in group if x[1]["status"] != "pending"),
-                          key=lambda x: tracker.first_kickoff(x[1]), reverse=True)
-            pending = sorted((x for x in group if x[1]["status"] == "pending"),
-                             key=lambda x: tracker.first_kickoff(x[1]))
-            shown = (done + pending)[:40]
+            done = sorted((e for _, e in group if e["status"] != "pending"),
+                          key=tracker.first_kickoff, reverse=True)
+            pending = sorted((e for _, e in group if e["status"] == "pending"),
+                             key=tracker.first_kickoff)
+            shown = (done + pending)[:120]
             holder = tk.Frame(parent, bg=BG)
             holder.pack(fill="x")
-            cols = self.columns(holder)
-            for i, (src, e) in enumerate(shown):
-                self.result_card(cols[i % 2], e, src == "placed", tag=src.capitalize()
-                                 if src != "saved" else "Saved earlier")
+            cols = self.columns(holder, 3, CARD_W)
+            heights = [0, 0, 0]
+            for e in shown:  # fill the shortest column, so there are no gaps
+                col = heights.index(min(heights))
+                heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
+                self.history_row(cols[col], e)
             if len(group) > len(shown):
                 tk.Label(parent, text=f"Showing {len(shown)} of {len(group)}, settled bets first.",
                          bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
+
+    def history_row(self, parent, e: dict) -> None:
+        """One compact line: the bet, its chance, and WON/LOST once it's settled."""
+        row = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        row.pack(fill="x", pady=2)
+        if e["status"] in ("won", "lost", "push"):
+            word = {"won": "WON", "lost": "LOST", "push": "PUSH"}[e["status"]]
+            tk.Label(row, text=f" {word} ", bg=RESULT_STYLE[e["status"]][1], fg=WHITE,
+                     font=self.f["tinyb"]).pack(side="right", padx=(0, 6), pady=4)
+        tk.Label(row, text=f"{e['win_prob']:.0%}", bg=CARD, fg=MUTED,
+                 font=self.f["bold"]).pack(side="right", padx=6)
+        text = tk.Frame(row, bg=CARD)
+        text.pack(side="left", fill="x", padx=(8, 0), pady=3)
+        if e["kind"] == "single":
+            tk.Label(text, text=e["legs"][0].get("pick") or e["legs"][0]["label"], bg=CARD,
+                     fg=TEXT, font=self.f["tinyb"], wraplength=170, justify="left").pack(anchor="w")
+        else:
+            tk.Label(text, text=f"{len(e['legs'])}-leg parlay", bg=CARD, fg=TEXT,
+                     font=self.f["tinyb"]).pack(anchor="w")
+            tk.Label(text, text="  ·  ".join(leg.get("pick") or leg["label"] for leg in e["legs"]),
+                     bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=170,
+                     justify="left").pack(anchor="w")
 
     def result_card(self, parent, e: dict, placed: bool, tag: str | None = None) -> None:
         card = self.card(parent)
