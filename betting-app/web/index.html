@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Football Picks</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#16191d;--mute:#5d6672;--line:#dfe3e8;--acc:#0b6bcb;--good:#0a7a3d;--bad:#b3261e;--warn-bg:#fff4d6;--warn-ink:#5c4400;--red-bg:#fde8e7;--red-ink:#7a1612;--blue-bg:#e6f0fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101316;--card:#181c21;--ink:#e8ebee;--mute:#9aa4af;--line:#2b323a;--acc:#5aa6ff;--good:#4cc784;--bad:#ff7b72;--warn-bg:#3a3010;--warn-ink:#f3dc8a;--red-bg:#3b1816;--red-ink:#ffb4ad;--blue-bg:#14283f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:1.1rem;margin:28px 0 8px}
+.sub{color:var(--mute);font-size:.9rem}
+.banner{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:.92rem}
+.disc{background:var(--red-bg);color:var(--red-ink)}.warn{background:var(--warn-bg);color:var(--warn-ink)}.info{background:var(--blue-bg)}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:.78rem;color:var(--mute);gap:3px}
+input,select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:90px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);color:var(--mute);font-weight:600;cursor:pointer}td.l,th.l{text-align:left}
+td.sel{font-weight:600}.pos{color:var(--good);font-weight:600}.neg{color:var(--bad)}
+.tag{display:inline-block;font-size:.7rem;padding:1px 6px;border-radius:9px;border:1px solid var(--line);color:var(--mute)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
+.card ul{margin:6px 0;padding-left:18px}.card .k{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;margin:6px 0}
+.small{font-size:.8rem;color:var(--mute)}details{margin:6px 0}
+@media(max-width:600px){main{padding:12px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Weekly NFL + NCAAF Picks</h1>
+<div class="sub" id="meta">Loading...</div>
+
+<div class="banner disc"><strong>Disclaimer.</strong> For information only. Not financial or betting advice. No bet or pick is guaranteed and you can lose all money you stake; no profit is promised. All probabilities, edges and EVs below are <em>estimates</em> derived from market prices. Gamble responsibly. Must be 21+ (or the legal age) and in a legal jurisdiction. Problem gambling help: <strong>1-800-GAMBLER</strong>.</div>
+<div id="banners"></div>
+
+<div class="controls">
+  <label>Bankroll ($)<input id="bankroll" type="number" min="0" step="100" value="1000"></label>
+  <label>Kelly fraction<select id="kf"><option value="0.1">0.10 (conservative)</option><option value="0.25" selected>0.25 (default)</option><option value="0.5">0.50</option></select></label>
+  <label>Min win probability<select id="minp"><option value="0">any</option><option value="0.25" selected>25%</option><option value="0.35">35%</option><option value="0.45">45%</option><option value="0.55">55%</option></select></label>
+  <label>League<select id="league"><option value="">All</option><option>NFL</option><option>NCAAF</option></select></label>
+  <label>Market<select id="market"><option value="">All</option></select></label>
+  <label>Sort by<select id="sort"><option value="ev_per_dollar">EV per $1</option><option value="edge">Edge</option><option value="model_prob">Win probability</option><option value="profit_per_100">Payout</option></select></label>
+</div>
+
+<h2>Top 30 single bets <span class="small" id="cnt"></span></h2>
+<div class="tw"><table id="singles"><thead><tr>
+<th class="l">#</th><th class="l">Game</th><th class="l">Bet</th><th class="l">Best book</th><th data-s="best_odds">Odds</th><th data-s="profit_per_100">Win on $100</th>
+<th data-s="model_prob">Est. win %</th><th data-s="implied_prob">Implied %</th><th data-s="edge">Edge</th><th data-s="ev_per_dollar">EV / $1</th><th>Stake</th><th class="l">Confidence</th></tr></thead><tbody></tbody></table></div>
+<p class="small">Est. win % = weighted no-vig consensus across the sources listed under Data sources (sharp books weighted most when present). Edge = est. win % minus the best price's implied %. Stake = fractional Kelly of your bankroll, capped at 2%. Click a column header to sort.</p>
+
+<h2>5 parlays (3-5 legs)</h2>
+<div class="banner warn">Parlays multiply each leg's sportsbook margin, so they usually carry <strong>more</strong> vig than the same bets placed singly. Legs are from different games and assumed independent (no same-game legs). Best prices may be at different books; a real parlay is placed at one book and pays less than shown. Stake cap 0.5% of bankroll.</div>
+<div class="cards" id="parlays"></div>
+
+<h2>Data sources</h2>
+<div class="tw"><table id="sources"><thead><tr><th class="l">Source</th><th class="l">League</th><th class="l">Status</th><th class="l">Detail</th></tr></thead><tbody></tbody></table></div>
+<p class="small">Method: implied probability from each book's two-way prices, vig removed (power method), then a weighted average across books (Pinnacle/other sharps weighted highest when present). A bet is "+EV" only when the best available price beats that consensus. Without several independent books this is a weak test: a single book's own no-vig line can never show a real edge against itself.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);let D=null,sortKey="ev_per_dollar",sortDir=-1;
+const pct=x=>(x*100).toFixed(1)+"%",odds=o=>o>0?"+"+o:""+o,money=x=>"$"+x.toFixed(2);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function stake(p,dec,frac,cap){const f=Math.max(0,(p*dec-1)/(dec-1))*frac;return Math.min(cap,f)}
+function when(t){try{return new Date(t).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})}catch(e){return t}}
+async function load(){
+  let r;try{r=await fetch("picks.json")}catch(e){r=null}
+  if(!r||!r.ok){$("meta").textContent="Could not load picks.json. Run: python refresh.py";return}
+  D=await r.json();
+  const b=store("bankroll");if(b)$("bankroll").value=b;
+  const ms=[...new Set(D.candidates.map(c=>c.market_label))];$("market").innerHTML='<option value="">All</option>'+ms.map(m=>`<option>${esc(m)}</option>`).join("");
+  $("meta").textContent=`Generated ${new Date(D.generated_at).toLocaleString()} | ${D.n_events} games | ${D.n_markets_evaluated} markets evaluated | mode: ${D.mode.toUpperCase()}`;
+  banners();sources();render();
+}
+function banners(){
+  let h="";
+  if(D.mode==="sample")h+=`<div class="banner warn"><strong>SAMPLE DATA.</strong> Teams, players and odds below are fictional and generated for demo purposes only. They are not real lines. ${esc(D.sample_reason||"")}</div>`;
+  else if(!D.edge_detectable)h+=`<div class="banner warn"><strong>No edge can be measured right now.</strong> Only one sportsbook (${esc(D.sources.filter(s=>s.ok).map(s=>s.name).join(", "))}) returned prices, so each probability is just that book's own no-vig line and the EV is simply the book's margin (negative). Nothing here is a +EV bet. The ranking shows the least-negative prices. Adding a second independent book/source is needed to find real edges.</div>`;
+  else if(D.positive_ev_count===0)h+=`<div class="banner info">No positive-EV bets found in the current data. Skipping the week is a valid decision.</div>`;
+  if(D.mode==="live"&&D.edge_detectable)h+=`<div class="banner info">Confidence is labelled per bet. "low" = few books and no sharp book; treat edges as unverified estimates.</div>`;
+  $("banners").innerHTML=h;
+}
+function sources(){$("sources").tBodies[0].innerHTML=D.sources.map(s=>`<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.league||"")}</td><td class="l ${s.ok?"pos":"neg"}">${s.ok?"OK":"FAILED"}</td><td class="l" style="white-space:normal">${esc(s.detail)}</td></tr>`).join("")}
+function render(){
+  const bank=+$("bankroll").value||0,kf=+$("kf").value,minp=+$("minp").value,lg=$("league").value,mk=$("market").value,cap=D.params.stake_cap;
+  store("bankroll",$("bankroll").value);
+  let rows=D.candidates.filter(c=>c.model_prob>=minp&&(!lg||c.league===lg)&&(!mk||c.market_label===mk));
+  // top 30 by EV after filters, then displayed in the chosen sort order
+  rows=rows.sort((a,b)=>b.ev_per_dollar-a.ev_per_dollar).slice(0,30).sort((a,b)=>sortDir*(a[sortKey]-b[sortKey]));
+  $("cnt").textContent=`(${rows.filter(r=>r.ev_per_dollar>0).length} with positive estimated EV)`;
+  $("singles").tBodies[0].innerHTML=rows.map((c,i)=>{const s=stake(c.model_prob,c.best_decimal,kf,cap);
+    const tips=c.flags&&c.flags.length?` title="${esc(c.flags.join(" "))}"`:"";
+    return `<tr><td class="l">${i+1}</td><td class="l">${esc(c.game)}<br><span class="small">${esc(c.league)} | ${esc(when(c.commence_time))}</span></td>
+<td class="l sel">${esc(c.selection)}<br><span class="tag">${esc(c.market_label)}</span></td><td class="l">${esc(c.best_book)}</td>
+<td>${odds(c.best_odds)}</td><td>${money(c.profit_per_100)}</td><td>${pct(c.model_prob)}</td><td>${pct(c.implied_prob)}</td>
+<td class="${c.edge>0?"pos":"neg"}">${(c.edge*100).toFixed(1)}%</td><td class="${c.ev_per_dollar>0?"pos":"neg"}">${c.ev_per_dollar>=0?"+":""}${c.ev_per_dollar.toFixed(3)}</td>
+<td>${s>0?(s*100).toFixed(2)+"%<br><span class='small'>"+money(s*bank)+"</span>":"<span class='small'>none (no +EV)</span>"}</td>
+<td class="l"${tips}>${esc(c.confidence)} <span class="small">(${c.n_books} src${c.has_sharp?", sharp":""})</span>${c.ev_per_dollar>D.params.flag_ev?" <span class='tag'>verify line</span>":""}</td></tr>`}).join("")||`<tr><td class="l" colspan="12">No bets match the filters.</td></tr>`;
+  $("parlays").innerHTML=D.parlays.map((p,i)=>{const s=stake(p.win_prob,p.combined_decimal,kf,D.params.parlay_stake_cap);
+    return `<div class="card"><strong>Parlay ${i+1}</strong> <span class="tag">${p.n_legs} legs</span> <span class="tag">confidence: ${esc(p.confidence)}</span>
+<ul>${p.legs.map(l=>`<li>${esc(l.selection)} <span class="small">${odds(l.best_odds)} @ ${esc(l.best_book)} | ${esc(l.game)} | est. ${pct(l.model_prob)}</span></li>`).join("")}</ul>
+<div class="k"><span>Payout: <b>${odds(p.combined_odds)}</b> (${money(p.payout_per_100)} on $100)</span><span>Est. win: <b>${pct(p.win_prob)}</b></span><span>Implied: ${pct(p.implied_prob)}</span>
+<span>EV/$1: <b class="${p.ev_per_dollar>0?"pos":"neg"}">${p.ev_per_dollar>=0?"+":""}${p.ev_per_dollar.toFixed(3)}</b></span><span>Stake: ${s>0?(s*100).toFixed(2)+"% ("+money(s*bank)+")":"none"}</span></div>
+<details><summary class="small">Notes</summary><ul class="small">${p.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details></div>`}).join("")||'<div class="card">No valid parlays could be built from current data.</div>';
+}
+["bankroll","kf","minp","league","market"].forEach(id=>$(id).addEventListener("input",()=>D&&render()));
+$("sort").addEventListener("input",e=>{sortKey=e.target.value;sortDir=-1;render()});
+document.querySelectorAll("th[data-s]").forEach(th=>th.addEventListener("click",()=>{const k=th.dataset.s;sortDir=k===sortKey?-sortDir:-1;sortKey=k;render()}));
+load();
+</script>
+</body>
+</html>
