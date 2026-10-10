@@ -177,7 +177,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <div class="updated">Updated <b id="updated"></b></div>
     </div>
     <div class="bar2">
-      <label for="wager">Wager $ <input id="wager" type="number" min="1" step="1" value="100"></label>
+      <label for="wager">Wager $ <input id="wager" type="number" min="1" step="1" value="10"></label>
       <span>Bets with a 60–80% chance, likeliest first. Tap a bet to add it to your slip.</span>
     </div>
     <nav class="tabs" role="tablist">
@@ -222,7 +222,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
   const money = (x) => "$" + (x >= 1000 ? x.toLocaleString("en-US", { maximumFractionDigits: 0 }) : (Number.isInteger(x) ? String(x) : x.toFixed(2)));
-  const wager = () => Math.max(1, Number($("wager").value) || 100);
+  const wager = () => Math.max(1, Number($("wager").value) || 10);
   const amToDec = (a) => (a > 0 ? 1 + a / 100 : 1 + 100 / -a);
   const fmtAm = (a) => (a > 0 ? "+" : "") + a;
   const decToAm = (d) => (d >= 2 ? Math.round((d - 1) * 100) : Math.round(-100 / (d - 1)));
