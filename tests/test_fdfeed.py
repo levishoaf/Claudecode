@@ -206,3 +206,62 @@ class BuildFallbackTest(unittest.TestCase):
         self.assertIn("Couldn't check against FanDuel", board.NOTES["fanduel_error"])
         self.assertIsNone(args.fanduel_state)  # shown as break-even odds, not FanDuel's
         board.NOTES.pop("fanduel_error", None)
+
+
+class LookAlikeMarketTest(unittest.TestCase):
+    """Quarter, half, alternate and other touchdown markets must never stand in for
+    the full-game bet: their longer odds made payouts look far too high."""
+
+    def setUp(self):
+        fdfeed._cache.clear()
+
+    def market(self, mid, name, mtype, runners):
+        return {"eventId": 101, "marketName": name, "marketType": mtype,
+                "marketStatus": "OPEN", "runners": runners}
+
+    def feed(self, decoys, real):
+        markets = {}
+        for i, m in enumerate(decoys + real):  # decoys first, so a loose match finds them
+            markets[str(i)] = m
+        return {"attachments": {"events": {"101": {"eventId": 101, "name": GAME}},
+                                "markets": markets}}
+
+    def test_full_game_markets_only(self):
+        league = self.feed(
+            [self.market(1, "1st Quarter Moneyline", "FIRST_QUARTER_MONEY_LINE",
+                         [runner("Atlanta Falcons", "+105")]),
+             self.market(2, "1st Half Spread", "FIRST_HALF_HANDICAP",
+                         [runner("Atlanta Falcons", "+120", -3.5)]),
+             self.market(3, "Alternate Spread", "ALTERNATE_HANDICAP",
+                         [runner("Atlanta Falcons", "+115", -3.5)]),
+             self.market(4, "1st Half Total Points", "FIRST_HALF_TOTAL_POINTS",
+                         [runner("Under", "+130", 43.5)])],
+            [self.market(5, "Moneyline", "MONEY_LINE", [runner("Atlanta Falcons", "-166")]),
+             self.market(6, "Spread", "MATCH_HANDICAP_(2-WAY)",
+                         [runner("Atlanta Falcons", "-110", -3.5)]),
+             self.market(7, "Total Points", "TOTAL_POINTS_(OVER/UNDER)",
+                         [runner("Under", "-108", 43.5)])])
+        event = self.feed(
+            [self.market(8, "First Touchdown Scorer", "FIRST_TOUCHDOWN_SCORER",
+                         [runner("Derrick Henry", "+550")]),
+             self.market(9, "To Score 2+ Touchdowns", "ANY_TIME_2+_TOUCHDOWNS",
+                         [runner("Derrick Henry", "+425")])],
+            [self.market(10, "Any Time Touchdown Scorer", "ANY_TIME_TOUCHDOWN_SCORER",
+                         [runner("Derrick Henry", "-185")])])
+        bets = [bet("h2h", "Atlanta Falcons", None, 0.62),
+                bet("spreads", "Atlanta Falcons", -3.5, 0.52),
+                bet("totals", "Under", 43.5, 0.51),
+                bet("player_anytime_td", "Derrick Henry Yes", 0.5, 0.6)]
+        kept, _ = fdfeed.verify(bets, "in", opener=opener({"league": league, "event": event}))
+        self.assertEqual({b.market: b.fd_price for b in kept},
+                         {"h2h": -166, "spreads": -110, "totals": -108,
+                          "player_anytime_td": -185})
+
+    def test_implausible_price_is_not_confirmed(self):
+        league = self.feed([], [self.market(1, "Moneyline", "MONEY_LINE",
+                                            [runner("Atlanta Falcons", "+300"),
+                                             runner("Baltimore Ravens", "+140")])])
+        kept, _ = fdfeed.verify([bet("h2h", "Atlanta Falcons", None, 0.62),   # +300 at 62%?
+                                 bet("h2h", "Baltimore Ravens", None, 0.40)], "in",
+                                opener=opener({"league": league}))
+        self.assertEqual([b.pick for b in kept], ["Baltimore Ravens"])

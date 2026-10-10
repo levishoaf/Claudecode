@@ -176,26 +176,54 @@ def _line(s: Selection) -> float | None:
     return s.handicap if s.handicap is not None and (s.handicap != 0 or n is None) else n
 
 
+# Look-alike markets that aren't the full-game bet: periods, 3-way lines, other
+# touchdown markets. Their odds are much longer, so matching one inflates the payout.
+NOT_FULL_GAME = re.compile(
+    r"\b(1st|2nd|3rd|4th|first|second|third|fourth|half|halves|quarter|q[1-4]|h[12]|"
+    r"3 way|three way|tie|draw|overtime|regulation|race|winning margin|"
+    r"2|3|4|two|three|four|last|exact|double|both|odd|even)\b")
+ALT = re.compile(r"\balt(ernate)?\b")
+
+
+def _words(s: Selection) -> str:
+    return norm(s.market_type.replace("_", " ") + " " + s.market).replace("2 way", "")
+
+
+def _full_game(s: Selection, allow: tuple[str, ...] = ()) -> bool:
+    text = _words(s)
+    for word in allow:
+        text = text.replace(word, " ")
+    return NOT_FULL_GAME.search(text) is None
+
+
+def _alt_ok(b, s: Selection) -> bool:
+    """Main-line bets only match main markets; alternate-line bets may match either."""
+    return b.market.startswith("alternate_") or not ALT.search(_words(s))
+
+
 def find(b, sels: list[Selection]) -> Selection | None:
     """The FanDuel selection that is exactly this bet, or None."""
     here = [s for s in sels if same_event(b.game, s.event)]
     mt = lambda s: (s.market_type + " " + s.market).upper()  # noqa: E731
     pick, point = b.pick, b.point
     if b.market == "h2h":
-        return next((s for s in here if ("MONEY" in mt(s)) and norm(s.runner) == norm(pick)), None)
+        return next((s for s in here if "MONEY" in mt(s) and _full_game(s) and _alt_ok(b, s)
+                     and norm(s.runner) == norm(pick)), None)
     if b.market in ("spreads", "alternate_spreads"):
         return next((s for s in here if ("HANDICAP" in mt(s) or "SPREAD" in mt(s))
-                     and "TEAM" not in mt(s) and norm(s.runner).startswith(norm(pick))
-                     and _line(s) == point), None)
+                     and "TEAM" not in mt(s) and _full_game(s) and _alt_ok(b, s)
+                     and norm(s.runner).startswith(norm(pick)) and _line(s) == point), None)
     if b.market in ("totals", "alternate_totals"):
         return next((s for s in here if "TOTAL" in mt(s) and norm(pick) in norm(s.runner)
-                     and _line(s) == point  # the game total, not a team's
+                     and _line(s) == point and _full_game(s) and _alt_ok(b, s)
+                     # the game total, not a team's
                      and not any(norm(t) in norm(s.market) for t in b.game.split(" @ "))),
                     None)
     if b.market in ("team_totals", "alternate_team_totals"):
         team, side = pick.rsplit(" ", 1)
         return next((s for s in here if "TOTAL" in mt(s) and norm(team) in norm(s.market)
-                     and norm(side) in norm(s.runner) and _line(s) == point), None)
+                     and _full_game(s) and norm(side) in norm(s.runner)
+                     and _line(s) == point), None)
     if b.market in LADDER_WORDS:
         # "X+" ladders: the player and the threshold, in a market for that stat.
         player = norm(pick.rsplit(" ", 1)[0])
@@ -208,13 +236,29 @@ def find(b, sels: list[Selection]) -> Selection | None:
             threshold = (re.search(rf"(^| ){need}\+", s.runner.lower()) is not None
                          or (s.handicap is not None and s.handicap in (need - 0.5, float(need))
                              and norm(s.runner).startswith(("over", player))))
-            return player in text and stat_ok and threshold and "under" not in norm(s.runner)
+            period_ok = not re.search(r"\b(1st|2nd|3rd|4th|first|half|quarter)\b",
+                                      norm(s.market))
+            return (player in text and stat_ok and threshold and period_ok
+                    and "under" not in norm(s.runner))
         return next((s for s in here if is_it(s)), None)
     if b.market == "player_anytime_td":
         player = pick.rsplit(" ", 1)[0]
-        return next((s for s in here if ("ANY" in mt(s) and "TOUCHDOWN" in mt(s))
+        return next((s for s in here if "ANY" in mt(s) and ("TOUCHDOWN" in mt(s) or " TD" in mt(s))
+                     and _full_game(s, allow=("any time", "anytime"))
                      and norm(s.runner) == norm(player)), None)
     return None  # other markets aren't checked: never confirmed
+
+
+# A FanDuel price this far from our estimate means the wrong market was matched
+# (say a quarter line or a 2+ TD market), not a real edge: don't confirm it.
+MAX_EDGE = 0.35  # expected value per $1
+MIN_PRICE_RATIO = 0.6  # FanDuel's implied chance / ours
+
+
+def plausible(b, odds: int) -> bool:
+    implied = 1 / american_to_decimal(odds)
+    ev = b.fair_prob * american_to_decimal(odds) - 1
+    return ev <= MAX_EDGE and implied >= b.fair_prob * MIN_PRICE_RATIO
 
 
 def verify(bets: list, state: str, sport: str = "nfl", opener=None) -> tuple[list, str]:
@@ -259,7 +303,7 @@ def _verify(bets: list, state: str, sport: str, opener) -> tuple[list, str]:
     kept = []
     for b in bets:
         s = find(b, sels)
-        if s is None:
+        if s is None or not plausible(b, s.odds):
             continue
         b.fd_price, b.priced, b.on_fanduel = s.odds, True, True
         b.ev = b.fair_prob * american_to_decimal(s.odds) - 1
