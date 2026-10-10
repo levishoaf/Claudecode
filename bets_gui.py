@@ -443,11 +443,11 @@ class App:
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None))
-        if self.fd_mode and board.NOTES.get("fanduel"):
+        if self.fd_mode and board.NOTES.get("fanduel") and not board.NOTES.get("fanduel_error"):
             tk.Label(self.body, text="FanDuel: " + board.NOTES["fanduel"].replace("FanDuel lines ", "")
                      + "  ·  ranked by expected value", bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        elif board.NOTES.get("fanduel_error") and self.fanduel_on:
+        elif board.NOTES.get("fanduel_error") and getattr(args, "fanduel_key", None):
             tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -917,10 +917,12 @@ class App:
             try:
                 try:
                     _, singles, parlays = bets.build(args)
-                except fanduel.OddsAPIError as e:  # fall back to the free board
-                    args.fanduel_key = None
-                    _, singles, parlays = bets.build(args)
-                    board.NOTES["fanduel_error"] = f"Couldn't get FanDuel lines ({e}). Showing free estimates."
+                except fanduel.OddsAPIError as e:
+                    # Never show bets FanDuel hasn't confirmed while FanDuel lines is on.
+                    singles, parlays = [], []
+                    board.NOTES["fanduel_error"] = (
+                        f"Couldn't confirm FanDuel's lines ({e}), so no bets are shown. "
+                        "Try again in a minute, or turn FanDuel lines off for estimates.")
                 else:
                     board.NOTES.pop("fanduel_error", None)
                 injuries = (None, [], "College injury reports aren't in the free data.")
