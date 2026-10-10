@@ -96,6 +96,31 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .legs li { display: flex; gap: 8px; align-items: baseline; border-left: 3px solid var(--line); padding-left: 8px; }
 .legs .lp { font-weight: 700; font-size: 12px; min-width: 30px; color: var(--ink-2); }
 
+.blist { background: var(--card); color: var(--ink); border-radius: 10px; overflow: hidden; }
+.lrow { display: grid; grid-template-columns: 34px minmax(0, 1fr) 62px 74px 82px; gap: 8px; align-items: center; width: 100%; padding: 8px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: inherit; text-align: left; cursor: pointer; font-size: 14px; }
+.lrow:first-child { border-top: 0; }
+.lrow:hover { background: var(--blue-soft); }
+.lrow.on { background: var(--blue-soft); box-shadow: inset 3px 0 0 var(--blue); }
+.lhead { cursor: default; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); padding-block: 7px; background: #f6f8fb; }
+.lhead:hover { background: #f6f8fb; }
+.lrow .r { text-align: right; }
+.lnum { font-family: var(--display); font-weight: 700; color: var(--ink-2); }
+.lrow.on .lnum { color: var(--blue); }
+.lbet { min-width: 0; overflow-wrap: anywhere; }
+.lbet small { display: block; color: var(--ink-2); font-size: 12px; margin-top: 1px; }
+.lpct { font-family: var(--display); font-weight: 800; font-size: 17px; }
+.lodds { font-weight: 700; color: var(--blue); }
+.srow { padding: 9px 12px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.srow:first-child { border-top: 0; }
+.stop { display: grid; grid-template-columns: minmax(0, 1fr) 54px 60px 24px; gap: 8px; align-items: center; }
+.sx { border: 0; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 14px; }
+.srow .placerow { border-top: 0; padding-top: 0; }
+.pverdict { font-weight: 700; }
+.slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+@media (max-width: 520px) {
+  .lrow { grid-template-columns: 30px minmax(0, 1fr) 50px 58px; }
+  .hide-sm { display: none; }
+}
 .empty { color: var(--on-dark-2); padding: 18px; border: 1px dashed #555; border-radius: 10px; }
 
 .inj-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -238,48 +263,34 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function inSlip(id) { return state.slip.some((s) => s.id === id); }
   function save() { store.set("bb.slip", state.slip); store.set("bb.prices", state.prices); }
 
-  function statRow(prob) {
-    const w = wager();
-    return `<div class="stats">
-      <div>To win<b>${pct(prob)}</b></div>
-      <div>Payout*<b>${money(w / prob)}</b></div>
-      <div>Worst odds<b>${fmtAm(decToAm(1 / prob))}</b></div>
-    </div>`;
-  }
-  function meter(p) {
-    return `<div class="meter"><div class="track"><div class="fill" style="width:${(p * 100).toFixed(1)}%;background:${color(p)}"></div></div><span class="pct" style="color:${color(p)}">${pct(p)}</span></div>`;
-  }
   function badge(note) {
     if (note === "Questionable") return '<span class="badge b-q">Q</span>';
     if (note === "Did not practice") return '<span class="badge b-dnp">DNP</span>';
     return "";
   }
 
-  function singleCard(b, i) {
-    return `<button class="card${inSlip(b.id) ? " on" : ""}" data-single="${i}" aria-pressed="${inSlip(b.id)}">
-      <div class="row">
-        <span class="rank">${i + 1}</span>
-        <div class="grow">
-          <div class="mkt">${esc(b.market)}</div>
-          <div class="pick">${esc(b.label)}${badge(b.note)}</div>
-          <div class="game">${esc(b.game)} · ${esc(b.when)} ET</div>
-        </div>
-        <div class="odds"><b>${esc(b.breakeven)}</b><small>break-even</small></div>
-      </div>
-      ${meter(b.prob)}
-      ${statRow(b.prob)}
+  // One list row per bet: the bet, its chance, the worst odds worth taking and the payout.
+  function listHead(first) {
+    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds</span><span class="r hide-sm">Pays ${money(wager())}</span></div>`;
+  }
+  function singleRow(b, i) {
+    const on = inSlip(b.id);
+    return `<button class="lrow${on ? " on" : ""}" data-single="${i}" aria-pressed="${on}">
+      <span class="lnum">${on ? "✓" : i + 1}</span>
+      <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note)}<small>${esc(b.game)} · ${esc(b.when)} ET</small></span>
+      <span class="r lpct" style="color:${color(b.prob)}">${pct(b.prob)}</span>
+      <span class="r lodds">${esc(b.breakeven)}</span>
+      <span class="r hide-sm">${money(wager() / b.prob)}</span>
     </button>`;
   }
-  function parlayCard(p, i) {
-    const id = parlayId(p);
-    return `<button class="card${inSlip(id) ? " on" : ""}" data-parlay="${i}" aria-pressed="${inSlip(id)}">
-      <div class="row">
-        <div class="grow"><div class="mkt">Parlay ${i + 1} · ${p.legs.length} legs</div></div>
-        <div class="odds"><b>${esc(p.breakeven)}</b><small>break-even</small></div>
-      </div>
-      <ul class="legs">${p.legs.map((l) => `<li><span class="lp">${pct(l.prob)}</span><div class="grow"><div class="pick" style="font-size:12.5px">${esc(l.label)}${badge(l.note)}</div><div class="game">${esc(l.game)} · ${esc(l.when)}</div></div></li>`).join("")}</ul>
-      ${meter(p.prob)}
-      ${statRow(p.prob)}
+  function parlayRow(p, i) {
+    const on = inSlip(parlayId(p));
+    return `<button class="lrow${on ? " on" : ""}" data-parlay="${i}" aria-pressed="${on}">
+      <span class="lnum">${on ? "✓" : "P" + (i + 1)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b><small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
+      <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
+      <span class="r lodds">${esc(p.breakeven)}</span>
+      <span class="r hide-sm">${money(wager() / p.prob)}</span>
     </button>`;
   }
 
@@ -321,18 +332,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
           : `<div class="empty">No players match.</div>`}`;
   }
 
-  function verdict(prob, key) {
-    const raw = state.prices[key];
-    if (raw == null || raw === "") return `<span>Type FanDuel's odds to check the expected value.</span>`;
-    const a = parseInt(String(raw).replace("+", ""), 10);
-    if (!a || Math.abs(a) < 100) return `<span class="verdict v-bad">Enter odds like -150 or +240.</span>`;
-    const ev = prob * amToDec(a) - 1;
-    const w = wager();
-    return `<span class="verdict ${ev > 0 ? "v-good" : "v-bad"}">${ev > 0 ? "Worth it" : "Not worth it"}: EV ${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}% (${ev >= 0 ? "+" : "−"}${money(Math.abs(ev * w))} per ${money(w)}), pays ${money(w * amToDec(a))}</span>`;
-  }
-  function checker(prob, key) {
-    return `<div class="check"><label>FanDuel odds <input data-price="${esc(key)}" inputmode="numeric" placeholder="-150" value="${esc(state.prices[key] ?? "")}"></label><span data-verdict="${esc(key)}">${verdict(prob, key)}</span></div>`;
-  }
   function combo() {
     const singles = state.slip.filter((s) => s.kind === "single");
     if (singles.length < 2) return null;
@@ -413,14 +412,24 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       : status === "push" ? `<span class="pill p-push">PUSH</span>` : "";
     return `<div class="hist-item"><div class="hb">${bet}</div><span class="hp">${pct(e.prob)}</span>${result}</div>`;
   }
+  function oddsVerdict(prob, raw) {  // what the odds you got are worth
+    if (!raw) return "";
+    const a = parseInt(String(raw).replace("+", ""), 10);
+    if (!a || Math.abs(a) < 100) return `<span class="v-bad">Odds look like -150 or +240</span>`;
+    const ev = prob * amToDec(a) - 1;
+    return `<span class="${ev > 0 ? "v-good" : "v-bad"}">${ev > 0 ? "Worth it" : "Not worth it"} · EV ${ev >= 0 ? "+" : ""}${(ev * 100).toFixed(1)}%</span>`;
+  }
   function placeRow(key, legs, kind, prob) {
-    if (!legs.every((l) => l.lid && l.rec)) return `<div class="placerow">This bet came from an older version of the page. Remove it and add it again to track it.</div>`;
+    if (!legs.every((l) => l.lid && l.rec)) return `<div class="placerow">Added with an older version of the page: remove it and add it again to track it.</div>`;
     const eid = entryId(kind, legs.map((l) => l.lid));
     if (placedIds().has(eid)) return `<div class="placerow"><span class="placed-ok">✓ Placed · tracked in Bet History</span></div>`;
-    if (state.dbState === "off") return `<div class="placerow">Sign in to claude.ai to keep track of bets you place.</div>`;
-    return `<div class="placerow"><label>Odds you got <input id="po-${key}" inputmode="numeric" placeholder="${esc(fmtAm(decToAm(1 / prob)))}"></label>
+    const odds = state.prices[eid] ?? "";
+    const place = state.dbState === "off" ? `<span>Sign in to claude.ai to track bets you place.</span>`
+      : `<button class="btn btn-primary" data-place="${key}">I placed this</button>`;
+    return `<div class="placerow">
+      <label>Odds you got <input id="po-${key}" data-po="${key}" data-eid="${esc(eid)}" inputmode="numeric" placeholder="${esc(fmtAm(decToAm(1 / prob)))}" value="${esc(odds)}"></label>
       <label>Stake $ <input id="ps-${key}" inputmode="decimal" value="${wager()}"></label>
-      <button class="btn btn-primary" data-place="${key}">I placed this</button></div>`;
+      ${place}<span id="pv-${key}" class="pverdict">${oddsVerdict(prob, odds)}</span></div>`;
   }
   function slipEntry(key) {
     if (key === "combo") {
@@ -484,23 +493,22 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 
   function slipView() {
     if (!state.slip.length) return `<div class="empty">Nothing here yet. Tap any single bet or parlay to add it.</div>`;
-    const items = state.slip.map((s, i) => `<div class="slip-item">
-      <div class="row"><div class="grow">
-        <div class="mkt">${s.kind === "single" ? esc(s.market) : "Parlay · " + s.legs.length + " legs"}</div>
-        <div class="pick">${s.kind === "single" ? esc(s.label) : s.legs.map((l) => esc(l.label)).join("<br>")}</div>
-        <div class="game">${s.kind === "single" ? esc(s.game) + " · " + esc(s.when) + " ET" : esc(s.weekLabel)}</div>
-      </div><div class="odds"><b>${esc(s.breakeven)}</b><small>break-even</small></div></div>
-      ${meter(s.prob)}${statRow(s.prob)}${checker(s.prob, s.id)}
-      ${placeRow(i, s.kind === "single" ? [s] : s.legs, s.kind, s.prob)}
-      <div><button class="x" data-remove="${i}">Remove from slip</button></div></div>`).join("");
+    const row = (key, title, sub, prob, legs, kind, removable) => `<div class="srow">
+      <div class="stop"><span class="lbet"><b>${title}</b><small>${sub}</small></span>
+        <span class="r lpct" style="color:${color(prob)}">${pct(prob)}</span><span class="r lodds">${esc(fmtAm(decToAm(1 / prob)))}</span>
+        ${removable ? `<button class="sx" data-remove="${key}" aria-label="Remove from slip">✕</button>` : `<span class="sx"></span>`}</div>
+      ${placeRow(key, legs, kind, prob)}</div>`;
+    const singles = state.slip.filter((s) => s.kind === "single");
     const c = combo();
-    let extra = "";
-    if (c && c.shared) extra = `<div class="notice">Two of your singles are from the same game, so they aren't combined into one parlay here (same-game legs move together).</div>`;
-    else if (c) extra = `<div class="slip-item"><div class="mkt">Your ${c.n} singles as one parlay</div>${meter(c.prob)}${statRow(c.prob)}${checker(c.prob, "COMBO:" + state.slip.filter((s) => s.kind === "single").map((s) => s.id).join("|"))}${placeRow("combo", state.slip.filter((s) => s.kind === "single"), "parlay", c.prob)}</div>`;
-    const allBtn = state.dbState === "on"
-      ? `<div class="notice summary"><div><button class="btn btn-primary" data-placeall="1">Placed all</button> <span style="margin-left:8px">Marks every single and parlay below as placed, at the odds and stake next to each.</span></div></div>`
-      : "";
-    return `<div class="slip">${allBtn}<div id="placemsg" class="foot" role="status"></div>${extra}${items}</div>`;
+    let html = state.dbState === "on" ? `<div class="slipbar2"><button class="btn btn-primary" data-placeall="1">Placed all</button><span>Marks every bet below as placed, at the odds and stake next to it.</span></div>` : "";
+    html += `<div id="placemsg" class="foot" role="status"></div><div class="blist">`;
+    html += state.slip.map((s, i) => s.kind === "single"
+      ? row(i, esc(s.label), `${esc(s.game)} · ${esc(s.when)} ET`, s.prob, [s], "single", true)
+      : row(i, `${s.legs.length}-leg parlay`, s.legs.map((l) => esc(l.label)).join(" · "), s.prob, s.legs, "parlay", true)).join("");
+    html += `</div>`;
+    if (c && c.shared) html += `<p class="foot">Two of your singles are from the same game, so they can't be combined into one parlay.</p>`;
+    else if (c) html += `<p class="foot" style="margin-bottom:0">Or bet your ${c.n} singles as one parlay:</p><div class="blist">${row("combo", `${c.n}-leg parlay (your singles)`, singles.map((s) => esc(s.label)).join(" · "), c.prob, singles, "parlay", false)}</div>`;
+    return html;
   }
 
   function render() {
@@ -521,8 +529,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
     }
-    if (state.tab === "singles") html += wk.singles.length ? `<div class="grid">${wk.singles.map(singleCard).join("")}</div>` : `<div class="empty">No bets in the 60–80% range for this week.</div>`;
-    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="grid">${wk.parlays.map(parlayCard).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
+    if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">No bets in the 60–80% range for this week.</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
     if (state.tab === "history") html += historyView();
@@ -561,11 +569,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   $("wager").addEventListener("input", render);
   document.addEventListener("input", (e) => {
     const t = e.target;
-    if (t.dataset && t.dataset.price != null) {
-      state.prices[t.dataset.price] = t.value; save();
-      const item = t.dataset.price.startsWith("COMBO:") ? combo() : state.slip.find((s) => s.id === t.dataset.price);
-      const v = document.querySelector(`[data-verdict="${CSS.escape(t.dataset.price)}"]`);
-      if (item && v) v.innerHTML = verdict(item.prob, t.dataset.price);
+    if (t.dataset && t.dataset.po != null) {
+      state.prices[t.dataset.eid] = t.value; save();
+      const e = slipEntry(t.dataset.po), v = $("pv-" + t.dataset.po);
+      if (e && v) v.innerHTML = oddsVerdict(e.prob, t.value);
     } else if (t.id === "injsearch") {
       state.injSearch = t.value; render();
       const s = $("injsearch"); s.focus(); s.setSelectionRange(s.value.length, s.value.length);
