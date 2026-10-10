@@ -26,7 +26,7 @@ import bets  # sets up paths for the standalone build
 from nfl_edge import board, data, fanduel, fdfeed, tracker
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
-from nfl_edge.odds import decimal_to_american
+from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 
 W, H = 1180, 870
@@ -529,7 +529,7 @@ class App:
         head.pack(fill="x")
         self.grid_cols(head)
         fd = getattr(self, "fd_mode", False)
-        last_text = (("EV" if fd else f"PAYS ${self.wager():g}") if last == "pays" else (last or ""))
+        last_text = f"PAYS ${self.wager():g}" if last == "pays" else (last or "")
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
                                   (3, "FANDUEL" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
             tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
@@ -571,13 +571,16 @@ class App:
         tk.Label(row, text=odds_text, bg=CARD, fg=BLUE,
                  font=self.f["bold"]).grid(row=0, column=3, rowspan=2, sticky="e", padx=6)
         if last is not None:
-            end, end_fg = last, TEXT
-        elif fd and ev is not None:
-            end, end_fg = f"{ev:+.1%}", GREEN if ev > 0 else RED
+            end = last
+        else:  # total payout: at FanDuel's price when known, else at the break-even odds
+            end = f"${self.wager() * (american_to_decimal(price) if fd else 1 / prob):,.2f}"
+        end_lbl = tk.Label(row, text=end, bg=CARD, fg=TEXT, font=self.f["bold"])
+        if last is None and fd and ev is not None:
+            end_lbl.grid(row=0, column=4, sticky="se", padx=8, pady=(6, 0))
+            tk.Label(row, text=f"EV {ev:+.1%}", bg=CARD, fg=GREEN if ev > 0 else RED,
+                     font=self.f["tiny"]).grid(row=1, column=4, sticky="ne", padx=8, pady=(0, 6))
         else:
-            end, end_fg = f"${self.wager() / prob:,.2f}", TEXT
-        end_lbl = tk.Label(row, text=end, bg=CARD, fg=end_fg, font=self.f["small"])
-        end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
+            end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
         if on_click is not None:
             self.clickable(row, on_click)
         if key is not None:

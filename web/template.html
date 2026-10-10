@@ -119,9 +119,11 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+.show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 520px) {
-  .lrow { grid-template-columns: 30px minmax(0, 1fr) 50px 58px; }
   .hide-sm { display: none; }
+  .show-sm { display: block; }
+  .lrow { grid-template-columns: 30px minmax(0, 1fr) 46px 76px; }
 }
 .empty { color: var(--on-dark-2); padding: 18px; border: 1px dashed #555; border-radius: 10px; }
 
@@ -274,7 +276,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 
   // One list row per bet: the bet, its chance, the worst odds worth taking and the payout.
   function listHead(first) {
-    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds</span><span class="r hide-sm">Pays ${money(wager())}</span></div>`;
+    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">pays ${money(wager())}</small></span><span class="r hide-sm">Pays ${money(wager())}</span></div>`;
   }
   function singleRow(b, i) {
     const on = inSlip(b.id);
@@ -282,7 +284,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <span class="lnum">${on ? "✓" : i + 1}</span>
       <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note)}<small>${esc(b.game)} · ${esc(b.when)} ET</small></span>
       <span class="r lpct" style="color:${color(b.prob)}">${pct(b.prob)}</span>
-      <span class="r lodds">${esc(b.breakeven)}</span>
+      <span class="r lodds">${esc(b.breakeven)}<small class="show-sm">pays ${money(wager() / b.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / b.prob)}</span>
     </button>`;
   }
@@ -292,7 +294,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <span class="lnum">${on ? "✓" : "P" + (i + 1)}</span>
       <span class="lbet"><b>${p.legs.length}-leg parlay</b><small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
-      <span class="r lodds">${esc(p.breakeven)}</span>
+      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
     </button>`;
   }
