@@ -21,9 +21,9 @@ from .providers import DiskCache, polite_get_json
 
 LEAGUES = {
     "americanfootball_nfl": dict(label="NFL", path="nfl", extra="", max_week=18,
-                                 hfa=2.0, k=0.08, sigma=13.2, reg=0.30, cap=24.0),
+                                 hfa=2.0, k=0.12, sigma=15.5, reg=0.30, cap=24.0),
     "americanfootball_ncaaf": dict(label="NCAAF", path="college-football", extra="&groups=80&limit=200", max_week=15,
-                                   hfa=2.5, k=0.08, sigma=16.5, reg=0.35, cap=28.0),
+                                   hfa=2.5, k=0.12, sigma=10.5, reg=0.35, cap=28.0),
 }
 SB = "https://site.api.espn.com/apis/site/v2/sports/football/{path}/scoreboard?dates={season}&seasontype=2&week={week}{extra}"
 SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/{path}/summary?event={eid}"

@@ -3,7 +3,8 @@
 data/ledger.jsonl is append-only: each refresh appends the published top singles and parlays
 (deduplicated, so re-running the same week does not double count). `grade` settles them from
 ESPN final scores into data/grades.json and writes data/track.json.
-1 unit = 1% of a notional bankroll (so a 2% Kelly stake = 2 units). Two views are reported:
+1 unit = 1% of a notional bankroll (so a 2% Kelly stake = 2 units). Watchlist picks are logged too (0 Kelly units) so we can see
+whether the bar helps. Two views are reported:
   flat  - every pick at 1 unit (measures whether the picks themselves have an edge)
   kelly - the suggested stakes (measures the staking plan; picks with no +EV stake get 0)
 """
@@ -34,13 +35,13 @@ def entries_from_payload(payload: dict, now: datetime) -> list[dict]:
                     "selection": s["selection"], "market": s["market_label"], "bet": s["bet"], "book": s["best_book"],
                     "odds": s["best_odds"], "decimal": s["best_decimal"], "model_prob": s["model_prob"],
                     "market_prob": s.get("market_prob"), "power_prob": s.get("power_prob"), "ev": s["ev_per_dollar"],
-                    "confidence": s["confidence"], "units": round(s["stake_pct"] * 100, 2), "flat_units": 1.0})
+                    "confidence": s["confidence"], "tier": s.get("tier", "bet"), "units": round(s["stake_pct"] * 100, 2), "flat_units": 1.0})
     for p in payload.get("parlays", []):
         legs = [{k: l[k] for k in ("event_id", "game", "selection", "bet", "best_odds", "best_decimal", "league", "commence_time")} for l in p["legs"]]
         key = "+".join(sorted(f"{l['event_id']}|{_bet_key(l['bet'])}" for l in legs))
         out.append({"id": f"p|{key}", "type": "parlay", "run_at": run_at, "legs": legs, "odds": p["combined_odds"],
                     "decimal": p["combined_decimal"], "model_prob": p["win_prob"], "ev": p["ev_per_dollar"],
-                    "confidence": p["confidence"], "commence_time": max(l["commence_time"] for l in legs),
+                    "confidence": p["confidence"], "tier": p.get("tier", "bet"), "commence_time": max(l["commence_time"] for l in legs),
                     "units": round(p["stake_pct"] * 100, 2), "flat_units": 1.0})
     return out
 
@@ -245,6 +246,10 @@ def track_summary(entries: list[dict], grades: dict, now: datetime) -> dict:
     groups = {"all": _agg(settled),
               "singles": _agg([x for x in settled if x[0]["type"] == "single"]),
               "parlays": _agg([x for x in settled if x[0]["type"] == "parlay"])}
+    for tr in ("bet", "watchlist"):
+        rows = [x for x in settled if x[0].get("tier", "bet") == tr]
+        if rows:
+            groups[f"tier_{tr}"] = _agg(rows)
     for lab in ("none", "low", "medium", "high"):
         rows = [x for x in settled if x[0]["confidence"] == lab]
         if rows:

@@ -1,0 +1,115 @@
+{
+ "generated_at": "2026-10-10T05:15:58+00:00",
+ "leagues": [
+  {
+   "league": "NFL",
+   "seasons": [
+    2025,
+    2026
+   ],
+   "tuned_on_prior_season": {
+    "k": 0.12,
+    "sigma": 15.5,
+    "log_loss": 0.638
+   },
+   "prior_season_walk_forward": {
+    "n": 208,
+    "brier": 0.2249,
+    "log_loss": 0.638,
+    "baseline_coin_flip_brier": 0.25,
+    "baseline_coin_flip_log_loss": 0.6931,
+    "home_win_rate": 0.514,
+    "margin_mae": 10.53
+   },
+   "current_season_walk_forward": {
+    "n": 33,
+    "brier": 0.2194,
+    "log_loss": 0.6235
+   },
+   "vs_market_closing": {
+    "n": 33,
+    "closing_lines_tried": 33,
+    "blend_market_weight": 0.8,
+    "model": {
+     "n": 33,
+     "brier": 0.2194,
+     "log_loss": 0.6235
+    },
+    "market_no_vig_moneyline": {
+     "n": 33,
+     "brier": 0.2493,
+     "log_loss": 0.6923
+    },
+    "blend": {
+     "n": 33,
+     "brier": 0.2404,
+     "log_loss": 0.6722
+    },
+    "margin_mae_model": 8.77,
+    "margin_mae_market_spread": 8.0,
+    "disagreement": {
+     "model_higher_n": 15,
+     "model_higher_actual_minus_market": 0.147,
+     "model_lower_n": 9,
+     "model_lower_actual_minus_market": -0.149
+    },
+    "verdict": "Model alone matched/beat the market (small sample); blend slightly better than market alone"
+   }
+  },
+  {
+   "league": "NCAAF",
+   "seasons": [
+    2025,
+    2026
+   ],
+   "tuned_on_prior_season": {
+    "k": 0.12,
+    "sigma": 10.5,
+    "log_loss": 0.551
+   },
+   "prior_season_walk_forward": {
+    "n": 566,
+    "brier": 0.187,
+    "log_loss": 0.551,
+    "baseline_coin_flip_brier": 0.25,
+    "baseline_coin_flip_log_loss": 0.6931,
+    "home_win_rate": 0.569,
+    "margin_mae": 12.82
+   },
+   "current_season_walk_forward": {
+    "n": 201,
+    "brier": 0.1769,
+    "log_loss": 0.53
+   },
+   "vs_market_closing": {
+    "n": 76,
+    "closing_lines_tried": 80,
+    "blend_market_weight": 0.8,
+    "model": {
+     "n": 76,
+     "brier": 0.1999,
+     "log_loss": 0.5799
+    },
+    "market_no_vig_moneyline": {
+     "n": 76,
+     "brier": 0.1735,
+     "log_loss": 0.5093
+    },
+    "blend": {
+     "n": 76,
+     "brier": 0.1749,
+     "log_loss": 0.5141
+    },
+    "margin_mae_model": 13.27,
+    "margin_mae_market_spread": 12.48,
+    "disagreement": {
+     "model_higher_n": 31,
+     "model_higher_actual_minus_market": 0.042,
+     "model_lower_n": 20,
+     "model_lower_actual_minus_market": -0.049
+    },
+    "verdict": "Model alone is worse than the market closing line; blend does NOT improve on the market alone"
+   }
+  }
+ ]
+}

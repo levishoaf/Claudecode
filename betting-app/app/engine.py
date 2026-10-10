@@ -14,7 +14,7 @@ SHARP_KEYS = {"pinnacle", "circasports", "betfair_ex_us"}
 MARKET_LABELS = {"h2h": "Moneyline", "spreads": "Spread", "totals": "Total",
                  "player_pass_yds": "Pass Yds", "player_rush_yds": "Rush Yds", "player_reception_yds": "Rec Yds"}
 
-DEFAULTS = dict(w_market=0.80, disagree_flag=0.08, min_prob=0.25, kelly_fraction=0.25, stake_cap=0.02, parlay_stake_cap=0.005, devig="power",
+DEFAULTS = dict(use_ratings=False, min_edge=0.03, min_conf="low", weekly_cap=0.10, game_cap=0.02, w_market=0.80, disagree_flag=0.08, min_prob=0.25, kelly_fraction=0.25, stake_cap=0.02, parlay_stake_cap=0.005, devig="power",
                 top_n=30, n_parlays=5, parlay_pool=22, min_parlay_prob=0.05, max_ev_sanity=0.25, flag_ev=0.08, candidates=200)
 
 
@@ -108,7 +108,7 @@ def evaluate_event(event: dict, p: dict, models: dict | None = None) -> list[dic
             continue
         cons = om.weighted_consensus(vecs, weights)
         pw = power_probs(event, market, outcomes, models)
-        final = [engine_blend(c, q, p["w_market"]) for c, q in zip(cons, pw)] if pw else cons
+        final = [engine_blend(c, q, p["w_market"]) for c, q in zip(cons, pw)] if (pw and p["use_ratings"]) else cons
         n_books = len(vecs)
         has_sharp = any(k in SHARP_KEYS for k in per_book)
         conf = confidence(n_books, has_sharp)
@@ -122,7 +122,7 @@ def evaluate_event(event: dict, p: dict, models: dict | None = None) -> list[dic
             pwr = pw[idx] if pw else None
             ev = om.expected_value(prob, dec)
             flags = []
-            if pw and conf == "none":
+            if pw and p["use_ratings"] and conf == "none":
                 conf = "low"
                 flags.append("Model-driven: only one book's prices, so any edge comes from the simple ratings model blended into that book's no-vig line. Treat as unverified.")
             elif conf == "none":
@@ -141,7 +141,7 @@ def evaluate_event(event: dict, p: dict, models: dict | None = None) -> list[dic
                 "home_team": event["home_team"], "away_team": event["away_team"],
                 "bet": {"market": market, "name": o[0], "point": o[1], "description": desc},
                 "market_prob": round(mkt_p, 4), "power_prob": round(pwr, 4) if pwr is not None else None,
-                "disagree": disagree, "basis": "market + ratings blend" if pw else "market only",
+                "disagree": disagree, "basis": "market + ratings blend" if (pw and p["use_ratings"]) else "market only",
                 "commence_time": event["commence_time"], "market": market, "market_label": MARKET_LABELS.get(market, market),
                 "selection": _label(event, market, desc, o[0], o[1]),
                 "best_book": books[best_k]["title"], "best_odds": price, "best_decimal": round(dec, 4),
@@ -201,6 +201,63 @@ def build_parlays(candidates: list[dict], p: dict) -> list[dict]:
     return out
 
 
+CONF_ORDER = ["none", "low", "medium", "high"]
+
+
+def qualifies(pick: dict, p: dict) -> bool:
+    return (pick["edge"] >= p["min_edge"] and pick["ev_per_dollar"] > 0
+            and CONF_ORDER.index(pick["confidence"]) >= CONF_ORDER.index(p["min_conf"]))
+
+
+def allocate(singles: list[dict], parlays: list[dict], p: dict) -> dict:
+    """Discipline rules: only qualifying picks get a stake; stake per game is capped (bets on the
+    same game are correlated and must not stack); total weekly exposure is capped."""
+    for s in singles:
+        s["tier"] = "bet" if qualifies(s, p) else "watchlist"
+        s["stake_pct_raw"] = s["stake_pct"]
+        if s["tier"] == "watchlist":
+            s["stake_pct"] = 0.0
+    by_game: dict[str, list[dict]] = {}
+    for s in singles:
+        if s["stake_pct"] > 0:
+            by_game.setdefault(s["event_id"], []).append(s)
+    capped_games = 0
+    for rows in by_game.values():
+        tot = sum(r["stake_pct"] for r in rows)
+        if tot > p["game_cap"]:
+            capped_games += 1
+            for r in rows:
+                r["stake_pct"] = round(r["stake_pct"] * p["game_cap"] / tot, 4)
+                r["flags"] = r.get("flags", []) + ["Stake reduced: bets on the same game are correlated, so combined stake per game is capped."]
+    for pl in parlays:
+        pl["stake_pct_raw"] = pl["stake_pct"]
+        ok = pl["ev_per_dollar"] > 0 and CONF_ORDER.index(pl["confidence"]) >= CONF_ORDER.index(p["min_conf"])
+        pl["tier"] = "bet" if ok else "watchlist"
+        if not ok:
+            pl["stake_pct"] = 0.0
+    total = sum(s["stake_pct"] for s in singles) + sum(x["stake_pct"] for x in parlays)
+    scaled = total > p["weekly_cap"]
+    if scaled:
+        f = p["weekly_cap"] / total
+        for r in singles + parlays:
+            r["stake_pct"] = round(r["stake_pct"] * f, 4)
+    sp, pp = sum(s["stake_pct"] for s in singles), sum(x["stake_pct"] for x in parlays)
+    return {"singles_pct": round(sp, 4), "parlays_pct": round(pp, 4), "total_pct": round(sp + pp, 4),
+            "cap_pct": p["weekly_cap"], "scaled_down": scaled, "games_capped": capped_games}
+
+
+def bottom_line(singles, parlays, exposure, p, basis_note: str) -> dict:
+    nb = sum(1 for s in singles if s["tier"] == "bet")
+    npl = sum(1 for x in parlays if x["tier"] == "bet")
+    if nb == 0 and npl == 0:
+        text = (f"No bets clear the bar this week (estimated edge of at least {p['min_edge']*100:.0f}%, positive EV, confidence at least "
+                f"'{p['min_conf']}'). Pass. Skipping bad bets is part of making money. Everything below is a watchlist, not a recommendation.")
+    else:
+        text = (f"{nb} single{'s' if nb != 1 else ''} and {npl} parlay{'s' if npl != 1 else ''} clear the bar. Suggested total exposure "
+                f"{exposure['total_pct']*100:.1f}% of bankroll (cap {p['weekly_cap']*100:.0f}%). These are estimates, not guarantees; most weeks you will still lose some.")
+    return {"n_singles": nb, "n_parlays": npl, "text": text, "basis": basis_note}
+
+
 def run(providers: list, params: dict | None = None, now: datetime | None = None, force_sample_reason: str | None = None,
         models: dict | None = None, model_notes: list | None = None) -> dict:
     """Fetch from providers (one request per league each), merge, evaluate, rank."""
@@ -223,8 +280,14 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
     top = eligible[: p["top_n"]]
     is_sample = any(getattr(pr, "is_sample", False) for pr in providers)
     max_books = max((c["n_books"] for c in picks), default=0)
+    parlays = build_parlays(cands, p)
+    exposure = allocate(top, parlays, p)
+    basis = ("Probabilities = market no-vig consensus; the ratings model is shown for reference only (the backtest did not justify blending it)."
+             if not p["use_ratings"] else f"Probabilities = {int(p['w_market']*100)}% market / {100-int(p['w_market']*100)}% ratings model blend.")
     return {
         "generated_at": now.isoformat(timespec="seconds"),
+        "bottom_line": bottom_line(top, parlays, exposure, p, basis),
+        "exposure": exposure,
         "mode": "sample" if is_sample else "live",
         "sample_reason": force_sample_reason,
         "params": p,
@@ -237,5 +300,5 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
         "edge_detectable": max_books >= 2,
         "top_singles": top,
         "candidates": cands,
-        "parlays": build_parlays(cands, p),
+        "parlays": parlays,
     }

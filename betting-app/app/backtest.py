@@ -40,8 +40,8 @@ def metrics(rows, key="p"):
 def tune(sport: str, by_season: dict, eval_season: int, min_week: int):
     """Tiny grid on the PRIOR season only (so the current season stays out-of-sample)."""
     best = None
-    for k in (0.04, 0.06, 0.08, 0.12):
-        for sigma in (11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5):
+    for k in (0.04, 0.08, 0.12, 0.16, 0.20, 0.25):
+        for sigma in (9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5):
             rows, _ = walk_forward(sport, by_season, eval_season, min_week, k=k, sigma=sigma)
             ll = metrics(rows)["log_loss"]
             if best is None or ll < best[0]:

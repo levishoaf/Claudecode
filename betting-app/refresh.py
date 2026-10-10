@@ -23,7 +23,7 @@ ap.add_argument("--static", metavar="DIR")
 a = ap.parse_args()
 
 payload = pipeline.build_payload(a.sample, a.ttl, a.state, not a.no_fanduel, not a.no_model, a.debug_dump)
-out = pipeline.save(payload)
+out = pipeline.save(payload, pipeline.DATA / "picks_sample.json") if a.sample else pipeline.save(payload)
 print(f"mode={payload['mode']} events={payload['n_events']} markets={payload['n_markets_evaluated']} "
       f"+EV={payload['positive_ev_count']} max_books/market={payload['max_books_per_market']}")
 for s in payload["sources"]:
