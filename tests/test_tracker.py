@@ -66,6 +66,22 @@ class TrackerTest(unittest.TestCase):
         self.assertEqual(ledger["generated"][0]["status"], "pending")
         self.assertTrue(tracker.summary(ledger["placed"], money=True).startswith("Record 1-0"))
 
+    def test_history_and_saved_files(self):
+        placed = tracker.make_entry("single", [leg("A")], 0.6, "nfl", 2026)
+        other = tracker.make_entry("single", [leg("B")], 0.7, "nfl", 2026)
+        ledger = {"placed": [placed], "generated": [placed, other], "saved": []}
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "paper.json"
+            path.write_text('{"name": "Paper", "kind": "singles", "season": 2026, "legs": ['
+                            '{"game_id": "g9", "label": "C", "type": "moneyline", "team": "HOU",'
+                            ' "odds": -150, "stake": 100, "win_prob": 0.6}]}')
+            with mock.patch("nfl_edge.tracker.kickoffs", return_value={"g9": (KICK, "X @ Y")}):
+                self.assertEqual(tracker.import_saved(ledger, [path]), 1)
+                self.assertEqual(tracker.import_saved(ledger, [path]), 0)  # no duplicates
+        self.assertEqual([(src, e["legs"][0]["label"]) for src, e in tracker.history(ledger)],
+                         [("placed", "A"), ("not placed", "B"), ("saved", "C")])
+        self.assertEqual(ledger["saved"][0]["legs"][0]["game"], "X @ Y")
+
 
 if __name__ == "__main__":
     unittest.main()

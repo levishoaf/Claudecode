@@ -54,6 +54,7 @@ def load(path: Path) -> dict:
         ledger = {}
     ledger.setdefault("placed", [])
     ledger.setdefault("generated", [])
+    ledger.setdefault("saved", [])
     return ledger
 
 
@@ -125,12 +126,96 @@ def profit(entry: dict) -> float:
     return 0.0
 
 
+def all_entries(ledger: dict) -> list[dict]:
+    return ledger["placed"] + ledger["generated"] + ledger.get("saved", [])
+
+
+def history(ledger: dict) -> list[tuple[str, dict]]:
+    """Every bet with where it came from: 'placed', 'not placed' or 'saved'.
+
+    A pick you placed shows once, as placed."""
+    placed = {e["id"] for e in ledger["placed"]}
+    out = [("placed", e) for e in ledger["placed"]]
+    out += [("not placed", e) for e in ledger["generated"] if e["id"] not in placed]
+    out += [("saved", e) for e in ledger.get("saved", []) if e["id"] not in placed]
+    return out
+
+
+def first_kickoff(e: dict) -> str:
+    return min((leg.get("kickoff") or "9999") for leg in e["legs"])
+
+
+def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[str, tuple]:
+    """{game_id: (kickoff ISO time, 'Away @ Home')} for one season."""
+    if sport == "ncaaf":
+        from . import cfb
+
+        return {r["game_id"]: (r["start_date"].replace("Z", "+00:00"),
+                               f"{r['away_team']} @ {r['home_team']}")
+                for r in cfb.load_schedule(season, games_source, current_season=season)}
+    from .board import ABBR_NAME, EASTERN
+
+    out = {}
+    for g in data.games(games_source):
+        if g["season"] == str(season) and g.get("gameday"):
+            hh, mm = (g.get("gametime") or "13:00").split(":")[:2]
+            when = datetime.fromisoformat(g["gameday"]).replace(hour=int(hh), minute=int(mm),
+                                                                tzinfo=EASTERN)
+            out[g["game_id"]] = (when.isoformat(), f"{ABBR_NAME.get(g['away_team'], g['away_team'])}"
+                                                   f" @ {ABBR_NAME.get(g['home_team'], g['home_team'])}")
+    return out
+
+
+def import_saved(ledger: dict, paths, games_source: str | None = None) -> int:
+    """Add bets saved as files (bets/*.json, the grader's format) to ledger["saved"].
+
+    A "kind": "singles" file becomes one single per leg; any other file is one
+    parlay. Returns how many entries were added."""
+    known = {e["id"] for e in ledger["saved"]}
+    times: dict[tuple, dict] = {}
+    added = 0
+    for path in paths:
+        try:
+            bet = json.loads(Path(path).read_text())
+            sport, season = bet.get("sport", "nfl"), int(bet["season"])
+            if (sport, season) not in times:
+                times[(sport, season)] = kickoffs(sport, season, games_source)
+        except (OSError, ValueError, KeyError, data.DataError):
+            continue
+        legs = []
+        for leg in bet["legs"]:
+            when, game = times[(sport, season)].get(leg["game_id"], ("", ""))
+            legs.append(dict(leg, kickoff=when, game=game, pick=leg["label"],
+                             win_prob=leg.get("win_prob") or 0.5))
+        groups = [("single", [leg]) for leg in legs] if bet.get("kind") == "singles" \
+            else [("parlay", legs)]
+        for kind, group in groups:
+            if kind == "single":
+                prob, odds = group[0]["win_prob"], group[0].get("odds")
+            else:
+                prob = bet.get("estimated_win_prob")
+                if not prob:
+                    prob = 1.0
+                    for leg in group:
+                        prob *= leg["win_prob"]
+                odds = bet.get("odds")
+            entry = make_entry(kind, group, prob, sport, season, odds=odds,
+                               stake=group[0].get("stake", 100) if kind == "single" else 100)
+            entry["source"] = bet.get("name", Path(path).stem)
+            if entry["id"] not in known:
+                ledger["saved"].append(entry)
+                known.add(entry["id"])
+                added += 1
+    return added
+
+
 def regrade(ledger: dict, games_source: str | None = None) -> int:
     """Grade every unsettled leg whose game has kicked off. Returns legs newly settled."""
     now = datetime.now(timezone.utc)
-    entries = [e for e in ledger["placed"] + ledger["generated"] if e["status"] == "pending"]
+    entries = [e for e in all_entries(ledger) if e["status"] == "pending"]
     todo = [(e, leg) for e in entries for leg in e["legs"] if leg["status"] == "pending"
-            and datetime.fromisoformat(leg["kickoff"]) < now - timedelta(hours=2)]
+            and (not leg.get("kickoff")
+                 or datetime.fromisoformat(leg["kickoff"]) < now - timedelta(hours=2))]
     if not todo:
         return 0
     games: dict[tuple, dict] = {}

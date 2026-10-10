@@ -182,6 +182,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <button role="tab" id="tab-slip" data-tab="slip" aria-selected="false">Your slip<span class="count" id="n-slip"></span></button>
       <button role="tab" id="tab-placed" data-tab="placed" aria-selected="false">Placed<span class="count" id="n-placed"></span></button>
       <button role="tab" id="tab-unplaced" data-tab="unplaced" aria-selected="false">Not placed<span class="count" id="n-unplaced"></span></button>
+      <button role="tab" id="tab-history" data-tab="history" aria-selected="false">Bet History<span class="count" id="n-history"></span></button>
     </nav>
   </div>
 </header>
@@ -338,6 +339,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   // ---- placed and not-placed bets, graded after the games
   const RESULTS = DATA.legResults || {};
   const HISTORY = DATA.history || [];
+  const SAVED = DATA.saved || [];
+  state.histFilter = "all";
   let db = null;
   state.placed = [];
   state.dbState = "loading";
@@ -381,8 +384,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
   const WORD = { won: "HIT", lost: "MISS", push: "PUSH", pending: "PENDING" };
   const MARK = { won: "✓", lost: "✗", push: "=", pending: "…" };
-  const kickWhen = (iso) => new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";
-  function resultCard(e, placed) {
+  const kickWhen = (iso) => !iso ? "" : new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";
+  function resultCard(e, placed, tag) {
     const status = entryStatus(e.legs);
     const title = e.kind === "single" ? e.legs[0].pick : `${e.legs.length}-leg parlay`;
     const legs = e.legs.map((l) => {
@@ -390,11 +393,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       return `<li><span class="mk mk-${s}">${MARK[s]}</span><div>${e.kind === "parlay" ? `<b>${esc(l.pick)}</b><br>` : ""}<span class="game">${esc(l.game)} · ${esc(s !== "pending" && detail ? detail : kickWhen(l.kickoff))}</span></div></li>`;
     }).join("");
     let foot;
+    const pre = tag ? `${esc(tag)} · ` : "";
     if (placed) {
       const net = profitOf(e, status);
-      foot = `<span>${status === "pending" ? `${money(e.stake)} to win ${money(e.stake * (amToDec(e.odds) - 1))}` : `${money(e.stake)} staked · ${net >= 0 ? "+" : "−"}${money(Math.abs(net))}`}</span><button class="x" data-unplace="${esc(e.docId)}">Remove</button>`;
+      foot = `<span>${pre}${status === "pending" ? `${money(e.stake)} to win ${money(e.stake * (amToDec(e.odds) - 1))}` : `${money(e.stake)} staked · ${net >= 0 ? "+" : "−"}${money(Math.abs(net))}`}</span>${tag ? "" : `<button class="x" data-unplace="${esc(e.docId)}">Remove</button>`}`;
     } else {
-      foot = `<span>Builder gave it ${pct(e.prob)} · ${esc((e.sport || "").toUpperCase())}</span>`;
+      foot = `<span>${pre}Builder gave it ${pct(e.prob)} · ${esc((e.sport || "").toUpperCase())}</span>`;
     }
     return `<div class="card" style="cursor:default">
       <div class="row"><span class="pill p-${status}">${WORD[status]}</span><div class="grow pick">${esc(title)}</div><b style="color:var(--blue)">${esc(fmtAm(e.odds))}</b></div>
@@ -418,6 +422,32 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const shown = sortEntries(list).slice(0, 80);
     html += `<div class="grid rgrid">${shown.map((e) => resultCard(e, placed)).join("")}</div>`;
     if (list.length > shown.length) html += `<p class="foot">Showing the latest ${shown.length} of ${list.length}.</p>`;
+    return html + `<p class="foot">Results come in after each game (player stats usually the next morning) and appear when this page is next updated.</p>`;
+  }
+  function historyList() {  // [source, entry]: a pick you placed shows once, as placed
+    const ids = placedIds();
+    return state.placed.map((e) => ["Placed", e])
+      .concat(unplaced().map((e) => ["Not placed", e]))
+      .concat(SAVED.filter((e) => !ids.has(e.id)).map((e) => ["Saved earlier", e]));
+  }
+  function historyView() {
+    const all = historyList();
+    const count = { won: 0, lost: 0, push: 0, pending: 0 };
+    all.forEach(([, e]) => { count[entryStatus(e.legs)]++; });
+    const placedOnes = all.filter(([src]) => src === "Placed").map(([, e]) => e);
+    let html = `<div class="notice summary"><div><b>${count.won} won · ${count.lost} lost${count.push ? ` · ${count.push} pushed` : ""} · ${count.pending} pending</b><br>
+      Every bet: ones you placed, the builder's picks you didn't, and bets saved earlier. Placed bets: ${esc(summaryOf(placedOnes, true))}.</div></div>`;
+    const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
+    html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
+    let list = all.map(([src, e]) => [src, e, entryStatus(e.legs)]);
+    if (state.histFilter !== "all") list = list.filter(([, , s]) => s === state.histFilter);
+    const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
+    const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
+    const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
+    const shown = done.concat(pend).slice(0, 100);
+    if (!shown.length) return html + `<div class="empty">${state.histFilter === "all" ? "No bets yet." : "None yet. Results come in after each game."}</div>`;
+    html += `<div class="grid rgrid">${shown.map(([src, e]) => resultCard(e, src === "Placed", src)).join("")}</div>`;
+    if (list.length > shown.length) html += `<p class="foot">Showing ${shown.length} of ${list.length}, settled bets first.</p>`;
     return html + `<p class="foot">Results come in after each game (player stats usually the next morning) and appear when this page is next updated.</p>`;
   }
   function placeRow(key, legs, kind, prob) {
@@ -522,6 +552,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     $("n-slip").textContent = state.slip.length;
     $("n-placed").textContent = state.placed.length;
     $("n-unplaced").textContent = unplaced().length;
+    $("n-history").textContent = historyList().length;
 
     let html = "";
     const future = /no lines yet/.test(wk.label);
@@ -535,6 +566,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "slip") html += slipView();
     if (state.tab === "placed") html += trackedView(true);
     if (state.tab === "unplaced") html += trackedView(false);
+    if (state.tab === "history") html += historyView();
     html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent.</p>`;
     $("main").innerHTML = html;
 
@@ -558,6 +590,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
     else if (t.dataset.single) { const b = wk.singles[+t.dataset.single]; toggle({ kind: "single", sport: state.sport, ...b }); }
     else if (t.dataset.parlay) { const p = wk.parlays[+t.dataset.parlay]; toggle({ kind: "parlay", sport: state.sport, id: parlayId(p), legs: p.legs, prob: p.prob, breakeven: p.breakeven, weekLabel: (state.sport === "nfl" ? "NFL " : "College ") + wk.label.split(" · ")[0] }); }
+    else if (t.dataset.hist) { state.histFilter = t.dataset.hist; render(); }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
     else if (t.dataset.remove) { state.slip.splice(+t.dataset.remove, 1); save(); render(); }
     else if (t.id === "viewslip") { state.tab = "slip"; render(); window.scrollTo({ top: 0 }); }

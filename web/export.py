@@ -111,21 +111,28 @@ def main():
 
     if a.placed:
         ledger["placed"] = placed_entries(a.placed)
+    try:  # paper bets saved as files in bets/ join the Bet History
+        tracker.import_saved(ledger, sorted((ROOT / "bets").glob("*.json")))
+    except Exception:
+        traceback.print_exc()
     try:
         tracker.regrade(ledger)
     except Exception:
         traceback.print_exc()
     results = {leg["id"]: [leg["status"], leg["detail"]]
-               for e in ledger["generated"] + ledger["placed"] for leg in e["legs"]}
+               for e in tracker.all_entries(ledger) for leg in e["legs"]}
     ledger["placed"] = []
     tracker.save(ledger, HISTORY)
     result["legResults"] = results
-    result["history"] = [
-        {"id": e["id"], "kind": e["kind"], "sport": e["sport"], "prob": e["win_prob"],
-         "odds": e["odds"], "status": e["status"], "created": e["created"],
-         "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
-                   "game": leg.get("game", ""), "kickoff": leg["kickoff"]} for leg in e["legs"]]}
-        for e in ledger["generated"]]
+    def brief(e, src):
+        return {"id": e["id"], "src": src, "kind": e["kind"], "sport": e["sport"],
+                "prob": e["win_prob"], "odds": e["odds"], "stake": e.get("stake", 100),
+                "status": e["status"], "created": e["created"], "name": e.get("source", ""),
+                "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
+                          "game": leg.get("game", ""), "kickoff": leg.get("kickoff", ""),
+                          "prob": leg.get("win_prob")} for leg in e["legs"]]}
+    result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
+    result["saved"] = [brief(e, "saved") for e in ledger["saved"]]
 
     payload = json.dumps(result, default=str).replace("</", "<\\/")
     page = (ROOT / "web" / "template.html").read_text().replace("__DATA__", payload)
