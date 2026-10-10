@@ -16,6 +16,7 @@ from pathlib import Path
 
 from . import odds_math as om
 from .backtest import market_p_home, parse_pickcenter
+from . import snapshots
 from .providers import DiskCache, polite_get_json
 from .ratings import LEAGUES, SUMMARY
 
@@ -153,12 +154,13 @@ SPORT_BY_LEAGUE = {v["label"]: k for k, v in LEAGUES.items()}
 
 
 def grade(ledger_path: Path, grades_path: Path, cache: DiskCache | None = None, fetch=polite_get_json,
-          now: datetime | None = None, delay_hours: float = 4.0) -> dict:
+          now: datetime | None = None, delay_hours: float = 4.0, snapshot_path: Path | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
     grades = json.loads(grades_path.read_text()) if grades_path.exists() else {}
     entries = read_ledger(ledger_path)
     cutoff = (now - timedelta(hours=delay_hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
     cache_ev: dict = {}
+    closing = snapshots.closing_snapshots(snapshot_path) if snapshot_path else {}
 
     def event_info(league, eid):
         k = (league, eid)
@@ -171,7 +173,7 @@ def grade(ledger_path: Path, grades_path: Path, cache: DiskCache | None = None, 
     for e in entries:
         if e["id"] in grades or e["commence_time"] > cutoff:
             continue
-        res = grade_entry(e, event_info)
+        res = grade_entry(e, event_info, closing)
         if res:
             grades[e["id"]] = res
     grades_path.parent.mkdir(parents=True, exist_ok=True)
@@ -184,7 +186,7 @@ def parse_pc(raw):
     return parse_pickcenter(pc[0]) if pc else None
 
 
-def grade_entry(e: dict, event_info) -> dict | None:
+def grade_entry(e: dict, event_info, closing: dict | None = None) -> dict | None:
     if e["type"] == "single":
         info = event_info(e["league"], e["event_id"])
         if not info[0]:
@@ -193,8 +195,16 @@ def grade_entry(e: dict, event_info) -> dict | None:
         r = settle_bet(e["bet"], home, away, hs, as_)
         if r == "void":
             return None
-        fair = closing_fair_prob(e["bet"], info[1], home)
-        return {"result": r, "clv": round(e["decimal"] * fair - 1, 4) if fair else None}
+        # prefer OUR OWN last pre-kickoff snapshot (same book, same line); fall back to ESPN's closing odds
+        fair, src = None, None
+        snap = (closing or {}).get(e["event_id"])
+        if snap:
+            fair = snapshots.fair_prob(e["bet"], snap["e"], e["book"])
+            src = "own snapshot " + snap["ts"] if fair else None
+        if not fair:
+            fair = closing_fair_prob(e["bet"], info[1], home)
+            src = "ESPN closing odds" if fair else None
+        return {"result": r, "clv": round(e["decimal"] * fair - 1, 4) if fair else None, "clv_source": src}
     # parlay
     results, dec = [], 1.0
     for l in e["legs"]:

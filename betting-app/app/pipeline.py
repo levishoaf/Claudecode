@@ -57,5 +57,5 @@ def build_payload(sample: bool = False, ttl: int = 6 * 3600, fanduel_state: str 
 def save(payload: dict, path: Path | None = None) -> Path:
     path = path or DATA / "picks.json"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=1))
+    path.write_text(json.dumps({k: v for k, v in payload.items() if not k.startswith("_")}, indent=1))
     return path

@@ -285,6 +285,7 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
     basis = ("Probabilities = market no-vig consensus; the ratings model is shown for reference only (the backtest did not justify blending it)."
              if not p["use_ratings"] else f"Probabilities = {int(p['w_market']*100)}% market / {100-int(p['w_market']*100)}% ratings model blend.")
     return {
+        "_events": events,
         "generated_at": now.isoformat(timespec="seconds"),
         "bottom_line": bottom_line(top, parlays, exposure, p, basis),
         "exposure": exposure,

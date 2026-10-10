@@ -10,7 +10,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from app import ledger, pipeline
+from app import ledger, pipeline, snapshots
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--sample", action="store_true")
@@ -34,6 +34,7 @@ print("wrote", out)
 if payload["mode"] == "live":
     n = ledger.append_picks(payload, pipeline.DATA / "ledger.jsonl")
     print(f"ledger: appended {n} new paper picks (data/ledger.jsonl)")
+    print(f"snapshot: {snapshots.append(pipeline.DATA / 'snapshots.jsonl', payload.get('_events', []))} events appended (data/snapshots.jsonl)")
 else:
     print("ledger: sample data is never ledgered")
 if a.static:

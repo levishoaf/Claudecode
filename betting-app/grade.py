@@ -6,7 +6,8 @@ from app import ledger, pipeline
 from app.providers import DiskCache
 
 cache = DiskCache(pipeline.DATA / "cache", 6 * 3600)
-t = ledger.grade(pipeline.DATA / "ledger.jsonl", pipeline.DATA / "grades.json", cache)
+t = ledger.grade(pipeline.DATA / "ledger.jsonl", pipeline.DATA / "grades.json", cache,
+                 snapshot_path=pipeline.DATA / "snapshots.jsonl")
 (pipeline.DATA / "track.json").write_text(json.dumps(t, indent=1))
 g = t["groups"]["all"]
 print(f"settled={t['settled']} pending={t['pending']} record={g['wins']}-{g['losses']}-{g['pushes']} "
