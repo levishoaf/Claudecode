@@ -54,7 +54,9 @@ https://claude.ai/artifact/QyRUWeX7NkXuVUSn4c3xsv
 
 **Every time the application changes, update the web page too.** Rebuild it
 with fresh data and republish to the same URL; carry any visible app change
-into `web/template.html` first. End each reply with the link to the web page.
+into `web/template.html` first. End each reply with the link to the releases page
+(https://github.com/levishoaf/Claudecode/releases/latest, where the app is
+downloaded; never the Actions page) and the link to the web page.
 
 To rebuild: read the page's placed bets first (ArtifactData `list` of the
 `placed` collection on the page's URL, saved as a JSON list), then run
