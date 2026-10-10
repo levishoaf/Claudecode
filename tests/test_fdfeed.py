@@ -39,6 +39,14 @@ EVENT = {"layout": {}, "attachments": {
         "9": {"eventId": 101, "marketName": "Any Time Touchdown Scorer",
               "marketType": "ANY_TIME_TOUCHDOWN_SCORER", "marketStatus": "OPEN",
               "runners": [runner("Derrick Henry", "-185"), runner("Bijan Robinson", "-200")]},
+        "11": {"eventId": 101, "marketName": "Drake London - Alt Receptions",
+               "marketType": "PLAYER_ALT_RECEPTIONS", "marketStatus": "OPEN",
+               "runners": [runner("Drake London 3+ Receptions", "-400"),
+                           runner("Drake London 4+ Receptions", "-220"),
+                           runner("Drake London 6+ Receptions", "+150")]},
+        "12": {"eventId": 101, "marketName": "Alt Receiving Yds", "marketType": "ALT_RECEIVING_YARDS",
+               "marketStatus": "OPEN",
+               "runners": [runner("Derrick Henry 25+ Yds", "-150")]},
         "10": {"eventId": 101, "marketName": "Atlanta Falcons Total Points",
                "marketType": "AWAY_TOTAL_POINTS", "marketStatus": "OPEN",
                "runners": [runner("Over", "-115", 23.5), runner("Under", "-105", 23.5)]}}}}
@@ -112,6 +120,15 @@ class VerifyTest(unittest.TestCase):
                                 opener=opener({"league": LEAGUE,
                                                "event": urllib.error.URLError("down")}))
         self.assertEqual([b.market for b in kept], ["h2h"])
+
+    def test_prop_ladders(self):
+        bets = [bet("player_receptions_alternate", "Drake London Over", 3.5, 0.75),     # 4+
+                bet("player_receptions_alternate", "Drake London Over", 4.5, 0.55),     # 5+: not listed
+                bet("player_reception_yds_alternate", "Derrick Henry Over", 24.5, 0.6),  # 25+
+                bet("player_rush_yds_alternate", "Derrick Henry Over", 24.5, 0.9)]      # wrong stat
+        kept, _ = fdfeed.verify(bets, "nj", opener=opener({"league": LEAGUE, "event": EVENT}))
+        self.assertEqual([(b.pick, b.point, b.fd_price) for b in kept],
+                         [("Drake London Over", 3.5, -220), ("Derrick Henry Over", 24.5, -150)])
 
 
 if __name__ == "__main__":

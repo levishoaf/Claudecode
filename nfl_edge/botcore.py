@@ -392,7 +392,7 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
 
 
 def pick_singles(bets, count: int, rank_by: str = "prob"):
-    return rank_singles(bets, count, rank_by=rank_by, per_game=3)
+    return rank_singles(bets, count, rank_by=rank_by, per_game=3, prop_share=0.5)
 
 
 def pick_parlays(bets, count: int, min_legs: int, max_legs: int) -> list[Parlay]:

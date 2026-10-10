@@ -25,8 +25,9 @@ from .odds import american_to_decimal
 APP_KEY = "FhMFpcPWXMeyZxOx"  # the public key FanDuel's own website sends
 BASE = "https://sbapi.{state}.sportsbook.fanduel.com/api"
 PAGE_IDS = {"nfl": "nfl", "ncaaf": "ncaaf"}
-# Event-page tabs that hold anytime touchdown scorers and team totals.
-EVENT_TABS = ("td-scorer-props", "team-props", "popular")
+# Event-page tabs that hold touchdown scorers, player props and team totals.
+EVENT_TABS = ("td-scorer-props", "passing-props", "receiving-props", "rushing-props",
+              "team-props", "popular")
 STATES = ("az", "co", "ct", "dc", "ia", "il", "in", "ks", "ky", "la", "ma", "md", "me", "mi",
           "nc", "nj", "ny", "oh", "pa", "tn", "va", "vt", "wv", "wy")
 CACHE_SECONDS = 15 * 60
@@ -138,6 +139,16 @@ def selections(payload) -> tuple[list[Selection], dict[str, str]]:
 
 # ------------------------------------------------------------------ matching
 
+# Words FanDuel uses in market names for each "X+" prop ladder.
+LADDER_WORDS = {
+    "player_receptions_alternate": ("receptions",),
+    "player_reception_yds_alternate": ("receiving yds", "receiving yards"),
+    "player_rush_yds_alternate": ("rushing yds", "rushing yards"),
+    "player_pass_yds_alternate": ("passing yds", "passing yards"),
+    "player_pass_tds_alternate": ("passing tds", "passing touchdowns", "passing td"),
+}
+
+
 def norm(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", text.lower().replace("&", "and")).strip()
 
@@ -180,6 +191,20 @@ def find(b, sels: list[Selection]) -> Selection | None:
         team, side = pick.rsplit(" ", 1)
         return next((s for s in here if "TOTAL" in mt(s) and norm(team) in norm(s.market)
                      and norm(side) in norm(s.runner) and _line(s) == point), None)
+    if b.market in LADDER_WORDS:
+        # "X+" ladders: the player and the threshold, in a market for that stat.
+        player = norm(pick.rsplit(" ", 1)[0])
+        need = int(point + 0.5)  # Over 24.5 -> 25+
+        words = LADDER_WORDS[b.market]
+
+        def is_it(s):
+            text = norm(s.market + " " + s.runner)
+            stat_ok = any(w in norm(s.market) or w in norm(s.runner) for w in words)
+            threshold = (re.search(rf"(^| ){need}\+", s.runner.lower()) is not None
+                         or (s.handicap is not None and s.handicap in (need - 0.5, float(need))
+                             and norm(s.runner).startswith(("over", player))))
+            return player in text and stat_ok and threshold and "under" not in norm(s.runner)
+        return next((s for s in here if is_it(s)), None)
     if b.market == "player_anytime_td":
         player = pick.rsplit(" ", 1)[0]
         return next((s for s in here if ("ANY" in mt(s) and "TOUCHDOWN" in mt(s))
@@ -197,8 +222,8 @@ def verify(bets: list, state: str, sport: str = "nfl", opener=None) -> tuple[lis
     if not events:
         raise FeedError("FanDuel's page had no games in it (its format may have changed)")
     # Props and team totals live on each game's own page; only fetch games we need.
-    need = {b.game for b in bets if b.market in ("player_anytime_td", "team_totals",
-                                                 "alternate_team_totals")}
+    need = {b.game for b in bets if b.market.startswith("player_")
+            or b.market in ("team_totals", "alternate_team_totals")}
     for eid, name in events.items():
         if not any(same_event(g, name) for g in need):
             continue

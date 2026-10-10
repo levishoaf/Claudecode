@@ -77,7 +77,10 @@ user's machine; never ask for it here or commit it.
 
 The free board (`nfl_board`, `always_offered=True` by default) only builds
 markets FanDuel posts for every game: moneylines, main spreads and totals,
-main team totals and anytime TDs. In the app and on the web page each slip
+main team totals and anytime TDs, plus "X+" prop ladders in FanDuel's steps
+for players with a clear starting role (`FEATURED_MIN_AVERAGE`). The top
+singles are a mix: props fill at most half (`prop_share=0.5`) while game bets
+are available. In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
 `nfl_edge/fdfeed.py` optionally checks bets against FanDuel's own site data

@@ -39,23 +39,44 @@ def sort_key(rank_by: str):
     return lambda b: value_key(b.ev, b.fair_prob)
 
 
+def is_prop(b: Bet) -> bool:
+    return b.market.startswith("player_")
+
+
 def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
-                 rank_by: str = "ev", per_game: int | None = None) -> list[Bet]:
+                 rank_by: str = "ev", per_game: int | None = None,
+                 prop_share: float | None = None) -> list[Bet]:
     """Best `count` singles, one per subject (see subject_key) and at most
-    `per_game` from any one game."""
+    `per_game` from any one game. With `prop_share` (e.g. 0.5), player props and
+    game bets each fill at most that share of the list first, so the list mixes
+    both; leftover places then go to the best of whichever remains."""
+    ranked = [b for b in sorted(bets, key=sort_key(rank_by), reverse=True)
+              if b.fair_prob >= min_prob]
     seen, games, out = set(), {}, []
-    for b in sorted(bets, key=sort_key(rank_by), reverse=True):
+    caps = None
+    if prop_share is not None:
+        n_props = round(count * prop_share)
+        caps = {True: n_props, False: count - n_props}
+
+    def take(b, capped: bool) -> None:
         key = subject_key(b)
-        if b.fair_prob < min_prob or key in seen:
-            continue
-        if per_game and games.get(b.game, 0) >= per_game:
-            continue
+        if key in seen or (per_game and games.get(b.game, 0) >= per_game):
+            return
+        if capped and caps is not None:
+            if sum(is_prop(x) == is_prop(b) for x in out) >= caps[is_prop(b)]:
+                return
         seen.add(key)
         games[b.game] = games.get(b.game, 0) + 1
         out.append(b)
-        if len(out) == count:
-            break
-    return out
+
+    for capped in ((True, False) if caps else (False,)):
+        for b in ranked:
+            if len(out) == count:
+                break
+            take(b, capped)
+    # Keep the list in rank order after the two passes.
+    order = {id(b): i for i, b in enumerate(ranked)}
+    return sorted(out, key=lambda b: order[id(b)])
 
 
 def best_parlays(bets: list[Bet], legs: int, count: int, *, allow_overlap: bool = False,

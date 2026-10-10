@@ -49,7 +49,8 @@ def bet(b, sport):
 def run(sport, week, label, ledger, this_week=False):
     bets = (cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
             else nfl_board(None, LO, HI, week=week))
-    singles = rank_singles(bets, 30, rank_by="prob", per_game=3)
+    singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
+                           prop_share=0.5 if sport == "nfl" else None)
     parlays = mixed_parlays(bets, 3, 5, 10)
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(

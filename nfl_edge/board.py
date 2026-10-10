@@ -52,6 +52,11 @@ PROP_LADDERS = {
 # offered only if the player averages at least this much of it.
 PROP_MIN_AVERAGE = {"passing_yards": 150, "passing_tds": 0.8, "rushing_yards": 25,
                     "receptions": 2.5, "receiving_yards": 25, "rushing_tds+receiving_tds": 0.15}
+# FanDuel posts "X+" prop ladders for players with a clear starting role.
+# With always_offered, a ladder is used only if the player averages this much.
+FEATURED_MIN_AVERAGE = {"passing_yards": 190, "passing_tds": 1.0, "rushing_yards": 45,
+                        "receptions": 3.5, "receiving_yards": 40,
+                        "rushing_tds+receiving_tds": 0.15}
 # How far from the main line FanDuel's alternate lines usually go.
 ALT_SPREAD_RANGE = 10
 ALT_TOTAL_RANGE = 10
@@ -233,7 +238,7 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
 
     # 3) Player props.
     bets += _props(rows, all_games, season, lo, hi, every_line,
-                   only={"player_anytime_td"} if always_offered else None)
+                   featured=always_offered)
     weeks = {g["game_id"]: int(g["week"]) for g in rows}
     for b in bets:
         b.week = weeks.get(b.game_id)
@@ -267,7 +272,7 @@ def _model_only_week(rows, season, lo, hi, games_source) -> list[Bet]:
 
 
 def _props(rows, all_games, season, lo, hi, every_line: bool = False,
-           only: set[str] | None = None) -> list[Bet]:
+           only: set[str] | None = None, featured: bool = False) -> list[Bet]:
     players = load_player_model(season, all_games)
     implied, info = {}, {}
     for g in rows:
@@ -340,7 +345,8 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
             if only is not None and market not in only:
                 continue
             prof = players.profile(name, stat)
-            if prof is None or prof.mean < PROP_MIN_AVERAGE.get(stat, 0):
+            minimum = (FEATURED_MIN_AVERAGE if featured else PROP_MIN_AVERAGE).get(stat, 0)
+            if prof is None or prof.mean < minimum:
                 continue  # FanDuel wouldn't list this prop for him
             mean = prof.mean * factor ** SCALING[dist]
             for k in ladder:

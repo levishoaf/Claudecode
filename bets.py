@@ -223,7 +223,8 @@ def build(args):
         # Keep only bets found on FanDuel's own site, at FanDuel's prices.
         bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
         rank = "ev"
-    singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game)
+    singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game,
+                           prop_share=0.5 if args.sport == "nfl" else None)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
     if not args.parlays:
