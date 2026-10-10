@@ -115,12 +115,14 @@ def tracker_entries(singles, parlays, sport: str, season: int) -> list[dict]:
         return legs
 
     out = []
-    for b in singles:
-        if legs := legs_of([b]):
-            out.append(tracker.make_entry("single", legs, b.fair_prob, sport, season))
-    for p in parlays:
-        if legs := legs_of(p.legs):
-            out.append(tracker.make_entry("parlay", legs, p.win_prob, sport, season))
+    for group, kind, prob in ([([b], "single", b.fair_prob) for b in singles]
+                              + [(list(p.legs), "parlay", p.win_prob) for p in parlays]):
+        if legs := legs_of(group):
+            entry = tracker.make_entry(kind, legs, prob, sport, season)
+            weeks = [b.week for b in group if b.week]
+            if weeks:
+                entry["week"] = min(weeks)
+            out.append(entry)
     return out
 
 

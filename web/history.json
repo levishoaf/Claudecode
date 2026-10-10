@@ -30,7 +30,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Dalton Kincaid 2+ Receptions (Buffalo Bills @ Los Angeles Rams)",
@@ -61,7 +62,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|Isaiah Likely 2+ Receptions (New York Giants @ Washington Commanders)",
@@ -92,7 +94,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams)",
@@ -123,7 +126,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Jaylen Warren 2+ Receptions (Indianapolis Colts @ Pittsburgh Steelers)",
@@ -154,7 +158,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_LV_NE|Las Vegas Raiders +11.5 (Las Vegas Raiders @ New England Patriots)",
@@ -184,7 +189,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Baltimore Ravens +11.5 (Baltimore Ravens @ Atlanta Falcons)",
@@ -214,7 +220,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams)",
@@ -245,7 +252,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_CHI_GB|Chicago Bears +8.5 (Chicago Bears @ Green Bay Packers)",
@@ -275,7 +283,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_CHI_GB|Luther Burden III 30+ Receiving Yds (Chicago Bears @ Green Bay Packers)",
@@ -306,7 +315,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Pittsburgh Steelers +6.5 (Indianapolis Colts @ Pittsburgh Steelers)",
@@ -336,7 +346,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_SF_SEA|Seattle Seahawks +6.5 (San Francisco 49ers @ Seattle Seahawks)",
@@ -366,7 +377,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_HOU_TEN|Xavier Hutchinson 20+ Receiving Yds (Houston Texans @ Tennessee Titans)",
@@ -397,7 +409,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_CLE_NYJ|Over 31.5 (Cleveland Browns @ New York Jets)",
@@ -427,7 +440,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_DEN_LAC|Los Angeles Chargers +13.5 (Denver Broncos @ Los Angeles Chargers)",
@@ -457,7 +471,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Jonathan Taylor 40+ Rushing Yds (Indianapolis Colts @ Pittsburgh Steelers)",
@@ -488,7 +503,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_SF_SEA|Jaxon Smith-Njigba 70+ Receiving Yds (San Francisco 49ers @ Seattle Seahawks)",
@@ -519,7 +535,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Philadelphia Eagles +19.5 (Philadelphia Eagles @ Jacksonville Jaguars)",
@@ -549,7 +566,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|Jordan Addison 20+ Receiving Yds (Minnesota Vikings @ New Orleans Saints)",
@@ -580,7 +598,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|New Orleans Saints +12.5 (Minnesota Vikings @ New Orleans Saints)",
@@ -610,7 +629,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|New York Giants +13.5 (New York Giants @ Washington Commanders)",
@@ -640,7 +660,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Philadelphia Eagles Team Total Over 9.5 (Philadelphia Eagles @ Jacksonville Jaguars)",
@@ -671,7 +692,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_CHI_GB|Green Bay Packers Team Total Over 14.5 (Chicago Bears @ Green Bay Packers)",
@@ -702,7 +724,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_LV_NE|Las Vegas Raiders Team Total Over 13.5 (Las Vegas Raiders @ New England Patriots)",
@@ -733,7 +756,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|Minnesota Vikings Team Total Over 14.5 (Minnesota Vikings @ New Orleans Saints)",
@@ -764,7 +788,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_CLE_NYJ|New York Jets Team Total Over 13.5 (Cleveland Browns @ New York Jets)",
@@ -795,7 +820,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|Washington Commanders Team Total Over 15.5 (New York Giants @ Washington Commanders)",
@@ -826,7 +852,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_DEN_LAC|Los Angeles Chargers Team Total Over 11.5 (Denver Broncos @ Los Angeles Chargers)",
@@ -857,7 +884,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_DET_ARI|Detroit Lions Team Total Over 22.5 (Detroit Lions @ Arizona Cardinals)",
@@ -888,7 +916,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Baltimore Ravens Team Total Over 12.5 (Baltimore Ravens @ Atlanta Falcons)",
@@ -919,7 +948,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Luther Burden III 30+ Receiving Yds (Chicago Bears @ Green Bay Packers) + 2026_05_IND_PIT|Pittsburgh Steelers +6.5 (Indianapolis Colts @ Pittsburgh Steelers)",
@@ -985,7 +1015,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Luther Burden III 30+ Receiving Yds (Chicago Bears @ Green Bay Packers) + 2026_05_SF_SEA|Seattle Seahawks +6.5 (San Francisco 49ers @ Seattle Seahawks)",
@@ -1051,7 +1082,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Luther Burden III 30+ Receiving Yds (Chicago Bears @ Green Bay Packers) + 2026_05_CLE_NYJ|Over 31.5 (Cleveland Browns @ New York Jets)",
@@ -1117,7 +1149,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Los Angeles Rams +6.5 (Buffalo Bills @ Los Angeles Rams) + 2026_05_CLE_NYJ|Over 31.5 (Cleveland Browns @ New York Jets) + 2026_05_SF_SEA|Seattle Seahawks +6.5 (San Francisco 49ers @ Seattle Seahawks)",
@@ -1181,7 +1214,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BAL_ATL|Baltimore Ravens +11.5 (Baltimore Ravens @ Atlanta Falcons) + 2026_05_BUF_LA|Dalton Kincaid 2+ Receptions (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Chicago Bears +8.5 (Chicago Bears @ Green Bay Packers) + 2026_05_LV_NE|Las Vegas Raiders +11.5 (Las Vegas Raiders @ New England Patriots)",
@@ -1263,7 +1297,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BAL_ATL|Baltimore Ravens +11.5 (Baltimore Ravens @ Atlanta Falcons) + 2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Chicago Bears +8.5 (Chicago Bears @ Green Bay Packers) + 2026_05_IND_PIT|Pittsburgh Steelers +6.5 (Indianapolis Colts @ Pittsburgh Steelers)",
@@ -1345,7 +1380,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CHI_GB|Chicago Bears +8.5 (Chicago Bears @ Green Bay Packers) + 2026_05_IND_PIT|Pittsburgh Steelers +6.5 (Indianapolis Colts @ Pittsburgh Steelers) + 2026_05_SF_SEA|Seattle Seahawks +6.5 (San Francisco 49ers @ Seattle Seahawks)",
@@ -1427,7 +1463,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Dalton Kincaid 2+ Receptions (Buffalo Bills @ Los Angeles Rams) + 2026_05_CIN_MIA|Mike Gesicki 2+ Receptions (Cincinnati Bengals @ Miami Dolphins) + 2026_05_IND_PIT|Jaylen Warren 2+ Receptions (Indianapolis Colts @ Pittsburgh Steelers) + 2026_05_LV_NE|Las Vegas Raiders +11.5 (Las Vegas Raiders @ New England Patriots) + 2026_05_NYG_WAS|Isaiah Likely 2+ Receptions (New York Giants @ Washington Commanders)",
@@ -1529,7 +1566,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BAL_ATL|Baltimore Ravens +11.5 (Baltimore Ravens @ Atlanta Falcons) + 2026_05_BUF_LA|Dalton Kincaid 2+ Receptions (Buffalo Bills @ Los Angeles Rams) + 2026_05_CIN_MIA|Mike Gesicki 2+ Receptions (Cincinnati Bengals @ Miami Dolphins) + 2026_05_IND_PIT|Jaylen Warren 2+ Receptions (Indianapolis Colts @ Pittsburgh Steelers) + 2026_05_NYG_WAS|Isaiah Likely 2+ Receptions (New York Giants @ Washington Commanders)",
@@ -1631,7 +1669,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams) + 2026_05_CIN_MIA|Mike Gesicki 2+ Receptions (Cincinnati Bengals @ Miami Dolphins) + 2026_05_IND_PIT|Jaylen Warren 2+ Receptions (Indianapolis Colts @ Pittsburgh Steelers) + 2026_05_LV_NE|Las Vegas Raiders +11.5 (Las Vegas Raiders @ New England Patriots) + 2026_05_NYG_WAS|Isaiah Likely 2+ Receptions (New York Giants @ Washington Commanders)",
@@ -1733,7 +1772,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 5
   },
   {
    "id": "single:401862797|East Carolina ML (Rice @ East Carolina)",
@@ -1762,7 +1802,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858258|Virginia ML (Syracuse @ Virginia)",
@@ -1791,7 +1832,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856713|Tennessee ML (Tennessee @ Arkansas)",
@@ -1820,7 +1862,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856808|Arizona State ML (Hawai'i @ Arizona State)",
@@ -1849,7 +1892,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401869843|App State ML (Old Dominion @ App State)",
@@ -1878,7 +1922,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858484|Oregon ML (UCLA @ Oregon)",
@@ -1907,7 +1952,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858481|Indiana ML (Indiana @ Nebraska)",
@@ -1936,7 +1982,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856717|Texas ML (Texas @ Oklahoma)",
@@ -1965,7 +2012,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856715|LSU ML (LSU @ Kentucky)",
@@ -1994,7 +2042,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
@@ -2023,7 +2072,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
@@ -2052,7 +2102,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401864517|Nevada ML (Nevada @ UTEP)",
@@ -2081,7 +2132,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401864516|Air Force ML (Air Force @ Northern Illinois)",
@@ -2110,7 +2162,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401862799|Navy ML (Tulsa @ Navy)",
@@ -2139,7 +2192,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856826|BYU ML (Iowa State @ BYU)",
@@ -2168,7 +2222,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856714|Florida ML (South Carolina @ Florida)",
@@ -2197,7 +2252,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858255|Duke ML (Duke @ Georgia Tech)",
@@ -2226,7 +2282,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856823|Arizona ML (Arizona @ West Virginia)",
@@ -2255,7 +2312,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401862795|Army ML (Tulane @ Army)",
@@ -2284,7 +2342,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401866438|Ohio ML (Central Michigan @ Ohio)",
@@ -2313,7 +2372,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401869965|Louisiana Tech ML (Louisiana @ Louisiana Tech)",
@@ -2342,7 +2402,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401860902|Oregon State ML (San Diego State @ Oregon State)",
@@ -2371,7 +2432,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858259|Virginia Tech ML (Virginia Tech @ California)",
@@ -2400,7 +2462,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401856825|Kansas State ML (Houston @ Kansas State)",
@@ -2429,7 +2492,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "single:401858485|Penn State ML (USC @ Penn State)",
@@ -2458,7 +2522,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856715|LSU ML (LSU @ Kentucky) + 401856717|Texas ML (Texas @ Oklahoma) + 401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State)",
@@ -2519,7 +2584,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401864517|Nevada ML (Nevada @ UTEP) + 401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State) + 401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
@@ -2580,7 +2646,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401864516|Air Force ML (Air Force @ Northern Illinois) + 401864517|Nevada ML (Nevada @ UTEP) + 401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
@@ -2641,7 +2708,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401862799|Navy ML (Tulsa @ Navy) + 401864516|Air Force ML (Air Force @ Northern Illinois) + 401864517|Nevada ML (Nevada @ UTEP)",
@@ -2702,7 +2770,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856717|Texas ML (Texas @ Oklahoma) + 401858481|Indiana ML (Indiana @ Nebraska) + 401858484|Oregon ML (UCLA @ Oregon) + 401869843|App State ML (Old Dominion @ App State)",
@@ -2779,7 +2848,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856715|LSU ML (LSU @ Kentucky) + 401858481|Indiana ML (Indiana @ Nebraska) + 401858484|Oregon ML (UCLA @ Oregon) + 401869843|App State ML (Old Dominion @ App State)",
@@ -2856,7 +2926,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856715|LSU ML (LSU @ Kentucky) + 401856717|Texas ML (Texas @ Oklahoma) + 401864519|San Jos\u00e9 State ML (Wyoming @ San Jos\u00e9 State) + 401866435|Eastern Michigan ML (Eastern Michigan @ Akron)",
@@ -2933,7 +3004,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856713|Tennessee ML (Tennessee @ Arkansas) + 401856808|Arizona State ML (Hawai'i @ Arizona State) + 401858258|Virginia ML (Syracuse @ Virginia) + 401862797|East Carolina ML (Rice @ East Carolina) + 401869843|App State ML (Old Dominion @ App State)",
@@ -3026,7 +3098,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856713|Tennessee ML (Tennessee @ Arkansas) + 401856808|Arizona State ML (Hawai'i @ Arizona State) + 401858258|Virginia ML (Syracuse @ Virginia) + 401858484|Oregon ML (UCLA @ Oregon) + 401862797|East Carolina ML (Rice @ East Carolina)",
@@ -3119,7 +3192,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   },
   {
    "id": "parlay:401856713|Tennessee ML (Tennessee @ Arkansas) + 401856808|Arizona State ML (Hawai'i @ Arizona State) + 401858258|Virginia ML (Syracuse @ Virginia) + 401858481|Indiana ML (Indiana @ Nebraska) + 401862797|East Carolina ML (Rice @ East Carolina)",
@@ -3212,7 +3286,8 @@
      "status": "pending",
      "detail": ""
     }
-   ]
+   ],
+   "week": 6
   }
  ],
  "saved": [
@@ -3243,7 +3318,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401858481|Indiana moneyline (@ Nebraska)",
@@ -3272,7 +3348,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401856718|Ole Miss moneyline (@ Vanderbilt)",
@@ -3301,7 +3378,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401858484|Oregon moneyline (vs UCLA)",
@@ -3330,7 +3408,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401858255|Duke moneyline (@ Georgia Tech)",
@@ -3359,7 +3438,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401856713|Tennessee moneyline (@ Arkansas)",
@@ -3388,7 +3468,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:401856715|LSU moneyline (@ Kentucky)",
@@ -3417,7 +3498,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)"
+   "source": "Paper bets: 7 college moneylines as singles (week 6, 2026)",
+   "week": 6
   },
   {
    "id": "single:2026_05_PHI_JAX|Jacksonville Jaguars moneyline",
@@ -3446,7 +3528,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 3 singles (week 5, 2026)"
+   "source": "Paper bets: top 3 singles (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_HOU_TEN|Tennessee Titans +7.5",
@@ -3476,7 +3559,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 3 singles (week 5, 2026)"
+   "source": "Paper bets: top 3 singles (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Ravens-Falcons Over 43.5",
@@ -3506,7 +3590,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 3 singles (week 5, 2026)"
+   "source": "Paper bets: top 3 singles (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "parlay:2026_05_CIN_MIA|Ja'Marr Chase 4+ receptions + 2026_05_DET_ARI|Trey McBride 6+ receptions + 2026_05_IND_PIT|Jaylen Warren 2+ receptions",
@@ -3565,7 +3650,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper prop parlay #1 (3 legs, Sunday week 5, 2026)"
+   "source": "Paper prop parlay #1 (3 legs, Sunday week 5, 2026)",
+   "week": 5
   },
   {
    "id": "parlay:2026_05_BAL_ATL|Drake London 40+ receiving yds + 2026_05_DEN_LAC|RJ Harvey 2+ receptions + 2026_05_HOU_TEN|Dalton Schultz 3+ receptions",
@@ -3624,7 +3710,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper prop parlay #2 (3 legs, Sunday week 5, 2026)"
+   "source": "Paper prop parlay #2 (3 legs, Sunday week 5, 2026)",
+   "week": 5
   },
   {
    "id": "parlay:2026_05_CHI_GB|D'Andre Swift 40+ rushing yds + 2026_05_PHI_JAX|Trevor Lawrence 1+ passing TDs + 2026_05_SF_SEA|George Kittle 3+ receptions",
@@ -3683,7 +3770,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper prop parlay #3 (3 legs, Sunday week 5, 2026)"
+   "source": "Paper prop parlay #3 (3 legs, Sunday week 5, 2026)",
+   "week": 5
   },
   {
    "id": "parlay:2026_05_CIN_MIA|Cincinnati Bengals moneyline + 2026_05_HOU_TEN|C.J. Stroud 1+ passing TDs + 2026_05_HOU_TEN|Houston Texans moneyline + 2026_05_PHI_JAX|Jacksonville Jaguars moneyline + 2026_05_PHI_JAX|Trevor Lawrence 1+ passing TDs",
@@ -3764,7 +3852,8 @@
      "detail": ""
     }
    ],
-   "source": "5-leg Same Game Parlay+ (week 5, 2026)"
+   "source": "5-leg Same Game Parlay+ (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Jaguars moneyline (vs Eagles)",
@@ -3793,7 +3882,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_HOU_TEN|Titans +7.5 (vs Texans)",
@@ -3823,7 +3913,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|Vikings-Saints Over 41.5",
@@ -3853,7 +3944,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|Giants-Commanders Over 41.5",
@@ -3883,7 +3975,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DET_ARI|Cardinals +5.5 (vs Lions)",
@@ -3913,7 +4006,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CHI_GB|Bears moneyline (at Packers)",
@@ -3942,7 +4036,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CIN_MIA|Bengals moneyline (at Dolphins)",
@@ -3971,7 +4066,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_LV_NE|Raiders +3.5 (at Patriots)",
@@ -4001,7 +4097,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CLE_NYJ|Browns-Jets Over 39.5",
@@ -4031,7 +4128,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)"
+   "source": "Paper bets: top 10 NFL singles by value (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Falcons team total Over 15.5",
@@ -4062,7 +4160,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CIN_MIA|Dolphins +17.5 (alt)",
@@ -4092,7 +4191,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DEN_LAC|Chargers team total Over 11.5",
@@ -4123,7 +4223,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CIN_MIA|Ja'Marr Chase 4+ receptions",
@@ -4154,7 +4255,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DET_ARI|Trey McBride 6+ receptions",
@@ -4185,7 +4287,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DEN_LAC|Chargers +14.5 (alt)",
@@ -4215,7 +4318,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Jaylen Warren 2+ receptions",
@@ -4246,7 +4350,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_SF_SEA|Seahawks team total Over 16.5",
@@ -4277,7 +4382,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Drake London 40+ receiving yds",
@@ -4308,7 +4414,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_HOU_TEN|Texans team total Over 14.5",
@@ -4339,7 +4446,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|Vikings team total Over 14.5",
@@ -4370,7 +4478,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Jonathan Taylor 40+ rushing yds",
@@ -4401,7 +4510,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CLE_NYJ|Jets team total Over 13.5",
@@ -4432,7 +4542,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_IND_PIT|Colts +13.5 (alt)",
@@ -4462,7 +4573,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Eagles team total Over 9.5",
@@ -4493,7 +4605,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CLE_NYJ|Browns +13.5 (alt)",
@@ -4523,7 +4636,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_MIN_NO|Saints +13.5 (alt)",
@@ -4553,7 +4667,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_HOU_TEN|Titans +17.5 (alt)",
@@ -4583,7 +4698,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Bills team total Over 18.5 (Mon)",
@@ -4614,7 +4730,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_CHI_GB|Packers team total Over 14.5",
@@ -4645,7 +4762,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Matthew Stafford 200+ passing yds (Mon)",
@@ -4676,7 +4794,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Eagles +18.5 (alt)",
@@ -4706,7 +4825,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_SF_SEA|49ers +13.5 (alt)",
@@ -4736,7 +4856,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DET_ARI|Cardinals team total Over 17.5",
@@ -4767,7 +4888,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|Giants team total Over 11.5",
@@ -4798,7 +4920,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_NYG_WAS|Commanders team total Over 15.5",
@@ -4829,7 +4952,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_PHI_JAX|Jaguars moneyline (real odds -410)",
@@ -4858,7 +4982,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_DET_ARI|Lions team total Over 22.5",
@@ -4889,7 +5014,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BAL_ATL|Ravens +13.5 (alt)",
@@ -4919,7 +5045,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   },
   {
    "id": "single:2026_05_BUF_LA|Bills +13.5 (alt, Mon)",
@@ -4949,7 +5076,8 @@
      "detail": ""
     }
    ],
-   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)"
+   "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+   "week": 5
   }
  ]
 }

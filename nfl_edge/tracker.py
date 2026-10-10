@@ -166,6 +166,36 @@ def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[s
     return out
 
 
+def game_weeks(sport: str, season: int, games_source: str | None = None) -> dict[str, int]:
+    """{game_id: week} for one season."""
+    if sport == "ncaaf":
+        from . import cfb
+
+        return {r["game_id"]: int(r["week"])
+                for r in cfb.load_schedule(season, games_source, current_season=season)
+                if r.get("week")}
+    return {g["game_id"]: int(g["week"]) for g in data.games(games_source)
+            if g["season"] == str(season) and g.get("week")}
+
+
+def annotate_weeks(ledger: dict, games_source: str | None = None) -> None:
+    """Give every entry a "week" (its first leg's), for grouping the history."""
+    weeks: dict[tuple, dict] = {}
+    for e in all_entries(ledger):
+        if e.get("week"):
+            continue
+        key = (e["sport"], e["season"])
+        if key not in weeks:
+            try:
+                weeks[key] = game_weeks(*key, games_source)
+            except data.DataError:
+                weeks[key] = {}
+        found = [weeks[key].get(leg["game_id"]) for leg in e["legs"]]
+        found = [w for w in found if w]
+        if found:
+            e["week"] = min(found)
+
+
 def import_saved(ledger: dict, paths, games_source: str | None = None) -> int:
     """Add bets saved as files (bets/*.json, the grader's format) to ledger["saved"].
 

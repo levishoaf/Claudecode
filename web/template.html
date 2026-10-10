@@ -125,6 +125,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .p-pending { background: var(--blue); }
 .rgrid { align-items: start; }
 .hist-section { display: grid; gap: 8px; }
+.week-head { margin: 4px 0 0; font-size: 14px; font-weight: 700; color: #fff; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.week-head span { font-size: 12px; font-weight: 500; color: var(--on-dark-2); }
 .hist-list { columns: 3 250px; column-gap: 6px; }
 .hist-item { break-inside: avoid; display: flex; align-items: center; gap: 8px; background: var(--card); color: var(--ink); border-radius: 7px; padding: 6px 9px; margin-bottom: 6px; font-size: 13px; line-height: 1.25; }
 .hist-item .hb { flex: 1; min-width: 0; overflow-wrap: anywhere; }
@@ -377,16 +379,28 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
     html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
     const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
+    const weekOf = (e) => {
+      if (e.week) return e.week;
+      const ws = e.legs.map((l) => (DATA.gameWeeks || {})[(l.lid || "").split("|")[0]]).filter(Boolean);
+      return ws.length ? Math.min(...ws) : null;
+    };
     for (const [sport, name] of [["nfl", "NFL"], ["ncaaf", "College football"]]) {
       const group = all.filter(([, e]) => (e.sport || "nfl") === sport);
-      const list = state.histFilter === "all" ? group : group.filter(([, , s]) => s === state.histFilter);
-      const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
-      const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
-      const shown = done.concat(pend).slice(0, 150);
       html += `<section class="hist-section"><h2 class="hist-head">${name}<span>${tally(group)}</span></h2>`;
-      if (!shown.length) html += `<div class="empty">${group.length ? "None match this filter yet." : `No ${name} bets yet.`}</div>`;
-      else html += `<div class="hist-list">${shown.map(([, e, s]) => histItem(e, s)).join("")}</div>`;
-      if (list.length > shown.length) html += `<p class="foot">Showing ${shown.length} of ${list.length}, settled bets first.</p>`;
+      if (!group.length) { html += `<div class="empty">No ${name} bets yet.</div></section>`; continue; }
+      const weeks = [...new Set(group.map(([, e]) => weekOf(e)))].sort((a, b) => (b ?? -1) - (a ?? -1));
+      let any = false;
+      for (const w of weeks) {
+        const inWeek = group.filter(([, e]) => weekOf(e) === w);
+        const list = state.histFilter === "all" ? inWeek : inWeek.filter(([, , s]) => s === state.histFilter);
+        if (!list.length) continue;
+        any = true;
+        const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
+        const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
+        html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(inWeek)}</span></h3>
+          <div class="hist-list">${done.concat(pend).map(([, e, s]) => histItem(e, s)).join("")}</div>`;
+      }
+      if (!any) html += `<div class="empty">None match this filter yet.</div>`;
       html += `</section>`;
     }
     return html;
@@ -424,6 +438,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const eid = entryId(e.kind, e.legs.map((l) => l.lid));
     return { id: docId(eid), doc: { entryId: eid, kind: e.kind, sport: e.sport || state.sport, prob: e.prob, odds, stake,
       placedAt: new Date().toISOString(),
+      week: Math.min(...e.legs.map((l) => l.week || 99)) < 99 ? Math.min(...e.legs.map((l) => l.week || 99)) : null,
       legs: e.legs.map((l) => ({ lid: l.lid, pick: l.label, game: l.game, kickoff: l.kickoff, prob: l.prob, rec: l.rec })) } };
   }
   function saveError(err) {

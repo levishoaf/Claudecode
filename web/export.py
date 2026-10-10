@@ -119,6 +119,13 @@ def main():
         tracker.regrade(ledger)
     except Exception:
         traceback.print_exc()
+    try:
+        tracker.annotate_weeks(ledger)
+    except Exception:
+        traceback.print_exc()
+    # Week of every game a tracked bet is on, for bets placed on the page.
+    result["gameWeeks"] = {leg["game_id"]: e["week"] for e in tracker.all_entries(ledger)
+                           if e.get("week") for leg in e["legs"]}
     results = {leg["id"]: [leg["status"], leg["detail"]]
                for e in tracker.all_entries(ledger) for leg in e["legs"]}
     ledger["placed"] = []
@@ -126,6 +133,7 @@ def main():
     result["legResults"] = results
     def brief(e, src):
         return {"id": e["id"], "src": src, "kind": e["kind"], "sport": e["sport"],
+                "week": e.get("week"),
                 "prob": e["win_prob"], "odds": e["odds"], "stake": e.get("stake", 100),
                 "status": e["status"], "created": e["created"], "name": e.get("source", ""),
                 "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],

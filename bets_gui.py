@@ -612,6 +612,7 @@ class App:
                     pass
             try:
                 tracker.regrade(ledger)
+                tracker.annotate_weeks(ledger)
             except Exception:  # never let grading break the board
                 pass
             tracker.save(ledger, self.ledger_path)
@@ -718,22 +719,27 @@ class App:
                 tk.Label(parent, text="No bets yet.", bg=BG, fg=MUTED,
                          font=self.f["small"]).pack(anchor="w", padx=6)
                 continue
-            done = sorted((e for _, e in group if e["status"] != "pending"),
-                          key=tracker.first_kickoff, reverse=True)
-            pending = sorted((e for _, e in group if e["status"] == "pending"),
-                             key=tracker.first_kickoff)
-            shown = (done + pending)[:120]
-            holder = tk.Frame(parent, bg=BG)
-            holder.pack(fill="x")
-            cols = self.columns(holder, 3, CARD_W)
-            heights = [0, 0, 0]
-            for e in shown:  # fill the shortest column, so there are no gaps
-                col = heights.index(min(heights))
-                heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
-                self.history_row(cols[col], e)
-            if len(group) > len(shown):
-                tk.Label(parent, text=f"Showing {len(shown)} of {len(group)}, settled bets first.",
-                         bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
+            weeks = sorted({e.get("week") for _, e in group}, key=lambda w: -(w or -1))
+            for week in weeks:
+                in_week = [x for x in group if x[1].get("week") == week]
+                wk = tk.Frame(parent, bg=BG)
+                wk.pack(fill="x", padx=6, pady=(6, 2))
+                tk.Label(wk, text=f"Week {week}" if week else "Other", bg=BG, fg=TEXT,
+                         font=self.f["bold"]).pack(side="left")
+                tk.Label(wk, text="   " + tally(in_week), bg=BG, fg=MUTED,
+                         font=self.f["tiny"]).pack(side="left", pady=(2, 0))
+                done = sorted((e for _, e in in_week if e["status"] != "pending"),
+                              key=tracker.first_kickoff, reverse=True)
+                pending = sorted((e for _, e in in_week if e["status"] == "pending"),
+                                 key=tracker.first_kickoff)
+                holder = tk.Frame(parent, bg=BG)
+                holder.pack(fill="x")
+                cols = self.columns(holder, 3, CARD_W)
+                heights = [0, 0, 0]
+                for e in done + pending:  # fill the shortest column, so there are no gaps
+                    col = heights.index(min(heights))
+                    heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
+                    self.history_row(cols[col], e)
 
     def history_row(self, parent, e: dict) -> None:
         """One compact line: the bet, its chance, and WON/LOST once it's settled."""

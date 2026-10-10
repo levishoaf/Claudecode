@@ -82,6 +82,17 @@ class TrackerTest(unittest.TestCase):
                          [("placed", "A"), ("not placed", "B"), ("saved", "C")])
         self.assertEqual(ledger["saved"][0]["legs"][0]["game"], "X @ Y")
 
+    def test_annotate_weeks(self):
+        a = tracker.make_entry("single", [leg("A")], 0.6, "nfl", 2026)
+        b = tracker.make_entry("single", [leg("B", game="gx")], 0.6, "nfl", 2026)
+        c = dict(tracker.make_entry("single", [leg("C")], 0.6, "nfl", 2026), week=3)
+        ledger = {"placed": [a], "generated": [b, c], "saved": []}
+        with mock.patch("nfl_edge.tracker.game_weeks", return_value={"g1": 5}):
+            tracker.annotate_weeks(ledger)
+        self.assertEqual(a["week"], 5)
+        self.assertNotIn("week", b)  # unknown game: left alone
+        self.assertEqual(c["week"], 3)  # already known: kept
+
 
 if __name__ == "__main__":
     unittest.main()
