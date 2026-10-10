@@ -166,17 +166,42 @@ def grade_saved(which: str) -> None:
 
 # ---------------------------------------------------------------- one board
 
+ODDS_KEY_FILE = ROOT / "odds api key.txt"
+
+
+def odds_api_key() -> str | None:
+    """The Odds API key for FanDuel lines: ODDS_API_KEY, or the saved key file."""
+    key = os.environ.get("ODDS_API_KEY", "").strip()
+    if not key and ODDS_KEY_FILE.exists():
+        key = ODDS_KEY_FILE.read_text().strip()
+    return key or None
+
+
+def save_odds_api_key(key: str) -> None:
+    ODDS_KEY_FILE.write_text(key.strip() + "\n")
+
+
 def build(args):
-    """Candidate bets, picked singles and parlays for the chosen sport and day."""
+    """Candidate bets, picked singles and parlays for the chosen sport and day.
+
+    With args.fanduel_key, only bets FanDuel lists, at FanDuel's prices, ranked by
+    expected value; otherwise the free board with break-even odds."""
     lo, hi = args.min_prob / 100, args.max_prob / 100
     day = None if args.date in ("week", "all") else (
         date.today() if args.date == "today" else date.fromisoformat(args.date))
     week = getattr(args, "week", None)
-    if args.sport == "ncaaf":
-        bets = cfb_board(day, lo, hi, week=week)
+    key = getattr(args, "fanduel_key", None)
+    board.NOTES.pop("fanduel", None)
+    if key and day is None:
+        from nfl_edge import fanduel
+
+        bets, board.NOTES["fanduel"] = fanduel.fanduel_board(key, args.sport, lo, hi, week=week)
+        rank = "ev"  # real prices: best chance-and-payout first
+    elif args.sport == "ncaaf":
+        bets, rank = cfb_board(day, lo, hi, week=week), "prob"
     else:
-        bets = nfl_board(day, lo, hi, games_source=args.games_file, week=week)
-    singles = rank_singles(bets, args.singles, rank_by="prob", per_game=args.per_game)
+        bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
+    singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game)
     lo_legs = getattr(args, "min_legs", None) or args.legs
     hi_legs = getattr(args, "max_legs", None) or args.legs
     if not args.parlays:

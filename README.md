@@ -118,6 +118,18 @@ with no account or key:
   `P1 +240`). It tells you the expected value and whether the bet is worth
   it.
 
+**FanDuel lines.** The free data doesn't include FanDuel's menu, so the free
+board keeps to lines FanDuel usually posts: alternate spreads and totals
+within 10 points of the main line, team totals within 4 points, and props in
+FanDuel's steps (yards in 25s, receptions from 3+) for players with a real
+role. Most picks will be on FanDuel, but not all. For an exact match, click
+**FanDuel lines** in the window and paste a key from
+[the-odds-api.com](https://the-odds-api.com): the app then shows only bets
+FanDuel actually lists, at FanDuel's odds, with each bet's expected value,
+best value first, and the slip fills in FanDuel's price. A full NFL week costs
+about 200 API credits per check, so results are reused for 30 minutes. The key
+is saved as `odds api key.txt` next to the program.
+
 **Auto-refresh** is on by default every 5 minutes, with a countdown to the
 next update (the **Refresh** box in the window; 0 turns it off, or
 `--watch 5` in the text version). Each update reloads injury reports

@@ -23,7 +23,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, tracker
+from nfl_edge import board, data, fanduel, tracker
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import decimal_to_american
@@ -181,7 +181,9 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        tk.Label(row1, text="   Free data  ·  odds shown are break-even", bg=NAVY, fg="#9fb0c8", font=self.f["small"]).pack(side="left")
+        self.fanduel_on = bets.odds_api_key() is not None  # on whenever a key is saved
+        self.mode_lbl = tk.Label(row1, text="", bg=NAVY, fg="#9fb0c8", font=self.f["small"])
+        self.mode_lbl.pack(side="left")
 
         self.sport = tk.StringVar(value="nfl")
         seg = tk.Frame(row1, bg=NAVY_2)
@@ -191,6 +193,9 @@ class App:
             b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
             b.pack(side="left")
             self.seg_btns[key] = b
+        self.fd_btn = FlatButton(row1, "", self.toggle_fanduel, "secondary", self.f["tinyb"])
+        self.fd_btn.pack(side="right", padx=(0, 10))
+        self.show_mode()
         tk.Label(row1, textvariable=self.countdown, bg=NAVY, fg=WHITE,
                  font=self.f["bold"]).pack(side="right", padx=(0, 14))
         self.pick_sport("nfl")
@@ -248,6 +253,27 @@ class App:
         self.build_btn.pack(side="left", padx=(0, 6))
         FlatButton(btns, "Save", self.save, "secondary", self.f["bold"]).pack(side="left")
         c.create_window(W / 2, 72, window=top, width=PANEL_W)
+
+    def show_mode(self) -> None:
+        on = self.fanduel_on
+        self.fd_btn.configure(text=" FanDuel lines: On " if on else " FanDuel lines: Off ")
+        self.fd_btn.set_kind("primary" if on else "ghost")
+        self.mode_lbl.configure(text="" if on else "   Free data  ·  break-even odds")
+
+    def toggle_fanduel(self) -> None:
+        if not self.fanduel_on and bets.odds_api_key() is None:
+            from tkinter import simpledialog
+
+            key = simpledialog.askstring(
+                "FanDuel lines", "Paste your key from the-odds-api.com.\n"
+                "It's saved next to this program. A full NFL week uses about 200 credits;\n"
+                "results are reused for 30 minutes.", parent=self.root)
+            if not key or not key.strip():
+                return
+            bets.save_odds_api_key(key)
+        self.fanduel_on = not self.fanduel_on
+        self.show_mode()
+        self.build()
 
     def pick_sport(self, key: str) -> None:
         changed = self.sport.get() != key
@@ -412,9 +438,18 @@ class App:
         sport = "NFL" if args.sport == "nfl" else "College Football"
         tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        tk.Label(head, text=f"   {args.min_prob:.0f}–{args.max_prob:.0f}% chance, likeliest first"
+        order = "best value first" if getattr(args, "fanduel_key", None) else "likeliest first"
+        tk.Label(head, text=f"   {args.min_prob:.0f}–{args.max_prob:.0f}% chance, {order}"
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
+        self.fd_mode = bool(getattr(args, "fanduel_key", None))
+        if self.fd_mode and board.NOTES.get("fanduel"):
+            tk.Label(self.body, text="FanDuel: " + board.NOTES["fanduel"].replace("FanDuel lines ", "")
+                     + "  ·  ranked by expected value", bg=BG, fg=BLUE,
+                     font=self.f["small"]).pack(anchor="w", padx=16)
+        elif board.NOTES.get("fanduel_error") and self.fanduel_on:
+            tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
+                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
             ready = "included for all" in board.NOTES["injuries"]
             tk.Label(self.body, text=("✓ " if ready else "⚠ ") + board.NOTES["injuries"],
@@ -453,8 +488,10 @@ class App:
         else:
             self.slip_tab(grid)
         self.refresh_cards()
-        tk.Label(self.body, text="Odds shown are break-even: bet only if FanDuel pays that or "
-                                 "better. Check any price at the bottom.",
+        tk.Label(self.body, text=("Odds are FanDuel's, from the last check. EV is the expected "
+                                  "profit per $1 at those odds." if self.fd_mode else
+                                  "Odds shown are break-even: bet only if FanDuel pays that or "
+                                  "better. Check any price at the bottom."),
                  bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
 
     def show_tab(self, key: str) -> None:
@@ -481,9 +518,10 @@ class App:
         head = tk.Frame(table, bg="#f6f8fb")
         head.pack(fill="x")
         self.grid_cols(head)
-        last_text = (f"PAYS ${self.wager():g}" if last == "pays" else (last or ""))
+        fd = getattr(self, "fd_mode", False)
+        last_text = (("EV" if fd else f"PAYS ${self.wager():g}") if last == "pays" else (last or ""))
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
-                                  (3, "WORST ODDS", "e"), (4, last_text, "e")):
+                                  (3, "FANDUEL" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
             tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
                 row=0, column=col, sticky=anchor, padx=6, pady=5)
         return table
@@ -501,7 +539,8 @@ class App:
             return 10.0
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
-                 on_click=None, last: str | None = None) -> tk.Frame:
+                 on_click=None, last: str | None = None, price: int | None = None,
+                 ev: float | None = None) -> tk.Frame:
         """One bet: number, name with game below, chance, worst odds, payout."""
         tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
         row = tk.Frame(table, bg=CARD)
@@ -517,10 +556,17 @@ class App:
                                                        pady=(0, 6))
         tk.Label(row, text=f"{prob:.0%}", bg=CARD, fg=chance_color(prob),
                  font=self.f["pick"]).grid(row=0, column=2, rowspan=2, sticky="e", padx=6)
-        tk.Label(row, text=_fmt_american(decimal_to_american(1 / prob)), bg=CARD, fg=BLUE,
+        fd = getattr(self, "fd_mode", False) and price is not None
+        odds_text = _fmt_american(price) if fd else _fmt_american(decimal_to_american(1 / prob))
+        tk.Label(row, text=odds_text, bg=CARD, fg=BLUE,
                  font=self.f["bold"]).grid(row=0, column=3, rowspan=2, sticky="e", padx=6)
-        end = last if last is not None else f"${self.wager() / prob:,.2f}"
-        end_lbl = tk.Label(row, text=end, bg=CARD, fg=TEXT, font=self.f["small"])
+        if last is not None:
+            end, end_fg = last, TEXT
+        elif fd and ev is not None:
+            end, end_fg = f"{ev:+.1%}", GREEN if ev > 0 else RED
+        else:
+            end, end_fg = f"${self.wager() / prob:,.2f}", TEXT
+        end_lbl = tk.Label(row, text=end, bg=CARD, fg=end_fg, font=self.f["small"])
         end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
         if on_click is not None:
             self.clickable(row, on_click)
@@ -543,7 +589,8 @@ class App:
             elif old is not None and abs(old - b.fair_prob) >= 0.02:
                 title += f"  · was {old:.0%}"
             self.list_row(table, str(i), title, f"{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
-                          b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b))
+                          b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b),
+                          price=b.fd_price, ev=b.ev)
 
     def parlays_tab(self, parent, parlays, stake) -> None:
         if not parlays:
@@ -556,7 +603,8 @@ class App:
                                                       "Did not practice": " (DNP)"}.get(b.note, "")
                                 for b in p.legs)
             self.list_row(table, f"P{i}", f"{len(p.legs)}-leg parlay", legs, p.win_prob,
-                          tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p))
+                          tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
+                          price=p.american, ev=p.ev)
 
     def injuries_tab(self, parent) -> None:
         week, players, note = self.injuries
@@ -620,23 +668,27 @@ class App:
         table = self.list_table(parent, "", last="")
         for b in singles:
             self.list_row(table, "", _slip_selection(b), f"{b.game}  ·  {_slip_time(b)}",
-                          b.fair_prob, last="✕")
+                          b.fair_prob, last="✕", price=b.fd_price)
             self.remove_link(table, lambda b=b: self.toggle_single(b))
-            self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob)
+            self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob,
+                           prefill=b.fd_price if self.fd_mode else None)
         for p in parlays:
             self.list_row(table, "", f"{len(p.legs)}-leg parlay",
-                          "  ·  ".join(_slip_selection(b) for b in p.legs), p.win_prob, last="✕")
+                          "  ·  ".join(_slip_selection(b) for b in p.legs), p.win_prob, last="✕",
+                          price=p.american)
             self.remove_link(table, lambda p=p: self.toggle_parlay(p))
-            self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob)
+            self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob,
+                           prefill=p.american if self.fd_mode else None)
         combo = self.combined(singles)
         if combo:
             tk.Label(parent, text=f"Or bet your {len(singles)} singles as one parlay:", bg=BG,
                      fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=(10, 0))
             table = self.list_table(parent, "", last="")
             self.list_row(table, "", f"{len(singles)}-leg parlay (your singles)",
-                          "  ·  ".join(_slip_selection(b) for b in singles), combo.win_prob, last="")
+                          "  ·  ".join(_slip_selection(b) for b in singles), combo.win_prob, last="",
+                          price=combo.american)
             self.place_row(table, self.entry_for([], [combo]), stake, bulk=False,
-                           prob=combo.win_prob)
+                           prob=combo.win_prob, prefill=combo.american if self.fd_mode else None)
 
     def remove_link(self, table, command) -> None:
         """Make the ✕ at the end of the row just added remove it from the slip."""
@@ -675,7 +727,7 @@ class App:
         return entries[0] if entries else None
 
     def place_row(self, parent, entry: dict | None, stake: float, bulk: bool = True,
-                  prob: float | None = None) -> None:
+                  prob: float | None = None, prefill: int | None = None) -> None:
         """'Odds you got [ ]  Stake [ ]  [I placed this]  Worth it' under a slip row."""
         if entry is None:
             return
@@ -700,6 +752,9 @@ class App:
                                   f"{'Worth it' if ev > 0 else 'Not worth it'} · EV {ev:+.1%}",
                                   fg=GREEN if ev and ev > 0 else RED)
             odds.bind("<KeyRelease>", judge)
+            if prefill is not None:  # FanDuel's own price, ready to confirm
+                odds.insert(0, _fmt_american(prefill))
+                self.root.after_idle(judge)
         tk.Label(row, text="Stake $", bg=CARD, fg=MUTED, font=self.f["tiny"]).pack(side="left")
         amount = ttk.Entry(row, width=5, font=self.f["small"])
         amount.insert(0, f"{stake:g}")
@@ -845,7 +900,8 @@ class App:
             legs=int(self.min_legs.get() or 3), min_legs=int(self.min_legs.get() or 3),
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=float(self.lo.get() or 60),
-            max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None)
+            max_prob=float(self.hi.get() or 80), per_game=3, allow_overlap=False, games_file=None,
+            fanduel_key=bets.odds_api_key() if self.fanduel_on else None)
 
     def build(self) -> None:
         try:
@@ -859,7 +915,14 @@ class App:
 
         def work():
             try:
-                _, singles, parlays = bets.build(args)
+                try:
+                    _, singles, parlays = bets.build(args)
+                except fanduel.OddsAPIError as e:  # fall back to the free board
+                    args.fanduel_key = None
+                    _, singles, parlays = bets.build(args)
+                    board.NOTES["fanduel_error"] = f"Couldn't get FanDuel lines ({e}). Showing free estimates."
+                else:
+                    board.NOTES.pop("fanduel_error", None)
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)

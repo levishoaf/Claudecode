@@ -34,17 +34,26 @@ ABBR_NAME = {v: k for k, v in TEAM_ABBR.items()}
 NOTES: dict[str, str] = {}
 HALF_POINTS = [k + 0.5 for k in range(0, 60)]
 
-# position -> [(stat column, market, distribution, thresholds)]
+# position -> [(stat column, market, distribution, thresholds)]. The steps follow
+# FanDuel's "X+" ladders: yards in 25s, receptions from 3+, passing TDs 1+ to 3+.
 PROP_LADDERS = {
-    "QB": [("passing_yards", "player_pass_yds_alternate", "normal", range(150, 351, 25)),
+    "QB": [("passing_yards", "player_pass_yds_alternate", "normal", range(175, 351, 25)),
            ("passing_tds", "player_pass_tds_alternate", "poisson", range(1, 4))],
-    "RB": [("rushing_yards", "player_rush_yds_alternate", "normal", range(20, 131, 10)),
-           ("receptions", "player_receptions_alternate", "count", range(2, 7)),
+    "RB": [("rushing_yards", "player_rush_yds_alternate", "normal", range(25, 151, 25)),
+           ("receptions", "player_receptions_alternate", "count", range(3, 7)),
            ("rushing_tds+receiving_tds", "player_anytime_td", "poisson", [1])],
-    "WR": [("receptions", "player_receptions_alternate", "count", range(2, 11)),
-           ("receiving_yards", "player_reception_yds_alternate", "normal", range(20, 151, 10)),
+    "WR": [("receptions", "player_receptions_alternate", "count", range(3, 11)),
+           ("receiving_yards", "player_reception_yds_alternate", "normal", range(25, 151, 25)),
            ("rushing_tds+receiving_tds", "player_anytime_td", "poisson", [1])],
 }
+# FanDuel only lists props for players with a real role: a stat's ladder is
+# offered only if the player averages at least this much of it.
+PROP_MIN_AVERAGE = {"passing_yards": 150, "passing_tds": 0.8, "rushing_yards": 25,
+                    "receptions": 2.5, "receiving_yards": 25, "rushing_tds+receiving_tds": 0.15}
+# How far from the main line FanDuel's alternate lines usually go.
+ALT_SPREAD_RANGE = 10
+ALT_TOTAL_RANGE = 10
+TEAM_TOTAL_RANGE = 4
 PROP_LADDERS["TE"] = PROP_LADDERS["WR"]
 # How much a team's expected points move each stat (yards and catches less than TDs).
 SCALING = {"normal": 0.5, "count": 0.3, "poisson": 1.0}
@@ -183,18 +192,23 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
             # team +L (or -L): covers if its margin + L > 0
             def cover(L, sign=sign):
                 return home_by_more(-L) if sign == 1 else 1 - home_by_more(L) - dist.outcome("margin", sp, L)[1]
-            for lines in ([L for L in HALF_POINTS], [-L for L in HALF_POINTS]):
+            main = -sp if sign == 1 else sp  # the team's main spread
+            near = [L for L in HALF_POINTS + [-L for L in HALF_POINTS]
+                    if abs(L - main) <= ALT_SPREAD_RANGE]
+            for lines in ([L for L in near if L > 0], [L for L in near if L < 0]):
                 for line, p in _lines(cover, lines, lo, hi, every_line):
                     bets.append(make_bet(game, kick, "alternate_spreads", team, line, p,
                                          gid, "market line"))
         over = lambda L: dist.outcome("total", tot, L)[0]  # noqa: E731
         for side, prob_at in (("Over", over), ("Under", lambda L: 1 - over(L))):
-            for line, p in _lines(prob_at, [L + 20 for L in HALF_POINTS], lo, hi, every_line):
+            near = [L + 20 for L in HALF_POINTS if abs(L + 20 - tot) <= ALT_TOTAL_RANGE]
+            for line, p in _lines(prob_at, near, lo, hi, every_line):
                 bets.append(make_bet(game, kick, "alternate_totals", side, line, p,
                                      gid, "market line"))
         for team, pts in ((home, tot / 2 + sp / 2), (away, tot / 2 - sp / 2)):
+            near = [L for L in HALF_POINTS if abs(L - pts) <= TEAM_TOTAL_RANGE]
             for line, p in _lines(lambda L, pts=pts: 1 - normal_cdf((L - pts) / 9.1),
-                                  HALF_POINTS, lo, hi, every_line):
+                                  near, lo, hi, every_line):
                 bets.append(make_bet(game, kick, "team_totals", f"{team} Over", line, p,
                                      gid, "market line"))
 
@@ -303,8 +317,8 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False) -> list[Be
         found = []  # (chance, market, threshold)
         for stat, market, dist, ladder in PROP_LADDERS.get(players.position.get(key, ""), []):
             prof = players.profile(name, stat)
-            if prof is None:
-                continue
+            if prof is None or prof.mean < PROP_MIN_AVERAGE.get(stat, 0):
+                continue  # FanDuel wouldn't list this prop for him
             mean = prof.mean * factor ** SCALING[dist]
             for k in ladder:
                 p = p_over(dist, mean, prof.sd, k - 0.5)
