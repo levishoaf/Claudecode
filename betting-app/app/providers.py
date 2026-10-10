@@ -71,7 +71,7 @@ def polite_get_json(url: str, timeout: int = 20):
     _last_request[0] = time.time()
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        return gunzip_json(resp.read())
 
 
 def describe_error(exc: Exception) -> str:
@@ -321,3 +321,11 @@ def _close(a: str, b: str) -> bool:
     except ValueError:
         return True
     return abs((da - db).total_seconds()) <= 12 * 3600
+
+
+# ----------------------------------------------------------------- shared ESPN fetch helpers
+def gunzip_json(raw: bytes):
+    import gzip
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    return json.loads(raw.decode("utf-8"))
