@@ -183,27 +183,8 @@ def save_odds_api_key(key: str) -> None:
     ODDS_KEY_FILE.write_text(key.strip() + "\n")
 
 
-STATE_FILE = ROOT / "fanduel state.txt"
 # Win chance range in %: no limit, so the board shows the likeliest bets.
 MIN_PROB, MAX_PROB = 1.0, 99.0
-
-
-DEFAULT_STATE = "in"  # Indiana: the FanDuel check is on unless it's turned off
-
-
-def fanduel_state() -> str | None:
-    """The state to check bets against FanDuel's own site in (Indiana unless changed
-    in the app), or None when the check is turned off."""
-    try:
-        saved = STATE_FILE.read_text().strip().lower()
-    except OSError:
-        saved = ""
-    return None if saved == "off" else (saved or DEFAULT_STATE)
-
-
-def save_fanduel_state(state: str) -> None:
-    """Save a two-letter state, or "off" to turn the FanDuel check off."""
-    STATE_FILE.write_text(state.strip().lower() + "\n")
 
 
 def build(args):
@@ -225,46 +206,16 @@ def build(args):
     elif args.sport == "ncaaf":
         bets, rank = cfb_board(day, lo, hi, week=week), "prob"
     else:
-        # With the FanDuel check on, start from every market; the check keeps only
-        # what FanDuel lists. Without it, only bets that are sure to be on FanDuel.
-        bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
-                               always_offered=not getattr(args, "fanduel_state", None)), "prob"
-    state = getattr(args, "fanduel_state", None)
-    full = bets if state and not key else None  # every market, before the check drops any
-    if state and not key:
-        from nfl_edge import fdfeed
-
-        # Keep only bets found on FanDuel's own site, at FanDuel's prices.
-        try:
-            bets, board.NOTES["fanduel"] = fdfeed.verify(bets, state, args.sport)
-            rank = "ev"
-        except fdfeed.FeedError as e:
-            # FanDuel can't be read: fall back to the bets sure to be on FanDuel.
-            if args.sport == "nfl":
-                bets = nfl_board(day, lo, hi, games_source=args.games_file, week=week)
-            args.fanduel_state = None
-            board.NOTES["fanduel_error"] = (
-                f"Couldn't check against FanDuel ({e}). Showing only bets sure to be on "
-                "FanDuel (moneylines and anytime TDs), at break-even odds; confirm each "
-                "one in your slip.")
+        # Only bets that are sure to be on FanDuel (moneylines, anytime TDs).
+        bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
     kind = getattr(args, "bet_type", None) or "All bets"
     board.NOTES.pop("confirm_line", None)
     if kind not in SURE_TYPES and args.sport == "nfl" and not key:
-        # Every line of the type: those FanDuel confirmed at its odds, the rest from the
-        # model, marked so their line gets confirmed on FanDuel before betting.
-        cap = type_max_prob(kind)
-        if cap is not None and cap < hi:
-            # Each player's likeliest line within the type's odds limit, checked on FanDuel.
-            full = nfl_board(day, lo, cap, games_source=args.games_file, week=week,
-                             always_offered=False)
-            if state and args.fanduel_state:
-                try:
-                    fdfeed.verify(of_type(full, kind), state, args.sport)
-                except fdfeed.FeedError:
-                    pass  # not confirmed: shown at break-even odds, marked Confirm line
-        elif full is None:
-            full = nfl_board(day, lo, hi, games_source=args.games_file, week=week,
-                             always_offered=False)
+        # Every line of the type from the model, marked so its line gets confirmed on
+        # FanDuel before betting.
+        cap = type_max_prob(kind)  # each player's likeliest line within the odds limit
+        full = nfl_board(day, lo, cap if cap is not None and cap < hi else hi,
+                         games_source=args.games_file, week=week, always_offered=False)
         bets, rank = every_line_of(full, kind), "prob"
         if any(b.confirm_line for b in bets):
             board.NOTES["confirm_line"] = CONFIRM_NOTE.format(kind=kind)

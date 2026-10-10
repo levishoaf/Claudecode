@@ -24,7 +24,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, fanduel, fdfeed, tracker, updater
+from nfl_edge import board, data, tracker, updater
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import american_to_decimal, decimal_to_american
@@ -191,9 +191,8 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        self.fanduel_on = bets.fanduel_state() is not None  # on (Indiana) unless turned off
-        self.mode_lbl = tk.Label(row1, text="", bg=NAVY, fg="#9fb0c8", font=self.f["small"])
-        self.mode_lbl.pack(side="left")
+        tk.Label(row1, text="   Free data  ·  break-even odds", bg=NAVY, fg="#9fb0c8",
+                 font=self.f["small"]).pack(side="left")
 
         self.sport = tk.StringVar(value="nfl")
         seg = tk.Frame(row1, bg=NAVY_2)
@@ -203,9 +202,6 @@ class App:
             b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
             b.pack(side="left")
             self.seg_btns[key] = b
-        self.fd_btn = FlatButton(row1, "", self.toggle_fanduel, "secondary", self.f["tinyb"])
-        self.fd_btn.pack(side="right", padx=(0, 10))
-        self.show_mode()
         tk.Label(row1, textvariable=self.countdown, bg=NAVY, fg=WHITE,
                  font=self.f["bold"]).pack(side="right", padx=(0, 14))
         self.pick_sport("nfl")
@@ -289,36 +285,6 @@ class App:
         c.itemconfigure(self.win_out, height=out_h)
         c.coords(self.win_bottom, w / 2, h - 52)
         c.coords(self.mark, w - 12, h - 8)
-
-    def show_mode(self) -> None:
-        on = self.fanduel_on
-        state = (bets.fanduel_state() or "").upper()
-        self.fd_btn.configure(text=f" FanDuel check: {state} ▾ " if on else " FanDuel check: Off ▾ ")
-        self.fd_btn.set_kind("primary" if on else "ghost")
-        self.mode_lbl.configure(text="" if on else "   Free data  ·  break-even odds")
-
-    def toggle_fanduel(self) -> None:
-        """Change the FanDuel check's state, or turn it off (it's on, for Indiana, by default)."""
-        from tkinter import simpledialog
-
-        state = simpledialog.askstring(
-            "FanDuel check",
-            "Every bet is checked against FanDuel's own site, and only the ones it lists\n"
-            "are shown, at FanDuel's odds. Which state do you bet in? (two letters, e.g. IN)\n"
-            "Type OFF to turn the check off.\n\n"
-            "This reads the odds FanDuel's website loads. It's unofficial: FanDuel may\n"
-            "change or block it, and automated reading may go against its terms.",
-            initialvalue=(bets.fanduel_state() or "off").upper(), parent=self.root)
-        if not state:
-            return
-        state = state.strip().lower()
-        if state != "off" and state not in fdfeed.STATES:
-            self.verdict.configure(text=f"FanDuel isn't available in {state.upper()}.", fg=WHITE)
-            return
-        bets.save_fanduel_state(state)
-        self.fanduel_on = bets.fanduel_state() is not None
-        self.show_mode()
-        self.build()
 
     def pick_sport(self, key: str) -> None:
         changed = self.sport.get() != key
@@ -485,20 +451,17 @@ class App:
         sport = "NFL" if args.sport == "nfl" else "College Football"
         tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        checked = getattr(args, "fanduel_state", None) or getattr(args, "fanduel_key", None)
+        checked = getattr(args, "fanduel_key", None)
         order = "best value first" if checked else "likeliest first"
         kind = getattr(args, "bet_type", "All bets")
         tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "  ·  click a bet to add it to your slip",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
-        self.fd_mode = bool(getattr(args, "fanduel_key", None) or getattr(args, "fanduel_state", None))
-        if self.fd_mode and board.NOTES.get("fanduel") and not board.NOTES.get("fanduel_error"):
+        self.fd_mode = bool(getattr(args, "fanduel_key", None))
+        if self.fd_mode and board.NOTES.get("fanduel"):
             tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
                      bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        elif board.NOTES.get("fanduel_error"):
-            tk.Label(self.body, text="⚠ " + board.NOTES["fanduel_error"], bg=BG, fg=MOVED_BADGE,
-                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if board.NOTES.get("confirm_line"):
             tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
@@ -647,7 +610,7 @@ class App:
         kind = self.bet_type.get()
         if kind == "All bets":
             return default
-        return empty_type_note(kind, self.sport.get(), self.fanduel_on)
+        return empty_type_note(kind, self.sport.get(), False)
 
     def singles_tab(self, parent, singles, previous) -> None:
         if not singles:
@@ -1073,7 +1036,6 @@ class App:
             max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=bets.MIN_PROB,
             max_prob=bets.MAX_PROB, per_game=3, allow_overlap=False, games_file=None,
-            fanduel_state=bets.fanduel_state() if self.fanduel_on else None,
             bet_type=self.bet_type.get(),
             pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
@@ -1088,18 +1050,9 @@ class App:
         self.countdown.set("Updating...")
 
         def work():
-            board.NOTES.pop("fanduel_error", None)
             try:
-                try:
-                    pool, singles, parlays = bets.build(args)
-                    args.money_makers = money_maker_parlays(pool, 10, parlays)
-                except (fanduel.OddsAPIError, fdfeed.FeedError) as e:
-                    # Never show bets FanDuel hasn't confirmed while the FanDuel check is on.
-                    singles, parlays, args.money_makers = [], [], []
-                    board.NOTES["fanduel_error"] = (
-                        f"Couldn't check against FanDuel ({e}), so no bets are shown. "
-                        "Try again in a minute, or turn the FanDuel check off and confirm "
-                        "bets yourself in the slip.")
+                pool, singles, parlays = bets.build(args)
+                args.money_makers = money_maker_parlays(pool, 10, parlays)
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)

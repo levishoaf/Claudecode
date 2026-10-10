@@ -125,9 +125,8 @@ with no account or key:
 - **Bet type** (the app's and web page's drop-down, `--type`, the bot's
   `bet_type:`) narrows singles and parlays to one kind of bet, such as
   Moneyline or Anytime TD. For spreads, totals and props it shows every
-  line the model estimates: ones the FanDuel check found at FanDuel's odds,
-  the rest marked **Confirm line**, since FanDuel may not offer that exact
-  line. Check it on FanDuel before you bet. Receiving yards bets are only listed at
+  line the model estimates, marked **Confirm line**, since FanDuel may not
+  offer that exact line. Check it on FanDuel before you bet. Receiving yards bets are only listed at
   -300 or better: each player's likeliest line at those odds.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
@@ -144,30 +143,19 @@ with no account or key:
   it.
 
 **Making sure every bet is on FanDuel.** The free data doesn't include
-FanDuel's menu, so three things keep bets placeable:
+FanDuel's menu, so two things keep bets placeable:
 
 1. **Only bets FanDuel is sure to list.** Without FanDuel's data, the free
    board shows only bets with no line that could differ on FanDuel:
    moneylines and anytime touchdown scorers for starters. Spreads, totals,
-   team totals and "X+" player props appear only with the FanDuel check (3),
-   which finds them on FanDuel at FanDuel's exact line. The top singles mix
+   team totals and "X+" player props appear only when you pick that **Bet
+   type**, marked **Confirm line**. The top singles mix
    player props and game bets.
 2. **Confirm in the slip.** Each bet in your slip asks *Is this on FanDuel?*
    Tap **✓ On FanDuel** and it can be marked placed; tap **✗ Not on FanDuel**
    and it leaves the slip and is hidden from the lists (with **Show again** to
    undo). Only confirmed bets can be marked placed, so Bet History only holds
    bets you could actually make.
-3. **FanDuel check (automatic in the app and Discord bot, Indiana by
-   default).** Every bet is checked against the odds FanDuel's own website
-   loads for Indiana: only bets found on FanDuel are shown, at FanDuel's odds,
-   with their expected value, and they need no manual confirmation. To use
-   another state or turn it off, click **FanDuel check: IN** in the window and
-   type a state or OFF (in Discord, `/fanduel-check state:NJ` or `state:off`).
-   If FanDuel can't be read, only the bets sure to be on FanDuel are shown
-   (moneylines and anytime TDs), with a note saying so. This reads FanDuel's
-   site data unofficially: FanDuel can change or block it, and automated
-   reading may go against its terms of use.
-
 **Auto-refresh** is on by default every 5 minutes, with a countdown to the
 next update (the **Refresh** box in the window; 0 turns it off, or
 `--watch 5` in the text version). Each update reloads injury reports

@@ -145,8 +145,8 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
     With `always_offered` (the default), only bets that have no line to get
     wrong and that FanDuel posts for every game: moneylines and anytime
     touchdown scorers (starters only). Spreads, totals, team totals and "X+"
-    props need FanDuel's own line, so they come only from the FanDuel check
-    (`always_offered=False`, then nfl_edge.fdfeed.verify)."""
+    props need FanDuel's own line, so they come only when a bet type is chosen
+    (`always_offered=False`), marked to confirm on FanDuel."""
     from .cli import build_model  # heavy import, only when needed
 
     now = now or datetime.now(EASTERN)

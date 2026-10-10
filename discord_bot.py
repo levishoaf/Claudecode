@@ -26,7 +26,7 @@ import tempfile
 from pathlib import Path
 
 import bets as launcher  # sets up paths and certificates, like the app
-from nfl_edge import botcore, data, fdfeed
+from nfl_edge import botcore, data
 from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, empty_type_note,
                             every_line_of, make_or_break, money_maker_parlays, of_type,
                             type_max_prob)
@@ -67,8 +67,7 @@ def save_settings(settings: dict) -> None:
 class Core:
     """Everything the commands do, without Discord (so --selftest can run it)."""
 
-    def __init__(self, ledger_path: Path, state=lambda: None):
-        self.state = state  # the FanDuel state to check bets against, or None
+    def __init__(self, ledger_path: Path):
         self.boards = botcore.Boards()
         self.ledger = botcore.ServerLedger(ledger_path)
         self.last_parlays: dict[int, tuple[str, list]] = {}  # channel -> (sport, parlays)
@@ -79,42 +78,19 @@ class Core:
             self.ledger.record_shown(launcher.tracker_entries(singles, parlays, sport,
                                                               botcore.season_now()))
 
-    def _checked(self, sport, bets):
-        """(bets, note): with a FanDuel state set, only the bets found on FanDuel."""
-        state = self.state()
-        if not state:
-            return list(bets), None
-        return fdfeed.verify(list(bets), state, sport)
-
     def _pool(self, sport, week, lo, hi):
-        """(bets, note, checked): the bets FanDuel lists, or, when FanDuel can't be
-        read, the bets sure to be on FanDuel with a note saying so."""
-        try:
-            pool, note = self._checked(sport, self.boards.get(sport, week, lo / 100, hi / 100,
-                                                              sure_only=not self.state()))
-            return pool, note, note is not None
-        except fdfeed.FeedError as e:
-            return (self.boards.get(sport, week, lo / 100, hi / 100, sure_only=True),
-                    f"Couldn't check against FanDuel ({e}), so these are only bets sure to be "
-                    "on FanDuel, at break-even odds. Confirm each one before you bet.", False)
+        """(bets, note, checked): the bets sure to be on FanDuel (moneylines, anytime TDs)."""
+        return self.boards.get(sport, week, lo / 100, hi / 100), None, False
 
     def _typed(self, sport, week, lo, hi, kind):
         """(bets of the type, note, checked). Types that aren't sure to be on FanDuel
-        get every line: FanDuel-confirmed ones, and the model's marked to confirm."""
+        get every model line, marked to confirm on FanDuel."""
         pool, note, checked = self._pool(sport, week, lo, hi)
         if kind in SURE_TYPES or sport != "nfl":
             return of_type(pool, kind), note, checked
-        cap = type_max_prob(kind)
-        if cap is not None and cap < hi / 100:  # likeliest lines within the odds limit
-            full = self.boards.get(sport, week, lo / 100, cap, sure_only=False)
-            if checked:
-                try:
-                    self._checked(sport, of_type(full, kind))
-                except fdfeed.FeedError:
-                    pass
-        else:
-            full = self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False)
-        out = every_line_of(full, kind)
+        cap = type_max_prob(kind)  # likeliest lines within the odds limit
+        top = cap if cap is not None and cap < hi / 100 else hi / 100
+        out = every_line_of(self.boards.get(sport, week, lo / 100, top, sure_only=False), kind)
         if any(b.confirm_line for b in out):
             note = CONFIRM_NOTE.format(kind=kind)
         return out, note, checked
@@ -174,17 +150,6 @@ class Core:
         except ValueError:
             return "Odds look like -150 or +240."
         matches = self.find(sport, query)
-        if self.state() and matches:
-            try:
-                found, _ = self._checked(sport, matches)
-            except fdfeed.FeedError as e:
-                return (botcore.chance_text(matches, odds, wager)
-                        + f"\n_Couldn't check this against FanDuel ({e}); confirm it's there._")
-            if not found:
-                return (f"**{botcore._describe(matches[0])}** isn't on FanDuel at that line right "
-                        "now, so it can't be placed there.")
-            matches = found
-            odds = odds if odds is not None else matches[0].fd_price
         return botcore.chance_text(matches, odds, wager)
 
     def place(self, channel, sport, query, odds_text, stake, user_id, user_name) -> str:
@@ -210,14 +175,6 @@ class Core:
             matches = self.find(sport, query)
             if not matches:
                 return "Couldn't find that bet. Try the team or player name and the line."
-            if self.state():
-                try:
-                    matches, _ = self._checked(sport, matches[:1])
-                except fdfeed.FeedError:
-                    pass  # FanDuel can't be read: log it as given (it was placed on FanDuel)
-                if not matches:
-                    return "That bet isn't on FanDuel at that line, so it wasn't logged."
-                odds = odds if odds is not None else matches[0].fd_price
             entries = launcher.tracker_entries([matches[0]], [], sport, season)
             what = botcore._describe(matches[0])
         if not entries:
@@ -246,11 +203,7 @@ def run_bot(token: str) -> None:
     from discord.ext import tasks
 
     settings = load_settings()
-    def state():  # Indiana unless changed with /fanduel-check; "off" turns it off
-        s = settings.get("fanduel_state", launcher.DEFAULT_STATE)
-        return None if s == "off" else s
-
-    core = Core(LEDGER, state=state)
+    core = Core(LEDGER)
     intents = discord.Intents.default()
     client = discord.Client(intents=intents)
     tree = app_commands.CommandTree(client)
@@ -346,27 +299,6 @@ def run_bot(token: str) -> None:
     async def injuries_cmd(interaction: discord.Interaction, team: str | None = None):
         await work(interaction, botcore.injuries_text, team)
 
-    @tree.command(name="fanduel-check",
-                  description="Change the state bets are checked in on FanDuel (default IN), or 'off'")
-    @app_commands.default_permissions(manage_guild=True)
-    @app_commands.describe(state="Two-letter state you bet in, e.g. IN, or off")
-    async def fanduel_check(interaction: discord.Interaction, state: str):
-        s = state.strip().lower()
-        if s == "off":
-            settings["fanduel_state"] = "off"
-            msg = ("FanDuel check is off. Bets come from markets FanDuel posts for every game, "
-                   "but confirm each one on FanDuel before you bet.")
-        elif s in fdfeed.STATES:
-            settings["fanduel_state"] = s
-            msg = (f"FanDuel check is on ({s.upper()}): /bets, /parlays, /chance and /place "
-                   "only use bets found on FanDuel's site, at FanDuel's odds. This reads "
-                   "FanDuel's website data unofficially; it can stop working if FanDuel "
-                   "changes or blocks it.")
-        else:
-            msg = f"FanDuel isn't available in {state.strip().upper()}. Use a state like NJ, or off."
-        save_settings(settings)
-        await interaction.response.send_message(msg)
-
     @tree.command(name="results-here", description="Post bet results in this channel")
     @app_commands.default_permissions(manage_guild=True)
     async def results_here(interaction: discord.Interaction):
@@ -430,9 +362,6 @@ def selftest() -> int:
         out["results"] = core.check_results() or "(nothing settled)"
         out["injuries"] = botcore.injuries_text("BUF")
         out["college"] = core.bets("ncaaf", 5, 1, 99, None, 10.0)
-        # With the FanDuel check on (the default, Indiana): checked bets, or a fallback note.
-        out["fanduel IN"] = Core(Path(d) / "l2.json", state=lambda: "in").bets(
-            "nfl", 5, 1, 99, None, 10.0)
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]

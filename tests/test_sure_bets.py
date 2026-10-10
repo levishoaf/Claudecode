@@ -31,16 +31,14 @@ class SureBetsTest(unittest.TestCase):
     def test_free_board_asks_for_sure_bets_only(self):
         with mock.patch("bets.nfl_board", return_value=ALL[:1]) as nb:
             launcher.build(args())
-        self.assertTrue(nb.call_args.kwargs["always_offered"])
+        self.assertTrue(nb.call_args.kwargs.get("always_offered", True))
 
-    def test_fanduel_check_starts_from_every_market_and_keeps_what_it_finds(self):
-        found = lambda bets, state, sport: ([b for b in bets if b.market != "team_totals"], "ok")  # noqa: E731
-        with mock.patch("bets.nfl_board", return_value=list(ALL)) as nb, \
-                mock.patch("nfl_edge.fdfeed.verify", side_effect=found) as verify:
-            _, singles, _ = launcher.build(args(fanduel_state="nj"))
+    def test_other_bet_types_use_every_market_marked_to_confirm(self):
+        with mock.patch("bets.nfl_board", return_value=list(ALL)) as nb:
+            _, singles, _ = launcher.build(args(bet_type="Spread"))
         self.assertFalse(nb.call_args.kwargs["always_offered"])
-        verify.assert_called_once()
-        self.assertNotIn("team_totals", {b.market for b in singles})
+        self.assertEqual({b.market for b in singles}, {"spreads", "alternate_spreads"})
+        self.assertTrue(all(b.confirm_line for b in singles))
 
 
 if __name__ == "__main__":
