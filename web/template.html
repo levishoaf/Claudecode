@@ -302,7 +302,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 
   // One list row per bet: the bet, its chance, the worst odds worth taking and the payout.
   function listHead(first) {
-    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">pays ${money(wager())}</small></span><span class="r hide-sm">Pays ${money(wager())}</span></div>`;
+    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">pays</small></span><span class="r hide-sm">Pays</span></div>`;
   }
   function singleRow(b, i) {
     const on = inSlip(b.id);

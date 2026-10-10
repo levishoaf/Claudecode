@@ -559,7 +559,7 @@ class App:
         head.pack(fill="x")
         self.grid_cols(head)
         fd = getattr(self, "fd_mode", False)
-        last_text = f"PAYS ${self.wager():g}" if last == "pays" else (last or "")
+        last_text = "PAYS" if last == "pays" else (last or "")
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
                                   (3, "ODDS" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
             tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
