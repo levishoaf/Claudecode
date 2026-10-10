@@ -74,8 +74,10 @@ Each push to the branch builds the programs (`.github/workflows/build-executable
 and publishes them as GitHub Release `build-<run number>`. The windowed app is
 stamped with its build number (`nfl_edge/_build.py`, written by the workflow,
 not committed) and updates itself from the latest release (`nfl_edge/updater.py`,
-`Updates` in `bets_gui.py`): Windows swaps the .exe with a batch helper, Mac the
-.app with a shell helper. Keep the release asset names (`updater.ASSETS`) and the
+`Updates` in `bets_gui.py`): the running app renames its own .exe or .app aside
+(hidden), moves the new one into its place under the same name, starts it with a
+clean PyInstaller environment (`updater.clean_env`) and quits; leftovers are deleted
+on the next start. The window is resizable (`App.relayout`). Keep the release asset names (`updater.ASSETS`) and the
 workflow in step.
 
 ## Discord bot

@@ -71,33 +71,34 @@ def chance_color(p: float) -> str:
     return GREEN if p >= 0.7 else AMBER if p >= 0.5 else RED
 
 
-def draw_field(c: tk.Canvas) -> None:
+def draw_field(c: tk.Canvas, w: float = W, h: float = H) -> None:
     """An original football field: end zones, 5-yard stripes, yard lines,
-    hash marks and yard numbers, drawn to fill the window."""
+    hash marks and yard numbers, drawn to fill the window (redrawn when it's resized)."""
+    W, H = w, h  # noqa: N806  (the drawing below is in window units)
     zone = W * 0.08
     yard = (W - 2 * zone) / 100
-    c.create_rectangle(0, 0, W, H, fill=TURF[0], outline="")
+    c.create_rectangle(0, 0, W, H, fill=TURF[0], outline="", tags="field")
     for i in range(20):
         x0 = zone + i * 5 * yard
-        c.create_rectangle(x0, 0, x0 + 5 * yard, H, fill=TURF[i % 2], outline="")
+        c.create_rectangle(x0, 0, x0 + 5 * yard, H, fill=TURF[i % 2], outline="", tags="field")
     for x0 in (0, W - zone):
-        c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="")
+        c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="", tags="field")
     for side, x in ((90, zone / 2), (-90, W - zone / 2)):
         c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6e6e74",
-                      font=("Helvetica", 30, "bold"))
+                      font=("Helvetica", 30, "bold"), tags="field")
     for i in range(0, 101, 5):
         x = zone + i * yard
         c.create_line(x, 0, x, H, fill=CHALK if i % 10 == 0 else CHALK_SOFT,
-                      width=3 if i % 10 == 0 else 1)
+                      width=3 if i % 10 == 0 else 1, tags="field")
     for i in range(1, 100):
         x = zone + i * yard
         for y in (H * 0.36, H * 0.64):
-            c.create_line(x, y - 5, x, y + 5, fill=CHALK_SOFT)
+            c.create_line(x, y - 5, x, y + 5, fill=CHALK_SOFT, tags="field")
     for i in range(10, 100, 10):
         x = zone + i * yard
         n = str(i if i <= 50 else 100 - i)
-        for y, ang in zip(NUMBER_ROWS, (180, 0)):
-            c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"))
+        for y, ang in zip((NUMBER_ROWS[0], H - (870 - NUMBER_ROWS[1])), (180, 0)):
+            c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"), tags="field")
 
 
 class FlatButton(tk.Label):
@@ -144,7 +145,7 @@ class App:
         self.offered = 0  # newest build already offered this session
         self.updates = None  # set by Updates
         root.geometry(f"{W}x{H}")
-        root.resizable(False, False)
+        root.minsize(W, H)  # resizable and maximizable; the layout follows the window
 
         fam = pick_font()
         self.f = {k: (fam, size, *style) for k, (size, *style) in {
@@ -156,11 +157,13 @@ class App:
         c = tk.Canvas(root, width=W, height=H, highlightthickness=0)
         c.pack(fill="both", expand=True)
         draw_field(c)
-        c.create_text(W - 12, H - 8, anchor="se", text="Levi Shoaf", fill="#8a8f99",
-                      font=self.f["tinyb"])  # owner watermark
+        self.mark = c.create_text(W - 12, H - 8, anchor="se", text="Levi Shoaf",
+                                  fill="#8a8f99", font=self.f["tinyb"])  # owner watermark
+        self.canvas = c
         self.header(c)
         self.output(c)
         self.checker(c)
+        c.bind("<Configure>", self.relayout)
 
         self.say("Loading this week's picks...")
         root.after(100, self.poll)
@@ -267,7 +270,25 @@ class App:
         btns.pack(side="right", anchor="s")
         self.build_btn = FlatButton(btns, "Build bets", self.build, "primary", self.f["bold"])
         self.build_btn.pack(side="left")
-        c.create_window(W / 2, 72, window=top, width=PANEL_W)
+        self.win_top = c.create_window(W / 2, 72, window=top, width=PANEL_W)
+
+    def relayout(self, event) -> None:
+        """Fit the window's new size: redraw the field, center the panels and give the
+        bets list the extra height (so the window can be maximized or fullscreen)."""
+        w, h = max(event.width, W), max(event.height, H)
+        if getattr(self, "_size", None) == (w, h):
+            return
+        self._size = (w, h)
+        c = self.canvas
+        c.delete("field")
+        draw_field(c, w, h)
+        c.tag_lower("field")
+        c.coords(self.win_top, w / 2, 72)
+        out_h = h - 338  # between the header and the bottom bar
+        c.coords(self.win_out, w / 2, 192 + out_h / 2)
+        c.itemconfigure(self.win_out, height=out_h)
+        c.coords(self.win_bottom, w / 2, h - 52)
+        c.coords(self.mark, w - 12, h - 8)
 
     def show_mode(self) -> None:
         on = self.fanduel_on
@@ -340,7 +361,7 @@ class App:
         for seq, step in (("<MouseWheel>", None), ("<Button-4>", -1), ("<Button-5>", 1)):
             self.root.bind_all(seq, lambda e, s=step: self.view.yview_scroll(
                 s if s else (-1 if e.delta > 0 else 1), "units"))
-        c.create_window(W / 2, 458, window=out, width=PANEL_W, height=532)
+        self.win_out = c.create_window(W / 2, 458, window=out, width=PANEL_W, height=532)
 
     def checker(self, c: tk.Canvas) -> None:
         bottom = tk.Frame(c, bg=NAVY)
@@ -372,7 +393,7 @@ class App:
                                 anchor="w", justify="left", font=self.f["small"],
                                 wraplength=int(PANEL_W) - 580)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
-        c.create_window(W / 2, 818, window=bottom, width=PANEL_W, height=96)
+        self.win_bottom = c.create_window(W / 2, 818, window=bottom, width=PANEL_W, height=96)
 
     # -------------------------------------------------------------- slip
     def clickable(self, widget, command) -> None:
@@ -1196,6 +1217,8 @@ class Updates:
     def __init__(self, app: "App"):
         self.app = app
         app.updates = self
+        if not app.selftest:
+            threading.Thread(target=updater.cleanup, daemon=True).start()  # last update's leftovers
         if updater.can_update() and not app.selftest:
             app.root.after(5000, self.check)
 
@@ -1270,7 +1293,7 @@ class Updates:
                 "Update available",
                 f"A new version of Bet Builder is ready (build {update.build}; you have "
                 f"build {updater.BUILD}).\n\nInstall it now? The app closes and reopens by "
-                "itself in about a minute. Your bets and settings are kept.",
+                "itself in a few seconds. Your bets and settings are kept.",
                 parent=self.app.root):
             return
         self.app.cancel_update()

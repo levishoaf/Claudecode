@@ -1,10 +1,7 @@
 import io
 import json
 import os
-import subprocess
-import sys
 import tempfile
-import time
 import unittest
 import urllib.error
 from pathlib import Path
@@ -74,35 +71,64 @@ class DownloadTest(unittest.TestCase):
 
 
 class SwapTest(unittest.TestCase):
-    def test_windows_script_waits_swaps_and_reopens(self):
-        text = updater.windows_script(Path(r"C:\Apps\Bet Builder.exe"),
-                                      Path(r"C:\Apps\Bet Builder.new.exe"), 4242)
-        self.assertIn('tasklist /FI "PID eq 4242"', text)
-        self.assertIn(r'move /y "C:\Apps\Bet Builder.new.exe" "C:\Apps\Bet Builder.exe"', text)
-        self.assertIn(r'start "" "C:\Apps\Bet Builder.exe"', text)
+    """Updating replaces the app in place: one copy, same name, nothing left showing."""
 
-    @unittest.skipIf(sys.platform == "win32", "needs a POSIX shell")
-    def test_mac_script_swaps_the_app_after_it_closes(self):
+    def test_swaps_a_program_in_place(self):
         with tempfile.TemporaryDirectory() as d:
-            app, new = Path(d) / "Bet Builder.app", Path(d) / "new" / "Bet Builder.app"
+            app = Path(d) / "Bet Builder by Levi Shoaf.exe"
+            new = Path(d) / "Bet Builder by Levi Shoaf.download"
+            app.write_text("old")
+            new.write_text("new")
+            with mock.patch.object(updater.sys, "platform", "win32"):
+                old = updater.swap_in(app, new)
+            self.assertEqual(app.read_text(), "new")
+            self.assertFalse(new.exists())
+            self.assertEqual(old.name, "Bet Builder by Levi Shoaf.old")  # not a second .exe
+            self.assertEqual(sorted(p.name for p in Path(d).glob("*.exe")),
+                             ["Bet Builder by Levi Shoaf.exe"])
+
+    def test_swaps_a_mac_app_bundle(self):
+        with tempfile.TemporaryDirectory() as d:
+            app = Path(d) / "Bet Builder.app"
+            new = Path(d) / "new" / "Bet Builder.app"
             (app / "Contents").mkdir(parents=True)
             (app / "Contents" / "v").write_text("old")
             (new / "Contents").mkdir(parents=True)
             (new / "Contents" / "v").write_text("new")
-            # A stand-in for the app: a process that ends in a second (and is reaped by
-            # the system, like a real app that closed).
-            pid = int(subprocess.run(["/bin/sh", "-c", "sleep 1 >/dev/null 2>&1 & echo $!"],
-                                     capture_output=True, text=True).stdout)
-            script = Path(d) / "update.sh"
-            marker = Path(d) / "reopened"
-            script.write_text(updater.mac_script(app, new, pid,
-                                                 reopen=f"touch {marker}; true"))
-            started = time.monotonic()
-            subprocess.run(["/bin/sh", str(script)], check=True, timeout=30)
-            self.assertGreaterEqual(time.monotonic() - started, 0.5)  # waited for the app
+            old = updater.swap_in(app, new)
             self.assertEqual((app / "Contents" / "v").read_text(), "new")
-            self.assertFalse(Path(f"{app}.old").exists())
-            self.assertTrue(marker.exists())
+            self.assertEqual(old.name, ".Bet Builder.app.old")  # hidden in Finder
+            self.assertEqual([p.name for p in Path(d).glob("*.app")], ["Bet Builder.app"])
+
+    def test_failed_swap_puts_the_app_back(self):
+        with tempfile.TemporaryDirectory() as d:
+            app = Path(d) / "Bet Builder.exe"
+            app.write_text("old")
+            with mock.patch.object(updater.sys, "platform", "win32"), \
+                    self.assertRaises(OSError):
+                updater.swap_in(app, Path(d) / "missing.download")
+            self.assertEqual(app.read_text(), "old")
+
+    def test_cleanup_removes_leftovers(self):
+        with tempfile.TemporaryDirectory() as d:
+            app = Path(d) / "Bet Builder.exe"
+            app.write_text("app")
+            for name in ("Bet Builder.old", "Bet Builder.old.123", "Bet Builder.download"):
+                (Path(d) / name).write_text("x")
+            with mock.patch.object(updater, "can_update", return_value=True), \
+                    mock.patch.object(updater, "app_path", return_value=app), \
+                    mock.patch.object(updater.sys, "platform", "win32"):
+                updater.cleanup()
+            self.assertEqual([p.name for p in Path(d).iterdir()], ["Bet Builder.exe"])
+
+    def test_new_version_starts_with_a_clean_environment(self):
+        with mock.patch.dict(os.environ, {"_PYI_APPLICATION_HOME_DIR": "C:/temp/_MEI1",
+                                          "_MEIPASS2": "C:/temp/_MEI1", "PATH": "x"}):
+            env = updater.clean_env()
+        self.assertNotIn("_PYI_APPLICATION_HOME_DIR", env)
+        self.assertNotIn("_MEIPASS2", env)
+        self.assertEqual(env["PYINSTALLER_RESET_ENVIRONMENT"], "1")
+        self.assertEqual(env["PATH"], "x")
 
     def test_mac_app_path(self):
         exe = "/Applications/Bet Builder.app/Contents/MacOS/Bet Builder"
