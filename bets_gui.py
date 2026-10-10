@@ -50,8 +50,6 @@ NEW_BADGE, MOVED_BADGE = "#1677ff", "#e07b00"
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
-LEG_MARK = {"won": ("✓", GREEN), "lost": ("✗", RED), "push": ("=", "#8a96a8"),
-            "pending": ("…", MUTED)}
 STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
                  "Did not practice": "#6b7280", "Limited": "#94a3b8"}
 STATUS_SHORT = {"Did not practice": "No practice"}  # fits the badge
@@ -445,18 +443,14 @@ class App:
 
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
-        n_slip = len(self.picked) + len(self.picked_parlays)
         self.tab_labels = {}
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
-                          ("slip", f"Your slip ({n_slip})"),
-                          ("placed", f"Placed ({len(self.ledger['placed'])})"),
-                          ("unplaced", f"Not placed ({len(self.unplaced())})"),
                           ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
-            tab.pack(side="left", padx=(0, 13))
+            tab.pack(side="left", padx=(0, 18))
             lbl = tk.Label(tab, text=text, bg=BG, fg=BLUE if on else MUTED, cursor="hand2",
                            font=self.f["bold"])
             lbl.pack()
@@ -474,10 +468,6 @@ class App:
             self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
-        elif self.tab == "placed":
-            self.results_tab(grid, self.ledger["placed"], placed=True)
-        elif self.tab == "unplaced":
-            self.results_tab(grid, self.unplaced(), placed=False)
         elif self.tab == "history":
             self.history_tab(grid)
         else:
@@ -627,10 +617,6 @@ class App:
             tracker.save(ledger, self.ledger_path)
         return ledger
 
-    def unplaced(self) -> list[dict]:
-        placed = {e["id"] for e in self.ledger["placed"]}
-        return [e for e in self.ledger["generated"] if e["id"] not in placed]
-
     def entry_for(self, singles, parlays) -> dict | None:
         args = self.last_args or self.args()
         entries = bets.tracker_entries(singles, parlays, args.sport, bets.season_for(date.today()))
@@ -643,7 +629,7 @@ class App:
         row = tk.Frame(parent, bg=BG)
         row.pack(fill="x", pady=(0, 6))
         if any(e["id"] == entry["id"] for e in self.ledger["placed"]):
-            tk.Label(row, text="✓ In your Placed bets", bg=BG, fg=GREEN,
+            tk.Label(row, text="✓ Placed · tracked in Bet History", bg=BG, fg=GREEN,
                      font=self.f["tinyb"]).pack(side="left")
             return
         tk.Label(row, text="Odds you got", bg=BG, fg=MUTED, font=self.f["tiny"]).pack(side="left")
@@ -706,44 +692,6 @@ class App:
         self.verdict.configure(text=f"Placed: ${stake:,.2f} at {price}. Graded after the game.",
                                fg=WHITE)
         self.show_tab("slip")
-
-    def remove_placed(self, entry_id: str) -> None:
-        with self.ledger_lock:
-            ledger = tracker.load(self.ledger_path)
-            tracker.remove_placed(ledger, entry_id)
-            tracker.save(ledger, self.ledger_path)
-        self.ledger = ledger
-        self.show_tab("placed")
-
-    def results_tab(self, parent, entries: list[dict], placed: bool) -> None:
-        top = tk.Frame(parent, bg=BG)
-        top.pack(fill="x", padx=6, pady=(6, 2))
-        tk.Label(top, text=tracker.summary(entries, money=placed), bg=BG, fg=TEXT,
-                 font=self.f["bold"]).pack(side="left")
-        FlatButton(top, "Check results now", self.build, "secondary",
-                   self.f["tinyb"]).pack(side="right")
-        explain = ("Bets you marked as placed. Mark one from Your slip. Results update after "
-                   "each game, on every refresh." if placed else
-                   "Every pick the builder showed for the coming week that you didn't place, "
-                   "at the chance it had when first shown, and how it turned out.")
-        tk.Label(parent, text=explain, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
-                 justify="left").pack(anchor="w", padx=6, pady=(0, 4))
-        if not entries:
-            return
-        order = sorted(entries, key=lambda e: (e["status"] != "pending",
-                                               min(leg["kickoff"] for leg in e["legs"])))
-        pending = [e for e in order if e["status"] == "pending"]
-        done = sorted((e for e in order if e["status"] != "pending"),
-                      key=lambda e: max(leg["kickoff"] for leg in e["legs"]), reverse=True)
-        shown = (pending + done)[:60]
-        holder = tk.Frame(parent, bg=BG)
-        holder.pack(fill="both")
-        cols = self.columns(holder)
-        for i, e in enumerate(shown):
-            self.result_card(cols[i % 2], e, placed)
-        if len(entries) > len(shown):
-            tk.Label(parent, text=f"Showing the latest {len(shown)} of {len(entries)}.", bg=BG,
-                     fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=4)
 
     def history_tab(self, parent) -> None:
         items = tracker.history(self.ledger)
@@ -808,55 +756,6 @@ class App:
             tk.Label(text, text="  ·  ".join(leg.get("pick") or leg["label"] for leg in e["legs"]),
                      bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=170,
                      justify="left").pack(anchor="w")
-
-    def result_card(self, parent, e: dict, placed: bool, tag: str | None = None) -> None:
-        card = self.card(parent)
-        head = tk.Frame(card, bg=CARD)
-        head.pack(fill="x", padx=10, pady=(8, 2))
-        word, color = RESULT_STYLE[e["status"]]
-        tk.Label(head, text=f" {word} ", bg=color, fg=WHITE, font=self.f["tinyb"]).pack(side="left")
-        title = (e["legs"][0].get("pick") or e["legs"][0]["label"]) if e["kind"] == "single" \
-            else f"{len(e['legs'])}-leg parlay"
-        tk.Label(head, text=title, bg=CARD, fg=TEXT, font=self.f["bold"], wraplength=250,
-                 justify="left").pack(side="left", padx=6)
-        tk.Label(head, text=_fmt_american(e["odds"]), bg=CARD, fg=BLUE,
-                 font=self.f["bold"]).pack(side="right")
-        for leg in e["legs"]:
-            row = tk.Frame(card, bg=CARD)
-            row.pack(fill="x", padx=10, pady=1)
-            mark, mcolor = LEG_MARK[leg["status"]]
-            tk.Label(row, text=mark, bg=CARD, fg=mcolor, font=self.f["bold"],
-                     width=2).pack(side="left", anchor="n")
-            txt = tk.Frame(row, bg=CARD)
-            txt.pack(side="left", fill="x")
-            if e["kind"] == "parlay":
-                tk.Label(txt, text=leg.get("pick") or leg["label"], bg=CARD, fg=TEXT,
-                         font=self.f["tinyb"], wraplength=330, justify="left").pack(anchor="w")
-            when = (_clock(datetime.fromisoformat(leg["kickoff"]).astimezone(board.EASTERN))
-                    if leg.get("kickoff") else "")
-            detail = leg["detail"] if leg["detail"] and leg["status"] != "pending" else when
-            tk.Label(txt, text=f"{leg.get('game', '')}  ·  {detail}", bg=CARD, fg=MUTED,
-                     font=self.f["tiny"], wraplength=330, justify="left").pack(anchor="w")
-        foot = tk.Frame(card, bg="#f6f8fb")
-        foot.pack(fill="x", pady=(4, 0))
-        if placed:
-            if e["status"] == "pending":
-                win = e["stake"] * (bets.american_to_decimal(e["odds"]) - 1)
-                money = f"${e['stake']:,.2f} to win ${win:,.2f}"
-            else:
-                net = tracker.profit(e)
-                money = f"${e['stake']:,.2f} staked  ·  {'+' if net >= 0 else '-'}${abs(net):,.2f}"
-            tk.Label(foot, text=(f"{tag}  ·  " if tag else "") + money, bg="#f6f8fb", fg=TEXT,
-                     font=self.f["tinyb"]).pack(side="left", padx=10, pady=4)
-            if tag is None:  # removing belongs on the Placed tab
-                rm = tk.Label(foot, text="Remove", bg="#f6f8fb", fg=MUTED, font=self.f["tiny"],
-                              cursor="hand2")
-                rm.pack(side="right", padx=10)
-                rm.bind("<Button-1>", lambda _e, i=e["id"]: self.remove_placed(i))
-        else:
-            tk.Label(foot, text=(f"{tag}  ·  " if tag else "")
-                     + f"Builder gave it {e['win_prob']:.0%}  ·  {e['sport'].upper()}",
-                     bg="#f6f8fb", fg=TEXT, font=self.f["tinyb"]).pack(side="left", padx=10, pady=4)
 
     def view_slip(self) -> None:
         self.show_tab("slip")

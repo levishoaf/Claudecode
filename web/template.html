@@ -132,11 +132,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .hist-item .hp { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--ink-2); }
 .hist-head { margin: 8px 0 0; font-family: var(--display); font-size: 24px; letter-spacing: .03em; text-transform: uppercase; color: #fff; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; border-bottom: 2px solid var(--blue); padding-bottom: 4px; }
 .hist-head span { font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--on-dark-2); }
-.rlegs { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.rlegs li { display: grid; grid-template-columns: 18px 1fr; gap: 6px; font-size: 12.5px; }
-.rlegs .mk { font-weight: 800; text-align: center; }
-.mk-won { color: var(--good); } .mk-lost { color: var(--bad); } .mk-push, .mk-pending { color: var(--ink-2); }
-.rfoot { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 6px; font-size: 12px; font-weight: 600; }
 .summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .summary b { font-size: 16px; color: #fff; }
 .placerow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 7px; }
@@ -187,9 +182,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Single bets<span class="count" id="n-singles"></span></button>
       <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="count" id="n-parlays"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="count" id="n-injuries"></span></button>
-      <button role="tab" id="tab-slip" data-tab="slip" aria-selected="false">Your slip<span class="count" id="n-slip"></span></button>
-      <button role="tab" id="tab-placed" data-tab="placed" aria-selected="false">Placed<span class="count" id="n-placed"></span></button>
-      <button role="tab" id="tab-unplaced" data-tab="unplaced" aria-selected="false">Not placed<span class="count" id="n-unplaced"></span></button>
       <button role="tab" id="tab-history" data-tab="history" aria-selected="false">Bet History<span class="count" id="n-history"></span></button>
     </nav>
   </div>
@@ -223,6 +215,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     injSearch: ""
   };
   if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
+  if (!["singles", "parlays", "injuries", "history", "slip"].includes(state.tab)) state.tab = "singles";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
@@ -365,73 +358,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (s.includes("pending")) return "pending";
     return s.every((x) => x === "push") ? "push" : "won";
   }
-  function profitOf(e, status) {
-    if (status === "lost") return -e.stake;
-    if (status !== "won") return 0;
-    let dec = amToDec(e.odds);
-    if (e.kind === "parlay") e.legs.forEach((l) => { if (legStatus(l.lid)[0] === "push") dec *= l.prob || 1; });
-    return e.stake * (Math.max(dec, 1) - 1);
-  }
   function placedIds() { return new Set(state.placed.map((p) => p.entryId)); }
   function unplaced() { const ids = placedIds(); return HISTORY.filter((h) => !ids.has(h.id)); }
-  function summaryOf(entries, money_) {
-    const st = entries.map((e) => [e, entryStatus(e.legs)]);
-    const done = st.filter(([, s]) => s !== "pending");
-    const pending = st.length - done.length;
-    const tail = pending ? ` · ${pending} pending` : "";
-    if (!done.length) return `No results yet${tail}`;
-    const won = done.filter(([, s]) => s === "won").length, lost = done.filter(([, s]) => s === "lost").length;
-    if (money_) {
-      const net = done.reduce((a, [e, s]) => a + profitOf(e, s), 0), staked = done.reduce((a, [e]) => a + e.stake, 0);
-      const pushed = done.length - won - lost;
-      return `Record ${won}-${lost}${pushed ? "-" + pushed : ""} · profit ${net >= 0 ? "+" : "−"}${money(Math.abs(net))} on ${money(staked)}${tail}`;
-    }
-    const decided = done.filter(([, s]) => s !== "push");
-    const expected = decided.reduce((a, [e]) => a + e.prob, 0) / (decided.length || 1);
-    return `Hit ${won} of ${decided.length} (${pct(won / (decided.length || 1))}) · the builder expected ${pct(expected)}${tail}`;
-  }
-  const WORD = { won: "HIT", lost: "MISS", push: "PUSH", pending: "PENDING" };
-  const MARK = { won: "✓", lost: "✗", push: "=", pending: "…" };
-  const kickWhen = (iso) => !iso ? "" : new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";
-  function resultCard(e, placed, tag) {
-    const status = entryStatus(e.legs);
-    const title = e.kind === "single" ? e.legs[0].pick : `${e.legs.length}-leg parlay`;
-    const legs = e.legs.map((l) => {
-      const [s, detail] = legStatus(l.lid);
-      return `<li><span class="mk mk-${s}">${MARK[s]}</span><div>${e.kind === "parlay" ? `<b>${esc(l.pick)}</b><br>` : ""}<span class="game">${esc(l.game)} · ${esc(s !== "pending" && detail ? detail : kickWhen(l.kickoff))}</span></div></li>`;
-    }).join("");
-    let foot;
-    const pre = tag ? `${esc(tag)} · ` : "";
-    if (placed) {
-      const net = profitOf(e, status);
-      foot = `<span>${pre}${status === "pending" ? `${money(e.stake)} to win ${money(e.stake * (amToDec(e.odds) - 1))}` : `${money(e.stake)} staked · ${net >= 0 ? "+" : "−"}${money(Math.abs(net))}`}</span>${tag ? "" : `<button class="x" data-unplace="${esc(e.docId)}">Remove</button>`}`;
-    } else {
-      foot = `<span>${pre}Builder gave it ${pct(e.prob)} · ${esc((e.sport || "").toUpperCase())}</span>`;
-    }
-    return `<div class="card" style="cursor:default">
-      <div class="row"><span class="pill p-${status}">${WORD[status]}</span><div class="grow pick">${esc(title)}</div><b style="color:var(--blue)">${esc(fmtAm(e.odds))}</b></div>
-      <ul class="rlegs">${legs}</ul><div class="rfoot">${foot}</div></div>`;
-  }
-  function sortEntries(list) {
-    const first = (e) => e.legs.map((l) => l.kickoff).sort()[0], last = (e) => e.legs.map((l) => l.kickoff).sort().pop();
-    const pend = list.filter((e) => entryStatus(e.legs) === "pending").sort((a, b) => first(a).localeCompare(first(b)));
-    const done = list.filter((e) => entryStatus(e.legs) !== "pending").sort((a, b) => last(b).localeCompare(last(a)));
-    return pend.concat(done);
-  }
-  function trackedView(placed) {
-    const list = placed ? state.placed : unplaced();
-    const explain = placed
-      ? "Bets you marked as placed from Your slip. Each one is graded after its games."
-      : "Every pick the builder showed for the coming week that you didn't place, at the chance it had when first shown, and how it turned out.";
-    let html = `<div class="notice summary"><div><b>${esc(summaryOf(list, placed))}</b><br>${explain}</div></div>`;
-    if (placed && state.dbState === "off") return html + `<div class="empty">Placed bets need you signed in to claude.ai. Open this page from claude.ai to keep track of them.</div>`;
-    if (placed && state.dbState === "error") return html + `<div class="empty">Couldn't load your placed bets. Reload the page to try again.</div>`;
-    if (!list.length) return html + `<div class="empty">${placed ? "No placed bets yet. In Your slip, type the odds you got and tap I placed this." : "Nothing yet. Picks are logged for the week ahead as they're shown."}</div>`;
-    const shown = sortEntries(list).slice(0, 80);
-    html += `<div class="grid rgrid">${shown.map((e) => resultCard(e, placed)).join("")}</div>`;
-    if (list.length > shown.length) html += `<p class="foot">Showing the latest ${shown.length} of ${list.length}.</p>`;
-    return html + `<p class="foot">Results come in after each game (player stats usually the next morning) and appear when this page is next updated.</p>`;
-  }
   function historyList() {  // [source, entry]: a pick you placed shows once, as placed
     const ids = placedIds();
     return state.placed.map((e) => ["Placed", e])
@@ -474,7 +402,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function placeRow(key, legs, kind, prob) {
     if (!legs.every((l) => l.lid && l.rec)) return `<div class="placerow">This bet came from an older version of the page. Remove it and add it again to track it.</div>`;
     const eid = entryId(kind, legs.map((l) => l.lid));
-    if (placedIds().has(eid)) return `<div class="placerow"><span class="placed-ok">✓ In your Placed bets</span></div>`;
+    if (placedIds().has(eid)) return `<div class="placerow"><span class="placed-ok">✓ Placed · tracked in Bet History</span></div>`;
     if (state.dbState === "off") return `<div class="placerow">Sign in to claude.ai to keep track of bets you place.</div>`;
     return `<div class="placerow"><label>Odds you got <input id="po-${key}" inputmode="numeric" placeholder="${esc(fmtAm(decToAm(1 / prob)))}"></label>
       <label>Stake $ <input id="ps-${key}" inputmode="decimal" value="${wager()}"></label>
@@ -570,9 +498,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     $("n-singles").textContent = wk.singles.length;
     $("n-parlays").textContent = wk.parlays.length;
     $("n-injuries").textContent = wk.injuries ? wk.injuries.players.length : "–";
-    $("n-slip").textContent = state.slip.length;
-    $("n-placed").textContent = state.placed.length;
-    $("n-unplaced").textContent = unplaced().length;
     $("n-history").textContent = historyList().length;
 
     let html = "";
@@ -585,8 +510,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="grid">${wk.parlays.map(parlayCard).join("")}</div>` : `<div class="empty">Not enough games for a parlay this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "slip") html += slipView();
-    if (state.tab === "placed") html += trackedView(true);
-    if (state.tab === "unplaced") html += trackedView(false);
     if (state.tab === "history") html += historyView();
     html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent.</p>`;
     $("main").innerHTML = html;
@@ -618,7 +541,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     else if (t.id === "clearslip") { state.slip = []; save(); render(); }
     else if (t.dataset.placeall) { placeAll(); }
     else if (t.dataset.place != null) { placeBet(t.dataset.place); }
-    else if (t.dataset.unplace && db) { db.collection("placed").doc(t.dataset.unplace).delete().catch(() => {}); }
   });
   $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });
   $("wager").addEventListener("input", render);
