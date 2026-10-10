@@ -132,5 +132,17 @@ jobs:
           CURRENT=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
           LATEST=true
           [ -n "$CURRENT" ] && [ "${CURRENT#build-}" -gt "$BUILD" ] 2>/dev/null && LATEST=false
-          gh release create "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "Bet Builder build $BUILD" --notes-file notes.md --latest=$LATEST
+          # GitHub occasionally refuses a request (it once answered 403 here); try a
+          # few times, finishing a release that was only partly published.
+          for try in 1 2 3 4; do
+            if gh release view "build-$BUILD" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release upload "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --clobber &&
+                gh release edit "build-$BUILD" --repo "$GITHUB_REPOSITORY" --latest=$LATEST && exit 0
+            else
+              gh release create "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+                --title "Bet Builder build $BUILD" --notes-file notes.md --latest=$LATEST && exit 0
+            fi
+            echo "Publishing failed (try $try); retrying in $((try * 20)) seconds"
+            sleep $((try * 20))
+          done
+          exit 1
