@@ -1,17 +1,42 @@
 name: betting-app weekly picks
 
 # Paper-trading / informational only. Builds a static site and uploads it as a workflow artifact.
-# Does NOT enable GitHub Pages and does NOT commit anything.
+# Does NOT enable GitHub Pages and does NOT commit or push anything.
+#
+# Schedules (GitHub cron is always UTC; times below are US Eastern during daylight time, EDT = UTC-4.
+# After the early-November change to EST (UTC-5) every run lands one hour earlier on the ET clock):
+#   Tue 13:17 UTC  = Tue  9:17 ET   weekly run: grade last week, refresh picks, build site (artifact)
+#   Thu 23:30 UTC  = Thu  7:30 PM ET  snapshot before Thursday-night kickoff (about 8:15 PM ET)
+#   Sat 15:45 UTC  = Sat 11:45 AM ET  snapshot before the noon college games
+#   Sat 18:45 UTC  = Sat  2:45 PM ET  snapshot before the 3:30 PM college games
+#   Sun 15:45 UTC  = Sun 11:45 AM ET  snapshot before the 1 PM NFL games
+# Snapshots only append our own captured lines to data/snapshots.jsonl (for closing-line value).
 on:
   schedule:
-    - cron: "17 13 * * 2"   # Tuesdays 13:17 UTC
+    - cron: "17 13 * * 2"
+    - cron: "30 23 * * 4"
+    - cron: "45 15 * * 6"
+    - cron: "45 18 * * 6"
+    - cron: "45 15 * * 0"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "weekly = grade + refresh + site artifact; snapshot = capture odds snapshot only"
+        type: choice
+        options: [weekly, snapshot]
+        default: weekly
 
 permissions:
   contents: read
 
+# One run at a time so two jobs never race on the cached ledger / snapshot files.
+concurrency:
+  group: betting-state
+  cancel-in-progress: false
+
 jobs:
   weekly:
+    if: ${{ (github.event_name == 'schedule' && github.event.schedule == '17 13 * * 2') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'weekly') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -22,15 +47,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Restore ledger and result cache
+      - name: Restore ledger, snapshots and result cache
         uses: actions/cache@v4
         with:
           path: |
             betting-app/data/ledger.jsonl
             betting-app/data/grades.json
+            betting-app/data/snapshots.jsonl
             betting-app/data/cache
-          key: betting-ledger-${{ github.run_id }}
-          restore-keys: betting-ledger-
+          key: betting-state-${{ github.run_id }}
+          restore-keys: betting-state-
       - name: Tests
         run: python -m unittest discover -s tests
       - name: Grade past paper picks
@@ -44,3 +70,28 @@ jobs:
           name: weekly-picks-site
           path: betting-app/site/
           if-no-files-found: error
+
+  snapshot:
+    if: ${{ (github.event_name == 'schedule' && github.event.schedule != '17 13 * * 2') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'snapshot') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: betting-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore ledger, snapshots and result cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            betting-app/data/ledger.jsonl
+            betting-app/data/grades.json
+            betting-app/data/snapshots.jsonl
+            betting-app/data/cache
+          key: betting-state-${{ github.run_id }}
+          restore-keys: betting-state-
+      - name: Capture odds snapshot (one request per league, no ranking, no ledger writes)
+        run: python snapshot.py

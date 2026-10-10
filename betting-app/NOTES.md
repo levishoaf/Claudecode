@@ -27,3 +27,13 @@
 
 ## 2026-10-10 item 6: docs
 - README: run list (experiments, snapshot, probe), flags, using the page, step-by-step FanDuel debug-dump instructions, layout. All six queue items done; 64 tests pass; live refresh = PASS (one book), sample refresh and static build OK.
+
+## 2026-10-10 workflow: kickoff-window snapshots and persisted state
+- `weekly.yml` now has a `weekly` job (Tuesday cron + dispatch mode weekly: tests, grade, refresh + static site artifact) and a `snapshot` job (four kickoff-window crons + dispatch mode snapshot: `snapshot.py` only). Both persist ledger/grades/snapshots/cache via `actions/cache` (key `betting-state-<run_id>`, restore-key `betting-state-`), serialized with a concurrency group. Still read-only, no commits, no Pages. YAML parsed with PyYAML; each schedule matches exactly one job's `if`.
+- Cron to ET mapping (cron is UTC only; EDT = UTC-4 until the first Sunday of November, then EST = UTC-5 and every run is one hour earlier on the ET clock):
+  - `17 13 * * 2`  Tue 13:17 UTC = Tue 9:17 AM EDT (weekly run)
+  - `30 23 * * 4`  Thu 23:30 UTC = Thu 7:30 PM EDT (before ~8:15 PM Thursday-night kickoff)
+  - `45 15 * * 6`  Sat 15:45 UTC = Sat 11:45 AM EDT (before noon college games)
+  - `45 18 * * 6`  Sat 18:45 UTC = Sat 2:45 PM EDT (before 3:30 PM college games)
+  - `45 15 * * 0`  Sun 15:45 UTC = Sun 11:45 AM EDT (before 1 PM NFL games)
+- Caveats: scheduled runs can start late; cache eviction after 7 days unused (snapshot runs keep it warm); during EST the windows sit 75 minutes before kickoff instead of 45 (adjust the crons in November if tighter timing matters). Not run in CI from here (no network access to GitHub Actions), only parsed.
