@@ -1,8 +1,9 @@
 name: Build executables
 
 # Builds standalone programs with Python bundled inside, so the bet builder
-# runs with a double-click and nothing to install. Download them from the
-# run's "Artifacts" section on the Actions tab.
+# runs with a double-click and nothing to install, then publishes them as a
+# GitHub Release ("build-<run number>"). Download them from the repository's
+# Releases page; the windowed app checks the latest release and updates itself.
 #   Bet Builder by Levi Shoaf            the windowed app
 #   Bet Builder by Levi Shoaf (Console)  the same picks in a text console (supports --watch etc.)
 #   Bet Builder by Levi Shoaf (Discord Bot)  the Discord bot (see README)
@@ -33,6 +34,10 @@ jobs:
 
       - name: Run tests
         run: python -m unittest discover -t . -s tests
+
+      - name: Stamp the build number (the app updates itself from the releases)
+        shell: bash
+        run: printf 'BUILD = %s\nREPO = "%s"\n' "${{ github.run_number }}" "$GITHUB_REPOSITORY" > nfl_edge/_build.py
 
       - name: Build
         shell: bash
@@ -86,3 +91,36 @@ jobs:
             Bet Builder by Levi Shoaf - Mac Console.zip
             Bet Builder by Levi Shoaf - Mac Discord Bot.zip
           retention-days: 90
+
+  release:
+    # Both platforms built and passed their smoke tests: publish them. The app
+    # finds its update here (BetBuilder-Windows.exe, BetBuilder-Mac-App.zip).
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dl
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+          BUILD: ${{ github.run_number }}
+        run: |
+          set -e
+          W="dl/Bet Builder by Levi Shoaf - Windows"
+          M="dl/Bet Builder by Levi Shoaf - Mac"
+          mkdir out
+          cp "$W/Bet Builder by Levi Shoaf.exe" out/BetBuilder-Windows.exe
+          cp "$W/Bet Builder by Levi Shoaf (Console).exe" out/BetBuilder-Windows-Console.exe
+          cp "$W/Bet Builder by Levi Shoaf (Discord Bot).exe" out/BetBuilder-Windows-DiscordBot.exe
+          cp "$M/Bet Builder by Levi Shoaf - Mac App.zip" out/BetBuilder-Mac-App.zip
+          cp "$M/Bet Builder by Levi Shoaf - Mac Console.zip" out/BetBuilder-Mac-Console.zip
+          cp "$M/Bet Builder by Levi Shoaf - Mac Discord Bot.zip" out/BetBuilder-Mac-DiscordBot.zip
+          printf '%s\n\n%s\n' "${MESSAGE%%$'\n'*}" \
+            "Windows: BetBuilder-Windows.exe (the app). Mac: BetBuilder-Mac-App.zip. The app installs later builds by itself." > notes.md
+          gh release create "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "Bet Builder build $BUILD" --notes-file notes.md --latest

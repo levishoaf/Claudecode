@@ -66,6 +66,16 @@ capability, so omit `capabilities` when republishing to keep it.
 The app keeps its own placed and not-placed bets in
 `~/Bet Builder/my bets.json` and grades them on every refresh.
 
+## Releases and auto-update
+
+Each push to the branch builds the programs (`.github/workflows/build-executables.yml`)
+and publishes them as GitHub Release `build-<run number>`. The windowed app is
+stamped with its build number (`nfl_edge/_build.py`, written by the workflow,
+not committed) and updates itself from the latest release (`nfl_edge/updater.py`,
+`Updates` in `bets_gui.py`): Windows swaps the .exe with a batch helper, Mac the
+.app with a shell helper. Keep the release asset names (`updater.ASSETS`) and the
+workflow in step.
+
 ## Discord bot
 
 `discord_bot.py` (logic in `nfl_edge/botcore.py`) is the same bet builder as a

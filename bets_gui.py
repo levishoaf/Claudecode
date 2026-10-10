@@ -23,7 +23,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, fanduel, fdfeed, tracker
+from nfl_edge import board, data, fanduel, fdfeed, tracker, updater
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import american_to_decimal, decimal_to_american
@@ -137,7 +137,10 @@ class App:
         self.ledger_path = (Path(tempfile.mkdtemp()) / "my bets.json") if selftest else LEDGER
         self.ledger_lock = threading.Lock()
         self.ledger = tracker.load(self.ledger_path)
-        root.title("Bet Builder by Levi Shoaf")
+        root.title("Bet Builder by Levi Shoaf"
+                   + (f"  ·  build {updater.BUILD}" if updater.BUILD else ""))
+        self.updating: str | None = None  # status text while an update installs
+        self.offered = 0  # newest build already offered this session
         root.geometry(f"{W}x{H}")
         root.resizable(False, False)
 
@@ -1109,7 +1112,9 @@ class App:
 
     def tick(self, repeat: bool = True) -> None:
         """Show the countdown to the next automatic update."""
-        if self.next_at is not None:
+        if self.updating:
+            self.countdown.set(self.updating)
+        elif self.next_at is not None:
             left = max(int(self.next_at - time.monotonic() + 0.999), 0)
             self.countdown.set(f"⟳  Next update in {left // 60}:{left % 60:02d}")
         elif self.build_btn.cget("text") != "Loading...":
@@ -1177,14 +1182,101 @@ class App:
         self.say(buf.getvalue().strip() or "No saved bets yet.")
 
 
+class Updates:
+    """Checks GitHub for a newer build of the app and installs it (see nfl_edge/updater.py)."""
+
+    def __init__(self, app: "App"):
+        self.app = app
+        if updater.can_update() and not app.selftest:
+            app.root.after(5000, self.check)
+
+    def _background(self, work, done) -> None:
+        """Run work() off the window's thread; call done(kind, value) back on it."""
+        q: queue.Queue = queue.Queue()
+
+        def run():
+            try:
+                q.put(("ok", work(q)))
+            except updater.UpdateError as e:
+                q.put(("error", str(e)))
+
+        def wait():
+            try:
+                while True:
+                    kind, value = q.get_nowait()
+                    if kind != "progress":
+                        done(kind, value)
+                        return
+                    self.app.updating = f"Downloading update…  {value:.0%}"
+                    self.app.countdown.set(self.app.updating)
+            except queue.Empty:
+                self.app.root.after(300, wait)
+
+        threading.Thread(target=run, daemon=True).start()
+        wait()
+
+    def check(self) -> None:
+        def done(kind, update):
+            if kind == "ok" and update and update.build > self.app.offered:
+                self.offer(update)
+            self.app.root.after(updater.CHECK_HOURS * 3_600_000, self.check)
+        self._background(lambda q: updater.available(), done)
+
+    def offer(self, update) -> None:
+        from tkinter import messagebox
+
+        self.app.offered = update.build
+        if not messagebox.askyesno(
+                "Update available",
+                f"A new version of Bet Builder is ready (build {update.build}; you have "
+                f"build {updater.BUILD}).\n\nInstall it now? The app closes and reopens by "
+                "itself in about a minute. Your bets and settings are kept.",
+                parent=self.app.root):
+            return
+        self.app.cancel_update()
+        self.app.next_at = None
+        self.app.updating = "Downloading update…"
+        self.app.countdown.set(self.app.updating)
+
+        def work(q):
+            updater.install(update, progress=lambda d, t: q.put(("progress", d / t if t else 0)))
+
+        def done(kind, value):
+            if kind == "ok":
+                self.app.updating = "Restarting with the new version…"
+                self.app.countdown.set(self.app.updating)
+                self.app.root.after(800, self.app.root.destroy)
+                return
+            self.app.updating = None
+            messagebox.showerror("Update failed", f"The update didn't install: {value}.\n\n"
+                                 "You can keep using this version; it will try again later.",
+                                 parent=self.app.root)
+            self.app.schedule()
+        self._background(work, done)
+
+
+def check_update_cli() -> int:
+    """--check-update: print this build and the newest one on GitHub."""
+    print(f"This build: {updater.BUILD or 'running from source'}")
+    try:
+        found = updater.latest()
+    except updater.UpdateError as e:
+        print(f"Couldn't check: {e}")
+        return 0
+    print(f"Newest build: {found.build} ({found.url})" if found else "No builds published yet.")
+    return 0
+
+
 def main() -> int:
     # A windowed build has no console; give stray prints somewhere to go.
     for name in ("stdout", "stderr"):
         if getattr(sys, name) is None:
             setattr(sys, name, open(os.devnull, "w"))
+    if "--check-update" in sys.argv:
+        return check_update_cli()
     selftest = "--selftest" in sys.argv
     root = tk.Tk()
-    App(root, selftest=selftest)
+    Updates(App(root, selftest=selftest))
     root.mainloop()
     return 0
 

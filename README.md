@@ -73,22 +73,30 @@ grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
 
 ![Your slip](docs/bet-builder-slip.png)
 
-**Download the standalone program** (no Python needed): on GitHub, open
-**Actions → Build executables**, pick the latest green run, and download
-from **Artifacts**:
+**Download the standalone program** (no Python needed) from the latest
+release: https://github.com/levishoaf/Claudecode/releases/latest
 
-- **Bet Builder by Levi Shoaf - Windows:** `Bet Builder by Levi Shoaf.exe`,
-  the window above, and `Bet Builder by Levi Shoaf (Console).exe`, the text
-  version.
-- **Bet Builder by Levi Shoaf - Mac:** `Bet Builder by Levi Shoaf - Mac App.zip`,
-  the window app, and `Bet Builder by Levi Shoaf - Mac Console.zip`, the text
-  version.
+- **Windows:** `BetBuilder-Windows.exe` is the window above. The text version
+  and the Discord bot are `BetBuilder-Windows-Console.exe` and
+  `BetBuilder-Windows-DiscordBot.exe`.
+- **Mac:** `BetBuilder-Mac-App.zip` is the window app. Unzip it and move
+  **Bet Builder by Levi Shoaf** to your **Applications** folder (it can only
+  update itself from there). The text version and the bot are
+  `BetBuilder-Mac-Console.zip` and `BetBuilder-Mac-DiscordBot.zip`.
 
-Unzip and double-click.
+The first time you open it:
 
 - **Windows:** if SmartScreen warns about an unknown app, click **More info →
   Run anyway**.
-- **Mac:** right-click → **Open** the first time.
+- **Mac:** right-click → **Open**.
+
+**It updates itself.** Every change pushed to GitHub is built and published
+as a new release ("build 42" and so on; the window title shows yours). The
+app checks for a newer build when it opens and every 6 hours, asks before
+installing it, then closes and reopens on the new version. Your bets and
+settings are kept. Running from source (below) doesn't auto-update; pull the
+latest code instead. The console and Discord bot don't update themselves;
+download them again from the latest release.
 
 With Python 3.10+ installed, run `python3 bets_gui.py` for the window, or
 double-click `Bets.command` (Mac) or `Bets.bat` (Windows), or run
@@ -207,7 +215,8 @@ once their games are final.
 3. Open **OAuth2 → URL Generator**. Tick **bot** and **applications.commands**;
    under bot permissions tick **Send Messages**, **Embed Links** and **Read
    Message History**. Open the generated link and add the bot to your server.
-4. Download **Bet Builder by Levi Shoaf (Discord Bot)** from the latest build
+4. Download the Discord bot (`BetBuilder-Windows-DiscordBot.exe` or
+   `BetBuilder-Mac-DiscordBot.zip`) from the latest release
    (see *Download the standalone program* above), put it in its own folder and
    run it. The first time, it asks for the token and saves it as
    `discord token.txt` in that folder. Keep that file private.
