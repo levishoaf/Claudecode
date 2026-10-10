@@ -12,6 +12,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--sample", action="store_true")
 ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
 ap.add_argument("--host", default="127.0.0.1")
+ap.add_argument("--no-model", action="store_true")
 ap.add_argument("--ttl", type=int, default=6 * 3600)
 args = ap.parse_args()
 INDEX = (pipeline.ROOT / "web" / "index.html").read_bytes()
@@ -20,7 +21,7 @@ PICKS = pipeline.DATA / "picks_sample.json" if args.sample else pipeline.DATA / 
 
 def current() -> bytes:
     if not PICKS.exists() or time.time() - PICKS.stat().st_mtime > args.ttl:
-        pipeline.save(pipeline.build_payload(args.sample, args.ttl), PICKS)
+        pipeline.save(pipeline.build_payload(args.sample, args.ttl, use_model=not args.no_model), PICKS)
     return PICKS.read_bytes()
 
 
@@ -30,6 +31,9 @@ class H(BaseHTTPRequestHandler):
             body, ctype = INDEX, "text/html; charset=utf-8"
         elif self.path.startswith("/picks.json"):
             body, ctype = current(), "application/json"
+        elif self.path in ("/track.json", "/backtest.json"):
+            f = pipeline.DATA / self.path.lstrip("/")
+            body, ctype = (f.read_bytes() if f.exists() else b"{}"), "application/json"
         else:
             self.send_error(404)
             return

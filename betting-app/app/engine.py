@@ -7,13 +7,14 @@ from datetime import datetime, timezone
 
 from . import odds_math as om
 from .providers import SPORTS, merge_events
+from .ratings import phi
 
 SHARP_WEIGHTS = {"pinnacle": 5.0, "circasports": 3.0, "betfair_ex_us": 3.0, "betcris": 2.0, "matchbook": 2.0, "lowvig": 2.0, "betonlineag": 2.0}
 SHARP_KEYS = {"pinnacle", "circasports", "betfair_ex_us"}
 MARKET_LABELS = {"h2h": "Moneyline", "spreads": "Spread", "totals": "Total",
                  "player_pass_yds": "Pass Yds", "player_rush_yds": "Rush Yds", "player_reception_yds": "Rec Yds"}
 
-DEFAULTS = dict(min_prob=0.25, kelly_fraction=0.25, stake_cap=0.02, parlay_stake_cap=0.005, devig="power",
+DEFAULTS = dict(w_market=0.80, disagree_flag=0.08, min_prob=0.25, kelly_fraction=0.25, stake_cap=0.02, parlay_stake_cap=0.005, devig="power",
                 top_n=30, n_parlays=5, parlay_pool=22, min_parlay_prob=0.05, max_ev_sanity=0.25, flag_ev=0.08, candidates=200)
 
 
@@ -63,7 +64,31 @@ def _label(event, market, desc, name, point) -> str:
     return f"{desc} {name} {fmt_point(point)} {MARKET_LABELS.get(market, market)}"
 
 
-def evaluate_event(event: dict, p: dict) -> list[dict]:
+def power_probs(event: dict, market: str, outcomes: list, models: dict | None):
+    """Ratings-model probabilities for each (name, point) outcome, or None if not modelled.
+    Only moneyline and spreads are modelled (the ratings have no scoring-total information)."""
+    if not models or market not in ("h2h", "spreads"):
+        return None
+    rater = models.get(event["sport_key"])
+    if rater is None:
+        return None
+    d = rater.margin_for(event["home_team"], event["away_team"], event.get("neutral", False))
+    if d is None:
+        return None
+    sigma = rater.cfg["sigma"]
+    vec = []
+    for name, point in outcomes:
+        if name == event["home_team"]:
+            vec.append(phi((d + (point or 0.0)) / sigma) if market == "spreads" else phi(d / sigma))
+        elif name == event["away_team"]:
+            vec.append(phi(((point or 0.0) - d) / sigma) if market == "spreads" else phi(-d / sigma))
+        else:
+            return None
+    tot = sum(vec)
+    return [v / tot for v in vec] if tot > 0 else None
+
+
+def evaluate_event(event: dict, p: dict, models: dict | None = None) -> list[dict]:
     picks = []
     game = f"{event['away_team']} @ {event['home_team']}"
     for (market, desc, sig), books in _groups(event).items():
@@ -82,6 +107,8 @@ def evaluate_event(event: dict, p: dict) -> list[dict]:
         if not vecs:
             continue
         cons = om.weighted_consensus(vecs, weights)
+        pw = power_probs(event, market, outcomes, models)
+        final = [engine_blend(c, q, p["w_market"]) for c, q in zip(cons, pw)] if pw else cons
         n_books = len(vecs)
         has_sharp = any(k in SHARP_KEYS for k in per_book)
         conf = confidence(n_books, has_sharp)
@@ -90,19 +117,31 @@ def evaluate_event(event: dict, p: dict) -> list[dict]:
             best_k = max(per_book, key=lambda k: om.american_to_decimal(books[k]["prices"][o]))
             price = books[best_k]["prices"][o]
             dec = om.american_to_decimal(price)
-            prob = cons[idx]
+            prob = final[idx]
+            mkt_p = cons[idx]
+            pwr = pw[idx] if pw else None
             ev = om.expected_value(prob, dec)
             flags = []
-            if conf == "none":
+            if pw and conf == "none":
+                conf = "low"
+                flags.append("Model-driven: only one book's prices, so any edge comes from the simple ratings model blended into that book's no-vig line. Treat as unverified.")
+            elif conf == "none":
                 flags.append("Single source: probability is just that book's own no-vig line, so EV here is only the vig (negative by construction). No edge can be estimated.")
             elif conf == "low":
                 flags.append("Low confidence: few books and no sharp book in the consensus.")
+            disagree = bool(pwr is not None and abs(pwr - mkt_p) >= p["disagree_flag"])
+            if disagree:
+                flags.append(f"Ratings model ({pwr*100:.1f}%) and market ({mkt_p*100:.1f}%) disagree by {abs(pwr-mkt_p)*100:.1f} points. Large gaps usually mean the simple model is wrong, not the market.")
             if ev > p["flag_ev"]:
                 flags.append("Unusually large edge: often a stale or mis-listed line. Verify the price is still live.")
             if ev > p["max_ev_sanity"]:
                 continue  # almost certainly a data error
             picks.append({
                 "event_id": event["id"], "league": event["league"], "game": game,
+                "home_team": event["home_team"], "away_team": event["away_team"],
+                "bet": {"market": market, "name": o[0], "point": o[1], "description": desc},
+                "market_prob": round(mkt_p, 4), "power_prob": round(pwr, 4) if pwr is not None else None,
+                "disagree": disagree, "basis": "market + ratings blend" if pw else "market only",
                 "commence_time": event["commence_time"], "market": market, "market_label": MARKET_LABELS.get(market, market),
                 "selection": _label(event, market, desc, o[0], o[1]),
                 "best_book": books[best_k]["title"], "best_odds": price, "best_decimal": round(dec, 4),
@@ -115,6 +154,10 @@ def evaluate_event(event: dict, p: dict) -> list[dict]:
                 "pinnacle_prob": round(per_book["pinnacle"][outcomes.index(o)], 4) if "pinnacle" in per_book else None,
             })
     return picks
+
+
+def engine_blend(market: float, model: float, w_market: float) -> float:
+    return w_market * market + (1 - w_market) * model
 
 
 def build_parlays(candidates: list[dict], p: dict) -> list[dict]:
@@ -146,7 +189,7 @@ def build_parlays(candidates: list[dict], p: dict) -> list[dict]:
         if ev <= 0:
             notes.insert(0, "NEGATIVE EV: no positive-EV parlay exists from the current data. This is only the least-bad combination; skipping it is the better bet.")
         out.append({
-            "legs": [{k: c[k] for k in ("league", "game", "market_label", "selection", "best_book", "best_odds", "model_prob", "commence_time")} for c in combo],
+            "legs": [{k: c[k] for k in ("event_id", "league", "game", "market_label", "selection", "best_book", "best_odds", "best_decimal", "model_prob", "commence_time", "bet")} for c in combo],
             "n_legs": len(combo), "combined_decimal": round(s["decimal"], 3), "combined_odds": s["american"],
             "payout_per_100": round((s["decimal"] - 1) * 100, 2), "win_prob": round(s["prob"], 4),
             "implied_prob": round(s["implied_prob"], 4), "ev_per_dollar": round(s["ev"], 4),
@@ -158,7 +201,8 @@ def build_parlays(candidates: list[dict], p: dict) -> list[dict]:
     return out
 
 
-def run(providers: list, params: dict | None = None, now: datetime | None = None, force_sample_reason: str | None = None) -> dict:
+def run(providers: list, params: dict | None = None, now: datetime | None = None, force_sample_reason: str | None = None,
+        models: dict | None = None, model_notes: list | None = None) -> dict:
     """Fetch from providers (one request per league each), merge, evaluate, rank."""
     p = {**DEFAULTS, **(params or {})}
     now = now or datetime.now(timezone.utc)
@@ -172,7 +216,7 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
                 lists.append(ev)
     events = merge_events(lists)
     events = [e for e in events if not e["commence_time"] or e["commence_time"] > now.strftime("%Y-%m-%dT%H:%M:%SZ")]
-    picks = [pick for e in events for pick in evaluate_event(e, p)]
+    picks = [pick for e in events for pick in evaluate_event(e, p, models)]
     picks.sort(key=lambda x: -x["ev_per_dollar"])
     cands = picks[: p["candidates"]]
     eligible = [c for c in picks if c["model_prob"] >= p["min_prob"]]
@@ -185,6 +229,8 @@ def run(providers: list, params: dict | None = None, now: datetime | None = None
         "sample_reason": force_sample_reason,
         "params": p,
         "sources": statuses,
+        "ratings_model": {"enabled": bool(models), "leagues": sorted(SPORTS[k] for k in (models or {})), "w_market": p["w_market"],
+                          "notes": model_notes or []},
         "n_events": len(events), "n_markets_evaluated": len(picks),
         "positive_ev_count": sum(1 for c in picks if c["ev_per_dollar"] > 0),
         "max_books_per_market": max_books,

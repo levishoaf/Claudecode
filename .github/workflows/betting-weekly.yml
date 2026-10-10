@@ -1,0 +1,46 @@
+name: betting-app weekly picks
+
+# Paper-trading / informational only. Builds a static site and uploads it as a workflow artifact.
+# Does NOT enable GitHub Pages and does NOT commit anything.
+on:
+  schedule:
+    - cron: "17 13 * * 2"   # Tuesdays 13:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: betting-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore ledger and result cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            betting-app/data/ledger.jsonl
+            betting-app/data/grades.json
+            betting-app/data/cache
+          key: betting-ledger-${{ github.run_id }}
+          restore-keys: betting-ledger-
+      - name: Tests
+        run: python -m unittest discover -s tests
+      - name: Grade past paper picks
+        run: python grade.py
+      - name: Refresh picks and build static site
+        # FanDuel may also be blocked or geo-restricted from GitHub runners; the app records that and falls
+        # back to ESPN, then to labeled SAMPLE data. Nothing is worked around.
+        run: python refresh.py --static site/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weekly-picks-site
+          path: betting-app/site/
+          if-no-files-found: error
