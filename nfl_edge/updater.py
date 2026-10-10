@@ -13,6 +13,7 @@ never does.
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import shutil
@@ -64,7 +65,7 @@ def _get_json(url: str, opener=None):
         if e.code == 404:
             return None  # no release yet
         raise UpdateError(f"GitHub answered {e.code}")
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
+    except (OSError, http.client.HTTPException, ValueError) as e:
         raise UpdateError(f"couldn't reach GitHub ({getattr(e, 'reason', e)})")
 
 
@@ -103,7 +104,7 @@ def download(update: Update, dest: Path, progress=None, opener=None) -> Path:
                 done += len(chunk)
                 if progress:
                     progress(done, update.size)
-    except (urllib.error.URLError, TimeoutError, OSError) as e:
+    except (OSError, http.client.HTTPException) as e:
         dest.unlink(missing_ok=True)
         raise UpdateError(f"download failed ({getattr(e, 'reason', e)})")
     if update.size and done != update.size:

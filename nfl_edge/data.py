@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import csv
 import gzip
+import http.client
 import io
 import os
 import time
-import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -32,7 +32,7 @@ def _download(url: str) -> str:
     try:
         with urllib.request.urlopen(url, timeout=60) as resp:
             raw = resp.read()
-    except urllib.error.URLError as e:
+    except (OSError, http.client.HTTPException) as e:  # URL errors, timeouts, dropped connections
         raise DataError(f"Could not download {url}: {e}") from e
     if raw[:2] == b"\x1f\x8b":  # gzip
         raw = gzip.decompress(raw)

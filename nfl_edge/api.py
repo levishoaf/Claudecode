@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import json
 import urllib.error
 import urllib.parse
@@ -42,8 +43,8 @@ def fetch_odds(
     except urllib.error.HTTPError as e:
         body = e.read().decode(errors="replace")
         raise OddsAPIError(f"HTTP {e.code} from The Odds API: {body}") from e
-    except urllib.error.URLError as e:
-        raise OddsAPIError(f"Could not reach The Odds API: {e.reason}") from e
+    except (OSError, http.client.HTTPException) as e:  # URL errors, timeouts, dropped connections
+        raise OddsAPIError(f"Could not reach The Odds API: {getattr(e, 'reason', e)}") from e
 
 
 EVENT_URL = "https://api.the-odds-api.com/v4/sports/{sport}/events/{event_id}/odds"
@@ -70,6 +71,6 @@ def fetch_event_odds(
     except urllib.error.HTTPError as e:
         body = e.read().decode(errors="replace")
         raise OddsAPIError(f"HTTP {e.code} from The Odds API: {body}") from e
-    except urllib.error.URLError as e:
-        raise OddsAPIError(f"Could not reach The Odds API: {e.reason}") from e
+    except (OSError, http.client.HTTPException) as e:  # URL errors, timeouts, dropped connections
+        raise OddsAPIError(f"Could not reach The Odds API: {getattr(e, 'reason', e)}") from e
 

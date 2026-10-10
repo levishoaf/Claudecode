@@ -12,6 +12,7 @@ confirmed (FeedError), so an unconfirmed bet is never shown as confirmed.
 
 from __future__ import annotations
 
+import http.client
 import json
 import re
 import time
@@ -65,7 +66,7 @@ def _get(url: str, opener=None):
     except urllib.error.HTTPError as e:
         raise FeedError(f"FanDuel answered {e.code}"
                         + (" (not available from your location?)" if e.code in (401, 403) else ""))
-    except (urllib.error.URLError, TimeoutError, OSError) as e:
+    except (OSError, http.client.HTTPException) as e:
         raise FeedError(f"couldn't reach FanDuel ({getattr(e, 'reason', e)})")
     except ValueError:
         raise FeedError("FanDuel sent something that isn't odds data")
