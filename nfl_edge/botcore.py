@@ -14,7 +14,7 @@ import threading
 import time
 from datetime import datetime
 
-from . import board, tracker
+from . import board, learn, tracker
 from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
@@ -205,6 +205,7 @@ class ServerLedger:
     def __init__(self, path):
         self.path = path
         self.lock = threading.Lock()
+        learn.remember(tracker.all_entries(tracker.load(path)))  # learn from past results
 
     def load(self) -> dict:
         return tracker.load(self.path)
@@ -215,6 +216,7 @@ class ServerLedger:
             ledger = tracker.load(self.path)
             change(ledger)
             tracker.save(ledger, self.path)
+        learn.remember(tracker.all_entries(ledger))  # the next boards learn from the results
         return ledger
 
     def record_shown(self, entries: list[dict]) -> None:

@@ -77,6 +77,8 @@ def leg_record(b, sport: str) -> dict | None:
             return name
     leg = {"game_id": b.game_id, "odds": b.fd_price, "stake": 100,
            "win_prob": round(b.fair_prob, 4), "label": label(b)}
+    if getattr(b, "raw_prob", None) is not None:  # the model's own chance, to learn from
+        leg["raw_prob"] = round(b.raw_prob, 4)
     if getattr(b, "tier", None):  # graded later by tier in the report card
         leg["tier"] = b.tier
     if b.market == "h2h":

@@ -369,6 +369,11 @@ def selftest() -> int:
         ok &= not too_long
         print(f"--- {name}: {len(parts)} message(s){' TOO LONG' if too_long else ''}")
         print(parts[0][:600])
+    from nfl_edge import learn
+
+    if not learn.saved().get("groups"):  # calibration.json must ship in the build
+        print("no learned calibration (calibration.json missing)")
+        ok = False
     import discord  # noqa: F401  (the library is bundled and imports)
     print("selftest", "passed" if ok else "FAILED")
     return 0 if ok else 1

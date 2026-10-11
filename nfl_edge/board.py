@@ -17,7 +17,7 @@ import math
 
 from datetime import date, datetime, timedelta, timezone
 
-from . import cfb, data
+from . import cfb, data, learn
 from .context import name_key
 from .extras import LineDistribution, load_player_model, p_over
 from .finder import Bet, find_bets
@@ -235,6 +235,7 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
         b.week = weeks.get(b.game_id)
     if always_offered:  # only bets with no line that could differ on FanDuel
         bets = [b for b in bets if b.market in SURE_MARKETS]
+    learn.adjust(bets, "nfl")  # chances corrected by how past bets like these did
     return [b for b in bets if lo <= b.fair_prob <= hi]
 
 
@@ -258,9 +259,29 @@ def _model_only_week(rows, season, lo, hi, games_source) -> list[Bet]:
         probs = probabilities_from_points(home, p.home_pts, p.away_pts, "h2h",
                                           [{"name": home}, {"name": away}])
         for team, prob in probs.items():
-            if lo <= prob <= hi:
-                out.append(make_bet(f"{away} @ {home}", kickoff_of(g), "h2h", team, None, prob,
-                                    g["game_id"], "stats model (no lines yet)", week=week))
+            out.append(make_bet(f"{away} @ {home}", kickoff_of(g), "h2h", team, None, prob,
+                                g["game_id"], "stats model (no lines yet)", week=week))
+    learn.adjust(out, "nfl")
+    return [b for b in out if lo <= b.fair_prob <= hi]
+
+
+def prop_chances(players, key: str, factor: float, only: set[str] | None = None,
+                 featured: bool = False) -> list[tuple[float, str, int, str]]:
+    """[(chance, market, threshold, stat)] for every rung of a player's prop ladders,
+    his averages scaled by `factor` (his team's expected points vs its average)."""
+    name = players.names[key]
+    out = []
+    for stat, market, dist, ladder in PROP_LADDERS.get(players.position.get(key, ""), []):
+        if only is not None and market not in only:
+            continue
+        prof = players.profile(name, stat)
+        minimum = (FEATURED_MIN_AVERAGE if featured else PROP_MIN_AVERAGE).get(stat, 0)
+        if prof is None or prof.mean < minimum:
+            continue  # FanDuel wouldn't list this prop for him
+        mean = prof.mean * factor ** SCALING[dist]
+        for k in ladder:
+            p = p_over(dist, mean, prof.sd, k - 0.5)
+            out.append(((p * prof.games + 1) / (prof.games + 2), market, k, stat))  # small-sample shrink
     return out
 
 
@@ -333,26 +354,14 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
             continue  # didn't play his team's latest game
         factor = implied[team] / (pts[team][0] / pts[team][1])
         name = players.names[key]
-        found = []  # (chance, market, threshold)
-        for stat, market, dist, ladder in PROP_LADDERS.get(players.position.get(key, ""), []):
-            if only is not None and market not in only:
-                continue
-            prof = players.profile(name, stat)
-            minimum = (FEATURED_MIN_AVERAGE if featured else PROP_MIN_AVERAGE).get(stat, 0)
-            if prof is None or prof.mean < minimum:
-                continue  # FanDuel wouldn't list this prop for him
-            mean = prof.mean * factor ** SCALING[dist]
-            for k in ladder:
-                p = p_over(dist, mean, prof.sd, k - 0.5)
-                p = (p * prof.games + 1) / (prof.games + 2)  # small-sample shrink
-                if lo <= p <= hi:
-                    found.append((p, market, k))
+        found = [f for f in prop_chances(players, key, factor, only, featured)
+                 if lo <= f[0] <= hi]  # (chance, market, threshold)
         if not every_line:  # the player's likeliest line of each prop type
             best = {}
             for f in sorted(found, key=lambda f: -f[0]):
                 best.setdefault(f[1], f)
             found = list(best.values())
-        for p, market, k in found:
+        for p, market, k, _ in found:
             game, kick, gid = info[team]
             pick = f"{name} Yes" if market == "player_anytime_td" else f"{name} Over"
             bet = make_bet(game, kick, market, pick, k - 0.5, p, gid, "player logs")
@@ -383,10 +392,10 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
         p_home = normal_cdf((hp - ap) / cfb.MARGIN_SD)
         game = f"{r['away_team']} @ {r['home_team']}"
         for team, p in ((r["home_team"], p_home), (r["away_team"], 1 - p_home)):
-            if lo <= p <= hi:
-                out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model",
-                                    week=int(r["week"])))
-    return out
+            out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model",
+                                week=int(r["week"])))
+    learn.adjust(out, "ncaaf")
+    return [b for b in out if lo <= b.fair_prob <= hi]
 
 
 # ---------------------------------------------------------------- injury report

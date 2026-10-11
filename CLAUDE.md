@@ -109,5 +109,10 @@ record against this week's opponent since two seasons back, game by game. Parlay
 show theirs, with the weakest leg named. The top singles mix props and game bets (`prop_share=0.5`). The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
 request: the app and web page only show bets, and every bet the builder makes is graded
 in Bet History. Bets placed on the page earlier stay there (the `placed` db collection).
+Chances are learned from results (`nfl_edge/learn.py`): `python -m nfl_edge.learn --write`
+replays past seasons to refit `nfl_edge/calibration.json` (kept per bet type only if it
+beats the raw model on the newest season; bundled into the builds), and each build also
+learns from the ledger's graded picks (`learn.remember`, legs keep `raw_prob`). Refit the
+file each off-season.
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
 user's request because it kept stopping bets from loading; don't add it back.

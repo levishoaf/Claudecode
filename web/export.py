@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 import bets as launcher  # noqa: E402  (leg records for grading)
-from nfl_edge import board, hitrate, tracker  # noqa: E402
+from nfl_edge import board, hitrate, learn, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
@@ -176,6 +176,7 @@ def main():
     a = ap.parse_args()
 
     ledger = tracker.load(HISTORY)
+    learn.remember(tracker.all_entries(ledger))  # learn from every graded pick so far
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
               "nfl": [], "ncaaf": [], "betTypes": list(BET_TYPES), "sureTypes": list(SURE_TYPES)}

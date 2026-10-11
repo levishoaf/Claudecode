@@ -634,6 +634,10 @@ class App:
         matchup = self.matchup_line(b)
         if matchup:
             lines.append(matchup)
+        raw = getattr(b, "raw_prob", None)
+        if raw is not None and abs(raw - b.fair_prob) >= 0.02:
+            lines.append((f"Learned: the model said {raw:.0%}; bets like this have really won "
+                          f"about {b.fair_prob:.0%}, so that's the chance shown", MUTED))
         ins = getattr(b, "insight", None)
         if ins:
             lines += [(n, TEXT) for n in ins.notes]
@@ -805,6 +809,7 @@ class App:
             self.win_bar(parent, name, sum(e["status"] == "won" for e in group),
                          sum(e["status"] == "lost" for e in group))
         self.report_card(parent, [e for _, e in items])
+        self.learned(parent)
         for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
             group = [x for x in items if x[1].get("sport", "nfl") == sport]
             head = tk.Frame(parent, bg=BG)
@@ -873,6 +878,32 @@ class App:
                 tk.Label(row, text=f"expected {expected:.0%}"
                          + ("  ·  too few to judge" if n < 10 else ""),
                          bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
+
+    def learned(self, parent) -> None:
+        """What the model has learned from past seasons and this season's graded picks."""
+        from nfl_edge import learn
+
+        rows = [r for r in learn.summary() if abs(r[4] - r[3]) >= 0.01 or r[2]]
+        if not rows:
+            return
+        head = tk.Frame(parent, bg=BG)
+        head.pack(fill="x", padx=6, pady=(10, 0))
+        tk.Label(head, text="What the model has learned", bg=BG, fg=NAVY,
+                 font=self.f["bold"]).pack(side="left")
+        tk.Label(head, text="   chances are corrected by how bets like them really did",
+                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(side="left", pady=(2, 0))
+        tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+        for name, past, live, said, real in rows:
+            row = tk.Frame(parent, bg=BG)
+            row.pack(fill="x", padx=18)
+            tk.Label(row, text=name, bg=BG, fg=TEXT, font=self.f["small"], width=22,
+                     anchor="w").pack(side="left")
+            tk.Label(row, text=f"a {said:.0%} bet really wins about {real:.0%}", bg=BG,
+                     fg=RED if real < said - 0.01 else GREEN if real > said + 0.01 else TEXT,
+                     font=self.f["small"], width=30, anchor="w").pack(side="left")
+            seen = [f"{past:,} past bets" if past else "", f"{live} graded this season" if live else ""]
+            tk.Label(row, text=" · ".join(s for s in seen if s), bg=BG, fg=MUTED,
+                     font=self.f["small"]).pack(side="left")
 
     def win_bar(self, parent, name: str, won: int, lost: int) -> None:
         """A league's green/red bar of settled bets won vs lost (out of 100%), filling in
@@ -991,6 +1022,9 @@ class App:
 
         def work():
             try:
+                from nfl_edge import learn
+
+                learn.remember(tracker.all_entries(self.ledger))  # learn from graded picks
                 pool, singles, parlays = bets.build(args)
                 # Money makers never lean on a Weak (red) leg.
                 args.money_makers = money_maker_parlays(
@@ -1070,6 +1104,11 @@ class App:
             self.show_tab("money")
             print(f"{len(self.singles)} singles, {len(self.parlays)} parlays, "
                   f"{len(self.money)} money makers rendered")
+            from nfl_edge import learn
+
+            if not learn.saved().get("groups"):  # calibration.json must ship in the build
+                print("selftest FAILED: no learned calibration")
+                os._exit(1)
             self.root.after(500, self.root.destroy)
             return
         self.root.after(150, self.poll)
