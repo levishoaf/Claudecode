@@ -119,6 +119,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+.res-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin: 8px 0 4px; }
+.r-won { color: var(--good); } .r-lost { color: var(--bad); } .r-push { color: var(--on-dark-2); } .r-pending { color: var(--blue); }
 .swing { color: var(--warn); font-weight: 700; }
 .show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 520px) {
@@ -441,10 +443,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         const list = state.histFilter === "all" ? inWeek : inWeek.filter(([, , s]) => s === state.histFilter);
         if (!list.length) continue;
         any = true;
-        const done = list.filter(([, , s]) => s !== "pending").sort((a, b) => first(b[1]).localeCompare(first(a[1])));
-        const pend = list.filter(([, , s]) => s === "pending").sort((a, b) => first(a[1]).localeCompare(first(b[1])));
-        html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(inWeek)}</span></h3>
-          <div class="hist-list">${done.concat(pend).map(([, e, s]) => histItem(e, s)).join("")}</div>`;
+        html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(inWeek)}</span></h3>`;
+        // Wins, then losses, then pushes and pending bets, each in its own group.
+        for (const [st, label] of [["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]]) {
+          const these = list.filter(([, , s]) => s === st)
+            .sort((a, b) => st === "pending" ? first(a[1]).localeCompare(first(b[1])) : first(b[1]).localeCompare(first(a[1])));
+          if (!these.length) continue;
+          html += `<div class="res-head r-${st}">${label} (${these.length})</div>
+            <div class="hist-list">${these.map(([, e, s]) => histItem(e, s)).join("")}</div>`;
+        }
       }
       if (!any) html += `<div class="empty">None match this filter yet.</div>`;
       html += `</section>`;
