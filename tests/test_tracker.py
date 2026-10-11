@@ -96,3 +96,16 @@ class TrackerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LegTeamTest(unittest.TestCase):
+    def test_team_for_each_kind_of_bet(self):
+        from nfl_edge import tracker
+
+        self.assertEqual(tracker.leg_team({"type": "moneyline", "team": "HOU"}, "nfl"),
+                         "Houston Texans")
+        self.assertEqual(tracker.leg_team({"type": "spread", "team": "Toledo"}, "ncaaf"), "Toledo")
+        self.assertEqual(tracker.leg_team({"type": "total"}, "nfl"), tracker.GAME_TOTALS)
+        self.assertEqual(tracker.leg_team({"type": "player_stat", "player": "Drake London"},
+                                          "nfl", lambda name: "ATL"), "Atlanta Falcons")
+        self.assertIsNone(tracker.leg_team({"type": "player_stat", "player": "Nobody"}, "nfl"))

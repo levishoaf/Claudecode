@@ -296,3 +296,25 @@ def summary(entries: list[dict], money: bool) -> str:
     expected = sum(e["win_prob"] for e in decided) / len(decided) if decided else 0
     return (f"Hit {won} of {len(decided)} ({rate:.0%}) · the builder expected "
             f"{expected:.0%}{tail}")
+
+
+GAME_TOTALS = "Game totals"
+
+
+def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None:
+    """The team a bet is on, by full name (for grouping Bet History): the picked team
+    for moneylines, spreads and team totals, the player's team for props
+    (`player_team(name)` gives it), GAME_TOTALS for a game total, None if unknown."""
+    from .stats import TEAM_ABBR
+
+    names = {v: k for k, v in TEAM_ABBR.items()} if sport == "nfl" else {}
+    kind = leg.get("type")
+    if kind == "total":
+        return GAME_TOTALS
+    if kind == "player_stat":
+        team = player_team(leg.get("player", ""))
+    else:
+        team = leg.get("team")
+    if not team:
+        return None
+    return names.get(team, team)

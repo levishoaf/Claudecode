@@ -119,6 +119,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+.team-head { font-size: 15px; font-weight: 700; color: var(--on-dark); margin: 16px 0 2px; padding-bottom: 3px; border-bottom: 1px solid #333; }
+.team-head span { font-weight: 500; font-size: 12px; color: var(--on-dark-2); margin-left: 8px; }
 .kind-head { font-size: 14px; font-weight: 700; color: var(--on-dark); margin: 12px 0 2px; }
 .kind-head span { font-weight: 500; font-size: 12px; color: var(--on-dark-2); margin-left: 8px; }
 .res-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin: 6px 0 4px 8px; }
@@ -469,21 +471,27 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       const group = all.filter(([, e]) => (e.sport || "nfl") === sport);
       html += `<section class="hist-section"><h2 class="hist-head">${name}<span>${tally(group)}</span></h2>`;
       if (!group.length) { html += `<div class="empty">No ${name} bets yet.</div></section>`; continue; }
-      const weeks = [...new Set(group.map(([, e]) => weekOf(e)))].sort((a, b) => (b ?? -1) - (a ?? -1));
+      // Single bets by team (the team bet on, or the player's team), then game totals;
+      // parlays cover several teams, so they get their own section.
+      const special = ["Game totals", "Other", "Parlays"];
+      const teamOf = (e) => e.team || (e.kind !== "single" ? "Parlays"
+        : (DATA.legTeams || {})[(e.legs[0] || {}).lid] || "Other");
+      const teams = [...new Set(group.map(([, e]) => teamOf(e)))];
+      const order = teams.filter((t) => !special.includes(t)).sort().concat(special.filter((t) => teams.includes(t)));
       let any = false;
-      for (const w of weeks) {
-        const inWeek = group.filter(([, e]) => weekOf(e) === w);
-        const list = state.histFilter === "all" ? inWeek : inWeek.filter(([, , s]) => s === state.histFilter);
-        if (!list.length) continue;
+      for (const team of order) {
+        const ofTeam = group.filter(([, e]) => teamOf(e) === team);
+        const shown = state.histFilter === "all" ? ofTeam : ofTeam.filter(([, , s]) => s === state.histFilter);
+        if (!shown.length) continue;
         any = true;
-        html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(inWeek)}</span></h3>`;
-        // Single bets, then parlays; in each, wins, then losses, then pushes and pending bets.
-        for (const [kind, kindLabel] of [["single", "Single bets"], ["parlay", "Parlays"]]) {
-          const ofKind = list.filter(([, e]) => (e.kind === "single") === (kind === "single"));
-          if (!ofKind.length) continue;
-          html += `<div class="kind-head">${kindLabel}<span>${tally(ofKind)}</span></div>`;
+        html += `<div class="team-head">${esc(team)}<span>${tally(ofTeam)}</span></div>`;
+        const weeks = [...new Set(shown.map(([, e]) => weekOf(e)))].sort((a, b) => (b ?? -1) - (a ?? -1));
+        for (const w of weeks) {
+          const list = shown.filter(([, e]) => weekOf(e) === w);
+          html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(ofTeam.filter(([, e]) => weekOf(e) === w))}</span></h3>`;
+          // wins, then losses, then pushes and pending bets
           for (const [st, label] of [["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]]) {
-            const these = ofKind.filter(([, , s]) => s === st)
+            const these = list.filter(([, , s]) => s === st)
               .sort((a, b) => st === "pending" ? first(a[1]).localeCompare(first(b[1])) : first(b[1]).localeCompare(first(a[1])));
             if (!these.length) continue;
             html += `<div class="res-head r-${st}">${label} (${these.length})</div>

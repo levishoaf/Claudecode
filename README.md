@@ -132,6 +132,9 @@ with no account or key:
   would have won in games already played this season and last (e.g. "Hit 3 of 4 this
   season"). Moneylines also show the record against this week's opponent since 2024,
   with each score. Parlay legs show theirs, and the weakest leg is named.
+- **Bet History** groups bets by league (NFL, college), then by team (the team bet on,
+  or the player's team for props), then by week, with wins, losses, pushes and pending
+  bets apart. Game totals and parlays (several teams) have their own groups.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

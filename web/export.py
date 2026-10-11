@@ -35,6 +35,7 @@ def be(p):
 
 
 _HISTORY = {}  # season -> (games, player model), loaded once per export
+LEG_TEAMS = {}  # leg id -> team name
 
 
 def track_record(b, sport):
@@ -68,12 +69,33 @@ def track_record(b, sport):
     return out
 
 
+def player_team(name):
+    """A player's current NFL team code (for grouping Bet History by team)."""
+    season = season_for(datetime.now().date())
+    if season not in _HISTORY:
+        try:
+            from nfl_edge import data
+            from nfl_edge.extras import load_player_model
+
+            games = data.games(None)
+            _HISTORY[season] = (games, load_player_model(season, games))
+        except Exception:
+            traceback.print_exc()
+            return None
+    from nfl_edge.context import name_key
+
+    return _HISTORY[season][1].current_team.get(name_key(name))
+
+
 def bet(b, sport):
     k = b.commence_time.astimezone(EASTERN)
     rec = launcher.leg_record(b, sport)
     if rec:
         rec.update(kickoff=b.commence_time.isoformat(), market=_slip_market(b), pick=_describe(b),
                    game=b.game)
+    if rec:  # the team it's on, for grouping Bet History (bets placed on the page too)
+        LEG_TEAMS[tracker.leg_id(rec)] = tracker.leg_team(
+            rec, sport, player_team if sport == "nfl" else lambda n: None) or "Other"
     return {"id": f"{_describe(b)} ({b.game})", "lid": tracker.leg_id(rec) if rec else None,
             "rec": rec, "label": _describe(b), "market": _slip_market(b),
             "selection": _slip_selection(b), "game": b.game, "kickoff": k.isoformat(),
@@ -174,6 +196,11 @@ def main():
 
     if a.placed:
         ledger["placed"] = placed_entries(a.placed)
+        for e in ledger["placed"]:  # their teams, for Bet History
+            for leg in e["legs"]:
+                LEG_TEAMS.setdefault(leg["id"], tracker.leg_team(
+                    leg, e["sport"], player_team if e["sport"] == "nfl" else lambda n: None)
+                    or "Other")
     try:  # paper bets saved as files in bets/ join the Bet History
         tracker.import_saved(ledger, sorted((ROOT / "bets").glob("*.json")))
     except Exception:
@@ -194,11 +221,14 @@ def main():
     ledger["placed"] = []
     tracker.save(ledger, HISTORY)
     result["legResults"] = results
+    result["legTeams"] = LEG_TEAMS
     def brief(e, src):
         return {"id": e["id"], "src": src, "kind": e["kind"], "sport": e["sport"],
                 "week": e.get("week"),
                 "prob": e["win_prob"], "odds": e["odds"], "stake": e.get("stake", 100),
                 "status": e["status"], "created": e["created"], "name": e.get("source", ""),
+                "team": (tracker.leg_team(e["legs"][0], e["sport"], player_team) or "Other")
+                if e["kind"] == "single" else "Parlays",
                 "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
                           "game": leg.get("game", ""), "kickoff": leg.get("kickoff", ""),
                           "prob": leg.get("win_prob")} for leg in e["legs"]]}

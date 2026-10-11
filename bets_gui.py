@@ -27,6 +27,7 @@ import bets  # sets up paths for the standalone build
 from nfl_edge import board, data, hitrate, tracker, updater
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
+from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 from nfl_edge.picks import BET_TYPES, empty_type_note, make_or_break, money_maker_parlays
@@ -1088,40 +1089,60 @@ class App:
                 tk.Label(parent, text="No bets yet.", bg=BG, fg=MUTED,
                          font=self.f["small"]).pack(anchor="w", padx=6)
                 continue
-            weeks = sorted({e.get("week") for _, e in group}, key=lambda w: -(w or -1))
-            for week in weeks:
-                in_week = [x for x in group if x[1].get("week") == week]
-                wk = tk.Frame(parent, bg=BG)
-                wk.pack(fill="x", padx=6, pady=(6, 2))
-                tk.Label(wk, text=f"Week {week}" if week else "Other", bg=BG, fg=TEXT,
-                         font=self.f["bold"]).pack(side="left")
-                tk.Label(wk, text="   " + tally(in_week), bg=BG, fg=MUTED,
+            # Single bets by team (the team bet on, or the player's team), then game
+            # totals; parlays cover several teams, so they get their own section.
+            by_team: dict[str, list] = {}
+            for x in group:
+                if x[1]["kind"] == "single":
+                    team = tracker.leg_team(x[1]["legs"][0], sport, self.player_team) or "Other"
+                else:
+                    team = "Parlays"
+                by_team.setdefault(team, []).append(x)
+            order = sorted(t for t in by_team if t not in (tracker.GAME_TOTALS, "Other", "Parlays"))
+            order += [t for t in (tracker.GAME_TOTALS, "Other", "Parlays") if t in by_team]
+            for team in order:
+                th = tk.Frame(parent, bg=BG)
+                th.pack(fill="x", padx=6, pady=(10, 0))
+                tk.Label(th, text=team, bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
+                tk.Label(th, text="   " + tally(by_team[team]), bg=BG, fg=MUTED,
                          font=self.f["tiny"]).pack(side="left", pady=(2, 0))
-                # Single bets, then parlays; in each, wins, then losses, then pushes and
-                # pending bets, each under its own heading.
-                for kind, kind_label in (("single", "Single bets"), ("parlay", "Parlays")):
-                    of_kind = [x for x in in_week if (x[1]["kind"] == "single") == (kind == "single")]
-                    if not of_kind:
-                        continue
-                    tk.Label(parent, text=f"{kind_label}   {tally(of_kind)}", bg=BG, fg=TEXT,
-                             font=self.f["small"]).pack(anchor="w", padx=10, pady=(6, 0))
-                    for status, label in (("won", "WON"), ("lost", "LOST"), ("push", "PUSHED"),
-                                          ("pending", "PENDING")):
-                        these = sorted((e for _, e in of_kind if e["status"] == status),
-                                       key=tracker.first_kickoff, reverse=status != "pending")
-                        if not these:
-                            continue
-                        tk.Label(parent, text=f"{label}  ({len(these)})", bg=BG,
-                                 fg=RESULT_STYLE[status][1], font=self.f["tinyb"]).pack(
-                            anchor="w", padx=18, pady=(3, 0))
-                        holder = tk.Frame(parent, bg=BG)
-                        holder.pack(fill="x")
-                        cols = self.columns(holder, 3, CARD_W)
-                        heights = [0, 0, 0]
-                        for e in these:  # fill the shortest column, so there are no gaps
-                            col = heights.index(min(heights))
-                            heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
-                            self.history_row(cols[col], e)
+                tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+                self.history_weeks(parent, by_team[team], tally)
+
+    def player_team(self, name: str) -> str | None:
+        """A player's current NFL team code, from the stats loaded for the track records."""
+        cached = getattr(self, "_players", None)
+        return cached[2].current_team.get(name_key(name)) if cached else None
+
+    def history_weeks(self, parent, items, tally) -> None:
+        """One team's (or the parlays') bets by week; in each week wins, then losses,
+        then pushes and pending bets."""
+        weeks = sorted({e.get("week") for _, e in items}, key=lambda w: -(w or -1))
+        for week in weeks:
+            in_week = [x for x in items if x[1].get("week") == week]
+            wk = tk.Frame(parent, bg=BG)
+            wk.pack(fill="x", padx=12, pady=(4, 0))
+            tk.Label(wk, text=f"Week {week}" if week else "Other", bg=BG, fg=TEXT,
+                     font=self.f["small"]).pack(side="left")
+            tk.Label(wk, text="   " + tally(in_week), bg=BG, fg=MUTED,
+                     font=self.f["tiny"]).pack(side="left", pady=(1, 0))
+            for status, label in (("won", "WON"), ("lost", "LOST"), ("push", "PUSHED"),
+                                  ("pending", "PENDING")):
+                these = sorted((e for _, e in in_week if e["status"] == status),
+                               key=tracker.first_kickoff, reverse=status != "pending")
+                if not these:
+                    continue
+                tk.Label(parent, text=f"{label}  ({len(these)})", bg=BG,
+                         fg=RESULT_STYLE[status][1], font=self.f["tinyb"]).pack(
+                    anchor="w", padx=18, pady=(3, 0))
+                holder = tk.Frame(parent, bg=BG)
+                holder.pack(fill="x")
+                cols = self.columns(holder, 3, CARD_W)
+                heights = [0, 0, 0]
+                for e in these:  # fill the shortest column, so there are no gaps
+                    col = heights.index(min(heights))
+                    heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
+                    self.history_row(cols[col], e)
 
     def history_row(self, parent, e: dict) -> None:
         """One compact line: the bet, its chance, and WON/LOST once it's settled."""
