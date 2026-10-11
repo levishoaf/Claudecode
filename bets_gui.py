@@ -707,9 +707,26 @@ class App:
         now, last = rec
         parts = [f"{hr.hits} of {hr.games} {when} ({hr.rate:.0%})"
                  for hr, when in ((now, "this season"), (last, "last season")) if hr and hr.games]
+        h2h = self.h2h_text(b, long=True)
+        if h2h:
+            parts.append(h2h)
         if not parts:
             return None
         return "Hit " + "  ·  ".join(parts), self._rate_color(now, last)
+
+    def h2h_text(self, b, long: bool = False) -> str | None:
+        """A moneyline pick's record against this opponent since two seasons back."""
+        if b.market != "h2h":
+            return None
+        hr = ((getattr(self, "rates", None) or {}).get(bets.label(b)) or {}).get("h2h")
+        if hr is None:
+            return None
+        opp = next((t for t in b.game.split(" @ ") if t != b.pick), "them").split()[-1]
+        since = bets.season_for(date.today()) - hitrate.H2H_SEASONS + 1
+        if not hr.games:
+            return f"no games vs {opp} since {since}" if long else None
+        record = f"{hr.hits}-{hr.games - hr.hits} vs {opp}"
+        return f"{record} since {since}" if long else record
 
     def _leg_record(self, b):
         """This season's record for a parlay leg (last season's if none yet), or None."""
@@ -721,7 +738,11 @@ class App:
     def leg_text(self, b) -> str:
         """A parlay leg with its record, e.g. "Jahmyr Gibbs Anytime TD (4/4)"."""
         hr = self._leg_record(b)
-        return _slip_selection(b) + (f" ({hr.hits}/{hr.games})" if hr else "")
+        bits = [f"{hr.hits}/{hr.games}"] if hr else []
+        h2h = self.h2h_text(b)
+        if h2h:
+            bits.append(h2h)
+        return _slip_selection(b) + (f" ({', '.join(bits)})" if bits else "")
 
     def legs_record_line(self, legs) -> tuple[str, str] | None:
         """The parlay's weakest leg by its record; colored by it."""

@@ -52,3 +52,14 @@ class HitRateTest(unittest.TestCase):
         td = hitrate.rates(self.bet("player_anytime_td", "Drake London Yes", 0.5), players,
                            GAMES, 2026)
         self.assertEqual(td[2026].hits, 2)
+
+
+class HeadToHeadTest(unittest.TestCase):
+    def test_record_against_this_opponent(self):
+        games = [game("a", 2024, "ATL", "BAL", 20, 17), game("b", 2025, "BAL", "ATL", 30, 10),
+                 game("c", 2026, "ATL", "BAL", 21, 14), game("d", 2023, "ATL", "BAL", 9, 3),
+                 game("e", 2026, "ATL", "TB", 7, 3)]
+        b = make_bet(GAME, KICK, "h2h", "Atlanta Falcons", None, 0.6, "g", "x")
+        h = hitrate.head_to_head(b, games, 2026)
+        self.assertEqual((h.hits, h.games), (2, 3))  # 2024-2026 only, Ravens games only
+        self.assertEqual(hitrate.rates(b, None, games, 2026)["h2h"].games, 3)

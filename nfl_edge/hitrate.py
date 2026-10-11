@@ -113,8 +113,37 @@ def team_rates(b, games: list[dict], season: int) -> dict[int, HitRate] | None:
     return out
 
 
-def rates(b, players, games: list[dict], season: int) -> dict[int, HitRate] | None:
-    """This season's and last season's hit rate for any NFL bet we can settle."""
+H2H_SEASONS = 3  # this season and the two before it
+
+
+def head_to_head(b, games: list[dict], season: int) -> HitRate | None:
+    """A moneyline pick's record against this opponent (playoffs included) since
+    the season two years back, e.g. 2024-2026."""
+    teams = [TEAM_ABBR.get(t.strip()) for t in b.game.split(" @ ")]
+    me = TEAM_ABBR.get(b.pick)
+    if None in teams or me not in teams:
+        return None
+    opp = teams[0] if teams[1] == me else teams[1]
+    first = season - H2H_SEASONS + 1
+    hits = n = 0
+    for g in games:
+        if g["home_score"] == "" or not first <= int(g["season"]) <= season:
+            continue
+        if {g["home_team"], g["away_team"]} != {me, opp}:
+            continue
+        mine, theirs = ((int(g["home_score"]), int(g["away_score"])) if g["home_team"] == me
+                        else (int(g["away_score"]), int(g["home_score"])))
+        n += 1
+        hits += mine > theirs
+    return HitRate(hits, n)
+
+
+def rates(b, players, games: list[dict], season: int) -> dict | None:
+    """This season's and last season's hit rate for any NFL bet we can settle, plus
+    ("h2h") a moneyline pick's record against its opponent."""
     if b.market.startswith("player_"):
         return prop_rates(b, players, season)
-    return team_rates(b, games, season)
+    out = team_rates(b, games, season)
+    if out is not None and b.market == "h2h":
+        out["h2h"] = head_to_head(b, games, season)
+    return out
