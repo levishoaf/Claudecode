@@ -127,8 +127,6 @@ class App:
         self.root, self.selftest = root, selftest
         self.singles, self.parlays, self.previous = [], [], {}
         self.money: list = []  # Money Maker parlays
-        self.picked: set[str] = set()  # labels of singles on your slip
-        self.picked_parlays: set[tuple] = set()  # parlays on your slip
         self.last_args = None
         self.tab = "singles"
         self.injuries: tuple = (None, [], "")
@@ -281,10 +279,10 @@ class App:
         draw_field(c, w, h)
         c.tag_lower("field")
         c.coords(self.win_top, w / 2, 72)
-        out_h = h - 338  # between the header and the bottom bar
+        out_h = h - 266  # between the header and the bottom bar
         c.coords(self.win_out, w / 2, 192 + out_h / 2)
         c.itemconfigure(self.win_out, height=out_h)
-        c.coords(self.win_bottom, w / 2, h - 52)
+        c.coords(self.win_bottom, w / 2, h - 32)
         c.coords(self.mark, w - 12, h - 8)
 
     def pick_sport(self, key: str) -> None:
@@ -328,24 +326,13 @@ class App:
         for seq, step in (("<MouseWheel>", None), ("<Button-4>", -1), ("<Button-5>", 1)):
             self.root.bind_all(seq, lambda e, s=step: self.view.yview_scroll(
                 s if s else (-1 if e.delta > 0 else 1), "units"))
-        self.win_out = c.create_window(W / 2, 458, window=out, width=PANEL_W, height=532)
+        self.win_out = c.create_window(W / 2, 192 + (H - 266) / 2, window=out, width=PANEL_W,
+                                       height=H - 266)
 
     def checker(self, c: tk.Canvas) -> None:
         bottom = tk.Frame(c, bg=NAVY)
-        slip = tk.Frame(bottom, bg=NAVY)
-        slip.pack(fill="x", padx=14, pady=(8, 2))
-        tk.Label(slip, text="Your slip", bg=NAVY, fg=WHITE, font=self.f["bold"]).pack(side="left")
-        self.slip_summary = tk.Label(slip, text="Click any bet card to add it.", bg=NAVY,
-                                     fg="#9fb0c8", font=self.f["small"])
-        self.slip_summary.pack(side="left", padx=10)
-        for text, cmd, kind in (("Clear", self.clear_slip, "secondary"),
-                                ("Save slip", self.save, "secondary"),
-                                ("View slip", self.view_slip, "primary")):
-            FlatButton(slip, text, cmd, kind, self.f["bold"]).pack(side="right", padx=(6, 0))
-        self.view_btn_row = slip
-
         chk = tk.Frame(bottom, bg=NAVY)
-        chk.pack(fill="x", padx=14, pady=(4, 8))
+        chk.pack(fill="x", padx=14, pady=10)
         tk.Label(chk, text="Check FanDuel's price", bg=NAVY, fg=WHITE,
                  font=self.f["bold"]).pack(side="left", padx=(0, 8))
         self.check_entry = ttk.Entry(chk, width=9, font=self.f["body"])
@@ -360,74 +347,7 @@ class App:
                                 anchor="w", justify="left", font=self.f["small"],
                                 wraplength=int(PANEL_W) - 580)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
-        self.win_bottom = c.create_window(W / 2, 818, window=bottom, width=PANEL_W, height=96)
-
-    # -------------------------------------------------------------- slip
-    def clickable(self, widget, command) -> None:
-        widget.bind("<Button-1>", lambda e: command())
-        widget.configure(cursor="hand2")
-        for child in widget.winfo_children():
-            self.clickable(child, command)
-
-    def toggle_single(self, b) -> None:
-        key = bets.label(b)
-        self.picked.symmetric_difference_update({key})
-        self.after_toggle()
-
-    def toggle_parlay(self, p) -> None:
-        key = tuple(bets.label(b) for b in p.legs)
-        self.picked_parlays.symmetric_difference_update({key})
-        self.after_toggle()
-
-    def after_toggle(self) -> None:
-        if self.tab == "slip":  # removing from the slip view redraws it
-            self.show_tab("slip")
-        else:
-            self.refresh_cards()
-            self.update_tab_count()
-
-    def update_tab_count(self) -> None:
-        label = getattr(self, "tab_labels", {}).get("slip")
-        if label is not None and label.winfo_exists():
-            label.configure(text=f"Your slip ({len(self.picked) + len(self.picked_parlays)})")
-
-    def slip_bets(self) -> tuple[list, list]:
-        singles = [b for b in self.singles if bets.label(b) in self.picked]
-        parlays = [p for p in self.parlays + self.money
-                   if tuple(bets.label(b) for b in p.legs) in self.picked_parlays]
-        return singles, parlays
-
-    def combined(self, singles) -> Parlay | None:
-        """Your picked singles as one parlay, if they're all from different games."""
-        if len(singles) >= 2 and len({b.game for b in singles}) == len(singles):
-            return Parlay(tuple(singles))
-        return None
-
-    def refresh_cards(self) -> None:
-        for key, (row, num_lbl, num) in self.row_widgets.items():
-            on = key in self.picked or key in self.picked_parlays
-            bg = BLUE_SOFT if on else CARD
-            for w in [row, *row.winfo_children()]:
-                w.configure(bg=bg)
-            num_lbl.configure(text="✓" if on else num, fg=BLUE if on else MUTED)
-        singles, parlays = self.slip_bets()
-        if not singles and not parlays:
-            self.slip_summary.configure(text="Click any bet card to add it.")
-            return
-        text = f"{len(singles)} single{'s' * (len(singles) != 1)}, {len(parlays)} parlay" \
-               f"{'s' * (len(parlays) != 1)} picked"
-        combo = self.combined(singles)
-        if combo:
-            text += (f"  ·  your singles as one parlay: {combo.win_prob:.0%} to win, break-even "
-                     f"{_fmt_american(decimal_to_american(1 / combo.win_prob))}")
-        elif len(singles) >= 2:
-            text += "  ·  two picks share a game, so they can't be one standard parlay"
-        self.slip_summary.configure(text=text)
-
-    def clear_slip(self) -> None:
-        self.picked.clear()
-        self.picked_parlays.clear()
-        self.show_tab(self.tab)
+        self.win_bottom = c.create_window(W / 2, H - 32, window=bottom, width=PANEL_W, height=56)
 
     # -------------------------------------------------------------- output
     def clear(self) -> None:
@@ -457,7 +377,7 @@ class App:
         order = "best value first" if checked else "likeliest first"
         kind = getattr(args, "bet_type", "All bets")
         tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
-                            "  ·  click a bet to add it to your slip",
+                            "",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None))
         if self.fd_mode and board.NOTES.get("fanduel"):
@@ -497,11 +417,9 @@ class App:
         grid = tk.Frame(self.body, bg=BG)
         grid.pack(fill="both", padx=10, pady=(6, 0))
         if self.tab == "singles":
-            self.hidden_note(grid, singles, parlays)
-            self.singles_tab(grid, [b for b in singles if self.shown(b)], previous)
+            self.singles_tab(grid, singles, previous)
         elif self.tab == "parlays":
-            self.hidden_note(grid, singles, parlays)
-            self.parlays_tab(grid, [p for p in parlays if self.shown_parlay(p)], args.stake)
+            self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "money":
             tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
                                  "plus one coin-flip leg (⚡ MAKE OR BREAK) that decides it. "
@@ -509,15 +427,12 @@ class App:
                                  "leg is never in the regular parlays."),
                      bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                      justify="left").pack(anchor="w", padx=6, pady=(6, 0))
-            self.parlays_tab(grid, [p for p in money if self.shown_parlay(p)], args.stake,
+            self.parlays_tab(grid, money, args.stake,
                              swing=True)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
-        elif self.tab == "history":
-            self.history_tab(grid)
         else:
-            self.slip_tab(grid)
-        self.refresh_cards()
+            self.history_tab(grid)
         tk.Label(self.body, text=("Every bet here was found on FanDuel; odds are FanDuel's from "
                                   "the last check. EV is the expected profit per $1." if self.fd_mode else
                                   "Odds shown are break-even: bet only if FanDuel pays that or "
@@ -569,7 +484,7 @@ class App:
             return 10.0
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
-                 on_click=None, last: str | None = None, price: int | None = None,
+                 last: str | None = None, price: int | None = None,
                  ev: float | None = None, extra=None) -> tk.Frame:
         """One bet: number, name with game below (and an optional colored line, e.g. its
         track record), chance, worst odds, payout."""
@@ -609,8 +524,6 @@ class App:
                      font=self.f["tiny"]).grid(row=1, column=4, sticky="ne", padx=8, pady=(0, 6))
         else:
             end_lbl.grid(row=0, column=4, rowspan=3, sticky="e", padx=8)
-        if on_click is not None:
-            self.clickable(row, on_click)
         if key is not None:
             self.row_widgets[key] = (row, num_lbl, num)
         return row
@@ -640,7 +553,7 @@ class App:
             tag = "CONFIRM LINE  ·  " if b.confirm_line else ""
             self.list_row(table, str(i), title,
                           f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
-                          b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b),
+                          b.fair_prob, bets.label(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
                           extra=self.record_line(b))
 
@@ -664,7 +577,7 @@ class App:
             on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
             self.list_row(table, f"M{i}" if swing else f"P{i}", f"{len(p.legs)}-leg parlay",
                           legs, p.win_prob,
-                          tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
+                          tuple(bets.label(b) for b in p.legs),
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None,
                           extra=self.legs_record_line(p.legs))
 
@@ -815,138 +728,6 @@ class App:
                 tk.Label(row, text=p["position"], bg=CARD, fg=BLUE,
                          font=self.f["tinyb"]).pack(side="left", padx=6)
 
-    def slip_tab(self, parent) -> None:
-        singles, parlays = self.slip_bets()
-        if not singles and not parlays:
-            tk.Label(parent, text="Your slip is empty. Click bets on the Single bets or Parlays "
-                                  "tabs to add them.", bg=BG, fg=TEXT,
-                     font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
-            return
-        self.place_inputs = []  # (entry, odds box, stake box) for Placed all
-        top = tk.Frame(parent, bg=BG)
-        top.pack(fill="x", padx=6, pady=(6, 0))
-        FlatButton(top, "Placed all", self.mark_all_placed, "primary",
-                   self.f["tinyb"]).pack(side="left")
-        tk.Label(top, text="  Marks every confirmed bet below as placed, at the odds and stake "
-                           "next to it.",
-                 bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
-        stake = self.wager()
-        table = self.list_table(parent, "", last="")
-        for b in singles:
-            self.list_row(table, "", _slip_selection(b), f"{b.game}  ·  {_slip_time(b)}",
-                          b.fair_prob, last="✕", price=b.fd_price if self.on_fd([b]) else None)
-            self.remove_link(table, lambda b=b: self.toggle_single(b))
-            if self.confirmed([b]):
-                self.place_row(table, self.entry_for([b], []), stake, prob=b.fair_prob,
-                               prefill=b.fd_price if self.on_fd([b]) else None)
-            else:
-                self.confirm_row(table, [b], lambda b=b: self.toggle_single(b))
-        for p in parlays:
-            self.list_row(table, "", f"{len(p.legs)}-leg parlay",
-                          "  ·  ".join(_slip_selection(b) for b in p.legs), p.win_prob, last="✕",
-                          price=p.american if self.on_fd(p.legs) else None)
-            self.remove_link(table, lambda p=p: self.toggle_parlay(p))
-            if self.confirmed(list(p.legs)):
-                self.place_row(table, self.entry_for([], [p]), stake, prob=p.win_prob,
-                               prefill=p.american if self.on_fd(p.legs) else None)
-            else:
-                self.confirm_row(table, list(p.legs), lambda p=p: self.toggle_parlay(p))
-        combo = self.combined(singles) if self.confirmed(singles) else None
-        if combo:
-            tk.Label(parent, text=f"Or bet your {len(singles)} singles as one parlay:", bg=BG,
-                     fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=(10, 0))
-            table = self.list_table(parent, "", last="")
-            self.list_row(table, "", f"{len(singles)}-leg parlay (your singles)",
-                          "  ·  ".join(_slip_selection(b) for b in singles), combo.win_prob, last="",
-                          price=combo.american if self.on_fd(singles) else None)
-            self.place_row(table, self.entry_for([], [combo]), stake, bulk=False,
-                           prob=combo.win_prob, prefill=combo.american if self.on_fd(singles) else None)
-
-    # -------------------------------------------------------------- FanDuel checks
-    def checks(self) -> dict:
-        return self.ledger.setdefault("checks", {})
-
-    @staticmethod
-    def on_fd(legs) -> bool:
-        """Every leg found on FanDuel by the FanDuel check, so its price is FanDuel's."""
-        return all(getattr(b, "on_fanduel", False) for b in legs)
-
-    def confirmed(self, legs) -> bool:
-        """Every leg confirmed on FanDuel (by you, or by the FanDuel feed)."""
-        return bool(legs) and all(self.checks().get(bets.label(b)) is True
-                                  or getattr(b, "on_fanduel", False) for b in legs)
-
-    def shown(self, b) -> bool:
-        return self.checks().get(bets.label(b)) is not False
-
-    def shown_parlay(self, p) -> bool:
-        return all(self.shown(b) for b in p.legs)
-
-    def set_checks(self, keys: list[str], on: bool | None) -> None:
-        def change(ledger):
-            for k in keys:
-                if on is None:
-                    ledger["checks"].pop(k, None)
-                else:
-                    ledger["checks"][k] = on
-        with self.ledger_lock:
-            ledger = tracker.load(self.ledger_path)
-            change(ledger)
-            tracker.save(ledger, self.ledger_path)
-        self.ledger = ledger
-
-    def confirm_row(self, parent, legs, remove) -> None:
-        """'Is this on FanDuel?  [✓ On FanDuel]  [✗ Not on FanDuel]' under a slip row."""
-        row = tk.Frame(parent, bg=CARD)
-        row.pack(fill="x", padx=(48, 8), pady=(0, 7))
-        todo = [b for b in legs if self.checks().get(bets.label(b)) is not True]
-        what = ("Find this bet on FanDuel. Is it there?" if len(legs) == 1 else
-                f"Find {'these legs' if len(todo) > 1 else 'this leg'} on FanDuel: "
-                + "; ".join(_slip_selection(b) for b in todo) + ". All there?")
-        tk.Label(row, text=what, bg=CARD, fg=TEXT, font=self.f["tiny"], wraplength=330,
-                 justify="left").pack(side="left")
-
-        def yes():
-            self.set_checks([bets.label(b) for b in todo], True)
-            self.show_tab("slip")
-
-        def no():
-            # With one leg left to check, that's the missing one; otherwise hide them all.
-            self.set_checks([bets.label(b) for b in todo], False)
-            remove()
-            # Parlays that need a missing leg can't be placed either.
-            self.picked_parlays = {k for k in self.picked_parlays
-                                   if all(self.checks().get(leg) is not False for leg in k)}
-            self.after_toggle()
-        FlatButton(row, "✗ Not on FanDuel", no, "secondary", self.f["tinyb"]).pack(side="right")
-        FlatButton(row, "✓ On FanDuel", yes, "primary", self.f["tinyb"]).pack(side="right", padx=6)
-
-    def hidden_note(self, parent, singles, parlays) -> None:
-        hidden = [b for b in singles if not self.shown(b)]
-        hidden_p = [p for p in parlays if not self.shown_parlay(p)]
-        if not hidden and not hidden_p:
-            return
-        row = tk.Frame(parent, bg=BG)
-        row.pack(fill="x", padx=6, pady=(6, 0))
-        parts = [f"{len(hidden)} bet{'s' * (len(hidden) != 1)}" if hidden else "",
-                 f"{len(hidden_p)} parla{'ys' if len(hidden_p) != 1 else 'y'} with "
-                 f"{'them' if len(hidden) != 1 else 'it'}" if hidden_p else ""]
-        tk.Label(row, text=" and ".join(x for x in parts if x).capitalize()
-                 + " hidden: marked not on FanDuel.", bg=BG, fg=MUTED,
-                 font=self.f["small"]).pack(side="left")
-        link = tk.Label(row, text="Show again", bg=BG, fg=BLUE, cursor="hand2",
-                        font=self.f["small"])
-        link.pack(side="left", padx=6)
-        keys = [k for k, v in self.checks().items() if v is False]
-        link.bind("<Button-1>", lambda e: (self.set_checks(keys, None), self.show_tab(self.tab)))
-
-    def remove_link(self, table, command) -> None:
-        """Make the ✕ at the end of the row just added remove it from the slip."""
-        row = table.winfo_children()[-1]
-        x = row.grid_slaves(row=0, column=4)[0]
-        x.configure(fg=MUTED, cursor="hand2", font=self.f["bold"])
-        x.bind("<Button-1>", lambda e: command())
-
     # -------------------------------------------------------------- tracking
     def track(self, args, singles, parlays) -> dict:
         """Log the shown picks for the coming week and grade finished games (worker thread)."""
@@ -970,99 +751,6 @@ class App:
                 pass
             tracker.save(ledger, self.ledger_path)
         return ledger
-
-    def entry_for(self, singles, parlays) -> dict | None:
-        args = self.last_args or self.args()
-        entries = bets.tracker_entries(singles, parlays, args.sport, bets.season_for(date.today()))
-        return entries[0] if entries else None
-
-    def place_row(self, parent, entry: dict | None, stake: float, bulk: bool = True,
-                  prob: float | None = None, prefill: int | None = None) -> None:
-        """'Odds you got [ ]  Stake [ ]  [I placed this]  Worth it' under a slip row."""
-        if entry is None:
-            return
-        row = tk.Frame(parent, bg=CARD)
-        row.pack(fill="x", padx=(48, 8), pady=(0, 7))
-        if any(e["id"] == entry["id"] for e in self.ledger["placed"]):
-            tk.Label(row, text="✓ Placed · tracked in Bet History", bg=CARD, fg=GREEN,
-                     font=self.f["tinyb"]).pack(side="left")
-            return
-        tk.Label(row, text="Odds you got", bg=CARD, fg=MUTED, font=self.f["tiny"]).pack(side="left")
-        odds = ttk.Entry(row, width=6, font=self.f["small"])
-        odds.pack(side="left", padx=(4, 8))
-        verdict = tk.Label(row, text="", bg=CARD, font=self.f["tinyb"])
-        if prob:
-            def judge(_e=None):  # is the price you got worth it?
-                try:
-                    price = int(odds.get().replace("+", ""))
-                    ev = prob * bets.american_to_decimal(price) - 1 if abs(price) >= 100 else None
-                except ValueError:
-                    ev = None
-                verdict.configure(text="" if ev is None else
-                                  f"{'Worth it' if ev > 0 else 'Not worth it'} · EV {ev:+.1%}",
-                                  fg=GREEN if ev and ev > 0 else RED)
-            odds.bind("<KeyRelease>", judge)
-            if prefill is not None:  # FanDuel's own price, ready to confirm
-                odds.insert(0, _fmt_american(prefill))
-                self.root.after_idle(judge)
-        tk.Label(row, text="Stake $", bg=CARD, fg=MUTED, font=self.f["tiny"]).pack(side="left")
-        amount = ttk.Entry(row, width=5, font=self.f["small"])
-        amount.insert(0, f"{stake:g}")
-        amount.pack(side="left", padx=(4, 8))
-        if bulk:  # your singles as one parlay is an alternative, not part of Placed all
-            self.place_inputs.append((entry, odds, amount))
-        FlatButton(row, "I placed this", lambda: self.mark_placed(entry, odds.get(), amount.get()),
-                   "secondary", self.f["tinyb"]).pack(side="left")
-        verdict.pack(side="left", padx=8)
-
-    @staticmethod
-    def parse_place(odds_text: str, stake_text: str) -> tuple[int | None, float]:
-        """('-150' or blank, '10') -> (-150 or None, 10.0); ValueError if malformed."""
-        odds = int(odds_text.replace("+", "")) if odds_text.strip() else None
-        stake = float(stake_text)
-        if (odds is not None and abs(odds) < 100) or stake <= 0:
-            raise ValueError
-        return odds, stake
-
-    def mark_all_placed(self) -> None:
-        todo = []
-        for entry, odds_box, stake_box in getattr(self, "place_inputs", []):
-            try:
-                todo.append((entry, *self.parse_place(odds_box.get(), stake_box.get())))
-            except ValueError:
-                self.verdict.configure(text="Fix the odds or stake on one of the bets: odds "
-                                            "look like -150 or +240.", fg=WHITE)
-                return
-        if not todo:
-            self.verdict.configure(text="Everything on your slip is already placed.", fg=WHITE)
-            return
-        with self.ledger_lock:
-            ledger = tracker.load(self.ledger_path)
-            for entry, odds, stake in todo:
-                tracker.place(ledger, entry, odds, stake)
-            tracker.save(ledger, self.ledger_path)
-        self.ledger = ledger
-        total = sum(stake for _, _, stake in todo)
-        self.verdict.configure(text=f"Placed {len(todo)} bet{'s' * (len(todo) != 1)}, "
-                                    f"${total:,.2f} total.", fg=WHITE)
-        self.show_tab("slip")
-
-    def mark_placed(self, entry: dict, odds_text: str, stake_text: str) -> None:
-        try:
-            odds, stake = self.parse_place(odds_text, stake_text)
-        except ValueError:
-            self.verdict.configure(text="Odds look like -150 or +240; stake is a dollar amount.",
-                                   fg=WHITE)
-            return
-        with self.ledger_lock:
-            ledger = tracker.load(self.ledger_path)
-            tracker.place(ledger, entry, odds, stake)
-            tracker.save(ledger, self.ledger_path)
-        self.ledger = ledger
-        price = _fmt_american(odds) if odds is not None else "break-even odds"
-        self.verdict.configure(text=f"Placed: ${stake:,.2f} at {price}. Graded after the game.",
-                               fg=WHITE)
-        self.show_tab("slip")
 
     def history_tab(self, parent) -> None:
         items = tracker.history(self.ledger)
@@ -1201,9 +889,6 @@ class App:
                      bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=170,
                      justify="left").pack(anchor="w")
 
-    def view_slip(self) -> None:
-        self.show_tab("slip")
-
     def card(self, parent) -> tk.Frame:
         frame = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
         frame.pack(fill="x", pady=3)
@@ -1304,11 +989,6 @@ class App:
             if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
                 self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args
-            labels = {bets.label(b) for b in self.singles}
-            self.picked &= labels
-            self.picked_parlays = {k for k in self.picked_parlays
-                                   if k in {tuple(bets.label(b) for b in p.legs)
-                                            for p in self.parlays + self.money}}
             self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
         self.schedule()
@@ -1326,21 +1006,6 @@ class App:
             self.verdict.configure(text="Build bets first.")
             return
         self.verdict.configure(text=bets.check_price(self.singles, self.parlays, entry), fg=WHITE)
-
-    def save(self) -> None:
-        if not self.singles and not self.parlays:
-            self.verdict.configure(text="Build bets first.")
-            return
-        args = self.last_args or self.args()
-        singles, parlays = self.slip_bets()
-        what = "your slip"
-        if not singles and not parlays:
-            singles, parlays, what = self.singles, self.parlays, "all bets"
-        combo = self.combined(singles)
-        paths = bets.save(singles, parlays + ([combo] if combo else []), args.sport,
-                          bets.season_for(date.today()))
-        self.verdict.configure(text=f"Saved {what} ({len(paths)} file(s)) to {bets.ROOT / 'bets'}",
-                               fg=WHITE)
 
     def grade(self) -> None:
         buf = io.StringIO()

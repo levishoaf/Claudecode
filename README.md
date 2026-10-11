@@ -23,8 +23,9 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 ![Bet builder window](docs/bet-builder-preview.png)
 
 The window opens with this week's **top 30 single bets** and **10 parlays of
-3 to 5 legs**, each on its own tab: **Single bets**, **Parlays** and
-**Your slip**.
+3 to 5 legs**, each on its own tab: **Single bets**, **Parlays**, **Money Maker**,
+**Injuries** and **Bet History**. The lists are for looking only: every bet
+the builder makes is graded in Bet History after the games.
 
 **Choosing a week:** the **Games** list shows this week and every later week
 on the schedule, labeled with what's known right now:
@@ -37,10 +38,6 @@ on the schedule, labeled with what's known right now:
 
 ![Week list](docs/bet-builder-weeks.png)
 
-- **Building a slip:** click any card to add it to **your slip**. The slip
-  bar shows your picks, plus the chance if your singles were combined into
-  one parlay. **View slip** shows them as slips, and **Save slip** stores
-  them for grading.
 - **Parlays can share games:** a week doesn't have enough games for 10
   parlays without overlap. Each parlay still uses different games for its
   own legs, and no bet appears in more than three parlays.
@@ -70,8 +67,6 @@ grouped by team. Each one shows a status badge (**Out**, **Doubtful**,
 - **Console:** `python3 bets.py --injuries` prints the same list.
 
 ![Injuries tab](docs/bet-builder-injuries.png)
-
-![Your slip](docs/bet-builder-slip.png)
 
 **Download the standalone program** (no Python needed) from the latest
 release: https://github.com/levishoaf/Claudecode/releases/latest
@@ -151,7 +146,7 @@ with no account or key:
   it.
 
 **Making sure every bet is on FanDuel.** The free data doesn't include
-FanDuel's menu, so two things keep bets placeable:
+FanDuel's menu, so:
 
 1. **Only bets FanDuel is sure to list.** Without FanDuel's data, the free
    board shows only bets with no line that could differ on FanDuel:
@@ -159,11 +154,6 @@ FanDuel's menu, so two things keep bets placeable:
    team totals and "X+" player props appear only when you pick that **Bet
    type**, marked **Confirm line**. The top singles mix
    player props and game bets.
-2. **Confirm in the slip.** Each bet in your slip asks *Is this on FanDuel?*
-   Tap **✓ On FanDuel** and it can be marked placed; tap **✗ Not on FanDuel**
-   and it leaves the slip and is hidden from the lists (with **Show again** to
-   undo). Only confirmed bets can be marked placed, so Bet History only holds
-   bets you could actually make.
 **Auto-refresh** is on by default every 5 minutes, with a countdown to the
 next update (the **Refresh** box in the window; 0 turns it off, or
 `--watch 5` in the text version). Each update reloads injury reports

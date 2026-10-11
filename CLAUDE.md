@@ -106,8 +106,8 @@ parlays the user asked for: 2-3 strong legs plus one coin-flip "make or break" l
 the regular parlays don't use, about 20% to win for about 5x the wager. Every NFL bet shows its track record (`nfl_edge/hitrate.py`): how often that exact bet
 would have won in games already played this season and last, and for moneylines the
 record against this week's opponent since two seasons back, game by game. Parlay legs
-show theirs, with the weakest leg named. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
-bet must be confirmed **On FanDuel** before it can be marked placed
-(`ledger["checks"]` in the app, the `checks` db collection on the page).
+show theirs, with the weakest leg named. The top singles mix props and game bets (`prop_share=0.5`). The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
+request: the app and web page only show bets, and every bet the builder makes is graded
+in Bet History. Bets placed on the page earlier stay there (the `placed` db collection).
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
 user's request because it kept stopping bets from loading; don't add it back.
