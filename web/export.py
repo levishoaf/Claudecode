@@ -103,15 +103,47 @@ def bet(b, sport):
             "breakeven": be(b.fair_prob),
             "price": _fmt_american(b.fd_price) if b.priced else None, "note": b.note or "",
             "confirm": b.confirm_line, "hist": track_record(b, sport),
-            "week": b.week}
+            "week": b.week, "raw": round(b.raw_prob, 4) if getattr(b, "raw_prob", None) else None,
+            "tier": tier_of(b)}
+
+
+def tier_of(b):
+    """The bet's confidence tier, reasons, notes and warnings (NFL)."""
+    ins = getattr(b, "insight", None)
+    if ins is None:
+        return None
+    from nfl_edge.insights import TIER_WORDS
+
+    return {"tier": ins.tier, "word": TIER_WORDS[ins.tier], "reasons": ins.reasons,
+            "notes": ins.notes, "flags": ins.flags}
+
+
+def annotate(bets, sport):
+    """Confidence tiers for NFL bets (extra information: never blocks the export)."""
+    if sport == "nfl":
+        try:
+            from nfl_edge import insights
+
+            insights.annotate(bets, "nfl", season_for(datetime.now().date()))
+        except Exception:
+            traceback.print_exc()
+    return bets
 
 
 def run(sport, week, label, ledger, this_week=False):
-    bets = (cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
-            else nfl_board(None, LO, HI, week=week))
+    bets = annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
+                    else nfl_board(None, LO, HI, week=week), sport)
     singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
                            prop_share=0.5 if sport == "nfl" else None)
-    parlays = payout_parlays(bets, PARLAY_PAYS, 10)  # at least $40 back on $10
+
+    def legs_pool(some):  # Strong legs when there are enough, never Weak ones
+        if any(getattr(b, "tier", None) for b in some):
+            from nfl_edge import insights
+
+            return insights.parlay_pool(some)
+        return some, ""
+    pool, pool_note = legs_pool(bets)
+    parlays = payout_parlays(pool, PARLAY_PAYS, 10)  # at least $40 back on $10
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))
@@ -123,24 +155,27 @@ def run(sport, week, label, ledger, this_week=False):
         return out
 
     def picks(singles, parlays, pool):
-        money = money_maker_parlays(pool, 10, parlays)
+        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"],
+                                    10, parlays)
         return {"singles": [bet(b, sport) for b in singles],
                 "parlays": [parlay(p) for p in parlays],
                 "money": [parlay(p, swing=True) for p in money]}
 
     out = {"label": label, "week": week, **picks(singles, parlays, bets),
-           "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {}}
+           "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
+           "poolNote": pool_note}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
-    full = nfl_board(None, LO, HI, week=week, always_offered=False) if sport == "nfl" else []
+    full = annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
+                    if sport == "nfl" else [], sport)
     for kind in BET_TYPES:  # each type's own top 30 and parlays, for the Bet type menu
         cap = type_max_prob(kind)
         if cap is not None and sport == "nfl":  # likeliest lines within the odds limit
-            some = every_line_of(nfl_board(None, LO, min(HI, cap), week=week,
-                                           always_offered=False), kind)
+            some = every_line_of(annotate(nfl_board(None, LO, min(HI, cap), week=week,
+                                                    always_offered=False), sport), kind)
         else:
             some = of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind)
         if kind != "All bets" and some:
-            regular = payout_parlays(some, PARLAY_PAYS, 10)
+            regular = payout_parlays(legs_pool(some)[0], PARLAY_PAYS, 10)
             out["types"][kind] = picks(rank_singles(some, 30, rank_by="prob", per_game=3,
                                                     every_line=True), regular, some)
     if sport == "nfl":
@@ -223,6 +258,14 @@ def main():
     tracker.save(ledger, HISTORY)
     result["legResults"] = results
     result["legTeams"] = LEG_TEAMS
+    try:  # how the model did, and what it has learned from that
+        from nfl_edge import insights
+
+        result["report"] = insights.report_card(tracker.all_entries(ledger))
+        result["learned"] = [list(r) for r in learn.summary()
+                             if abs(r[4] - r[3]) >= 0.01 or r[2]]
+    except Exception:
+        traceback.print_exc()
     def brief(e, src):
         return {"id": e["id"], "src": src, "kind": e["kind"], "sport": e["sport"],
                 "week": e.get("week"),

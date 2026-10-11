@@ -49,6 +49,13 @@ class Boards:
         bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
                 else nfl_board(None, lo, hi, week=week, every_line=every_line,
                                always_offered=sure_only and not every_line))
+        if sport == "nfl":
+            try:  # confidence tiers: matchup, usage, floor, injuries, rest, weather
+                from . import insights
+
+                insights.annotate(bets, "nfl", season_now())
+            except Exception:  # extra information: never block the bets
+                pass
         with self._lock:
             self._cache[key] = (time.monotonic(), bets)
         return bets
@@ -90,11 +97,39 @@ def singles_text(singles, sport: str, wager: float) -> str:
                      f"${wager / b.fair_prob:,.2f}")
         tag = NOTE_TAG.get(b.note, "") + (" · *confirm line*" if b.confirm_line else "")
         lines.append(f"**{i}. {_describe(b)}**{tag} — **{b.fair_prob:.0%}** · "
-                     f"{price}\n   {b.game} · {when(b)}")
+                     f"{price}\n   {b.game} · {when(b)}" + tier_text(b))
     if not on_fd:
         lines.append("Expected value is 0 at break-even odds. Use `/chance` with FanDuel's price "
                      "to see the real value.")
     return "\n".join(lines)
+
+
+TIER_ICON = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
+
+
+def tier_text(b) -> str:
+    """A bet's confidence tier and why, plus its warnings, as extra lines."""
+    ins = getattr(b, "insight", None)
+    if ins is None:
+        return ""
+    from .insights import TIER_WORDS
+
+    why = ", ".join(ins.reasons) or "no strong signals either way"
+    out = f"\n   {TIER_ICON[ins.tier]} {TIER_WORDS[ins.tier]}: {why}"
+    raw = getattr(b, "raw_prob", None)
+    if raw is not None and abs(raw - b.fair_prob) >= 0.02:
+        out += f" · model said {raw:.0%}, learned {b.fair_prob:.0%}"
+    return out + "".join(f"\n   ⚠ {f}" for f in ins.flags[:2])
+
+
+def legs_tier_text(legs) -> str:
+    from .insights import TIER_WORDS
+
+    tiers = [getattr(b, "tier", None) for b in legs]
+    if not any(tiers):
+        return ""
+    return "\nLegs: " + ", ".join(f"{TIER_ICON[t]} {tiers.count(t)} {TIER_WORDS[t]}"
+                                  for t in ("green", "yellow", "red") if tiers.count(t))
 
 
 def parlays_text(parlays, sport: str, wager: float) -> list[str]:
@@ -109,7 +144,7 @@ def parlays_text(parlays, sport: str, wager: float) -> list[str]:
         odds = (f"FanDuel {_fmt_american(p.american)} · EV {p.ev:+.1%}" if on_fd
                 else f"worst odds {break_even(p.win_prob)}")
         out.append(f"**P{i}** · {len(p.legs)} legs · **{p.win_prob:.0%}** to win · {odds}"
-                   f"\n```\n{slip}\n```")
+                   f"{legs_tier_text(p.legs)}\n```\n{slip}\n```")
     return out
 
 

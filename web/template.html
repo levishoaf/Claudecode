@@ -133,6 +133,11 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .r-won { color: var(--good); } .r-lost { color: var(--bad); } .r-push { color: var(--on-dark-2); } .r-pending { color: var(--blue); }
 .lbet small.rec { font-weight: 700; font-size: 11.5px; margin-top: 1px; }
 .swing { color: var(--warn); font-weight: 700; }
+.lbet small.flag { color: var(--warn); font-weight: 600; }
+.card-rows { margin: 4px 0 2px 8px; display: grid; gap: 2px; font-size: 13px; color: var(--on-dark-2); }
+.card-rows div { display: grid; grid-template-columns: minmax(120px, 1.2fr) minmax(0, 1.6fr) minmax(0, 1.4fr); gap: 8px; }
+.card-rows b { color: var(--on-dark); font-weight: 600; }
+@media (max-width: 520px) { .card-rows div { grid-template-columns: 1fr 1fr; } .card-rows div span:last-child { grid-column: 1 / -1; } }
 .show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 520px) {
   .hide-sm { display: none; }
@@ -309,7 +314,37 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   // Track records: how often a bet would have won in games already played.
   const rateColor = (r) => (r >= 0.7 ? "var(--good)" : r >= 0.5 ? "var(--warn)" : "var(--bad)");
   const legRec = (l) => { const h = l.hist; if (!h) return null; return h.now && h.now[1] ? h.now : h.last && h.last[1] ? h.last : null; };
+  // Confidence tier (Strong / Mixed / Weak) and why.
+  const TIER_COLOR = { green: "var(--good)", yellow: "var(--warn)", red: "var(--bad)" };
+  const TIER_WORD = { green: "Strong", yellow: "Mixed", red: "Weak" };
+  function tierLine(b) {
+    const t = b.tier;
+    if (!t) return "";
+    return `<small class="rec" style="color:${TIER_COLOR[t.tier]}">● ${esc(t.word)}: ${esc(t.reasons.join(", ") || "no strong signals either way")}</small>`;
+  }
+  function insightLines(b) {
+    let html = "";
+    if (b.raw != null && Math.abs(b.raw - b.prob) >= 0.02)
+      html += `<small>Learned: the model said ${pct(b.raw)}; bets like this have really won about ${pct(b.prob)}, so that's the chance shown</small>`;
+    const t = b.tier;
+    if (t) {
+      html += t.notes.map((n) => `<small>${esc(n)}</small>`).join("");
+      html += t.flags.map((f) => `<small class="flag">⚠ ${esc(f)}</small>`).join("");
+    }
+    return html;
+  }
+  function legsTierLine(legs) {
+    const tiers = legs.map((l) => l.tier && l.tier.tier).filter(Boolean);
+    if (!tiers.length) return "";
+    const worst = tiers.includes("red") ? "red" : tiers.includes("yellow") ? "yellow" : "green";
+    const parts = ["green", "yellow", "red"].map((k) => [k, tiers.filter((t) => t === k).length])
+      .filter(([, n]) => n).map(([k, n]) => `${n} ${TIER_WORD[k]}`);
+    return `<small class="rec" style="color:${TIER_COLOR[worst]}">● Legs: ${parts.join(", ")}</small>`;
+  }
   function recLines(b) {
+    return tierLine(b) + histLines(b) + insightLines(b);
+  }
+  function histLines(b) {
     const h = b.hist;
     if (!h) return "";
     const parts = [[h.now, "this season"], [h.last, "last season"]].filter(([r]) => r && r[1])
@@ -348,7 +383,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function parlayRow(p, i) {
     return `<div class="lrow">
       <span class="lnum">P${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${weakestLine(p.legs)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -361,7 +396,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const rest = p.legs.filter((l, j) => j !== p.swing).map(legText).join(" · ");
     return `<div class="lrow">
       <span class="lnum">M${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${legText(s)}, ${pct(s.prob)} to hit</span></small>${weakestLine(p.legs)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${legText(s)}, ${pct(s.prob)} to hit</span></small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -451,7 +486,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       const p = Math.round(100 * w / (w + l));
       return `<div class="wl"><b>${name}</b><div class="wl-bar"><span class="wl-g" data-w="${p}"></span></div><span class="wl-t">${p}% won (${w}) · ${100 - p}% lost (${l})</span></div>`;
     };
-    let html = `<div class="notice summary"><div><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}</div>`;
+    let html = `<div class="notice summary"><div><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}${reportCard()}</div>`;
     const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
     html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
     const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
@@ -494,6 +529,25 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       }
       if (!any) html += `<div class="empty">None match this filter yet.</div>`;
       html += `</section>`;
+    }
+    return html;
+  }
+  // How the model did (won vs expected) and what it has learned from that.
+  function reportCard() {
+    const r = DATA.report, learned = DATA.learned || [];
+    let html = "";
+    if (r && (r.tier.length || r.type.length || r.parlays.length)) {
+      html += `<div class="kind-head">Model report card<span>settled bets: won vs the model's expected win rate</span></div>`;
+      for (const [key, title] of [["tier", "By confidence"], ["type", "By bet type"], ["parlays", "Parlays"]]) {
+        if (!r[key].length) continue;
+        html += `<div class="card-rows"><i>${title}</i>` + r[key].map(([name, won, n, exp, act]) =>
+          `<div><b>${esc(name)}</b><span style="color:${act >= exp - 0.05 ? "var(--good)" : "var(--bad)"}">won ${won} of ${n} (${pct(act)})</span><span>expected ${pct(exp)}${n < 10 ? " · too few to judge" : ""}</span></div>`).join("") + `</div>`;
+      }
+    }
+    if (learned.length) {
+      html += `<div class="kind-head">What the model has learned<span>chances are corrected by how bets like them really did</span></div><div class="card-rows">`
+        + learned.map(([name, past, live, said, real]) =>
+          `<div><b>${esc(name)}</b><span style="color:${real < said - 0.01 ? "var(--bad)" : real > said + 0.01 ? "var(--good)" : "inherit"}">a ${pct(said)} bet really wins about ${pct(real)}</span><span>${[past ? past.toLocaleString() + " past bets" : "", live ? live + " graded this season" : ""].filter(Boolean).join(" · ")}</span></div>`).join("") + `</div>`;
     }
     return html;
   }
@@ -548,7 +602,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
     }
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
-    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">Riskier parlays that hang on one leg: two or three strong legs plus one coin-flip leg (⚡ make or break) that decides it. About 1 in 5 win, paying about 5× your wager. The make-or-break leg is never in the regular parlays.</div><div class="blist">${listHead("")}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: they need coin-flip legs (35–55% to win), and there aren't enough this week. Try All bets.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();

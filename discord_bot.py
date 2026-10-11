@@ -109,18 +109,24 @@ class Core:
         pool, note, checked = self._typed(sport, week, lo, hi, kind)
         if not pool and kind != "All bets":
             return [empty_type_note(kind, sport, checked)]
+        if any(getattr(b, "tier", None) for b in pool):  # Strong legs first, never Weak
+            from nfl_edge import insights
+
+            pool, tier_note = insights.parlay_pool(pool)
+            note = f"{note} {tier_note}" if note else tier_note
         parlays = botcore.pick_parlays(pool, count, min_legs, max_legs,
                                        pays=pays / wager if pays else None)
         self.last_parlays[channel] = (sport, parlays)
         self._record(sport, week, [], parlays)
         out = botcore.parlays_text(parlays, sport, wager)
-        if note and (not checked or kind not in SURE_TYPES):
+        if note:
             out[0] += f"\n_{note}_"
         return out
 
     def money(self, channel, sport, week, wager, kind="All bets") -> list[str]:
         """Money makers: riskier parlays that hang on one coin-flip leg."""
         pool, note, checked = self._typed(sport, week, 1, 99, kind)
+        pool = [b for b in pool if getattr(b, "tier", "yellow") != "red"]  # never a Weak leg
         regular = botcore.pick_parlays(pool, 10, 2, 6, pays=4.0)
         money = money_maker_parlays(pool, 5, regular)
         self.last_money[channel] = (sport, money)
