@@ -444,6 +444,7 @@ class App:
     def render(self, args, singles, parlays, previous) -> None:
         """Header, tab bar and the current tab's cards."""
         self.render_args = (args, singles, parlays, previous)
+        self.rates = getattr(args, "hit_rates", None) or {}
         self.clear()
         self.row_widgets = {}
         head = tk.Frame(self.body, bg=BG)
@@ -478,7 +479,6 @@ class App:
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("money", f"Money Maker ({len(money)})"),
-                          ("stats", "Stats"),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
             on = key == self.tab
@@ -501,8 +501,6 @@ class App:
         elif self.tab == "parlays":
             self.hidden_note(grid, singles, parlays)
             self.parlays_tab(grid, [p for p in parlays if self.shown_parlay(p)], args.stake)
-        elif self.tab == "stats":
-            self.stats_tab(grid, singles, getattr(args, "hit_rates", None), args.sport)
         elif self.tab == "money":
             tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
                                  "plus one coin-flip leg (⚡ MAKE OR BREAK) that decides it. "
@@ -571,26 +569,31 @@ class App:
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
                  on_click=None, last: str | None = None, price: int | None = None,
-                 ev: float | None = None) -> tk.Frame:
-        """One bet: number, name with game below, chance, worst odds, payout."""
+                 ev: float | None = None, extra: tuple[str, str] | None = None) -> tk.Frame:
+        """One bet: number, name with game below (and an optional colored line, e.g. its
+        track record), chance, worst odds, payout."""
         tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
         row = tk.Frame(table, bg=CARD)
         row.pack(fill="x")
         self.grid_cols(row)
         num_lbl = tk.Label(row, text=num, bg=CARD, fg=MUTED, font=self.f["bold"])
-        num_lbl.grid(row=0, column=0, rowspan=2, sticky="w", padx=8)
+        num_lbl.grid(row=0, column=0, rowspan=3, sticky="w", padx=8)
         tk.Label(row, text=title, bg=CARD, fg=TEXT, font=self.f["bold"], anchor="w",
                  justify="left", wraplength=470).grid(row=0, column=1, sticky="w", padx=6,
                                                        pady=(6, 0))
         tk.Label(row, text=sub, bg=CARD, fg=MUTED, font=self.f["tiny"], anchor="w",
                  justify="left", wraplength=470).grid(row=1, column=1, sticky="w", padx=6,
-                                                       pady=(0, 6))
+                                                       pady=(0, 0 if extra else 6))
+        if extra:
+            tk.Label(row, text=extra[0], bg=CARD, fg=extra[1], font=self.f["tinyb"], anchor="w",
+                     justify="left", wraplength=470).grid(row=2, column=1, sticky="w", padx=6,
+                                                           pady=(1, 6))
         tk.Label(row, text=f"{prob:.0%}", bg=CARD, fg=chance_color(prob),
-                 font=self.f["pick"]).grid(row=0, column=2, rowspan=2, sticky="e", padx=6)
+                 font=self.f["pick"]).grid(row=0, column=2, rowspan=3, sticky="e", padx=6)
         fd = getattr(self, "fd_mode", False) and price is not None
         odds_text = _fmt_american(price) if fd else _fmt_american(decimal_to_american(1 / prob))
         tk.Label(row, text=odds_text, bg=CARD, fg=BLUE,
-                 font=self.f["bold"]).grid(row=0, column=3, rowspan=2, sticky="e", padx=6)
+                 font=self.f["bold"]).grid(row=0, column=3, rowspan=3, sticky="e", padx=6)
         if last is not None:
             end = last
         else:  # total payout: at FanDuel's price when known, else at the break-even odds
@@ -601,7 +604,7 @@ class App:
             tk.Label(row, text=f"EV {ev:+.1%}", bg=CARD, fg=GREEN if ev > 0 else RED,
                      font=self.f["tiny"]).grid(row=1, column=4, sticky="ne", padx=8, pady=(0, 6))
         else:
-            end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
+            end_lbl.grid(row=0, column=4, rowspan=3, sticky="e", padx=8)
         if on_click is not None:
             self.clickable(row, on_click)
         if key is not None:
@@ -634,7 +637,8 @@ class App:
             self.list_row(table, str(i), title,
                           f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, bets.label(b), lambda b=b: self.toggle_single(b),
-                          price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None)
+                          price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
+                          extra=self.record_line(b))
 
     def parlays_tab(self, parent, parlays, stake, swing: bool = False) -> None:
         if not parlays:
@@ -648,16 +652,17 @@ class App:
         table = self.list_table(parent, "")
         for i, p in enumerate(parlays, 1):
             key = make_or_break(p) if swing else None
-            legs = "  ·  ".join(_slip_selection(b) for b in p.legs if b is not key)
+            legs = "  ·  ".join(self.leg_text(b) for b in p.legs if b is not key)
             if key is not None:
-                legs += f"  ·  ⚡ MAKE OR BREAK: {_slip_selection(key)} ({key.fair_prob:.0%})"
+                legs += f"  ·  ⚡ MAKE OR BREAK: {self.leg_text(key)}, {key.fair_prob:.0%} to hit"
             if any(b.confirm_line for b in p.legs):
                 legs = "CONFIRM LINES  ·  " + legs
             on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
             self.list_row(table, f"M{i}" if swing else f"P{i}", f"{len(p.legs)}-leg parlay",
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
-                          price=p.american if on_fd else None, ev=p.ev if on_fd else None)
+                          price=p.american if on_fd else None, ev=p.ev if on_fd else None,
+                          extra=self.legs_record_line(p.legs))
 
     def hit_rates(self, args, singles) -> dict | None:
         """{bet label: {season: HitRate}}: how often each single bet would have won in
@@ -678,60 +683,55 @@ class App:
             traceback.print_exc()
             return None
 
-    def stats_tab(self, parent, singles, rates, sport) -> None:
-        """Each single bet with how often it would have won in games already played."""
+    def _record(self, b):
+        """(this season, last season) hit rates for a bet, or None."""
         season = bets.season_for(date.today())
-        intro = ("How often each bet would have won if you'd made it every game: this "
-                 "season and last, from game results and player game logs. History, not "
-                 "a promise: few games this early in a season, and it ignores the opponent.")
-        tk.Label(parent, text=intro, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
-                 justify="left").pack(anchor="w", padx=6, pady=(6, 4))
-        if sport != "nfl":
-            tk.Label(parent, text="Stats are for NFL bets only for now.", bg=BG, fg=TEXT,
-                     font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
-            return
-        if not rates:
-            tk.Label(parent, text="Stats couldn't be loaded right now. Try Build bets again.",
-                     bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
-            return
-        table = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
-        table.pack(fill="x", padx=6, pady=(6, 0))
-        tk.Frame(table, bg=CARD, width=int(PANEL_W) - 70, height=0).pack()
+        r = (getattr(self, "rates", None) or {}).get(bets.label(b)) or {}
+        if not r:
+            return None
+        return r.get(season), r.get(season - 1)
 
-        def cols(frame):
-            for col, size in ((0, 40), (2, 70), (3, 150), (4, 150)):
-                frame.grid_columnconfigure(col, minsize=size)
-            frame.grid_columnconfigure(1, weight=1)
+    @staticmethod
+    def _rate_color(*records) -> str:
+        """Color by this season's rate once there are a few games, else last season's."""
+        for hr in records:
+            if hr and hr.games >= 3:
+                return chance_color(hr.rate)
+        return MUTED
 
-        head = tk.Frame(table, bg="#f6f8fb")
-        head.pack(fill="x")
-        cols(head)
-        for col, text, anchor in ((0, "#", "w"), (1, "BET", "w"), (2, "MODEL", "e"),
-                                  (3, f"{season} SEASON", "e"), (4, f"{season - 1} SEASON", "e")):
-            tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
-                row=0, column=col, sticky=anchor, padx=6, pady=5)
-        for i, b in enumerate(singles, 1):
-            tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
-            row = tk.Frame(table, bg=CARD)
-            row.pack(fill="x")
-            cols(row)
-            tk.Label(row, text=str(i), bg=CARD, fg=MUTED, font=self.f["bold"]).grid(
-                row=0, column=0, rowspan=2, sticky="w", padx=8)
-            tk.Label(row, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["bold"],
-                     anchor="w").grid(row=0, column=1, sticky="w", padx=6, pady=(6, 0))
-            tk.Label(row, text=f"{_slip_market(b)}  ·  {b.game}", bg=CARD, fg=MUTED,
-                     font=self.f["tiny"], anchor="w").grid(row=1, column=1, sticky="w", padx=6,
-                                                            pady=(0, 6))
-            tk.Label(row, text=f"{b.fair_prob:.0%}", bg=CARD, fg=chance_color(b.fair_prob),
-                     font=self.f["pick"]).grid(row=0, column=2, rowspan=2, sticky="e", padx=6)
-            r = rates.get(bets.label(b)) or {}
-            for col, s in ((3, season), (4, season - 1)):
-                hr = r.get(s)
-                rate = hr.rate if hr else None
-                tk.Label(row, text=hr.text() if hr else "–", bg=CARD,
-                         fg=MUTED if rate is None else chance_color(rate),
-                         font=self.f["bold"]).grid(row=0, column=col, rowspan=2, sticky="e",
-                                                   padx=8)
+    def record_line(self, b) -> tuple[str, str] | None:
+        """How often this exact bet would have won in games already played."""
+        rec = self._record(b)
+        if not rec:
+            return None
+        now, last = rec
+        parts = [f"{hr.hits} of {hr.games} {when} ({hr.rate:.0%})"
+                 for hr, when in ((now, "this season"), (last, "last season")) if hr and hr.games]
+        if not parts:
+            return None
+        return "Hit " + "  ·  ".join(parts), self._rate_color(now, last)
+
+    def _leg_record(self, b):
+        """This season's record for a parlay leg (last season's if none yet), or None."""
+        rec = self._record(b)
+        if not rec:
+            return None
+        return rec[0] if rec[0] and rec[0].games else (rec[1] if rec[1] and rec[1].games else None)
+
+    def leg_text(self, b) -> str:
+        """A parlay leg with its record, e.g. "Jahmyr Gibbs Anytime TD (4/4)"."""
+        hr = self._leg_record(b)
+        return _slip_selection(b) + (f" ({hr.hits}/{hr.games})" if hr else "")
+
+    def legs_record_line(self, legs) -> tuple[str, str] | None:
+        """The parlay's weakest leg by its record; colored by it."""
+        weakest = min(((self._leg_record(b), b) for b in legs if self._leg_record(b)),
+                      key=lambda x: x[0].rate, default=None)
+        if weakest is None:
+            return None
+        hr, b = weakest
+        return (f"Weakest leg: {_slip_selection(b)} hit {hr.hits} of {hr.games} "
+                f"({hr.rate:.0%})", self._rate_color(hr))
 
     def injuries_tab(self, parent) -> None:
         week, players, note = self.injuries
@@ -1143,7 +1143,8 @@ class App:
             try:
                 pool, singles, parlays = bets.build(args)
                 args.money_makers = money_maker_parlays(pool, 10, parlays)
-                args.hit_rates = self.hit_rates(args, singles)
+                args.hit_rates = self.hit_rates(
+                    args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
@@ -1220,7 +1221,6 @@ class App:
         self.schedule()
         if self.selftest:
             self.show_tab("money")
-            self.show_tab("stats")
             print(f"{len(self.singles)} singles, {len(self.parlays)} parlays, "
                   f"{len(self.money)} money makers rendered")
             self.root.after(500, self.root.destroy)
