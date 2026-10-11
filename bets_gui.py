@@ -8,8 +8,6 @@ bets.py, on a charcoal football field. No API key needed.
 from __future__ import annotations
 
 import argparse
-import contextlib
-import io
 import os
 import queue
 import tempfile
@@ -333,19 +331,12 @@ class App:
         bottom = tk.Frame(c, bg=NAVY)
         chk = tk.Frame(bottom, bg=NAVY)
         chk.pack(fill="x", padx=14, pady=10)
-        tk.Label(chk, text="Check FanDuel's price", bg=NAVY, fg=WHITE,
-                 font=self.f["bold"]).pack(side="left", padx=(0, 8))
-        self.check_entry = ttk.Entry(chk, width=9, font=self.f["body"])
-        self.check_entry.pack(side="left")
-        self.check_entry.bind("<Return>", lambda e: self.check())
-        FlatButton(chk, "Check", self.check, "primary", self.f["bold"]).pack(side="left", padx=8)
-        FlatButton(chk, "Grade saved bets", self.grade, "secondary",
-                   self.f["bold"]).pack(side="right")
         FlatButton(chk, "Check for updates", lambda: self.updates and self.updates.check(manual=True),
-                   "secondary", self.f["bold"]).pack(side="right", padx=(0, 8))
-        self.verdict = tk.Label(chk, text="e.g. 3 -150 or P1 +240", bg=NAVY, fg="#9fb0c8",
+                   "secondary", self.f["bold"]).pack(side="right")
+        # Update messages show here.
+        self.verdict = tk.Label(chk, text="", bg=NAVY, fg="#9fb0c8",
                                 anchor="w", justify="left", font=self.f["small"],
-                                wraplength=int(PANEL_W) - 580)
+                                wraplength=int(PANEL_W) - 260)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
         self.win_bottom = c.create_window(W / 2, H - 32, window=bottom, width=PANEL_W, height=56)
 
@@ -441,7 +432,7 @@ class App:
         tk.Label(self.body, text=("Every bet here was found on FanDuel; odds are FanDuel's from "
                                   "the last check. EV is the expected profit per $1." if self.fd_mode else
                                   "Odds shown are break-even: bet only if FanDuel pays that or "
-                                  "better. Check any price at the bottom."),
+                                  "better."),
                  bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
 
     def show_tab(self, key: str) -> None:
@@ -1112,19 +1103,6 @@ class App:
             self.root.after(500, self.root.destroy)
             return
         self.root.after(150, self.poll)
-
-    def check(self) -> None:
-        entry = self.check_entry.get().strip()
-        if not self.singles and not self.parlays:
-            self.verdict.configure(text="Build bets first.")
-            return
-        self.verdict.configure(text=bets.check_price(self.singles, self.parlays, entry), fg=WHITE)
-
-    def grade(self) -> None:
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            bets.grade_saved("all")
-        self.say(buf.getvalue().strip() or "No saved bets yet.")
 
 
 class Updates:
