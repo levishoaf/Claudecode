@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 import bets as launcher  # noqa: E402  (leg records for grading)
-from nfl_edge import board, tracker  # noqa: E402
+from nfl_edge import board, hitrate, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
@@ -34,6 +34,40 @@ def be(p):
     return _fmt_american(decimal_to_american(1 / p))
 
 
+_HISTORY = {}  # season -> (games, player model), loaded once per export
+
+
+def track_record(b, sport):
+    """How often this bet would have won in games already played (NFL): this season,
+    last season and, for a moneyline, against this week's opponent."""
+    if sport != "nfl":
+        return None
+    season = season_for(datetime.now().date())
+    try:
+        if season not in _HISTORY:
+            from nfl_edge import data
+            from nfl_edge.extras import load_player_model
+
+            games = data.games(None)
+            _HISTORY[season] = (games, load_player_model(season, games))
+        games, players = _HISTORY[season]
+        r = hitrate.rates(b, players, games, season)
+    except Exception:
+        traceback.print_exc()
+        return None
+    if not r:
+        return None
+    out = {"now": [r[season].hits, r[season].games] if r.get(season) else None,
+           "last": [r[season - 1].hits, r[season - 1].games] if r.get(season - 1) else None,
+           "season": season}
+    h = r.get("h2h")
+    if h is not None:
+        opp = next((t for t in b.game.split(" @ ") if t != b.pick), "")
+        out["h2h"] = {"w": h.hits, "n": h.games, "games": list(h.results), "opp": opp,
+                      "since": season - hitrate.H2H_SEASONS + 1}
+    return out
+
+
 def bet(b, sport):
     k = b.commence_time.astimezone(EASTERN)
     rec = launcher.leg_record(b, sport)
@@ -46,7 +80,7 @@ def bet(b, sport):
             "when": clock(k, with_date=True), "prob": round(b.fair_prob, 4),
             "breakeven": be(b.fair_prob),
             "price": _fmt_american(b.fd_price) if b.priced else None, "note": b.note or "",
-            "confirm": b.confirm_line,
+            "confirm": b.confirm_line, "hist": track_record(b, sport),
             "week": b.week}
 
 

@@ -128,6 +128,10 @@ with no account or key:
   line the model estimates, marked **Confirm line**, since FanDuel may not
   offer that exact line. Check it on FanDuel before you bet. Receiving yards bets are only listed at
   -300 or better: each player's likeliest line at those odds.
+- **Track record** (app and web page, NFL): under each bet, how often that exact bet
+  would have won in games already played this season and last (e.g. "Hit 3 of 4 this
+  season"). Moneylines also show the record against this week's opponent since 2024,
+  with each score. Parlay legs show theirs, and the weakest leg is named.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

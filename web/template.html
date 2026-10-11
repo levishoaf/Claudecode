@@ -123,6 +123,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .kind-head span { font-weight: 500; font-size: 12px; color: var(--on-dark-2); margin-left: 8px; }
 .res-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin: 6px 0 4px 8px; }
 .r-won { color: var(--good); } .r-lost { color: var(--bad); } .r-push { color: var(--on-dark-2); } .r-pending { color: var(--blue); }
+.lbet small.rec { font-weight: 700; font-size: 11.5px; margin-top: 1px; }
 .swing { color: var(--warn); font-weight: 700; }
 .show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 520px) {
@@ -308,11 +309,41 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function listHead(first) {
     return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">pays</small></span><span class="r hide-sm">Pays</span></div>`;
   }
+  // Track records: how often a bet would have won in games already played.
+  const rateColor = (r) => (r >= 0.7 ? "var(--good)" : r >= 0.5 ? "var(--warn)" : "var(--bad)");
+  const legRec = (l) => { const h = l.hist; if (!h) return null; return h.now && h.now[1] ? h.now : h.last && h.last[1] ? h.last : null; };
+  function recLines(b) {
+    const h = b.hist;
+    if (!h) return "";
+    const parts = [[h.now, "this season"], [h.last, "last season"]].filter(([r]) => r && r[1])
+      .map(([r, w]) => `${r[0]} of ${r[1]} ${w} (${pct(r[0] / r[1])})`);
+    const base = (h.now && h.now[1] >= 3) ? h.now : (h.last && h.last[1] >= 3 ? h.last : null);
+    let html = parts.length ? `<small class="rec" style="color:${base ? rateColor(base[0] / base[1]) : "var(--ink-2)"}">Hit ${parts.join(" · ")}</small>` : "";
+    if (h.h2h) {
+      const m = h.h2h;
+      html += m.n
+        ? `<small class="rec" style="color:${rateColor(m.w / m.n)}">Vs this week's opponent, the ${esc(m.opp)}: ${m.w}-${m.n - m.w} since ${m.since} (${esc(m.games.join(", "))})</small>`
+        : `<small class="rec">Vs this week's opponent, the ${esc(m.opp)}: no games since ${m.since}</small>`;
+    }
+    return html;
+  }
+  function legText(l) {
+    const r = legRec(l), m = l.hist && l.hist.h2h, bits = [];
+    if (r) bits.push(`${r[0]}/${r[1]}`);
+    if (m && m.n) bits.push(`${m.w}-${m.n - m.w} vs ${m.opp.split(" ").pop()}`);
+    return esc(l.label) + (bits.length ? ` (${esc(bits.join(", "))})` : "");
+  }
+  function weakestLine(legs) {
+    const w = legs.map((l) => [legRec(l), l]).filter(([r]) => r).sort((a, b) => a[0][0] / a[0][1] - b[0][0] / b[0][1])[0];
+    if (!w) return "";
+    const [r, l] = w;
+    return `<small class="rec" style="color:${rateColor(r[0] / r[1])}">Weakest leg: ${esc(l.label)} hit ${r[0]} of ${r[1]} (${pct(r[0] / r[1])})</small>`;
+  }
   function singleRow(b, i) {
     const on = inSlip(b.id);
     return `<button class="lrow${on ? " on" : ""}" data-single="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : i + 1}</span>
-      <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note, b.confirm)}<small>${esc(b.game)} · ${esc(b.when)} ET</small></span>
+      <span class="lbet"><b>${esc(b.label)}</b>${badge(b.note, b.confirm)}<small>${esc(b.game)} · ${esc(b.when)} ET</small>${recLines(b)}</span>
       <span class="r lpct" style="color:${color(b.prob)}">${pct(b.prob)}</span>
       <span class="r lodds">${esc(b.breakeven)}<small class="show-sm">pays ${money(wager() / b.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / b.prob)}</span>
@@ -322,7 +353,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const on = inSlip(parlayId(p));
     return `<button class="lrow${on ? " on" : ""}" data-parlay="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : "P" + (i + 1)}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map((l) => esc(l.label) + (l.note ? " (" + (l.note === "Questionable" ? "Q" : "DNP") + ")" : "")).join(" · ")}</small></span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -333,10 +364,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function moneyRow(p, i) {
     const on = inSlip(parlayId(p));
     const s = p.legs[p.swing];
-    const rest = p.legs.filter((l, j) => j !== p.swing).map((l) => esc(l.label)).join(" · ");
+    const rest = p.legs.filter((l, j) => j !== p.swing).map(legText).join(" · ");
     return `<button class="lrow${on ? " on" : ""}" data-money="${i}" aria-pressed="${on}">
       <span class="lnum">${on ? "✓" : "M" + (i + 1)}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${esc(s.label)} (${pct(s.prob)})</span></small></span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${legText(s)}, ${pct(s.prob)} to hit</span></small>${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>

@@ -103,7 +103,10 @@ bet type, so the Bet type menu's other types (spreads, totals, yardage and other
 props) show every model line, marked **Confirm line** (`Bet.confirm_line`, `picks.every_line_of`). Receiving yards bets are only listed at -300 or better (`picks.TYPE_MIN_ODDS`):
 each player's likeliest line within that limit. The **Money Maker** tab (`picks.money_maker_parlays`, bot `/moneymaker`) holds riskier
 parlays the user asked for: 2-3 strong legs plus one coin-flip "make or break" leg
-the regular parlays don't use, about 20% to win for about 5x the wager. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
+the regular parlays don't use, about 20% to win for about 5x the wager. Every NFL bet shows its track record (`nfl_edge/hitrate.py`): how often that exact bet
+would have won in games already played this season and last, and for moneylines the
+record against this week's opponent since two seasons back, game by game. Parlay legs
+show theirs, with the weakest leg named. The top singles mix props and game bets (`prop_share=0.5`). In the app and on the web page each slip
 bet must be confirmed **On FanDuel** before it can be marked placed
 (`ledger["checks"]` in the app, the `checks` db collection on the page).
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
