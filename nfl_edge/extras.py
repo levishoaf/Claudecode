@@ -136,12 +136,14 @@ class PlayerModel:
         self.position: dict[str, str] = {}
         self.current_team: dict[str, str] = {}
         self.names: dict[str, str] = {}
+        self.games_played: dict[str, list[tuple[int, dict]]] = defaultdict(list)  # every game
         for s, rows in stats.items():
             for r in rows:
                 if r.get("season_type") != "REG":
                     continue
                 key = name_key(r["player_display_name"])
                 self.names[key] = r["player_display_name"]
+                self.games_played[key].append((s, r))
                 self.appearances[(key, s)].add((r["team"], r["week"]))
                 role = self.ROLE.get(r["position"])
                 if role and role(r):

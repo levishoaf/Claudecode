@@ -24,7 +24,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, tracker, updater
+from nfl_edge import board, data, hitrate, tracker, updater
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.odds import american_to_decimal, decimal_to_american
@@ -478,6 +478,7 @@ class App:
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("money", f"Money Maker ({len(money)})"),
+                          ("stats", "Stats"),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
             on = key == self.tab
@@ -500,6 +501,8 @@ class App:
         elif self.tab == "parlays":
             self.hidden_note(grid, singles, parlays)
             self.parlays_tab(grid, [p for p in parlays if self.shown_parlay(p)], args.stake)
+        elif self.tab == "stats":
+            self.stats_tab(grid, singles, getattr(args, "hit_rates", None), args.sport)
         elif self.tab == "money":
             tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
                                  "plus one coin-flip leg (⚡ MAKE OR BREAK) that decides it. "
@@ -655,6 +658,80 @@ class App:
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), lambda p=p: self.toggle_parlay(p),
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None)
+
+    def hit_rates(self, args, singles) -> dict | None:
+        """{bet label: {season: HitRate}}: how often each single bet would have won in
+        games already played (worker thread). NFL only; None if it can't be worked out."""
+        if args.sport != "nfl":
+            return None
+        try:
+            season = bets.season_for(date.today())
+            games = data.games(None)
+            cached = getattr(self, "_players", None)
+            if not cached or cached[0] != season or time.monotonic() - cached[1] > 1800:
+                from nfl_edge.extras import load_player_model
+
+                self._players = (season, time.monotonic(), load_player_model(season, games))
+            players = self._players[2]
+            return {bets.label(b): hitrate.rates(b, players, games, season) for b in singles}
+        except Exception:  # stats are extra: never block the bets
+            traceback.print_exc()
+            return None
+
+    def stats_tab(self, parent, singles, rates, sport) -> None:
+        """Each single bet with how often it would have won in games already played."""
+        season = bets.season_for(date.today())
+        intro = ("How often each bet would have won if you'd made it every game: this "
+                 "season and last, from game results and player game logs. History, not "
+                 "a promise: few games this early in a season, and it ignores the opponent.")
+        tk.Label(parent, text=intro, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+                 justify="left").pack(anchor="w", padx=6, pady=(6, 4))
+        if sport != "nfl":
+            tk.Label(parent, text="Stats are for NFL bets only for now.", bg=BG, fg=TEXT,
+                     font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        if not rates:
+            tk.Label(parent, text="Stats couldn't be loaded right now. Try Build bets again.",
+                     bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        table = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        table.pack(fill="x", padx=6, pady=(6, 0))
+        tk.Frame(table, bg=CARD, width=int(PANEL_W) - 70, height=0).pack()
+
+        def cols(frame):
+            for col, size in ((0, 40), (2, 70), (3, 150), (4, 150)):
+                frame.grid_columnconfigure(col, minsize=size)
+            frame.grid_columnconfigure(1, weight=1)
+
+        head = tk.Frame(table, bg="#f6f8fb")
+        head.pack(fill="x")
+        cols(head)
+        for col, text, anchor in ((0, "#", "w"), (1, "BET", "w"), (2, "MODEL", "e"),
+                                  (3, f"{season} SEASON", "e"), (4, f"{season - 1} SEASON", "e")):
+            tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
+                row=0, column=col, sticky=anchor, padx=6, pady=5)
+        for i, b in enumerate(singles, 1):
+            tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
+            row = tk.Frame(table, bg=CARD)
+            row.pack(fill="x")
+            cols(row)
+            tk.Label(row, text=str(i), bg=CARD, fg=MUTED, font=self.f["bold"]).grid(
+                row=0, column=0, rowspan=2, sticky="w", padx=8)
+            tk.Label(row, text=_slip_selection(b), bg=CARD, fg=TEXT, font=self.f["bold"],
+                     anchor="w").grid(row=0, column=1, sticky="w", padx=6, pady=(6, 0))
+            tk.Label(row, text=f"{_slip_market(b)}  ·  {b.game}", bg=CARD, fg=MUTED,
+                     font=self.f["tiny"], anchor="w").grid(row=1, column=1, sticky="w", padx=6,
+                                                            pady=(0, 6))
+            tk.Label(row, text=f"{b.fair_prob:.0%}", bg=CARD, fg=chance_color(b.fair_prob),
+                     font=self.f["pick"]).grid(row=0, column=2, rowspan=2, sticky="e", padx=6)
+            r = rates.get(bets.label(b)) or {}
+            for col, s in ((3, season), (4, season - 1)):
+                hr = r.get(s)
+                rate = hr.rate if hr else None
+                tk.Label(row, text=hr.text() if hr else "–", bg=CARD,
+                         fg=MUTED if rate is None else chance_color(rate),
+                         font=self.f["bold"]).grid(row=0, column=col, rowspan=2, sticky="e",
+                                                   padx=8)
 
     def injuries_tab(self, parent) -> None:
         week, players, note = self.injuries
@@ -1066,6 +1143,7 @@ class App:
             try:
                 pool, singles, parlays = bets.build(args)
                 args.money_makers = money_maker_parlays(pool, 10, parlays)
+                args.hit_rates = self.hit_rates(args, singles)
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
@@ -1142,6 +1220,7 @@ class App:
         self.schedule()
         if self.selftest:
             self.show_tab("money")
+            self.show_tab("stats")
             print(f"{len(self.singles)} singles, {len(self.parlays)} parlays, "
                   f"{len(self.money)} money makers rendered")
             self.root.after(500, self.root.destroy)
