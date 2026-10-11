@@ -983,24 +983,31 @@ class App:
                          font=self.f["bold"]).pack(side="left")
                 tk.Label(wk, text="   " + tally(in_week), bg=BG, fg=MUTED,
                          font=self.f["tiny"]).pack(side="left", pady=(2, 0))
-                # Wins, then losses, then pushes and pending bets, each in its own group.
-                for status, label in (("won", "WON"), ("lost", "LOST"), ("push", "PUSHED"),
-                                      ("pending", "PENDING")):
-                    these = sorted((e for _, e in in_week if e["status"] == status),
-                                   key=tracker.first_kickoff, reverse=status != "pending")
-                    if not these:
+                # Single bets, then parlays; in each, wins, then losses, then pushes and
+                # pending bets, each under its own heading.
+                for kind, kind_label in (("single", "Single bets"), ("parlay", "Parlays")):
+                    of_kind = [x for x in in_week if (x[1]["kind"] == "single") == (kind == "single")]
+                    if not of_kind:
                         continue
-                    tk.Label(parent, text=f"{label}  ({len(these)})", bg=BG,
-                             fg=RESULT_STYLE[status][1], font=self.f["tinyb"]).pack(
-                        anchor="w", padx=10, pady=(4, 0))
-                    holder = tk.Frame(parent, bg=BG)
-                    holder.pack(fill="x")
-                    cols = self.columns(holder, 3, CARD_W)
-                    heights = [0, 0, 0]
-                    for e in these:  # fill the shortest column, so there are no gaps
-                        col = heights.index(min(heights))
-                        heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
-                        self.history_row(cols[col], e)
+                    tk.Label(parent, text=f"{kind_label}   {tally(of_kind)}", bg=BG, fg=TEXT,
+                             font=self.f["small"]).pack(anchor="w", padx=10, pady=(6, 0))
+                    for status, label in (("won", "WON"), ("lost", "LOST"), ("push", "PUSHED"),
+                                          ("pending", "PENDING")):
+                        these = sorted((e for _, e in of_kind if e["status"] == status),
+                                       key=tracker.first_kickoff, reverse=status != "pending")
+                        if not these:
+                            continue
+                        tk.Label(parent, text=f"{label}  ({len(these)})", bg=BG,
+                                 fg=RESULT_STYLE[status][1], font=self.f["tinyb"]).pack(
+                            anchor="w", padx=18, pady=(3, 0))
+                        holder = tk.Frame(parent, bg=BG)
+                        holder.pack(fill="x")
+                        cols = self.columns(holder, 3, CARD_W)
+                        heights = [0, 0, 0]
+                        for e in these:  # fill the shortest column, so there are no gaps
+                            col = heights.index(min(heights))
+                            heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
+                            self.history_row(cols[col], e)
 
     def history_row(self, parent, e: dict) -> None:
         """One compact line: the bet, its chance, and WON/LOST once it's settled."""

@@ -119,7 +119,9 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
-.res-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin: 8px 0 4px; }
+.kind-head { font-size: 14px; font-weight: 700; color: var(--on-dark); margin: 12px 0 2px; }
+.kind-head span { font-weight: 500; font-size: 12px; color: var(--on-dark-2); margin-left: 8px; }
+.res-head { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin: 6px 0 4px 8px; }
 .r-won { color: var(--good); } .r-lost { color: var(--bad); } .r-push { color: var(--on-dark-2); } .r-pending { color: var(--blue); }
 .swing { color: var(--warn); font-weight: 700; }
 .show-sm { display: none; font-size: 11px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
@@ -444,13 +446,18 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         if (!list.length) continue;
         any = true;
         html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(inWeek)}</span></h3>`;
-        // Wins, then losses, then pushes and pending bets, each in its own group.
-        for (const [st, label] of [["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]]) {
-          const these = list.filter(([, , s]) => s === st)
-            .sort((a, b) => st === "pending" ? first(a[1]).localeCompare(first(b[1])) : first(b[1]).localeCompare(first(a[1])));
-          if (!these.length) continue;
-          html += `<div class="res-head r-${st}">${label} (${these.length})</div>
-            <div class="hist-list">${these.map(([, e, s]) => histItem(e, s)).join("")}</div>`;
+        // Single bets, then parlays; in each, wins, then losses, then pushes and pending bets.
+        for (const [kind, kindLabel] of [["single", "Single bets"], ["parlay", "Parlays"]]) {
+          const ofKind = list.filter(([, e]) => (e.kind === "single") === (kind === "single"));
+          if (!ofKind.length) continue;
+          html += `<div class="kind-head">${kindLabel}<span>${tally(ofKind)}</span></div>`;
+          for (const [st, label] of [["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]]) {
+            const these = ofKind.filter(([, , s]) => s === st)
+              .sort((a, b) => st === "pending" ? first(a[1]).localeCompare(first(b[1])) : first(b[1]).localeCompare(first(a[1])));
+            if (!these.length) continue;
+            html += `<div class="res-head r-${st}">${label} (${these.length})</div>
+              <div class="hist-list">${these.map(([, e, s]) => histItem(e, s)).join("")}</div>`;
+          }
         }
       }
       if (!any) html += `<div class="empty">None match this filter yet.</div>`;
