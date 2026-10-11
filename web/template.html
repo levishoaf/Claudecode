@@ -119,6 +119,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .btn-light { background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
 .placerow .grow { flex: 1 1 220px; }
 .slipbar2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; color: var(--on-dark-2); font-size: 13px; }
+.notice.summary { flex-direction: column; align-items: stretch; }
+.wl { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.wl b { width: 64px; }
+.wl-bar { flex: 1 1 180px; height: 16px; border-radius: 8px; background: var(--bad); overflow: hidden; }
+.wl-g { display: block; height: 100%; width: 0; background: var(--good); transition: width .9s ease-out; }
+.wl-t, .wl-none { font-size: 13px; color: var(--on-dark-2); }
 .team-head { font-size: 15px; font-weight: 700; color: var(--on-dark); margin: 16px 0 2px; padding-bottom: 3px; border-bottom: 1px solid #333; }
 .team-head span { font-weight: 500; font-size: 12px; color: var(--on-dark-2); margin-left: 8px; }
 .kind-head { font-size: 14px; font-weight: 700; color: var(--on-dark); margin: 12px 0 2px; }
@@ -458,7 +464,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       list.forEach(([, , s]) => { c[s]++; });
       return `${c.won} won · ${c.lost} lost${c.push ? ` · ${c.push} pushed` : ""} · ${c.pending} pending`;
     };
-    let html = `<div class="notice summary"><div><b>${tally(all)}</b></div></div>`;
+    // Win rate of settled bets, a bar per league (it fills in when shown).
+    const bar = (sport, name) => {
+      const g = all.filter(([, e]) => (e.sport || "nfl") === sport);
+      const w = g.filter(([, , s]) => s === "won").length, l = g.filter(([, , s]) => s === "lost").length;
+      if (w + l === 0) return `<div class="wl"><b>${name}</b><span class="wl-none">No settled bets yet: the win rate shows once games finish.</span></div>`;
+      const p = Math.round(100 * w / (w + l));
+      return `<div class="wl"><b>${name}</b><div class="wl-bar"><span class="wl-g" data-w="${p}"></span></div><span class="wl-t">${p}% won (${w}) · ${100 - p}% lost (${l})</span></div>`;
+    };
+    let html = `<div class="notice summary"><div><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}</div>`;
     const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
     html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
     const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
@@ -674,6 +688,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "history") html += historyView();
     html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Type FanDuel's actual price into the slip to see the real expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet. Confirm each bet in your slip before marking it placed.</p>`;
     $("main").innerHTML = html;
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      document.querySelectorAll(".wl-g[data-w]").forEach((el) => { el.style.width = el.dataset.w + "%"; })));
 
     const c = combo();
     const n = state.slip.length;

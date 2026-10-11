@@ -135,6 +135,7 @@ with no account or key:
 - **Bet History** groups bets by league (NFL, college), then by team (the team bet on,
   or the player's team for props), then by week, with wins, losses, pushes and pending
   bets apart. Game totals and parlays (several teams) have their own groups.
+  At the top, a green and red bar per league shows the share of settled bets won and lost.
 - **Parlays** print as FanDuel-style slips, with legs from different games.
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is

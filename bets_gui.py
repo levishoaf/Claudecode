@@ -1077,6 +1077,11 @@ class App:
         tk.Label(top, text=tally(items), bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
         FlatButton(top, "Check results now", self.build, "secondary",
                    self.f["tinyb"]).pack(side="right")
+        # Win rate of settled bets, a bar per league, under the overall record.
+        for sport, name in (("nfl", "NFL"), ("ncaaf", "College")):
+            group = [e for _, e in items if e.get("sport", "nfl") == sport]
+            self.win_bar(parent, name, sum(e["status"] == "won" for e in group),
+                         sum(e["status"] == "lost" for e in group))
         for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
             group = [x for x in items if x[1].get("sport", "nfl") == sport]
             head = tk.Frame(parent, bg=BG)
@@ -1108,6 +1113,36 @@ class App:
                          font=self.f["tiny"]).pack(side="left", pady=(2, 0))
                 tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
                 self.history_weeks(parent, by_team[team], tally)
+
+    def win_bar(self, parent, name: str, won: int, lost: int) -> None:
+        """A league's green/red bar of settled bets won vs lost (out of 100%), filling in
+        when shown."""
+        box = tk.Frame(parent, bg=BG)
+        box.pack(fill="x", padx=6, pady=(4, 2))
+        tk.Label(box, text=name, bg=BG, fg=TEXT, font=self.f["bold"], width=8,
+                 anchor="w").pack(side="left")
+        total = won + lost
+        if not total:
+            tk.Label(box, text="No settled bets yet: the win rate shows once games finish.",
+                     bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
+            return
+        share = won / total
+        width, height = int(PANEL_W) - 420, 18
+        bar = tk.Canvas(box, width=width, height=height, bg=RED, highlightthickness=0)
+        bar.pack(side="left")
+        green = bar.create_rectangle(0, 0, 0, height, fill=GREEN, outline="")
+        words = bar.create_text(8, height / 2, anchor="w", fill=WHITE, font=self.f["tinyb"],
+                                text="")
+        tk.Label(box, text=f"  {share:.0%} won ({won})  ·  {1 - share:.0%} lost ({lost})",
+                 bg=BG, fg=TEXT, font=self.f["small"]).pack(side="left")
+
+        def grow(step=0, steps=24):  # fills in over about half a second
+            frac = share * min(step / steps, 1) ** 0.6
+            bar.coords(green, 0, 0, width * frac, height)
+            bar.itemconfigure(words, text=f"{frac:.0%} won")
+            if step < steps and bar.winfo_exists():
+                bar.after(20, grow, step + 1, steps)
+        grow()
 
     def player_team(self, name: str) -> str | None:
         """A player's current NFL team code, from the stats loaded for the track records."""
