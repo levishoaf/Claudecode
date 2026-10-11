@@ -419,6 +419,11 @@ class App:
         if self.tab == "singles":
             self.singles_tab(grid, singles, previous)
         elif self.tab == "parlays":
+            if board.NOTES.get("parlay_pool"):
+                tk.Label(grid, text="● " + board.NOTES["parlay_pool"], bg=BG,
+                         fg=GREEN if "only Strong" in board.NOTES["parlay_pool"] else AMBER,
+                         font=self.f["small"], wraplength=820,
+                         justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "money":
             tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
@@ -579,7 +584,8 @@ class App:
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs),
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None,
-                          extra=self.legs_record_line(p.legs))
+                          extra=[x for x in (self.legs_tier_line(p.legs),
+                                             self.legs_record_line(p.legs)) if x])
 
     def hit_rates(self, args, singles) -> dict | None:
         """{bet label: {season: HitRate}}: how often each single bet would have won in
@@ -587,15 +593,13 @@ class App:
         if args.sport != "nfl":
             return None
         try:
-            season = bets.season_for(date.today())
-            games = data.games(None)
-            cached = getattr(self, "_players", None)
-            if not cached or cached[0] != season or time.monotonic() - cached[1] > 1800:
-                from nfl_edge.extras import load_player_model
+            from nfl_edge import insights
 
-                self._players = (season, time.monotonic(), load_player_model(season, games))
-            players = self._players[2]
-            return {bets.label(b): hitrate.rates(b, players, games, season) for b in singles}
+            season = bets.season_for(date.today())
+            ctx = insights.context(season)  # shared with the tiers, reloaded every 30 minutes
+            self._players = (season, time.monotonic(), ctx.players)
+            return {bets.label(b): hitrate.rates(b, ctx.players, ctx.games, season)
+                    for b in singles}
         except Exception:  # stats are extra: never block the bets
             traceback.print_exc()
             return None
@@ -624,11 +628,41 @@ class App:
         now, last = rec
         parts = [f"{hr.hits} of {hr.games} {when} ({hr.rate:.0%})"
                  for hr, when in ((now, "this season"), (last, "last season")) if hr and hr.games]
-        lines = [("Hit " + "  ·  ".join(parts), self._rate_color(now, last))] if parts else []
+        lines = self.tier_lines(b)
+        if parts:
+            lines.append(("Hit " + "  ·  ".join(parts), self._rate_color(now, last)))
         matchup = self.matchup_line(b)
         if matchup:
             lines.append(matchup)
+        ins = getattr(b, "insight", None)
+        if ins:
+            lines += [(n, TEXT) for n in ins.notes]
+            lines += [("⚠ " + f, AMBER) for f in ins.flags]
         return lines or None
+
+    TIER_COLORS = {"green": GREEN, "yellow": AMBER, "red": RED}
+
+    def tier_lines(self, b) -> list:
+        """The bet's confidence tier and why."""
+        ins = getattr(b, "insight", None)
+        if not ins:
+            return []
+        from nfl_edge.insights import TIER_WORDS
+
+        why = ", ".join(ins.reasons) if ins.reasons else "no strong signals either way"
+        return [(f"● {TIER_WORDS[ins.tier]}: {why}", self.TIER_COLORS[ins.tier])]
+
+    def legs_tier_line(self, legs) -> tuple[str, str] | None:
+        """How many of a parlay's legs are Strong, Mixed and Weak."""
+        from nfl_edge.insights import TIER_WORDS
+
+        tiers = [getattr(b, "tier", None) for b in legs]
+        if not any(tiers):
+            return None
+        counts = [(t, tiers.count(t)) for t in ("green", "yellow", "red") if tiers.count(t)]
+        worst = "red" if "red" in tiers else "yellow" if "yellow" in tiers else "green"
+        return ("● Legs: " + ", ".join(f"{n} {TIER_WORDS[t]}" for t, n in counts),
+                self.TIER_COLORS[worst])
 
     def matchup_line(self, b) -> tuple[str, str] | None:
         """A moneyline pick's record against the team it plays this week, game by game."""
@@ -770,6 +804,7 @@ class App:
             group = [e for _, e in items if e.get("sport", "nfl") == sport]
             self.win_bar(parent, name, sum(e["status"] == "won" for e in group),
                          sum(e["status"] == "lost" for e in group))
+        self.report_card(parent, [e for _, e in items])
         for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
             group = [x for x in items if x[1].get("sport", "nfl") == sport]
             head = tk.Frame(parent, bg=BG)
@@ -801,6 +836,43 @@ class App:
                          font=self.f["tiny"]).pack(side="left", pady=(2, 0))
                 tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
                 self.history_weeks(parent, by_team[team], tally)
+
+    def report_card(self, parent, entries) -> None:
+        """The model's report card: how often each kind of bet actually won vs how often
+        the model said it would, by bet type, by confidence tier and for parlays."""
+        from nfl_edge.insights import report_card
+
+        card = report_card(entries)
+        head = tk.Frame(parent, bg=BG)
+        head.pack(fill="x", padx=6, pady=(10, 0))
+        tk.Label(head, text="Model report card", bg=BG, fg=NAVY,
+                 font=self.f["bold"]).pack(side="left")
+        tk.Label(head, text="   settled bets: won vs the model's expected win rate",
+                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(side="left", pady=(2, 0))
+        tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+        if not any(card.values()):
+            tk.Label(parent, text="No settled bets yet.", bg=BG, fg=MUTED,
+                     font=self.f["small"]).pack(anchor="w", padx=6)
+            return
+        for key, title in (("tier", "By confidence"), ("type", "By bet type"),
+                           ("parlays", "Parlays")):
+            if not card[key]:
+                continue
+            tk.Label(parent, text=title, bg=BG, fg=TEXT, font=self.f["small"],
+                     anchor="w").pack(fill="x", padx=6, pady=(4, 0))
+            for name, won, n, expected, actual in card[key]:
+                # Within 5 points of the model counts as on track; a handful of bets
+                # can swing either way, so say how many there are.
+                color = GREEN if actual >= expected - 0.05 else RED
+                row = tk.Frame(parent, bg=BG)
+                row.pack(fill="x", padx=18)
+                tk.Label(row, text=name, bg=BG, fg=TEXT, font=self.f["small"], width=22,
+                         anchor="w").pack(side="left")
+                tk.Label(row, text=f"won {won} of {n} ({actual:.0%})", bg=BG, fg=color,
+                         font=self.f["small"], width=20, anchor="w").pack(side="left")
+                tk.Label(row, text=f"expected {expected:.0%}"
+                         + ("  ·  too few to judge" if n < 10 else ""),
+                         bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
 
     def win_bar(self, parent, name: str, won: int, lost: int) -> None:
         """A league's green/red bar of settled bets won vs lost (out of 100%), filling in
@@ -920,7 +992,9 @@ class App:
         def work():
             try:
                 pool, singles, parlays = bets.build(args)
-                args.money_makers = money_maker_parlays(pool, 10, parlays)
+                # Money makers never lean on a Weak (red) leg.
+                args.money_makers = money_maker_parlays(
+                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10, parlays)
                 args.hit_rates = self.hit_rates(
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "College injury reports aren't in the free data.")

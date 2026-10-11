@@ -77,6 +77,8 @@ def leg_record(b, sport: str) -> dict | None:
             return name
     leg = {"game_id": b.game_id, "odds": b.fd_price, "stake": 100,
            "win_prob": round(b.fair_prob, 4), "label": label(b)}
+    if getattr(b, "tier", None):  # graded later by tier in the report card
+        leg["tier"] = b.tier
     if b.market == "h2h":
         leg.update(type="moneyline", team=team_code(b.pick))
     elif b.market in ("spreads", "alternate_spreads"):
@@ -221,6 +223,15 @@ def build(args):
             board.NOTES["confirm_line"] = CONFIRM_NOTE.format(kind=kind)
     else:
         bets = of_type(bets, kind)
+    # NFL: each bet's statistics and confidence tier (nfl_edge/insights.py); parlays use
+    # Strong (green) legs, or Strong and Mixed when there aren't enough, never Weak.
+    board.NOTES.pop("parlay_pool", None)
+    legs_pool = bets
+    if args.sport == "nfl" and getattr(args, "insights", True):
+        from nfl_edge import insights
+
+        if insights.annotate(bets, "nfl", season_for(date.today())) is not None:
+            legs_pool, board.NOTES["parlay_pool"] = insights.parlay_pool(bets)
     singles = rank_singles(bets, args.singles, rank_by=rank, per_game=args.per_game,
                            prop_share=0.5 if args.sport == "nfl" and kind == "All bets" else None,
                            every_line=kind != "All bets")
@@ -230,13 +241,13 @@ def build(args):
     if not args.parlays:
         parlays = []
     elif pays:  # parlays that pay about this much on the wager, likeliest first
-        parlays = payout_parlays(bets, pays / (args.stake or 10), args.parlays,
+        parlays = payout_parlays(legs_pool, pays / (args.stake or 10), args.parlays,
                                  min_legs=min(lo_legs, 2), max_legs=max(hi_legs, 6),
                                  rank_by=rank)
     elif hi_legs > lo_legs:  # a spread of sizes; parlays may share games
-        parlays = mixed_parlays(bets, lo_legs, hi_legs, args.parlays)
+        parlays = mixed_parlays(legs_pool, lo_legs, hi_legs, args.parlays)
     else:
-        parlays = best_parlays(bets, lo_legs, args.parlays, allow_overlap=args.allow_overlap,
+        parlays = best_parlays(legs_pool, lo_legs, args.parlays, allow_overlap=args.allow_overlap,
                                rank_by="prob")
     return bets, singles, parlays
 
