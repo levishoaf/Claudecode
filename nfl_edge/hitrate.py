@@ -26,6 +26,7 @@ PROP_STATS = {
 class HitRate:
     hits: int
     games: int
+    results: tuple[str, ...] = ()  # e.g. ("2025 W 45-21",), newest first, for matchups
 
     @property
     def rate(self) -> float | None:
@@ -126,6 +127,7 @@ def head_to_head(b, games: list[dict], season: int) -> HitRate | None:
     opp = teams[0] if teams[1] == me else teams[1]
     first = season - H2H_SEASONS + 1
     hits = n = 0
+    results = []
     for g in games:
         if g["home_score"] == "" or not first <= int(g["season"]) <= season:
             continue
@@ -135,7 +137,9 @@ def head_to_head(b, games: list[dict], season: int) -> HitRate | None:
                         else (int(g["away_score"]), int(g["home_score"])))
         n += 1
         hits += mine > theirs
-    return HitRate(hits, n)
+        word = "W" if mine > theirs else "L" if mine < theirs else "T"
+        results.append((int(g["season"]), int(g.get("week") or 0), f"{g['season']} {word} {mine}-{theirs}"))
+    return HitRate(hits, n, tuple(r for *_, r in sorted(results, reverse=True)))
 
 
 def rates(b, players, games: list[dict], season: int) -> dict | None:

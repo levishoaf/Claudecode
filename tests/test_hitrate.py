@@ -62,4 +62,5 @@ class HeadToHeadTest(unittest.TestCase):
         b = make_bet(GAME, KICK, "h2h", "Atlanta Falcons", None, 0.6, "g", "x")
         h = hitrate.head_to_head(b, games, 2026)
         self.assertEqual((h.hits, h.games), (2, 3))  # 2024-2026 only, Ravens games only
+        self.assertEqual(h.results, ("2026 W 21-14", "2025 L 10-30", "2024 W 20-17"))
         self.assertEqual(hitrate.rates(b, None, games, 2026)["h2h"].games, 3)

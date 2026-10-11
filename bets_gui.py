@@ -569,7 +569,7 @@ class App:
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
                  on_click=None, last: str | None = None, price: int | None = None,
-                 ev: float | None = None, extra: tuple[str, str] | None = None) -> tk.Frame:
+                 ev: float | None = None, extra=None) -> tk.Frame:
         """One bet: number, name with game below (and an optional colored line, e.g. its
         track record), chance, worst odds, payout."""
         tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
@@ -585,9 +585,12 @@ class App:
                  justify="left", wraplength=470).grid(row=1, column=1, sticky="w", padx=6,
                                                        pady=(0, 0 if extra else 6))
         if extra:
-            tk.Label(row, text=extra[0], bg=CARD, fg=extra[1], font=self.f["tinyb"], anchor="w",
-                     justify="left", wraplength=470).grid(row=2, column=1, sticky="w", padx=6,
-                                                           pady=(1, 6))
+            lines = [extra] if isinstance(extra, tuple) else extra  # (text, color) pairs
+            box = tk.Frame(row, bg=CARD)
+            box.grid(row=2, column=1, sticky="w", padx=6, pady=(1, 6))
+            for text, color in lines:
+                tk.Label(box, text=text, bg=CARD, fg=color, font=self.f["tinyb"], anchor="w",
+                         justify="left", wraplength=470).pack(anchor="w")
         tk.Label(row, text=f"{prob:.0%}", bg=CARD, fg=chance_color(prob),
                  font=self.f["pick"]).grid(row=0, column=2, rowspan=3, sticky="e", padx=6)
         fd = getattr(self, "fd_mode", False) and price is not None
@@ -707,26 +710,39 @@ class App:
         now, last = rec
         parts = [f"{hr.hits} of {hr.games} {when} ({hr.rate:.0%})"
                  for hr, when in ((now, "this season"), (last, "last season")) if hr and hr.games]
-        h2h = self.h2h_text(b, long=True)
-        if h2h:
-            parts.append(h2h)
-        if not parts:
-            return None
-        return "Hit " + "  ·  ".join(parts), self._rate_color(now, last)
+        lines = [("Hit " + "  ·  ".join(parts), self._rate_color(now, last))] if parts else []
+        matchup = self.matchup_line(b)
+        if matchup:
+            lines.append(matchup)
+        return lines or None
 
-    def h2h_text(self, b, long: bool = False) -> str | None:
-        """A moneyline pick's record against this opponent since two seasons back."""
-        if b.market != "h2h":
-            return None
-        hr = ((getattr(self, "rates", None) or {}).get(bets.label(b)) or {}).get("h2h")
+    def matchup_line(self, b) -> tuple[str, str] | None:
+        """A moneyline pick's record against the team it plays this week, game by game."""
+        hr = self._h2h(b)
         if hr is None:
             return None
-        opp = next((t for t in b.game.split(" @ ") if t != b.pick), "them").split()[-1]
+        opp = self._opponent(b)
         since = bets.season_for(date.today()) - hitrate.H2H_SEASONS + 1
         if not hr.games:
-            return f"no games vs {opp} since {since}" if long else None
-        record = f"{hr.hits}-{hr.games - hr.hits} vs {opp}"
-        return f"{record} since {since}" if long else record
+            return f"Vs this week's opponent, the {opp}: no games since {since}", MUTED
+        return (f"Vs this week's opponent, the {opp}: {hr.hits}-{hr.games - hr.hits} since "
+                f"{since}  ({', '.join(hr.results)})", chance_color(hr.rate))
+
+    def _h2h(self, b):
+        if b.market != "h2h":
+            return None
+        return ((getattr(self, "rates", None) or {}).get(bets.label(b)) or {}).get("h2h")
+
+    @staticmethod
+    def _opponent(b) -> str:
+        return next((t for t in b.game.split(" @ ") if t != b.pick), "opponent")
+
+    def h2h_text(self, b) -> str | None:
+        """Short form for a parlay leg: "3-1 vs Titans" (this week's opponent)."""
+        hr = self._h2h(b)
+        if hr is None or not hr.games:
+            return None
+        return f"{hr.hits}-{hr.games - hr.hits} vs {self._opponent(b).split()[-1]}"
 
     def _leg_record(self, b):
         """This season's record for a parlay leg (last season's if none yet), or None."""
