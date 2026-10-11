@@ -1,0 +1,148 @@
+name: Build executables
+
+# Builds standalone programs with Python bundled inside, so the bet builder
+# runs with a double-click and nothing to install, then publishes them as a
+# GitHub Release ("build-<run number>"). Download them from the repository's
+# Releases page; the windowed app checks the latest release and updates itself.
+#   Bet Builder by Levi Shoaf            the windowed app
+#   Bet Builder by Levi Shoaf (Console)  the same picks in a text console (supports --watch etc.)
+#   Bet Builder by Levi Shoaf (Discord Bot)  the Discord bot (see README)
+on:
+  push:
+    branches: [claude/fanduel-nfl-ev-finder, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push replaces a build still running for an older one, so an older
+# build can never finish last and become the latest release.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: python -m pip install -r requirements-build.txt
+
+      - name: Run tests
+        run: python -m unittest discover -t . -s tests
+
+      - name: Stamp the build number (the app updates itself from the releases)
+        shell: bash
+        run: printf 'BUILD = %s\nREPO = "%s"\n' "${{ github.run_number }}" "$GITHUB_REPOSITORY" > nfl_edge/_build.py
+
+      - name: Build
+        shell: bash
+        run: |
+          COMMON="--onefile --collect-data tzdata --collect-data certifi"
+          pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Console)" bets.py
+          pyinstaller $COMMON --windowed --name "Bet Builder by Levi Shoaf" bets_gui.py
+          pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Discord Bot)" discord_bot.py
+
+      - name: Smoke test the builds
+        shell: bash
+        timeout-minutes: 10
+        run: |
+          cd dist
+          CONSOLE="./Bet Builder by Levi Shoaf (Console)"
+          [ -f "$CONSOLE.exe" ] && CONSOLE="$CONSOLE.exe"
+          "$CONSOLE" --sport nfl --singles 5 --legs 2 --parlays 1
+          "$CONSOLE" --sport ncaaf --singles 5 --parlays 0
+          "$CONSOLE" --grade
+          APP="Bet Builder by Levi Shoaf"
+          if [ -d "$APP.app" ]; then "./$APP.app/Contents/MacOS/$APP" --selftest; else "./$APP.exe" --selftest; fi
+          BOT="./Bet Builder by Levi Shoaf (Discord Bot)"
+          [ -f "$BOT.exe" ] && BOT="$BOT.exe"
+          "$BOT" --selftest
+
+      - name: Package (Mac keeps file permissions inside a zip)
+        if: runner.os == 'macOS'
+        run: |
+          ditto -c -k --keepParent "dist/Bet Builder by Levi Shoaf.app" "Bet Builder by Levi Shoaf - Mac App.zip"
+          chmod +x "dist/Bet Builder by Levi Shoaf (Console)"
+          ditto -c -k "dist/Bet Builder by Levi Shoaf (Console)" "Bet Builder by Levi Shoaf - Mac Console.zip"
+          chmod +x "dist/Bet Builder by Levi Shoaf (Discord Bot)"
+          ditto -c -k "dist/Bet Builder by Levi Shoaf (Discord Bot)" "Bet Builder by Levi Shoaf - Mac Discord Bot.zip"
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: Bet Builder by Levi Shoaf - Windows
+          path: |
+            dist/Bet Builder by Levi Shoaf.exe
+            dist/Bet Builder by Levi Shoaf (Console).exe
+            dist/Bet Builder by Levi Shoaf (Discord Bot).exe
+          retention-days: 90
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: Bet Builder by Levi Shoaf - Mac
+          path: |
+            Bet Builder by Levi Shoaf - Mac App.zip
+            Bet Builder by Levi Shoaf - Mac Console.zip
+            Bet Builder by Levi Shoaf - Mac Discord Bot.zip
+          retention-days: 90
+
+  release:
+    # Both platforms built and passed their smoke tests: publish them. The app
+    # finds its update here (BetBuilder-Windows.exe, BetBuilder-Mac-App.zip).
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dl
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+          BUILD: ${{ github.run_number }}
+        run: |
+          set -e
+          W="dl/Bet Builder by Levi Shoaf - Windows"
+          M="dl/Bet Builder by Levi Shoaf - Mac"
+          mkdir out
+          cp "$W/Bet Builder by Levi Shoaf.exe" out/BetBuilder-Windows.exe
+          cp "$W/Bet Builder by Levi Shoaf (Console).exe" out/BetBuilder-Windows-Console.exe
+          cp "$W/Bet Builder by Levi Shoaf (Discord Bot).exe" out/BetBuilder-Windows-DiscordBot.exe
+          cp "$M/Bet Builder by Levi Shoaf - Mac App.zip" out/BetBuilder-Mac-App.zip
+          cp "$M/Bet Builder by Levi Shoaf - Mac Console.zip" out/BetBuilder-Mac-Console.zip
+          cp "$M/Bet Builder by Levi Shoaf - Mac Discord Bot.zip" out/BetBuilder-Mac-DiscordBot.zip
+          printf '%s\n\n%s\n' "${MESSAGE%%$'\n'*}" \
+            "Windows: BetBuilder-Windows.exe (the app). Mac: BetBuilder-Mac-App.zip. The app installs later builds by itself." > notes.md
+          # Only a newer build than the current latest release becomes "latest".
+          CURRENT=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
+          LATEST=true
+          [ -n "$CURRENT" ] && [ "${CURRENT#build-}" -gt "$BUILD" ] 2>/dev/null && LATEST=false
+          # GitHub occasionally refuses a request (it once answered 403 here); try a
+          # few times, finishing a release that was only partly published.
+          for try in 1 2 3 4; do
+            if gh release view "build-$BUILD" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release upload "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --clobber &&
+                gh release edit "build-$BUILD" --repo "$GITHUB_REPOSITORY" --latest=$LATEST && exit 0
+            else
+              gh release create "build-$BUILD" out/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+                --title "Bet Builder build $BUILD" --notes-file notes.md --latest=$LATEST && exit 0
+            fi
+            echo "Publishing failed (try $try); retrying in $((try * 20)) seconds"
+            sleep $((try * 20))
+          done
+          exit 1

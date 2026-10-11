@@ -1,0 +1,66 @@
+import unittest
+
+from nfl_edge.grade import grade_leg
+
+GAMES = {
+    "g1": {"game_id": "g1", "away_team": "HOU", "home_team": "TEN", "away_score": "24", "home_score": "17"},
+    "g2": {"game_id": "g2", "away_team": "CIN", "home_team": "MIA", "away_score": "", "home_score": ""},
+}
+STATS = [{"game_id": "g1", "player_display_name": "C.J. Stroud", "passing_tds": "2",
+          "receptions": "0", "passing_yards": "251"},
+         {"game_id": "g1", "player_display_name": "Nico Collins", "passing_tds": "0",
+          "receptions": "5", "receiving_yards": "38"}]
+
+
+class GradeTest(unittest.TestCase):
+    def test_moneyline(self):
+        self.assertEqual(grade_leg({"type": "moneyline", "game_id": "g1", "team": "HOU"}, GAMES, [])[0], "won")
+        self.assertEqual(grade_leg({"type": "moneyline", "game_id": "g1", "team": "TEN"}, GAMES, [])[0], "lost")
+        self.assertEqual(grade_leg({"type": "moneyline", "game_id": "g2", "team": "CIN"}, GAMES, [])[0], "pending")
+
+    def test_passing_tds(self):
+        leg = {"type": "passing_tds", "game_id": "g1", "player": "C.J. Stroud", "min": 1}
+        self.assertEqual(grade_leg(leg, GAMES, STATS), ("won", "2 passing TDs"))
+        self.assertEqual(grade_leg(dict(leg, min=3), GAMES, STATS)[0], "lost")
+        self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "lost")
+        self.assertEqual(grade_leg(dict(leg, game_id="g2"), GAMES, STATS)[0], "pending")
+
+    def test_player_stat(self):
+        leg = {"type": "player_stat", "game_id": "g1", "player": "Nico Collins",
+               "stat": "receptions", "min": 4}
+        self.assertEqual(grade_leg(leg, GAMES, STATS), ("won", "5 receptions"))
+        self.assertEqual(grade_leg(dict(leg, stat="receiving_yards", min=40), GAMES, STATS),
+                         ("lost", "38 receiving yards"))
+
+    def test_spread_and_total(self):
+        spread = {"type": "spread", "game_id": "g1", "team": "TEN", "point": 7.5}
+        self.assertEqual(grade_leg(spread, GAMES, [])[0], "won")  # lost by 7
+        self.assertEqual(grade_leg(dict(spread, point=7), GAMES, [])[0], "push")
+        self.assertEqual(grade_leg(dict(spread, team="HOU", point=-7.5), GAMES, [])[0], "lost")
+        total = {"type": "total", "game_id": "g1", "side": "Over", "line": 40.5}
+        self.assertEqual(grade_leg(total, GAMES, [])[0], "won")  # 41 points
+        self.assertEqual(grade_leg(dict(total, side="Under"), GAMES, [])[0], "lost")
+        self.assertEqual(grade_leg(dict(total, line=41), GAMES, [])[0], "push")
+
+    def test_team_total(self):
+        leg = {"type": "team_total", "game_id": "g1", "team": "TEN", "side": "Over", "line": 16.5}
+        self.assertEqual(grade_leg(leg, GAMES, [])[0], "won")  # TEN scored 17
+        self.assertEqual(grade_leg(dict(leg, line=17), GAMES, [])[0], "push")
+        self.assertEqual(grade_leg(dict(leg, team="HOU", line=24.5), GAMES, [])[0], "lost")
+
+    def test_profit(self):
+        from nfl_edge.grade import profit_of
+        leg = {"odds": -115, "stake": 100}
+        self.assertAlmostEqual(profit_of(leg, "won"), 86.96, places=2)
+        self.assertEqual(profit_of(leg, "lost"), -100)
+        self.assertEqual(profit_of(leg, "push"), 0)
+
+    def test_decimal_scores(self):
+        games = {"c": {"game_id": "c", "away_team": "Iowa", "home_team": "Washington",
+                       "away_score": "24.0", "home_score": "21.0"}}
+        leg = {"type": "moneyline", "game_id": "c", "team": "Iowa"}
+        self.assertEqual(grade_leg(leg, games, []), ("won", "Iowa 24 - Washington 21"))
+
+
+if __name__ == "__main__":
+    unittest.main()

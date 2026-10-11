@@ -1,0 +1,334 @@
+"""Pick single bets and parlays by the user's standing rules.
+
+- Rank by expected value; break ties toward the higher win probability.
+- Parlays use legs from different games, and by default no two parlays
+  share a game, so one bad game can't sink more than one ticket.
+"""
+
+from __future__ import annotations
+
+from itertools import combinations
+from math import comb
+
+from .odds import american_to_decimal
+from .finder import Bet
+from .parlays import Parlay
+
+MAX_COMBOS = 200_000
+
+
+def value_key(ev: float, win_prob: float) -> tuple[float, float]:
+    # Round EV so near-ties are decided by the higher win probability.
+    return round(ev, 3), win_prob
+
+
+def subject_key(b: Bet) -> tuple[str, str, str]:
+    """What a bet is about: alternate lines count as their main market, and
+    props and team totals are per player or team. Only the best bet on each
+    subject is kept, so the list isn't five versions of one player."""
+    market = b.market.replace("alternate_", "").removesuffix("_alternate")
+    if market.startswith("player_") or market == "team_totals":
+        return b.game, market, b.pick.rsplit(" ", 1)[0]
+    return b.game, market, ""
+
+
+def sort_key(rank_by: str):
+    """'ev': best value first (ties to the likelier bet). 'prob': likeliest
+    first, for bets without real FanDuel prices."""
+    if rank_by == "prob":
+        return lambda b: (round(b.fair_prob, 3), b.ev)
+    return lambda b: value_key(b.ev, b.fair_prob)
+
+
+def is_prop(b: Bet) -> bool:
+    return b.market.startswith("player_")
+
+
+# Bet types to choose from, by the start of their market keys ("All bets": everything).
+BET_TYPES = {
+    "All bets": (),
+    "Moneyline": ("h2h",),
+    "Spread": ("spreads", "alternate_spreads"),
+    "Total points": ("totals", "alternate_totals", "team_totals", "alternate_team_totals"),
+    "Anytime TD": ("player_anytime_td",),
+    "Passing yards": ("player_pass_yds",),
+    "Passing TDs": ("player_pass_tds",),
+    "Rushing yards": ("player_rush_yds",),
+    "Receiving yards": ("player_reception_yds",),
+    "Receptions": ("player_receptions",),
+}
+# Worst odds a bet type may have, e.g. receiving yards only at -300 or better.
+TYPE_MIN_ODDS = {"Receiving yards": -300}
+
+
+def type_max_prob(kind: str | None) -> float | None:
+    """The highest win chance a type's bets may have (its odds limit), or None."""
+    odds = TYPE_MIN_ODDS.get(kind or "")
+    return None if odds is None else 1 / american_to_decimal(odds) + 5e-4  # rounding
+
+
+def within_odds(bets: list[Bet], kind: str | None) -> list[Bet]:
+    """Only bets at the type's odds limit or better: FanDuel's odds when it was
+    found there, else the break-even odds."""
+    odds = TYPE_MIN_ODDS.get(kind or "")
+    if odds is None:
+        return list(bets)
+    cap = type_max_prob(kind)
+    return [b for b in bets if (b.fd_price >= odds if getattr(b, "on_fanduel", False)
+                                else b.fair_prob <= cap)]
+
+
+# Types on the free board, which only has bets sure to be on FanDuel.
+SURE_TYPES = ("All bets", "Moneyline", "Anytime TD")
+
+
+def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
+    """Only the bets of one type from BET_TYPES; every bet for "All bets" or None."""
+    markets = BET_TYPES.get(kind or "All bets")
+    if markets is None:
+        raise ValueError(f"unknown bet type {kind!r}")
+    return [b for b in bets if not markets or b.market.startswith(markets)]
+
+
+def every_line_of(full: list[Bet], kind: str) -> list[Bet]:
+    """Every bet of a type that isn't sure to be on FanDuel (spreads, totals, yardage
+    props...): FanDuel-confirmed ones as they are, the rest marked `confirm_line`."""
+    out = within_odds(of_type(full, kind), kind)
+    for b in out:
+        b.confirm_line = not getattr(b, "on_fanduel", False)
+    return out
+
+
+CONFIRM_NOTE = ("{kind} lines marked CONFIRM LINE come from the model, not FanDuel: check "
+                "that FanDuel has that exact line before you bet.")
+
+
+def empty_type_note(kind: str, sport: str, checked: bool) -> str:
+    """Why a chosen bet type has no bets."""
+    if sport == "ncaaf" and kind not in ("All bets", "Moneyline"):
+        return "College bets are moneylines only."
+    return f"No {kind.lower()} bets for this week."
+
+
+def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
+                 rank_by: str = "ev", per_game: int | None = None,
+                 prop_share: float | None = None, every_line: bool = False) -> list[Bet]:
+    """Best `count` singles, one per subject (see subject_key; with `every_line`,
+    one per exact line, for showing every bet of one type) and at most
+    `per_game` from any one game. With `prop_share` (e.g. 0.5), player props and
+    game bets each fill at most that share of the list first, so the list mixes
+    both; leftover places then go to the best of whichever remains."""
+    ranked = [b for b in sorted(bets, key=sort_key(rank_by), reverse=True)
+              if b.fair_prob >= min_prob]
+    seen, games, out = set(), {}, []
+    caps = None
+    if prop_share is not None:
+        n_props = round(count * prop_share)
+        caps = {True: n_props, False: count - n_props}
+
+    def take(b, capped: bool) -> None:
+        key = (b.game, b.market, b.pick, b.point) if every_line else subject_key(b)
+        if key in seen or (per_game and games.get(b.game, 0) >= per_game):
+            return
+        if capped and caps is not None:
+            if sum(is_prop(x) == is_prop(b) for x in out) >= caps[is_prop(b)]:
+                return
+        seen.add(key)
+        games[b.game] = games.get(b.game, 0) + 1
+        out.append(b)
+
+    for capped in ((True, False) if caps else (False,)):
+        for b in ranked:
+            if len(out) == count:
+                break
+            take(b, capped)
+    # Keep the list in rank order after the two passes.
+    order = {id(b): i for i, b in enumerate(ranked)}
+    return sorted(out, key=lambda b: order[id(b)])
+
+
+def best_parlays(bets: list[Bet], legs: int, count: int, *, allow_overlap: bool = False,
+                 min_prob: float = 0.0, rank_by: str = "ev") -> list[Parlay]:
+    """Best `count` parlays of exactly `legs` legs from different games."""
+    pool = rank_singles(bets, 10_000, min_prob, rank_by=rank_by)
+    # Keep the search affordable: shrink the pool until the combinations fit.
+    while len(pool) > legs and comb(len(pool), legs) > MAX_COMBOS:
+        pool = pool[:-1]
+    candidates = [Parlay(c) for c in combinations(pool, legs)
+                  if len({b.game for b in c}) == legs]
+    if rank_by == "prob":
+        candidates.sort(key=lambda p: p.win_prob, reverse=True)
+    else:
+        candidates.sort(key=lambda p: value_key(p.ev, p.win_prob), reverse=True)
+
+    chosen: list[Parlay] = []
+    used_games: set[str] = set()
+    for p in candidates:
+        games = {b.game for b in p.legs}
+        if not allow_overlap and games & used_games:
+            continue
+        chosen.append(p)
+        used_games |= games
+        if len(chosen) == count:
+            break
+    return chosen
+
+
+def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
+                  min_prob: float = 0.0, rank_by: str = "prob", max_uses: int = 3,
+                  pool_size: int = 24) -> list[Parlay]:
+    """`count` parlays spread across `min_legs`..`max_legs` legs.
+
+    A week has too few games for many parlays without sharing games, so
+    parlays may share games with each other. Each parlay still uses
+    different games for its own legs, no two parlays are identical, and no
+    single bet appears in more than `max_uses` parlays.
+    """
+    sizes = list(range(min_legs, max_legs + 1))
+    quota = {n: count // len(sizes) for n in sizes}
+    for n in sizes[: count % len(sizes)]:
+        quota[n] += 1
+
+    pool = rank_singles(bets, pool_size, min_prob, rank_by=rank_by)
+    ranked = {}
+    for n in sizes:
+        candidates = [Parlay(c) for c in combinations(pool, n) if len({b.game for b in c}) == n]
+        if rank_by == "prob":
+            candidates.sort(key=lambda p: p.win_prob, reverse=True)
+        else:
+            candidates.sort(key=lambda p: value_key(p.ev, p.win_prob), reverse=True)
+        ranked[n] = candidates
+
+    uses: dict[int, int] = {}
+    chosen: list[Parlay] = []
+    taken = {n: 0 for n in sizes}
+    limit = max_uses
+    # Biggest parlays first: they need the most fresh legs. If the reuse limit
+    # leaves gaps, loosen it one step at a time.
+    while sum(taken.values()) < min(count, sum(len(c) for c in ranked.values())) and limit <= count:
+        for n in reversed(sizes):
+            for p in ranked[n]:
+                if taken[n] == quota[n]:
+                    break
+                if p in chosen or any(uses.get(id(b), 0) >= limit for b in p.legs):
+                    continue
+                chosen.append(p)
+                taken[n] += 1
+                for b in p.legs:
+                    uses[id(b)] = uses.get(id(b), 0) + 1
+        limit += 1
+    chosen.sort(key=lambda p: (len(p.legs), -p.win_prob))
+    return chosen
+
+
+def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int = 2,
+                   max_legs: int = 6, tolerance: float = 0.05, rank_by: str = "prob",
+                   max_uses: int = 3, pool_size: int = 20) -> list[Parlay]:
+    """`count` parlays that each pay at least `target` times the wager (stake
+    included) and as little over it as possible, likeliest to win first (best
+    value first with rank_by="ev").
+
+    Legs come from different games. If too few parlays pay between the target
+    and `tolerance` above it, the band widens step by step up to 50% above.
+    No bet appears in more than `max_uses` parlays when that can be avoided.
+    """
+    # The likeliest bets, plus the likeliest of those long enough that max_legs of
+    # them can reach the target (when every bet is very likely, e.g. 25+ yards).
+    cap = target ** (-1 / max_legs)
+    pool = rank_singles(bets, pool_size // 2, rank_by="prob", per_game=2)
+    pool += [b for b in rank_singles([b for b in bets if b.fair_prob <= cap and b not in pool],
+                                     pool_size - len(pool), rank_by="prob", per_game=2)]
+
+    def pays(p: Parlay) -> float:
+        """What it pays per $1, as shown: at FanDuel's prices, else at break-even."""
+        return p.decimal if all(b.priced for b in p.legs) else 1 / p.win_prob
+
+    candidates = [Parlay(c) for n in range(min_legs, max_legs + 1)
+                  for c in combinations(pool, n) if len({b.game for b in c}) == n]
+    if rank_by == "prob":
+        key = lambda p: (p.win_prob, -pays(p))  # noqa: E731
+    else:
+        key = lambda p: (*value_key(p.ev, p.win_prob), -pays(p))  # noqa: E731
+    over = lambda p: pays(p) / target - 1  # noqa: E731  (never below the target)
+    band = tolerance
+    near: list[Parlay] = []
+    while band <= 0.5 + 1e-9:
+        near = sorted((p for p in candidates if 0 <= over(p) <= band),
+                      key=key, reverse=True)
+        if len(near) >= count:
+            break
+        band += 0.05
+    chosen: list[Parlay] = []
+    uses: dict[int, int] = {}
+    for limit in range(max_uses, count + max_uses + 1):  # relax reuse only if needed
+        for p in near:
+            if len(chosen) == count:
+                break
+            if p in chosen or any(uses.get(id(b), 0) >= limit for b in p.legs):
+                continue
+            chosen.append(p)
+            for b in p.legs:
+                uses[id(b)] = uses.get(id(b), 0) + 1
+        if len(chosen) == count or len(chosen) == len(near):
+            break
+    return sorted(chosen, key=key, reverse=True)
+
+
+def _leg_key(b: Bet) -> tuple:
+    return (b.game, b.market, b.pick, b.point)
+
+
+def money_maker_parlays(bets: list[Bet], count: int, avoid: list[Parlay] = (), *,
+                        swing: tuple[float, float] = (0.35, 0.55), anchor_min: float = 0.60,
+                        max_anchors: int = 3, win: tuple[float, float] = (0.14, 0.20),
+                        max_uses: int = 2, pool_size: int = 16) -> list[Parlay]:
+    """Riskier parlays that hang on one leg: two or three strong legs (`anchor_min`
+    or better) plus one coin-flip "make or break" leg in the `swing` range, from
+    different games, winning `win` of the time. Unlike the parlays in `avoid`, the
+    swing leg is one they don't use, and no money maker shares more than half its
+    legs with any of them. Likeliest first; each swing leg is used once."""
+    taken = {_leg_key(b) for p in avoid for b in p.legs}
+    avoid_sets = [{_leg_key(b) for b in p.legs} for p in avoid]
+    anchors = rank_singles([b for b in bets if b.fair_prob >= anchor_min], pool_size,
+                           rank_by="prob", per_game=2)
+    swings = rank_singles([b for b in bets if swing[0] <= b.fair_prob <= swing[1]
+                           and _leg_key(b) not in taken], pool_size, rank_by="prob", per_game=2)
+    lo_win, hi_win = win
+    found: list[Parlay] = []
+    while True:
+        found = []
+        for s in swings:
+            others = [a for a in anchors if a.game != s.game]
+            for n in range(2, max_anchors + 1):
+                for combo in combinations(others, n):
+                    if len({a.game for a in combo}) < n:
+                        continue
+                    p = Parlay((*combo, s))
+                    if not lo_win <= p.win_prob <= hi_win:
+                        continue
+                    keys = {_leg_key(b) for b in p.legs}
+                    if any(len(keys & a) > len(keys) // 2 for a in avoid_sets):
+                        continue  # too close to a regular parlay
+                    found.append(p)
+        if len(found) >= count or lo_win <= 0.06:
+            break
+        lo_win -= 0.03  # too few: allow a little more risk
+    found.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
+    chosen, swing_used, uses = [], set(), {}
+    for p in found:
+        s = make_or_break(p)
+        if len(chosen) == count:
+            break
+        if _leg_key(s) in swing_used or any(uses.get(_leg_key(b), 0) >= max_uses
+                                            for b in p.legs if b is not s):
+            continue
+        chosen.append(p)
+        swing_used.add(_leg_key(s))
+        for b in p.legs:
+            uses[_leg_key(b)] = uses.get(_leg_key(b), 0) + 1
+    return chosen
+
+
+def make_or_break(p: Parlay) -> Bet:
+    """The parlay's riskiest leg: the one it hangs on."""
+    return min(p.legs, key=lambda b: b.fair_prob)
