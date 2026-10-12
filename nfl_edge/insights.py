@@ -411,16 +411,16 @@ def analyze(b, ctx: Context, rates: dict | None = None) -> Insight:
     if signals.tested(group):
         # Tiers from the weights learned on past seasons, not hand-set points: Strong or
         # Weak only when tested signals move the chance by 2 points or more.
-        weights = signals.saved().get(group)
         ins.reasons = []
-        if weights and is_prop and team and g:
+        if signals.saved().get(group) and is_prop and team and g:
             base = getattr(b, "signal_base", None) or b.fair_prob  # once per bet
             b.signal_base = base
             feats = ctx.signal_features(b, key, team, g)
-            p = signals.sigmoid(signals.logit(base) + signals.shift(weights, feats))
+            p, weights = signals.move(group, base, feats)
             learn.reprice(b, p)
             ins.shift = p - base
-            ins.reasons = signals.reasons(weights, feats)
+            if abs(ins.shift) >= 0.005:
+                ins.reasons = signals.reasons(weights, feats)
         moved = getattr(ins, "shift", 0.0)
         if moved >= 0.02 and not ins.small_sample:
             ins.tier = GREEN

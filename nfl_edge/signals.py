@@ -29,6 +29,7 @@ from .venues import STADIUMS
 
 WEIGHTS_FILE = Path(__file__).with_name("signal_weights.json")
 RIDGE = 20.0  # pulls every weight toward 0 (no effect) unless the data insists
+SHOWN = (0.5, 0.97)  # fit on the chances the board actually shows, not long shots
 
 PROP_FEATURES = ["record", "trend", "comfy", "matchup", "home", "short_week", "travel",
                  "qb_change", "wind", "cold"]
@@ -218,8 +219,21 @@ def _file() -> dict:
 
 
 def saved() -> dict:
-    """{group: {feature: weight}} for the kinds of bet whose signals passed the test."""
+    """{group: {"weights": {feature: weight}, "up": bool, "down": bool}} for the kinds
+    of bet whose signals passed the test, and which ways they may move the chance."""
     return _file().get("groups", {})
+
+
+def move(group: str, p: float, feats: dict) -> tuple[float, dict]:
+    """(new chance, weights) for a bet: its chance moved by the tested signals, only in
+    the directions that held up on the newest season. ({} weights if none.)"""
+    g = saved().get(group)
+    if not g:
+        return p, {}
+    q = sigmoid(logit(p) + shift(g["weights"], feats))
+    if (q > p and not g.get("up")) or (q < p and not g.get("down")):
+        return p, g["weights"]
+    return q, g["weights"]
 
 
 def tested(group: str) -> bool:
@@ -316,18 +330,35 @@ def build(seasons: list[int]) -> tuple[dict, list[str]]:
 
         calibrated = group in learn.saved().get("groups", {})
         curve = fit_curve([(p, y, 1.0) for p, _, y in train]) if calibrated else None
-        cal = lambda rows: [(apply_curve(curve, p), f, y) for p, f, y in rows]  # noqa: E731
+
+        def cal(rows, curve=curve):
+            out = [(apply_curve(curve, p), f, y) for p, f, y in rows]
+            return [x for x in out if SHOWN[0] <= x[0] <= SHOWN[1]]
         w = fit_weights(cal(train), names)
         before, after = loss(cal(test)), loss(cal(test), w)
-        keep = after < before - 3e-4  # a clear gain, not noise
+        # Raising and lowering are each kept only if, on the newest season, the bets
+        # they moved by 2+ points really won closer to the new chance than the old one.
+        moves = {"up": [], "down": []}
+        for p, f, y in cal(test):
+            q = sigmoid(logit(p) + shift(w, f))
+            if abs(q - p) >= 0.02:
+                moves["up" if q > p else "down"].append((p, q, y))
+        directions = {}
+        for d, rows in moves.items():
+            won = sum(y for _, _, y in rows) / len(rows) if rows else 0
+            old = sum(p for p, _, _ in rows) / len(rows) if rows else 0
+            new = sum(q for _, q, _ in rows) / len(rows) if rows else 0
+            directions[d] = len(rows) >= 50 and abs(new - won) < abs(old - won)
+        keep = any(directions.values())
+        kept = "/".join(d for d, ok in directions.items() if ok) or "not kept"
         report.append(f"{group:<36} {len(train) + len(test):>6} bets  {newest}: log loss "
-                      f"{before:.4f} -> {after:.4f}  {'kept' if keep else 'not kept'}  "
+                      f"{before:.4f} -> {after:.4f}  {kept:<9}  "
                       + ", ".join(f"{n} {v:+.2f}" for n, v in w.items() if abs(v) >= 0.02))
         if keep:
             every = train + test
             curve = fit_curve([(p, y, 1.0) for p, _, y in every]) if calibrated else None
-            groups[group] = fit_weights([(apply_curve(curve, p), f, y) for p, f, y in every],
-                                        names)
+            groups[group] = {"weights": fit_weights(cal(every, curve), names),
+                             "up": directions["up"], "down": directions["down"]}
     tested = sorted({g for v in data_.values() for g in v})
     return {"seasons": seasons, "tested": tested, "groups": groups}, report
 

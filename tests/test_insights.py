@@ -92,12 +92,18 @@ class LearnedTierTest(unittest.TestCase):
     """Tiers from the weights learned on past seasons (signal_weights.json)."""
 
     def test_good_signals_raise_the_chance_and_make_it_strong(self):
-        b = prop(0.6)
+        b = prop(0.6, "player_rush_yds_alternate")  # raising held up for rushing yards
         ctx = FakeContext(feats={"record": 0.3, "trend": 0.4, "matchup": 0.2, "home": 1.0})
         ins = insights.analyze(b, ctx, rates(6, 7))
         self.assertGreater(b.fair_prob, 0.62)
         self.assertEqual(ins.tier, insights.GREEN)
-        self.assertIn("strong record", ins.reasons)
+        self.assertIn("usage rising", ins.reasons)
+
+    def test_only_directions_that_held_up(self):
+        b = prop(0.6)  # receiving yards: lowering held up, raising didn't
+        ins = insights.analyze(b, FakeContext(feats={"record": 0.3, "trend": 0.4}),
+                               rates(6, 7))
+        self.assertEqual((b.fair_prob, ins.tier), (0.6, insights.YELLOW))
 
     def test_bad_signals_lower_it_and_make_it_weak(self):
         b = prop(0.6)
@@ -108,14 +114,14 @@ class LearnedTierTest(unittest.TestCase):
 
     def test_applied_once(self):
         b = prop(0.6)
-        ctx = FakeContext(feats={"record": 0.3})
+        ctx = FakeContext(feats={"record": -0.3, "trend": -0.4})
         insights.analyze(b, ctx, rates(6, 7))
         once = b.fair_prob
         insights.analyze(b, ctx, rates(6, 7))
         self.assertAlmostEqual(b.fair_prob, once)
 
     def test_tested_without_signals_is_mixed(self):
-        b = prop(0.6, "player_rush_yds_alternate")  # its signals didn't predict 2025
+        b = prop(0.6, "player_pass_yds_alternate")  # its signals didn't predict 2025
         ins = insights.analyze(b, FakeContext(matchup=("m", 1), floor=("f", 1)), rates(6, 7))
         self.assertEqual((ins.tier, b.fair_prob), (insights.YELLOW, 0.6))
 
