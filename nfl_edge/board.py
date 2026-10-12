@@ -19,7 +19,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from . import cfb, data, learn
 from .context import name_key
-from .extras import LineDistribution, load_player_model, p_over
+from .extras import LineDistribution, defense_table, load_player_model, p_over
 from .finder import Bet, find_bets
 from .odds import american_to_decimal, decimal_to_american, kelly_fraction
 from .stats import TEAM_ABBR, normal_cdf
@@ -192,6 +192,8 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
     ids = {f"{e['away_team']} @ {e['home_team']}": e["id"] for e in events}
     for b in bets:
         b.game_id, b.books = ids[b.game], ["consensus line"]
+        if b.market == "spreads":
+            b.main_line = b.point
 
     # 2) Alternate spreads, totals and team totals from the lines.
     dist = LineDistribution("nfl", all_games)
@@ -214,6 +216,7 @@ def nfl_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
                 for line, p in _lines(cover, lines, lo, hi, every_line):
                     bets.append(make_bet(game, kick, "alternate_spreads", team, line, p,
                                          gid, "market line"))
+                    bets[-1].main_line = main  # for the closing-line check
         over = lambda L: dist.outcome("total", tot, L)[0]  # noqa: E731
         for side, prob_at in (("Over", over), ("Under", lambda L: 1 - over(L))):
             near = [L + 20 for L in HALF_POINTS if abs(L + 20 - tot) <= ALT_TOTAL_RANGE]
@@ -265,13 +268,30 @@ def _model_only_week(rows, season, lo, hi, games_source) -> list[Bet]:
     return [b for b in out if lo <= b.fair_prob <= hi]
 
 
+# How much a defense (its yards and catches allowed to the position, vs average) and
+# the expected game script (the team's spread) move a player's projection. Kept only
+# where they predicted 2025 better on the replay (`python -m nfl_edge.learn --props`).
+# Tested: recent-game weighting, a blend with his actual hit rate, game script and
+# defense for the other stats all predicted 2025 slightly worse, so they're off.
+DEFENSE_WEIGHT = {"passing_yards": 0.5}  # stat -> weight (1.0 = the full ratio)
+SCRIPT_RUSH = 0.0  # rushing up this much per point a team is favored by
+SCRIPT_PASS = 0.0  # passing and receiving down this much per point favored by
+RUSH_STATS = {"rushing_yards"}
+PASS_STATS = {"passing_yards", "passing_tds", "receiving_yards", "receptions"}
+
+
 def prop_chances(players, key: str, factor: float, only: set[str] | None = None,
-                 featured: bool = False) -> list[tuple[float, str, int, str]]:
+                 featured: bool = False, opponent: str | None = None, defense=None,
+                 favored_by: float = 0.0) -> list[tuple[float, str, int, str]]:
     """[(chance, market, threshold, stat)] for every rung of a player's prop ladders,
-    his averages scaled by `factor` (his team's expected points vs its average)."""
+    his averages scaled by `factor` (his team's expected points vs its average), the
+    `opponent`'s defense (a `defense_table`) and the game script (`favored_by`)."""
+    from .extras import EMPIRICAL_PRIOR
+
     name = players.names[key]
+    position = players.position.get(key, "")
     out = []
-    for stat, market, dist, ladder in PROP_LADDERS.get(players.position.get(key, ""), []):
+    for stat, market, dist, ladder in PROP_LADDERS.get(position, []):
         if only is not None and market not in only:
             continue
         prof = players.profile(name, stat)
@@ -279,8 +299,18 @@ def prop_chances(players, key: str, factor: float, only: set[str] | None = None,
         if prof is None or prof.mean < minimum:
             continue  # FanDuel wouldn't list this prop for him
         mean = prof.mean * factor ** SCALING[dist]
+        if defense is not None and opponent and DEFENSE_WEIGHT.get(stat):
+            mean *= defense(opponent, position, stat) ** DEFENSE_WEIGHT[stat]
+        if stat in RUSH_STATS:
+            mean *= max(1 + SCRIPT_RUSH * favored_by, 0.5)
+        elif stat in PASS_STATS:
+            mean *= max(1 - SCRIPT_PASS * favored_by, 0.5)
         for k in ladder:
             p = p_over(dist, mean, prof.sd, k - 0.5)
+            if EMPIRICAL_PRIOR and prof.values:  # how often he really cleared it
+                hit = sum(w for w, v in prof.values if v >= k)
+                total = sum(w for w, _ in prof.values)
+                p = (hit + EMPIRICAL_PRIOR * p) / (total + EMPIRICAL_PRIOR)
             out.append(((p * prof.games + 1) / (prof.games + 2), market, k, stat))  # small-sample shrink
     return out
 
@@ -288,10 +318,13 @@ def prop_chances(players, key: str, factor: float, only: set[str] | None = None,
 def _props(rows, all_games, season, lo, hi, every_line: bool = False,
            only: set[str] | None = None, featured: bool = False) -> list[Bet]:
     players = load_player_model(season, all_games)
-    implied, info = {}, {}
+    implied, info, opponent, favored = {}, {}, {}, {}
+    defense = defense_table(players.stats.get(season, []))
     for g in rows:
         tot, sp = float(g["total_line"]), float(g["spread_line"])
         implied[g["home_team"]], implied[g["away_team"]] = tot / 2 + sp / 2, tot / 2 - sp / 2
+        opponent[g["home_team"]], opponent[g["away_team"]] = g["away_team"], g["home_team"]
+        favored[g["home_team"]], favored[g["away_team"]] = sp, -sp
         game = f"{ABBR_NAME[g['away_team']]} @ {ABBR_NAME[g['home_team']]}"
         info[g["home_team"]] = info[g["away_team"]] = (game, kickoff_of(g), g["game_id"])
 
@@ -316,6 +349,14 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
     for (team_code, player_key), report in espn_official().items():
         status[(team_code, player_key)] = report["status"]
     espn_teams = {t for t, _ in status}
+    soon = starting_soon(rows)
+    if soon:  # final check: each game's own page, re-read every five minutes
+        status.update(late_statuses(rows))
+        NOTES["late"] = (f"Final check: injury news for the {len(soon)} game"
+                         f"{'s' * (len(soon) > 1)} starting within 2 hours is re-checked "
+                         "every 5 minutes")
+    else:
+        NOTES.pop("late", None)
     for i in data.release("injuries", season, season, max_age=INJURY_MAX_AGE):
         if i.get("game_type") != "REG" or i.get("week") != str(week):
             continue
@@ -354,7 +395,8 @@ def _props(rows, all_games, season, lo, hi, every_line: bool = False,
             continue  # didn't play his team's latest game
         factor = implied[team] / (pts[team][0] / pts[team][1])
         name = players.names[key]
-        found = [f for f in prop_chances(players, key, factor, only, featured)
+        found = [f for f in prop_chances(players, key, factor, only, featured,
+                                         opponent.get(team), defense, favored.get(team, 0.0))
                  if lo <= f[0] <= hi]  # (chance, market, threshold)
         if not every_line:  # the player's likeliest line of each prop type
             best = {}
@@ -385,14 +427,22 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
         week = min(int(r["week"]) for r in upcoming)
     if week is not None:
         upcoming = [r for r in upcoming if int(r["week"]) == week]
+    lines: dict[str, float] = {}
+    for w in sorted({int(r["week"]) for r in upcoming}):
+        lines.update(cfb.espn_lines(season, w))
     out = []
     for r in upcoming:
         kick = kick_of(r)
         hp, ap, _ = model.predict_row(r)
         p_home = normal_cdf((hp - ap) / cfb.MARGIN_SD)
+        source = "college model"
+        market = lines.get(str(r["game_id"]))
+        if market is not None:  # the betting market, nudged by the model
+            p_home = cfb.MARKET_WEIGHT * market + (1 - cfb.MARKET_WEIGHT) * p_home
+            source = "market line + college model"
         game = f"{r['away_team']} @ {r['home_team']}"
         for team, p in ((r["home_team"], p_home), (r["away_team"], 1 - p_home)):
-            out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], "college model",
+            out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], source,
                                 week=int(r["week"])))
     learn.adjust(out, "ncaaf")
     return [b for b in out if lo <= b.fair_prob <= hi]
@@ -406,6 +456,52 @@ ESPN_INJURIES = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/inju
 # Same report on ESPN's other API host, tried if the first can't be reached.
 ESPN_INJURIES_ALT = "https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 INJURY_MAX_AGE = 30 * 60  # injury news moves fast; refresh every 30 minutes
+
+
+LATE_WINDOW = 2 * 3600  # seconds before kickoff when news is re-checked every few minutes
+LATE_MAX_AGE = 5 * 60
+ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event={id}"
+
+
+def starting_soon(rows: list[dict], now: datetime | None = None) -> list[dict]:
+    """The games among `rows` that kick off within LATE_WINDOW."""
+    now = now or datetime.now(EASTERN)
+    return [g for g in rows if 0 <= (kickoff_of(g) - now).total_seconds() <= LATE_WINDOW]
+
+
+def late_statuses(rows: list[dict], now: datetime | None = None) -> dict[tuple[str, str], str]:
+    """{(team, player key): status} from ESPN's page for each game starting within two
+    hours, re-read every five minutes, so late scratches and downgrades drop out.
+    {} when no game is that close or ESPN can't be reached."""
+    soon = starting_soon(rows, now)
+    if not soon:
+        return {}
+    wanted = {frozenset((g["home_team"], g["away_team"])) for g in soon}
+    out: dict[tuple[str, str], str] = {}
+    try:
+        board = data.read_json(ESPN_SCOREBOARD, "espn_nfl_scoreboard.json", LATE_MAX_AGE)
+    except Exception:
+        return {}
+    for e in board.get("events", []):
+        comps = (e.get("competitions") or [{}])[0].get("competitors", [])
+        teams = frozenset(TEAM_ABBR.get((c.get("team") or {}).get("displayName", ""), "")
+                          for c in comps)
+        if teams not in wanted:
+            continue
+        try:
+            summary = data.read_json(ESPN_SUMMARY.format(id=e["id"]),
+                                     f"espn_nfl_summary_{e['id']}.json", LATE_MAX_AGE)
+        except Exception:
+            continue
+        for team in summary.get("injuries", []):
+            abbr = TEAM_ABBR.get((team.get("team") or {}).get("displayName", ""))
+            for item in team.get("injuries", []) if abbr else []:
+                status = (item.get("status") or "").strip().title()
+                name = (item.get("athlete") or {}).get("displayName")
+                if status in GAME_STATUSES and name:
+                    out[(abbr, name_key(name))] = status
+    return out
 
 
 def espn_official(payload: object | None = None) -> dict[tuple[str, str], dict]:

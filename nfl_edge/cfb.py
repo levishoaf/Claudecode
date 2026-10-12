@@ -201,3 +201,101 @@ class CfbModel:
             return None
         return probabilities_from_points(event["home_team"], p.home_pts, p.away_pts, market,
                                          outcomes, MARGIN_SD, TOTAL_SD)
+
+
+# ---------------------------------------------------------------- market lines
+# The betting market predicts college games far better than the ratings model
+# (2023-2025: log loss 0.505 vs 0.589), so chances are 90% market, 10% model,
+# as for the NFL. See `python -m nfl_edge.learn`.
+MARKET_WEIGHT = 0.9
+SPREAD_SD = 14.0  # margin spread around the market line (fit on 2023-2025)
+ESPN_SCOREBOARD = ("https://site.api.espn.com/apis/site/v2/sports/football/college-football/"
+                   "scoreboard?groups={group}&limit=400&week={week}&seasontype=2&dates={season}")
+LINES_MAX_AGE = 15 * 60
+
+
+def market_prob(home_odds: int | None, away_odds: int | None,
+                home_spread: float | None) -> float | None:
+    """The home team's no-vig chance: from moneylines, else from the spread."""
+    from .odds import devig_power, implied_probability
+    from .stats import normal_cdf
+
+    if home_odds and away_odds:
+        try:
+            return devig_power([implied_probability(home_odds), implied_probability(away_odds)])[0]
+        except (ValueError, ZeroDivisionError):
+            pass
+    if home_spread is not None:  # home -7 means home favored by 7
+        return normal_cdf(-home_spread / SPREAD_SD)
+    return None
+
+
+def _american(text) -> int | None:
+    try:
+        v = int(float(str(text).replace("+", "")))
+    except (TypeError, ValueError):
+        return None
+    return v if abs(v) >= 100 else None
+
+
+def espn_lines(season: int, week: int) -> dict[str, float]:
+    """{game_id: home no-vig chance} from ESPN's scoreboard (FBS and FCS games);
+    {} if it can't be reached. ESPN's game ids are the schedule's game ids."""
+    out: dict[str, float] = {}
+    for group in (80, 81):
+        try:
+            payload = data.read_json(ESPN_SCOREBOARD.format(group=group, week=week, season=season),
+                                     f"espn_cfb_{season}_{week}_{group}.json", LINES_MAX_AGE)
+        except Exception:
+            continue
+        for e in payload.get("events", []):
+            comp = (e.get("competitions") or [{}])[0]
+            odds = (comp.get("odds") or [None])[0]
+            if not odds:
+                continue
+            ml = odds.get("moneyline") or {}
+
+            def price(side):
+                s = ml.get(side) or {}
+                return _american((s.get("close") or {}).get("odds") or (s.get("open") or {}).get("odds"))
+            spread = odds.get("spread")
+            home_fav = (odds.get("homeTeamOdds") or {}).get("favorite")
+            home_spread = None
+            if isinstance(spread, (int, float)):
+                # ESPN's spread is the home line when the home team is the favorite
+                # (negative) or a positive number for the away favorite's margin.
+                home_spread = -abs(spread) if home_fav else abs(spread)
+            p = market_prob(price("home"), price("away"), home_spread)
+            if p is not None:
+                out[str(e.get("id"))] = p
+    return out
+
+
+def history_lines(seasons: set[int]) -> dict[str, float]:
+    """{game_id: home no-vig chance} for past seasons, averaged across books
+    (moneylines where posted, else the spread), from cfbfastR's betting lines."""
+    from collections import defaultdict
+
+    books: dict[str, dict] = defaultdict(lambda: defaultdict(dict))
+    spreads: dict[str, list] = defaultdict(list)
+    for r in data.read_csv(LINES_URL, permanent=True):
+        try:
+            if int(float(r["season"])) not in seasons:
+                continue
+        except ValueError:
+            continue
+        home = r["game_desc"].split("@")[-1]
+        if r["market_type"] == "money_line" and _american(r["odds"]):
+            books[r["game_id"]][r["book"]]["home" if r["abbr"] == home else "away"] = \
+                _american(r["odds"])
+        elif r["market_type"] == "spread" and r["abbr"] == home and _num(r["lines"]) is not None:
+            spreads[r["game_id"]].append(_num(r["lines"]))
+    out = {}
+    for g in set(books) | set(spreads):
+        ps = [market_prob(b.get("home"), b.get("away"), None) for b in books.get(g, {}).values()]
+        ps = [p for p in ps if p is not None]
+        if not ps and spreads.get(g):
+            ps = [market_prob(None, None, sum(spreads[g]) / len(spreads[g]))]
+        if ps:
+            out[g] = sum(ps) / len(ps)
+    return out

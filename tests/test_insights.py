@@ -1,7 +1,8 @@
 import unittest
 from types import SimpleNamespace
+from unittest import mock
 
-from nfl_edge import insights
+from nfl_edge import insights, signals
 from nfl_edge.hitrate import HitRate
 
 GAME = {"home_team": "ATL", "away_team": "BAL"}
@@ -13,9 +14,12 @@ class FakeContext:
     abbr_name = {}
 
     def __init__(self, matchup=None, usage=None, floor=None, mates=(), qb=None, rest=(),
-                 weather=None, game=GAME):
+                 weather=None, game=GAME, feats=None):
         self.m, self.u, self.f, self.mates = matchup, usage, floor, list(mates)
         self.q, self.rt, self.w, self.g = qb, list(rest), weather, game
+        self.feats = feats or {}
+
+    def signal_features(self, *a): return self.feats
 
     def game_row(self, b): return self.g
     def team_of(self, b): return "ATL"
@@ -30,7 +34,8 @@ class FakeContext:
 
 
 def prop(prob=0.7, market="player_reception_yds"):
-    return SimpleNamespace(market=market, pick="Drake London Over", fair_prob=prob)
+    return SimpleNamespace(market=market, pick="Drake London Over", fair_prob=prob,
+                           priced=False, fd_price=-233, ev=0.0, kelly=0.0, point=49.5)
 
 
 def rates(hits, games):
@@ -38,6 +43,13 @@ def rates(hits, games):
 
 
 class TierTest(unittest.TestCase):
+    """The hand-scored tiers, still used for kinds of bet the signals weren't tested on."""
+
+    def setUp(self):
+        patch = mock.patch.object(signals, "tested", return_value=False)
+        patch.start()
+        self.addCleanup(patch.stop)
+
     def test_green_needs_two_good_signals_and_enough_games(self):
         ctx = FakeContext(matchup=("Allows the 3rd most", 1), floor=("Cleared 8 of 8", 1))
         ins = insights.analyze(prop(), ctx, rates(6, 7))
@@ -74,6 +86,38 @@ class TierTest(unittest.TestCase):
         ins = insights.analyze(prop(0.3, "player_anytime_td"), FakeContext(game=None),
                                rates(2, 7))
         self.assertTrue(any("streaky" in f for f in ins.flags))
+
+
+class LearnedTierTest(unittest.TestCase):
+    """Tiers from the weights learned on past seasons (signal_weights.json)."""
+
+    def test_good_signals_raise_the_chance_and_make_it_strong(self):
+        b = prop(0.6)
+        ctx = FakeContext(feats={"record": 0.3, "trend": 0.4, "matchup": 0.2, "home": 1.0})
+        ins = insights.analyze(b, ctx, rates(6, 7))
+        self.assertGreater(b.fair_prob, 0.62)
+        self.assertEqual(ins.tier, insights.GREEN)
+        self.assertIn("strong record", ins.reasons)
+
+    def test_bad_signals_lower_it_and_make_it_weak(self):
+        b = prop(0.6)
+        ctx = FakeContext(feats={"record": -0.3, "trend": -0.4, "matchup": -0.2})
+        ins = insights.analyze(b, ctx, rates(2, 7))
+        self.assertLess(b.fair_prob, 0.58)
+        self.assertEqual(ins.tier, insights.RED)
+
+    def test_applied_once(self):
+        b = prop(0.6)
+        ctx = FakeContext(feats={"record": 0.3})
+        insights.analyze(b, ctx, rates(6, 7))
+        once = b.fair_prob
+        insights.analyze(b, ctx, rates(6, 7))
+        self.assertAlmostEqual(b.fair_prob, once)
+
+    def test_tested_without_signals_is_mixed(self):
+        b = prop(0.6, "player_rush_yds_alternate")  # its signals didn't predict 2025
+        ins = insights.analyze(b, FakeContext(matchup=("m", 1), floor=("f", 1)), rates(6, 7))
+        self.assertEqual((ins.tier, b.fair_prob), (insights.YELLOW, 0.6))
 
 
 class ParlayPoolTest(unittest.TestCase):

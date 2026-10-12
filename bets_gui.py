@@ -400,6 +400,9 @@ class App:
         if board.NOTES.get("confirm_line") and args.sport != "nba":
             tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+        if args.sport == "nfl" and board.NOTES.get("late"):
+            tk.Label(self.body, text="⏱ " + board.NOTES["late"], bg=BG, fg=BLUE,
+                     font=self.f["small"]).pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
             ready = "included for all" in board.NOTES["injuries"]
             tk.Label(self.body, text=("✓ " if ready else "⚠ ") + board.NOTES["injuries"],
@@ -671,6 +674,8 @@ class App:
         from nfl_edge.insights import TIER_WORDS
 
         why = ", ".join(ins.reasons) if ins.reasons else "no strong signals either way"
+        if abs(getattr(ins, "shift", 0.0)) >= 0.005:
+            why += f"  ({ins.shift * 100:+.0f} pts from tested signals)"
         return [(f"● {TIER_WORDS[ins.tier]}: {why}", self.TIER_COLORS[ins.tier])]
 
     def legs_tier_line(self, legs) -> tuple[str, str] | None:
@@ -1038,6 +1043,7 @@ class App:
         if titled:  # a dropdown names it already
             self.section_title(parent, "Model report card",
                                "settled bets: won vs the model's expected win rate")
+        self.closing_line(parent, entries)
         if not any(card.values()):
             tk.Label(parent, text="No settled bets yet.", bg=BG, fg=MUTED,
                      font=self.f["small"]).pack(anchor="w", padx=6)
@@ -1061,6 +1067,31 @@ class App:
                 tk.Label(row, text=f"expected {expected:.0%}"
                          + ("  ·  too few to judge" if n < 10 else ""),
                          bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
+
+    def closing_line(self, parent, entries) -> None:
+        """How often the NFL picks beat the closing line: the market moving toward them
+        before kickoff is the earliest sign of a real edge."""
+        try:
+            from nfl_edge import clv
+
+            rows = clv.report(entries, data.games(None))
+        except Exception:
+            return
+        if not rows:
+            return
+        tk.Label(parent, text="Beat the closing line (NFL)", bg=BG, fg=TEXT,
+                 font=self.f["small"], anchor="w").pack(fill="x", padx=6, pady=(4, 0))
+        for kind, (n, beat, avg) in rows.items():
+            gained = f"{avg * 100:+.1f} chance points" if kind == "moneyline" else f"{avg:+.1f} points"
+            row = tk.Frame(parent, bg=BG)
+            row.pack(fill="x", padx=18)
+            tk.Label(row, text="Moneylines" if kind == "moneyline" else "Spreads", bg=BG,
+                     fg=TEXT, font=self.f["small"], width=22, anchor="w").pack(side="left")
+            tk.Label(row, text=f"beat it {beat} of {n} ({beat / n:.0%})", bg=BG,
+                     fg=GREEN if beat / n >= 0.5 else RED, font=self.f["small"], width=20,
+                     anchor="w").pack(side="left")
+            tk.Label(row, text=f"average {gained}", bg=BG, fg=MUTED,
+                     font=self.f["small"]).pack(side="left")
 
     def section_title(self, parent, title: str, sub: str) -> None:
         head = tk.Frame(parent, bg=BG)

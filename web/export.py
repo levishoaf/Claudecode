@@ -115,7 +115,7 @@ def tier_of(b):
     from nfl_edge.insights import TIER_WORDS
 
     return {"tier": ins.tier, "word": TIER_WORDS[ins.tier], "reasons": ins.reasons,
-            "notes": ins.notes, "flags": ins.flags}
+            "notes": ins.notes, "flags": ins.flags, "shift": round(ins.shift, 4)}
 
 
 def annotate(bets, sport):
@@ -163,6 +163,7 @@ def run(sport, week, label, ledger, this_week=False):
 
     out = {"label": label, "week": week, **picks(singles, parlays, bets),
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
+           "late": board.NOTES.get("late", "") if sport == "nfl" else "",
            "poolNote": pool_note}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
     full = annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
@@ -262,6 +263,9 @@ def main():
         from nfl_edge import insights
 
         result["report"] = insights.report_card(tracker.all_entries(ledger))
+        from nfl_edge import clv, data as nfl_data
+
+        result["clv"] = clv.report(tracker.all_entries(ledger), nfl_data.games(None))
         result["learned"] = [list(r) for r in learn.summary()
                              if abs(r[4] - r[3]) >= 0.01 or r[2]]
     except Exception:

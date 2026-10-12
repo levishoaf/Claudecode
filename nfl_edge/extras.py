@@ -114,6 +114,48 @@ class Profile:
     mean: float
     sd: float
     games: int
+    values: list = None  # (weight, value) per game, for the empirical hit rate
+
+
+# Prop model settings, each kept only because it predicted 2025 better on the
+# past-season replay (`python -m nfl_edge.learn --props`):
+RECENT_HALF_LIFE = None  # games; recent games count more (None = every game equal)
+EMPIRICAL_PRIOR = None  # blend in how often he actually cleared the line (None = off)
+POSITION_GROUP = {"WR": "WR", "TE": "TE", "RB": "RB", "FB": "RB", "QB": "QB"}
+
+
+def defense_table(rows: list[dict], prior_games: float = 4.0):
+    """f(opponent, position, stat) -> how much more (>1) or less of the stat that
+    defense allows to the position than the league average, from these weekly rows,
+    shrunk toward average by `prior_games` games."""
+    allowed: dict[tuple, float] = defaultdict(float)
+    games: dict[str, set] = defaultdict(set)
+    league: dict[tuple, float] = defaultdict(float)
+    for r in rows:
+        if r.get("season_type") != "REG" or not r.get("opponent_team"):
+            continue
+        pos = POSITION_GROUP.get(r.get("position", ""))
+        if not pos:
+            continue
+        games[r["opponent_team"]].add((r["season"] if "season" in r else "", r["week"]))
+        for stat in ("passing_yards", "passing_tds", "rushing_yards", "receiving_yards",
+                     "receptions", "rushing_tds", "receiving_tds"):
+            v = _n(r, stat)
+            allowed[(r["opponent_team"], pos, stat)] += v
+            league[(pos, stat)] += v
+    n_team_games = sum(len(g) for g in games.values()) or 1
+    avg = {k: v / n_team_games for k, v in league.items()}
+
+    def factor(opp: str, position: str, stat: str) -> float:
+        pos = POSITION_GROUP.get(position)
+        g = len(games.get(opp, ()))
+        parts = stat.split("+")
+        base = sum(avg.get((pos, c), 0.0) for c in parts)
+        if not pos or base <= 0:
+            return 1.0
+        got = sum(allowed.get((opp, pos, c), 0.0) for c in parts)
+        return (got + prior_games * base) / ((g + prior_games) * base)
+    return factor
 
 
 class PlayerModel:
@@ -126,6 +168,7 @@ class PlayerModel:
 
     def __init__(self, season: int, games: list[dict], stats: dict[int, list[dict]]):
         self.season = season
+        self.stats = stats
         self.team_games: dict[tuple[int, str], int] = defaultdict(int)
         for g in games:
             if g["game_type"] == "REG" and g["home_score"] and int(g["season"]) in stats:
@@ -170,11 +213,15 @@ class PlayerModel:
         logs = [(s, r) for s, t, r in self.logs.get(key, []) if s == self.season or t == team]
         if len(logs) < 4:
             return None
+        logs.sort(key=lambda x: (x[0], int(x[1]["week"])))
         w = [2.0 if s == self.season else 1.0 for s, _ in logs]
+        if RECENT_HALF_LIFE:  # the latest game counts most
+            n = len(logs)
+            w = [a * 0.5 ** ((n - 1 - i) / RECENT_HALF_LIFE) for i, a in enumerate(w)]
         vals = [sum(_n(r, c) for c in stat.split("+")) for _, r in logs]
         mean = sum(a * v for a, v in zip(w, vals)) / sum(w)
         var = sum(a * (v - mean) ** 2 for a, v in zip(w, vals)) / sum(w)
-        return Profile(team, mean, math.sqrt(var), len(logs))
+        return Profile(team, mean, math.sqrt(var), len(logs), list(zip(w, vals)))
 
 
 def _n(row: dict, col: str) -> float:

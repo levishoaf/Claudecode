@@ -45,6 +45,7 @@ class Insight:
     notes: list[str] = field(default_factory=list)     # matchup, usage, floor, splits
     flags: list[str] = field(default_factory=list)     # warnings
     small_sample: bool = False
+    shift: float = 0.0  # how much the tested signals moved the chance
 
 
 def _num(row: dict, cols: str) -> float:
@@ -150,6 +151,23 @@ class Context:
             except Exception:
                 self._weather[key] = None
         return self._weather[key]
+
+    def signal_features(self, b, key: str, team: str, g: dict) -> dict:
+        """The tested signals for a prop bet (nfl_edge/signals.py), from live data."""
+        from . import signals
+        from .extras import defense_table
+
+        if not hasattr(self, "_defense"):
+            self._defense = defense_table(self.players.stats.get(self.season, []))
+        usual = signals.usual_qb(self.games, team, self.season)
+        hurt = bool(usual and self.injuries.get((team, name_key(usual))) in OUT + ("Questionable",))
+        gf = signals.game_features(g, team, self.home_stadium, self.games, self.season, hurt)
+        opp = g["away_team"] if g["home_team"] == team else g["home_team"]
+        w = self.weather(g) or {}
+        stat = _stat_for(b.market)
+        return signals.prop_features(self.players, key, team, stat, (b.point or 0) + 0.5,
+                                     getattr(b, "raw_prob", None) or b.fair_prob,
+                                     self._defense, opp, gf, w.get("wind"), w.get("temp"))
 
     # ---------------------------------------------------------------- signals
     def matchup(self, b, key: str, team: str, g: dict):
@@ -387,6 +405,30 @@ def analyze(b, ctx: Context, rates: dict | None = None) -> Insight:
                 ins.reasons.append("bad weather")
 
     ins.score = score
+    from . import learn, signals
+
+    group = learn.group_of_bet(b, "nfl")
+    if signals.tested(group):
+        # Tiers from the weights learned on past seasons, not hand-set points: Strong or
+        # Weak only when tested signals move the chance by 2 points or more.
+        weights = signals.saved().get(group)
+        ins.reasons = []
+        if weights and is_prop and team and g:
+            base = getattr(b, "signal_base", None) or b.fair_prob  # once per bet
+            b.signal_base = base
+            feats = ctx.signal_features(b, key, team, g)
+            p = signals.sigmoid(signals.logit(base) + signals.shift(weights, feats))
+            learn.reprice(b, p)
+            ins.shift = p - base
+            ins.reasons = signals.reasons(weights, feats)
+        moved = getattr(ins, "shift", 0.0)
+        if moved >= 0.02 and not ins.small_sample:
+            ins.tier = GREEN
+        elif moved <= -0.02:
+            ins.tier = RED
+        else:
+            ins.tier = YELLOW
+        return ins
     if score >= 2 and not ins.small_sample and not any("QB" in r for r in ins.reasons):
         ins.tier = GREEN
     elif score <= -1:
@@ -405,7 +447,14 @@ CACHE_SECONDS = 30 * 60
 def context(season: int) -> Context | None:
     """The shared context for this season, rebuilt every 30 minutes."""
     hit = _CACHE.get(season)
-    if hit and time.monotonic() - hit[0] < CACHE_SECONDS:
+    # Close to kickoff, injuries and the weather forecast are re-read every 5 minutes.
+    from .board import LATE_MAX_AGE, starting_soon, upcoming_nfl
+
+    try:
+        late = bool(starting_soon(upcoming_nfl()))
+    except Exception:
+        late = False
+    if hit and time.monotonic() - hit[0] < (LATE_MAX_AGE if late else CACHE_SECONDS):
         return hit[1]
     from .board import espn_official
     from .extras import load_player_model

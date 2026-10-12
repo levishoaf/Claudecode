@@ -79,6 +79,10 @@ def leg_record(b, sport: str) -> dict | None:
            "win_prob": round(b.fair_prob, 4), "label": label(b)}
     if getattr(b, "raw_prob", None) is not None:  # the model's own chance, to learn from
         leg["raw_prob"] = round(b.raw_prob, 4)
+    if b.market == "h2h" and b.market_prob:  # the market's chance, for the closing line
+        leg["market_prob"] = round(b.market_prob, 4)
+    if getattr(b, "main_line", None) is not None:  # the team's main spread when picked
+        leg["main_line"] = b.main_line
     if getattr(b, "tier", None):  # graded later by tier in the report card
         leg["tier"] = b.tier
     if b.market == "h2h":

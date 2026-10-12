@@ -36,6 +36,7 @@ from .odds import american_to_decimal, decimal_to_american, devig_power, implied
 CALIBRATION_FILE = Path(__file__).with_name("calibration.json")
 PRIOR = 30.0   # bets' worth of "the model was right" each correction starts from
 LIVE_PRIOR = 60.0  # this season's picks overlap (same players, same games): trust them slower
+PARLAY_PRIOR = 100.0  # parlays share legs with each other: trust their results slowest
 CLAMP = (0.01, 0.99)
 
 GROUP_NAMES = {"moneyline": "Moneylines", "spread": "Spreads", "total": "Game totals",
@@ -135,6 +136,8 @@ def group_of_leg(leg: dict, sport: str) -> str:
 
 
 def group_name(group: str) -> str:
+    if group.startswith("parlay:"):
+        return "Parlays" + (" (college)" if group.endswith("ncaaf") else "")
     sport, _, kind = group.partition(":")
     return ("College " if sport == "ncaaf" else "") + GROUP_NAMES.get(kind, kind)
 
@@ -191,9 +194,40 @@ def remember(entries: list[dict]) -> None:
         shifted = [(apply(base, p), won, w) for p, won, w in points]
         _live[group] = fit(shifted, LIVE_PRIOR)
         _live_counts[group] = len(points)
+    for group, points in parlay_points(entries).items():  # after the legs' corrections
+        _live[group] = fit(points, PARLAY_PRIOR)
+        _live_counts[group] = len(points)
+
+
+def parlay_points(entries: list[dict]) -> dict[str, list[tuple[float, bool, float]]]:
+    """{"parlay:<sport>": [(chance now, won, weight)]} for every settled parlay: its
+    chance worked out again from its legs' original chances with today's corrections,
+    so old parlays are scored the way new ones are priced."""
+    seen, out = set(), defaultdict(list)
+    for e in entries:
+        if e.get("kind") != "parlay" or e.get("status") not in ("won", "lost"):
+            continue
+        if e["id"] in seen:
+            continue
+        seen.add(e["id"])
+        sport = e.get("sport", "nfl")
+        p = 1.0
+        for leg in e["legs"]:
+            raw = leg.get("raw_prob") or leg.get("win_prob") or 0.5
+            p *= calibrated(float(raw), group_of_leg(leg, sport))
+        out[f"parlay:{sport}"].append((p, e["status"] == "won", 1.0))
+    return out
+
+
+def parlay_prob(p: float, sport: str = "nfl") -> float:
+    """A parlay's chance (its legs' chances multiplied), corrected by how this season's
+    graded parlays did."""
+    return apply(_live.get(f"parlay:{sport}"), p)
 
 
 def calibrated(p: float, group: str) -> float:
+    if group.startswith("parlay:"):
+        return parlay_prob(p, group.split(":", 1)[1])
     return apply(_live.get(group), apply(base_curve(group), p))
 
 
@@ -204,13 +238,17 @@ def adjust(bets: list, sport: str) -> None:
         raw = getattr(b, "raw_prob", None) or b.fair_prob
         p = calibrated(raw, group_of_bet(b, sport))
         b.raw_prob = raw
-        if abs(p - b.fair_prob) < 1e-9:
-            continue
-        b.fair_prob = p
-        if not b.priced:
-            b.fd_price = decimal_to_american(1 / min(max(p, 0.01), 0.99))
-        b.ev = p * american_to_decimal(b.fd_price) - 1
-        b.kelly = kelly_fraction(p, b.fd_price)
+        if abs(p - b.fair_prob) >= 1e-9:
+            reprice(b, p)
+
+
+def reprice(b, p: float) -> None:
+    """Set a bet's chance, with break-even odds and expected value to match."""
+    b.fair_prob = p
+    if not b.priced:
+        b.fd_price = decimal_to_american(1 / min(max(p, 0.01), 0.99))
+    b.ev = p * american_to_decimal(b.fd_price) - 1
+    b.kelly = kelly_fraction(p, b.fd_price)
 
 
 def summary() -> list[tuple[str, int, int, float, float]]:
@@ -220,7 +258,7 @@ def summary() -> list[tuple[str, int, int, float, float]]:
     groups = set(saved().get("groups", {})) | set(_live)
     for g in groups:
         info = saved().get("groups", {}).get(g, {})
-        typical = info.get("typical", 0.6)
+        typical = info.get("typical", 0.3 if g.startswith("parlay:") else 0.6)
         rows.append((group_name(g), info.get("n", 0), _live_counts.get(g, 0), typical,
                      calibrated(typical, g)))
     rows.sort(key=lambda r: -abs(r[4] - r[3]))
@@ -284,12 +322,14 @@ def replay_nfl_lines(seasons: list[int], games: list[dict]) -> dict[int, dict[st
     return out
 
 
-def replay_props(seasons: list[int], games: list[dict]) -> dict[int, dict[str, list]]:
+def replay_props(seasons: list[int], games: list[dict],
+                 collect: list | None = None) -> dict[int, dict[str, list]]:
     """{season: {group: [(chance, won, 1)]}}: each week's prop ladders priced from
-    the games before it, graded by what the player actually did."""
+    the games before it, graded by what the player actually did. With `collect`, each
+    bet's context is also appended there (for nfl_edge/signals.py)."""
     from .board import prop_chances
     from .context import name_key
-    from .extras import STATS_URL, PlayerModel, _n
+    from .extras import STATS_URL, PlayerModel, _n, defense_table
 
     stats = {}
     for s in sorted({x for s in seasons for x in (s - 1, s)}):
@@ -308,10 +348,14 @@ def replay_props(seasons: list[int], games: list[dict]) -> dict[int, dict[str, l
                     and g["game_type"] == "REG" and g["spread_line"] and g["total_line"]]
             pm = PlayerModel(s, past, {s - 1: stats[s - 1],
                                        s: [r for r in stats[s] if int(r["week"]) < week]})
-            implied = {}
+            implied, opponent, favored, game_of = {}, {}, {}, {}
             for g in this:
+                game_of[g["home_team"]] = game_of[g["away_team"]] = g
                 tot, sp = float(g["total_line"]), float(g["spread_line"])
                 implied[g["home_team"]], implied[g["away_team"]] = tot / 2 + sp / 2, tot / 2 - sp / 2
+                opponent[g["home_team"]], opponent[g["away_team"]] = g["away_team"], g["home_team"]
+                favored[g["home_team"]], favored[g["away_team"]] = sp, -sp
+            defense = defense_table([r for r in stats[s] if int(r["week"]) < week])
             pts, latest = {}, {}
             for g in past:
                 if g["game_type"] != "REG" or not g["home_score"] or int(g["season"]) < s - 1:
@@ -333,20 +377,26 @@ def replay_props(seasons: list[int], games: list[dict]) -> dict[int, dict[str, l
                 if (team, str(latest.get(team, 0))) not in pm.appearances.get((key, s), set()):
                     continue  # the board only uses players who played the last game
                 factor = implied[team] / (pts[team][0] / pts[team][1])
-                for p, _, k, stat in prop_chances(pm, key, factor):
+                for p, _, k, stat in prop_chances(pm, key, factor, None, False, opponent.get(team),
+                                                  defense, favored.get(team, 0.0)):
                     if _between(p):
                         actual = sum(_n(r, c) for c in stat.split("+"))
                         got["nfl:prop:" + stat].append((p, actual >= k, 1.0))
+                        if collect is not None:  # for fitting the signals (signals.py)
+                            collect.append((s, "nfl:prop:" + stat, p, actual >= k,
+                                            (pm, key, team, stat, k, defense,
+                                             opponent.get(team), game_of[team])))
         out[s] = got
     return out
 
 
 def replay_college(seasons: list[int]) -> dict[int, dict[str, list]]:
-    """{season: {"ncaaf:moneyline": [(chance, won, 1)]}} from the college model fit
-    on each season's earlier weeks."""
+    """{season: {"ncaaf:moneyline": [(chance, won, 1)]}}: the market line (where there
+    is one) blended with the college model fit on each season's earlier weeks."""
     from . import cfb
     from .stats import normal_cdf
 
+    lines = cfb.history_lines(set(seasons))  # blended in as on the live board
     out: dict[int, dict[str, list]] = {}
     for s in seasons:
         try:
@@ -366,6 +416,8 @@ def replay_college(seasons: list[int]) -> dict[int, dict[str, list]]:
             for r in tests:
                 hp, ap, _ = model.predict_row(r)
                 p = normal_cdf((hp - ap) / cfb.MARGIN_SD)
+                if r["game_id"] in lines:
+                    p = cfb.MARKET_WEIGHT * lines[r["game_id"]] + (1 - cfb.MARKET_WEIGHT) * p
                 margin = float(r["home_points"]) - float(r["away_points"])
                 if margin and _between(p):
                     got += [(p, margin > 0, 1.0), (1 - p, margin < 0, 1.0)]

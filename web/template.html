@@ -356,7 +356,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function tierLine(b) {
     const t = b.tier;
     if (!t) return "";
-    return `<small class="rec" style="color:${TIER_COLOR[t.tier]}">● ${esc(t.word)}: ${esc(t.reasons.join(", ") || "no strong signals either way")}</small>`;
+    const moved = Math.abs(t.shift || 0) >= 0.005 ? ` (${t.shift > 0 ? "+" : ""}${Math.round(t.shift * 100)} pts from tested signals)` : "";
+    return `<small class="rec" style="color:${TIER_COLOR[t.tier]}">● ${esc(t.word)}: ${esc(t.reasons.join(", ") || "no strong signals either way")}${moved}</small>`;
   }
   function insightLines(b) {
     let html = "";
@@ -600,8 +601,13 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
   function reportCardHtml() {
     const r = DATA.report;
-    if (!r || !(r.tier.length || r.type.length || r.parlays.length)) return `<div class="hcount">No settled bets yet.</div>`;
     let html = "";
+    const clv = DATA.clv || {};  // beat the closing line (NFL)
+    if (Object.keys(clv).length) {
+      html += `<div class="card-rows"><i>Beat the closing line (NFL)</i>` + Object.entries(clv).map(([k, [n, beat, avg]]) =>
+        `<div><b>${k === "moneyline" ? "Moneylines" : "Spreads"}</b><span style="color:${beat / n >= 0.5 ? "var(--good)" : "var(--bad)"}">beat it ${beat} of ${n} (${pct(beat / n)})</span><span>average ${k === "moneyline" ? (avg * 100 >= 0 ? "+" : "") + (avg * 100).toFixed(1) + " chance points" : (avg >= 0 ? "+" : "") + avg.toFixed(1) + " points"}</span></div>`).join("") + `</div>`;
+    }
+    if (!r || !(r.tier.length || r.type.length || r.parlays.length)) return html || `<div class="hcount">No settled bets yet.</div>`;
     for (const [key, title] of [["tier", "By confidence"], ["type", "By bet type"], ["parlays", "Parlays"]]) {
       if (!r[key].length) continue;
       html += `<div class="card-rows"><i>${title}</i>` + r[key].map(([name, won, n, exp, act]) =>
@@ -670,6 +676,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "singles" || state.tab === "parlays" || state.tab === "money") {
       if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
+      if (wk.late) html += `<div class="notice">⏱ ${esc(wk.late)}.</div>`;
     }
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;

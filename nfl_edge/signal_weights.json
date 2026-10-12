@@ -1,0 +1,54 @@
+{
+ "seasons": [
+  2023,
+  2024,
+  2025
+ ],
+ "tested": [
+  "nfl:moneyline",
+  "nfl:prop:passing_tds",
+  "nfl:prop:passing_yards",
+  "nfl:prop:receiving_yards",
+  "nfl:prop:receptions",
+  "nfl:prop:rushing_tds+receiving_tds",
+  "nfl:prop:rushing_yards"
+ ],
+ "groups": {
+  "nfl:prop:passing_tds": {
+   "record": 0.2012,
+   "trend": 0.0777,
+   "comfy": 0.1831,
+   "matchup": 0.0173,
+   "home": 0.1768,
+   "short_week": 0.121,
+   "travel": 0.2483,
+   "qb_change": 0.0609,
+   "wind": -0.0913,
+   "cold": -0.019
+  },
+  "nfl:prop:receiving_yards": {
+   "record": 0.5365,
+   "trend": 0.3909,
+   "comfy": 0.0082,
+   "matchup": 0.18,
+   "home": 0.0254,
+   "short_week": -0.0052,
+   "travel": 0.0078,
+   "qb_change": 0.0271,
+   "wind": -0.1982,
+   "cold": -0.2544
+  },
+  "nfl:prop:receptions": {
+   "record": 0.5276,
+   "trend": 0.5143,
+   "comfy": 0.0353,
+   "matchup": 0.4131,
+   "home": 0.0021,
+   "short_week": 0.1248,
+   "travel": 0.0021,
+   "qb_change": 0.0138,
+   "wind": -0.1849,
+   "cold": -0.0204
+  }
+ }
+}

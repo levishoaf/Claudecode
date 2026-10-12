@@ -28,7 +28,13 @@ class Parlay:
 
     @property
     def win_prob(self) -> float:
-        return prod(b.fair_prob for b in self.legs)
+        """The legs' chances multiplied (legs are from different games, and past seasons
+        show those win together about as often as that says), corrected by how this
+        season's graded parlays did (learn.parlay_prob)."""
+        from .learn import parlay_prob
+
+        sport = "ncaaf" if any("college" in " ".join(b.books) for b in self.legs) else "nfl"
+        return parlay_prob(prod(b.fair_prob for b in self.legs), sport)
 
     @property
     def decimal(self) -> float:
