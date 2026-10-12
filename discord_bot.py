@@ -65,6 +65,8 @@ def save_settings(settings: dict) -> None:
     SETTINGS.write_text(json.dumps(settings, indent=1) + "\n")
 
 
+WAGER = 10.0  # every payout is shown for a $10 wager
+
 class Core:
     """Everything the commands do, without Discord (so --selftest can run it)."""
 
@@ -240,47 +242,44 @@ def run_bot(token: str) -> None:
     @tree.command(name="bets", description="Top single bets, likeliest first")
     @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many bets (1-30)",
-                           week="NFL or college week (default: this week)", wager="Wager in $",
+                           week="NFL or college week (default: this week)",
                            bet_type="Only one type of bet, e.g. Anytime TD (default: all)")
     async def bets_cmd(interaction: discord.Interaction, sport: str = "nfl",
                        count: app_commands.Range[int, 1, 30] = 10,
-                       week: int | None = None, wager: float = 10.0,
-                       bet_type: str = "All bets"):
-        await work(interaction, core.bets, sport, count, 1, 99, week, wager, bet_type)
+                       week: int | None = None, bet_type: str = "All bets"):
+        await work(interaction, core.bets, sport, count, 1, 99, week, WAGER, bet_type)
 
     @tree.command(name="parlays", description="Top parlays as bet slips")
     @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many parlays (1-10)", min_legs="Fewest legs",
                            max_legs="Most legs", week="Week (default: this week)",
-                           wager="Wager in $",
                            pays="Build parlays that pay at least this much back (default $40; 0 = any)",
                            bet_type="Only one type of bet, e.g. Anytime TD (default: all)")
     async def parlays_cmd(interaction: discord.Interaction, sport: str = "nfl",
                           count: app_commands.Range[int, 1, 10] = 3,
                           min_legs: app_commands.Range[int, 2, 8] = 2,
                           max_legs: app_commands.Range[int, 2, 8] = 6,
-                          week: int | None = None, wager: float = 10.0, pays: float = 40.0,
+                          week: int | None = None, pays: float = 40.0,
                           bet_type: str = "All bets"):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
-                   min_legs, max(min_legs, max_legs), 1, 99, week, wager, pays or None, bet_type)
+                   min_legs, max(min_legs, max_legs), 1, 99, week, WAGER, pays or None, bet_type)
 
     @tree.command(name="moneymaker",
-                  description="Riskier parlays that hang on one coin-flip leg (about 5x your wager)")
+                  description="The likeliest parlays that pay back at least double the wager")
     @app_commands.choices(sport=sport_choices, bet_type=type_choices)
-    @app_commands.describe(week="Week (default: this week)", wager="Wager in $",
+    @app_commands.describe(week="Week (default: this week)",
                            bet_type="Only one type of bet (default: all)")
     async def moneymaker_cmd(interaction: discord.Interaction, sport: str = "nfl",
-                             week: int | None = None, wager: float = 10.0,
-                             bet_type: str = "All bets"):
-        await work(interaction, core.money, interaction.channel_id, sport, week, wager, bet_type)
+                             week: int | None = None, bet_type: str = "All bets"):
+        await work(interaction, core.money, interaction.channel_id, sport, week, WAGER, bet_type)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
     @app_commands.describe(bet="Team or player and the line, e.g. Ravens +11.5",
-                           odds="FanDuel's price, e.g. -350 (optional)", wager="Wager in $")
+                           odds="FanDuel's price, e.g. -350 (optional)")
     async def chance_cmd(interaction: discord.Interaction, bet: str, odds: str | None = None,
-                         sport: str = "nfl", wager: float = 10.0):
-        await work(interaction, core.chance, sport, bet, odds, wager)
+                         sport: str = "nfl"):
+        await work(interaction, core.chance, sport, bet, odds, WAGER)
 
     @tree.command(name="place", description="Log a bet you placed in the server's history")
     @app_commands.choices(sport=sport_choices)

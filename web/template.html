@@ -262,7 +262,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <div class="updated">Updated <b id="updated"></b></div>
     </div>
     <div class="bar2">
-      <label for="wager">Wager $ <input id="wager" type="number" min="1" step="1" value="10"></label>
       <label for="btype">Bet type <select id="btype" class="weeksel"></select></label>
       <span>The 30 likeliest bets of the chosen type, likeliest first.</span>
     </div>
@@ -301,7 +300,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
   const money = (x) => "$" + (x >= 1000 ? x.toLocaleString("en-US", { maximumFractionDigits: 0 }) : (Number.isInteger(x) ? String(x) : x.toFixed(2)));
-  const wager = () => Math.max(1, Number($("wager").value) || 10);
+  const wager = () => 10;  // every payout is shown for a $10 wager
   const amToDec = (a) => (a > 0 ? 1 + a / 100 : 1 + 100 / -a);
   const fmtAm = (a) => (a > 0 ? "+" : "") + a;
   const decToAm = (d) => (d >= 2 ? Math.round((d - 1) * 100) : Math.round(-100 / (d - 1)));
@@ -344,7 +343,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
 
   // One list row per bet: the bet, its chance, the worst odds worth taking and the payout.
-  function listHead(first, pays = "Pays") {
+  function listHead(first, pays = "Pays on $10") {
     return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">${esc(pays.toLowerCase())}</small></span><span class="r hide-sm">${esc(pays)}</span></div>`;
   }
   // Track records: how often a bet would have won in games already played.
@@ -428,7 +427,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
 
   // A money maker: its strong legs, then the one leg it hangs on.
-  // A Money Maker: one of the likeliest parlays that at least doubles its $50 wager,
+  // A Money Maker: one of the likeliest parlays that at least doubles its $10 wager,
   // paid about what FanDuel would pay (p.back per $1).
   function moneyRow(p, i) {
     const back = wager() * (p.back || 1 / p.prob);
@@ -684,7 +683,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest parlays that pay back at least double your $${wager()} wager if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 4]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first, then the likeliest of the rest. No Weak legs, and no leg in more than two. Payouts are estimates; check the slip.</div><div class="blist">${listHead("", "Pays on $" + wager())}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: not enough games this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
-    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Enter FanDuel's actual price on FanDuel to compare: a price better than the worst odds has positive expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet.</p>`;
+    html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Enter FanDuel's actual price on FanDuel to compare: a price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet.</p>`;
     $("main").innerHTML = html;
     requestAnimationFrame(() => requestAnimationFrame(() =>
       document.querySelectorAll(".wl-g[data-w]").forEach((el) => { el.style.width = el.dataset.w + "%"; })));
@@ -700,7 +699,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
   });
   $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });
-  $("wager").addEventListener("input", render);
   $("btype").addEventListener("change", (e) => { state.betType = e.target.value; store.set("bb.type", state.betType); render(); });
   document.addEventListener("change", (e) => {
     const k = e.target.dataset && e.target.dataset.hf;
