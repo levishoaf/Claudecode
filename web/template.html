@@ -123,7 +123,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .notice.summary { flex-direction: column; align-items: stretch; }
 .wl { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
 .wl b { width: 64px; }
-.wl-bar { flex: 1 1 180px; height: 16px; border-radius: 8px; background: var(--bad); overflow: hidden; }
+.wl-bar { flex: 1 1 120px; height: 16px; border-radius: 8px; background: var(--bad); overflow: hidden; }
 .wl-g { display: block; height: 100%; width: 0; background: var(--good); transition: width .9s ease-out; }
 .wl-t, .wl-none { font-size: 13px; color: var(--on-dark-2); }
 .team-head { font-size: 15px; font-weight: 700; color: var(--on-dark); margin: 16px 0 2px; padding-bottom: 3px; border-bottom: 1px solid #333; }
@@ -510,7 +510,17 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   // Bet History: the record at a glance, a search box and filters, then everything in
   // dropdowns (report card, what the model learned, each league by team and week).
   const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["nba", "NBA"]];
-  const HF = { q: "", league: "all", result: "all", kind: "all", week: "all" };
+  const HF = { q: "", league: "all", result: "all", kind: "all", week: "all", type: "all" };
+  // A leg's bet type, as the Bet type menu names it (nfl_edge/tracker.leg_type_name).
+  const LEG_TYPES = { moneyline: "Moneyline", spread: "Spread", total: "Total points", team_total: "Team totals" };
+  const STAT_TYPES = { receiving_yards: "Receiving yards", receptions: "Receptions", rushing_yards: "Rushing yards",
+    passing_yards: "Passing yards", passing_tds: "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD" };
+  function legType(l) {
+    if (l.type) return l.type;
+    const r = l.rec || {};
+    return r.type === "player_stat" ? (STAT_TYPES[r.stat] || "Other props") : (LEG_TYPES[r.type] || "Other");
+  }
+  const typesOf = (e) => [...new Set(e.legs.map(legType))];
   state.hist = { ...HF };
   state.histOpen = new Set();
   const histFiltered = () => Object.keys(HF).some((k) => state.hist[k] !== HF[k]);
@@ -542,13 +552,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     let html = `<div class="notice summary"><div class="sumline"><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}</div>`;
     const h = state.hist;
     const weeks = [...new Set(all.map(([, e]) => weekOf(e)).filter(Boolean))].sort((a, b) => b - a);
+    const kinds = [...new Set(all.flatMap(([, e]) => typesOf(e)))].sort();
     const opt = (v, label, cur) => `<option value="${v}"${String(cur) === String(v) ? " selected" : ""}>${label}</option>`;
     html += `<div class="hfilters">
-      <input id="hsearch" type="search" placeholder="Search a team, player or week" value="${esc(h.q)}" aria-label="Search bet history">
+      <input id="hsearch" type="search" placeholder="Search a team, player, bet type or week" value="${esc(h.q)}" aria-label="Search bet history">
       <select data-hf="league" aria-label="League">${opt("all", "All leagues", h.league)}${LEAGUES.map(([k, n]) => opt(k, n, h.league)).join("")}</select>
       <select data-hf="result" aria-label="Result">${[["all", "Any result"], ["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]].map(([k, n]) => opt(k, n, h.result)).join("")}</select>
       <select data-hf="kind" aria-label="Singles or parlays">${[["all", "Singles + parlays"], ["single", "Singles"], ["parlay", "Parlays"]].map(([k, n]) => opt(k, n, h.kind)).join("")}</select>
       <select data-hf="week" aria-label="Week">${opt("all", "Any week", h.week)}${weeks.map((w) => opt(w, "Week " + w, h.week)).join("")}</select>
+      <select data-hf="type" aria-label="Bet type">${opt("all", "Any bet type", h.type)}${kinds.map((k) => opt(k, esc(k), h.type)).join("")}</select>
       ${histFiltered() ? `<button class="x" data-hclear="1">Clear</button>` : ""}
     </div>`;
 
@@ -560,7 +572,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         if (h.result !== "all" && s !== h.result) return false;
         if (h.kind !== "all" && (e.kind === "single" ? "single" : "parlay") !== h.kind) return false;
         if (h.week !== "all" && String(weekOf(e)) !== String(h.week)) return false;
-        const text = [leagueName(sport), teamOf(e), e.kind, s, "week " + weekOf(e),
+        if (h.type !== "all" && !typesOf(e).includes(h.type)) return false;
+        const text = [leagueName(sport), teamOf(e), e.kind, s, "week " + weekOf(e), ...typesOf(e),
           ...e.legs.map((l) => l.pick + " " + (l.game || ""))].join(" ").toLowerCase();
         return words.every((w) => text.includes(w));
       }).sort((a, b) => first(b[1]).localeCompare(first(a[1])));

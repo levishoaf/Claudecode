@@ -318,3 +318,22 @@ def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None
     if not team:
         return None
     return names.get(team, team)
+
+
+LEG_TYPES = {"moneyline": "Moneyline", "spread": "Spread", "total": "Total points",
+             "team_total": "Team totals"}
+STAT_TYPES = {"receiving_yards": "Receiving yards", "receptions": "Receptions",
+              "rushing_yards": "Rushing yards", "passing_yards": "Passing yards",
+              "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD"}
+
+
+def leg_type_name(leg: dict) -> str:
+    """A leg's bet type as the Bet type menu names it, e.g. 'Receptions'."""
+    if leg.get("type") == "player_stat":
+        return STAT_TYPES.get(leg.get("stat", ""), "Other props")
+    return LEG_TYPES.get(leg.get("type", ""), "Other")
+
+
+def entry_types(e: dict) -> set[str]:
+    """The bet types in a single or parlay (a parlay can mix several)."""
+    return {leg_type_name(leg) for leg in e.get("legs", [])}

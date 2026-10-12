@@ -109,3 +109,16 @@ class LegTeamTest(unittest.TestCase):
         self.assertEqual(tracker.leg_team({"type": "player_stat", "player": "Drake London"},
                                           "nfl", lambda name: "ATL"), "Atlanta Falcons")
         self.assertIsNone(tracker.leg_team({"type": "player_stat", "player": "Nobody"}, "nfl"))
+
+
+class LegTypeTest(unittest.TestCase):
+    def test_names_match_the_bet_type_menu(self):
+        from nfl_edge.tracker import entry_types, leg_type_name
+
+        self.assertEqual(leg_type_name({"type": "moneyline"}), "Moneyline")
+        self.assertEqual(leg_type_name({"type": "player_stat", "stat": "receptions"}),
+                         "Receptions")
+        self.assertEqual(leg_type_name({"type": "player_stat",
+                                        "stat": "rushing_tds+receiving_tds"}), "Anytime TD")
+        parlay = {"legs": [{"type": "moneyline"}, {"type": "spread"}, {"type": "moneyline"}]}
+        self.assertEqual(entry_types(parlay), {"Moneyline", "Spread"})

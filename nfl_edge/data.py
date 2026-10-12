@@ -39,6 +39,21 @@ def _download(url: str) -> str:
     return raw.decode()
 
 
+_PARSED: dict[str, tuple[float, list[dict]]] = {}
+
+
+def _parsed(path: Path) -> list[dict]:
+    """A cached file's rows, parsed once per version of the file (big files such as the
+    schedule and player stats are read many times per build). Rows are shared: callers
+    only read them."""
+    mtime = path.stat().st_mtime
+    hit = _PARSED.get(str(path))
+    if hit is None or hit[0] != mtime:
+        hit = (mtime, list(csv.DictReader(io.StringIO(path.read_text()))))
+        _PARSED[str(path)] = hit
+    return list(hit[1])
+
+
 def read_csv(source: str | Path, *, permanent: bool = False,
              max_age: float | None = None) -> list[dict]:
     """Rows from a local path or URL. URLs are cached; `permanent` files never
@@ -53,7 +68,7 @@ def read_csv(source: str | Path, *, permanent: bool = False,
     cached = cache_dir() / source.rsplit("/", 1)[-1]
     fresh = FRESH_SECONDS if max_age is None else min(max_age, FRESH_SECONDS)
     if cached.exists() and (permanent or time.time() - cached.stat().st_mtime < fresh):
-        text = cached.read_text()
+        return _parsed(cached)
     else:
         try:
             text = _download(source)
@@ -63,7 +78,7 @@ def read_csv(source: str | Path, *, permanent: bool = False,
             text = cached.read_text()  # stale beats nothing
         else:
             cached.write_text(text)
-    return list(csv.DictReader(io.StringIO(text)))
+    return _parsed(cached)
 
 
 def games(source: str | Path | None = None) -> list[dict]:

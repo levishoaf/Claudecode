@@ -74,16 +74,25 @@ def player_games(pm, key: str, team: str) -> list[dict]:
     return sorted(rows, key=lambda r: (int(r.get("season") or pm.season), int(r["week"])))
 
 
+_USUAL: dict = {}
+
+
 def usual_qb(games: list[dict], team: str, season: int) -> str | None:
-    """The team's most frequent starting QB in this season's finished games."""
-    starts = Counter()
-    for g in games:
-        if g.get("season") != str(season) or not g.get("home_score"):
-            continue
-        for side in ("home", "away"):
-            if g[f"{side}_team"] == team and g.get(f"{side}_qb_name"):
-                starts[g[f"{side}_qb_name"]] += 1
-    return starts.most_common(1)[0][0] if starts else None
+    """The team's most frequent starting QB in this season's finished games (worked
+    out once per list of games, for every team at once)."""
+    key = (id(games), len(games), season)
+    if key not in _USUAL:
+        if len(_USUAL) > 256:
+            _USUAL.clear()
+        starts: dict[str, Counter] = defaultdict(Counter)
+        for g in games:
+            if g.get("season") != str(season) or not g.get("home_score"):
+                continue
+            for side in ("home", "away"):
+                if g.get(f"{side}_qb_name"):
+                    starts[g[f"{side}_team"]][g[f"{side}_qb_name"]] += 1
+        _USUAL[key] = ({t: c.most_common(1)[0][0] for t, c in starts.items()}, games)
+    return _USUAL[key][0].get(team)
 
 
 def home_stadiums(games: list[dict]) -> dict[str, str]:

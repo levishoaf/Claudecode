@@ -298,8 +298,9 @@ def money_maker_parlays(bets: list[Bet], count: int, *, legs: tuple[int, int] = 
     isn't one parlay with a single leg swapped each time."""
     pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
     if strong is not None:  # make room for strong legs further down the list too
-        pool += [b for b in rank_singles([b for b in bets if b not in pool and strong(b)],
-                                         pool_size, rank_by="prob", per_game=2)]
+        nearby = rank_singles([b for b in bets if b not in pool], pool_size * 3,
+                              rank_by="prob", per_game=2)  # only these can make the cut
+        pool += [b for b in nearby if strong(b)][:pool_size]
     found = []
     for n in range(legs[0], legs[1] + 1):
         for c in combinations(pool, n):

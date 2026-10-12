@@ -217,7 +217,7 @@ class App:
         def chose_week(_event):
             self.games_box.selection_clear()
             self.root.focus_set()
-            self.build()
+            self.build(quick=True)
 
         self.games_box.bind("<<ComboboxSelected>>", chose_week)
         self.bet_type = tk.StringVar(value="All bets")
@@ -226,7 +226,7 @@ class App:
         def chose_type(_event):
             self.type_box.selection_clear()
             self.root.focus_set()
-            self.build()
+            self.build(quick=True)
 
         self.type_box.bind("<<ComboboxSelected>>", chose_type)
         # Singles (30), parlays (10), legs (3-5) and the wager ($10) keep their defaults;
@@ -400,7 +400,7 @@ class App:
         money = getattr(args, "money_makers", [])
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
-        self.tab_labels = {}
+        self.tab_labels, self.tab_lines = {}, {}
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("money", f"Money Maker ({len(money)})"),
@@ -414,25 +414,43 @@ class App:
                            font=self.f["bold"])
             lbl.pack()
             self.tab_labels[key] = lbl
-            tk.Frame(tab, bg=BLUE if on else BG, height=3).pack(fill="x", pady=(4, 0))
+            line = tk.Frame(tab, bg=BLUE if on else BG, height=3)
+            line.pack(fill="x", pady=(4, 0))
+            self.tab_lines[key] = line
             for w in (tab, lbl):
                 w.bind("<Button-1>", lambda e, k=key: self.show_tab(k))
         tk.Frame(self.body, bg=BORDER, height=1).pack(fill="x", padx=16)
 
-        grid = tk.Frame(self.body, bg=BG)
-        grid.pack(fill="both", padx=10, pady=(6, 0))
-        if args.sport == "nba" and self.tab != "history":
+        # Each tab is drawn once per build and kept, so switching tabs is instant.
+        self.tab_host = tk.Frame(self.body, bg=BG)
+        self.tab_host.pack(fill="both", padx=10, pady=(6, 0))
+        self.panes: dict[str, tk.Frame] = {}
+        self.pane(self.tab).pack(fill="both")
+        if args.sport != "nba":
+            tk.Label(self.body, text=(
+                "Every bet here was found on FanDuel; odds are FanDuel's from the last check. "
+                "EV is the expected profit per $1." if self.fd_mode else
+                "Odds shown are break-even: bet only if FanDuel pays that or better."),
+                bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+
+    def pane(self, key: str) -> tk.Frame:
+        """The tab's content for the bets shown now, drawn the first time it's opened."""
+        if key in self.panes:
+            return self.panes[key]
+        args, singles, parlays, previous = self.render_args
+        grid = self.panes[key] = tk.Frame(self.tab_host, bg=BG)
+        if args.sport == "nba" and key != "history":
             self.nba_placeholder(grid)
-        elif self.tab == "singles":
+        elif key == "singles":
             self.singles_tab(grid, singles, previous)
-        elif self.tab == "parlays":
+        elif key == "parlays":
             if board.NOTES.get("parlay_pool"):
                 tk.Label(grid, text="● " + board.NOTES["parlay_pool"], bg=BG,
                          fg=GREEN if "only Strong" in board.NOTES["parlay_pool"] else AMBER,
                          font=self.f["small"], wraplength=820,
                          justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
-        elif self.tab == "money":
+        elif key == "money":
             tk.Label(grid, text=(f"The likeliest parlays that pay back at least double your "
                                  f"wager if they win, even at FanDuel's prices: "
                                  f"{MONEY_MAKER_LEGS[0]}-{MONEY_MAKER_LEGS[1]} legs from different "
@@ -441,22 +459,28 @@ class App:
                                  "leg in more than two. Payouts are estimates; check the slip."),
                      bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                      justify="left").pack(anchor="w", padx=6, pady=(6, 0))
-            self.parlays_tab(grid, money, args.stake, money=True)
-        elif self.tab == "injuries":
+            self.parlays_tab(grid, getattr(args, "money_makers", []), args.stake, money=True)
+        elif key == "injuries":
             self.injuries_tab(grid)
         else:
             self.history_tab(grid)
-        if args.sport != "nba":
-            tk.Label(self.body, text=(
-                "Every bet here was found on FanDuel; odds are FanDuel's from the last check. "
-                "EV is the expected profit per $1." if self.fd_mode else
-                "Odds shown are break-even: bet only if FanDuel pays that or better."),
-                bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+        return grid
 
     def show_tab(self, key: str) -> None:
-        self.tab = key
-        if getattr(self, "render_args", None):
+        """Switch tabs: hide the current one and show the other (drawn once, then kept)."""
+        old, self.tab = self.tab, key
+        if not getattr(self, "render_args", None):
+            return
+        if not getattr(self, "panes", None) or not self.tab_host.winfo_exists():
             self.render(*self.render_args)
+            return
+        for k, lbl in self.tab_labels.items():
+            lbl.configure(fg=BLUE if k == key else MUTED)
+            self.tab_lines[k].configure(bg=BLUE if k == key else BG)
+        if old in self.panes:
+            self.panes[old].pack_forget()
+        self.pane(key).pack(fill="both")
+        self.view.yview_moveto(0)
 
     def columns(self, parent, n: int = 2, width: int = 418) -> list[tk.Frame]:
         cols = []
@@ -818,6 +842,7 @@ class App:
             self.hist_result = tk.StringVar(value="Any result")
             self.hist_kind = tk.StringVar(value="Singles + parlays")
             self.hist_week = tk.StringVar(value="Any week")
+            self.hist_type = tk.StringVar(value="Any bet type")
 
         top = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
         top.pack(fill="x", padx=6, pady=(8, 0))
@@ -840,10 +865,10 @@ class App:
         box.pack(side="left")
         tk.Label(box, text="🔍", bg=INPUT, fg=MUTED, font=self.f["small"]).pack(side="left",
                                                                              padx=(6, 0))
-        search = tk.Entry(box, textvariable=self.hist_query, width=25, relief="flat",
+        search = tk.Entry(box, textvariable=self.hist_query, width=48, relief="flat",
                           bg=INPUT, fg=TEXT, font=self.f["body"], insertbackground=TEXT)
         search.pack(side="left", ipady=4, padx=(2, 6))
-        hint = tk.Label(box, text="Search a team, player or week", bg=INPUT, fg=MUTED,
+        hint = tk.Label(box, text="Search a team, player, bet type or week", bg=INPUT, fg=MUTED,
                         font=self.f["small"])
 
         def show_hint(*_):
@@ -854,14 +879,18 @@ class App:
         search.bind("<FocusIn>", show_hint)
         search.bind("<FocusOut>", show_hint)
         weeks = sorted({e.get("week") for e in entries if e.get("week")}, reverse=True)
+        kinds = sorted({t for e in entries for t in tracker.entry_types(e)})
+        drops = tk.Frame(parent, bg=BG)  # the filters, on their own line under the search
+        drops.pack(fill="x", padx=6, pady=(0, 4))
         for var, values, width in (
                 (self.hist_league, ["All leagues"] + [LEAGUE_NAMES[k] for k, _ in SPORTS], 12),
                 (self.hist_result, list(self.HIST_RESULTS), 9),
                 (self.hist_kind, list(self.HIST_KINDS), 13),
-                (self.hist_week, ["Any week"] + [f"Week {w}" for w in weeks], 8)):
-            cb = ttk.Combobox(bar, textvariable=var, values=values, width=width,
+                (self.hist_week, ["Any week"] + [f"Week {w}" for w in weeks], 8),
+                (self.hist_type, ["Any bet type"] + kinds, 14)):
+            cb = ttk.Combobox(drops, textvariable=var, values=values, width=width,
                               state="readonly", font=self.f["small"])
-            cb.pack(side="left", padx=(6, 0))
+            cb.pack(side="left", padx=(0, 6))
         clear = tk.Label(bar, text="Clear", bg=BG, fg=BLUE, cursor="hand2",
                          font=self.f["small"])
         clear.pack(side="left", padx=8)
@@ -891,11 +920,11 @@ class App:
             self.hist_query.set("")
             for var, value in ((self.hist_league, "All leagues"), (self.hist_result, "Any result"),
                                (self.hist_kind, "Singles + parlays"),
-                               (self.hist_week, "Any week")):
+                               (self.hist_week, "Any week"), (self.hist_type, "Any bet type")):
                 var.set(value)
         clear.bind("<Button-1>", reset)
         for var in (self.hist_query, self.hist_league, self.hist_result, self.hist_kind,
-                    self.hist_week):
+                    self.hist_week, self.hist_type):
             for trace in var.trace_info():  # only this view listens
                 var.trace_remove(*trace)
             var.trace_add("write", later)
@@ -909,8 +938,8 @@ class App:
     def hist_filtered(self) -> bool:
         return bool(self.hist_query.get().strip()) or (
             self.hist_league.get(), self.hist_result.get(), self.hist_kind.get(),
-            self.hist_week.get()) != ("All leagues", "Any result", "Singles + parlays",
-                                      "Any week")
+            self.hist_week.get(), self.hist_type.get()) != (
+                "All leagues", "Any result", "Singles + parlays", "Any week", "Any bet type")
 
     def entry_team(self, e: dict) -> str:
         if e["kind"] != "single":
@@ -923,15 +952,18 @@ class App:
         result = self.HIST_RESULTS[self.hist_result.get()]
         kind = self.HIST_KINDS[self.hist_kind.get()]
         week = self.hist_week.get()
+        bet_type = self.hist_type.get()
         words = self.hist_query.get().lower().split()
         found = []
         for e in entries:
             sport = e.get("sport", "nfl")
             if (league and sport != league or result and e["status"] != result
                     or kind and e["kind"] != kind
-                    or week != "Any week" and f"Week {e.get('week')}" != week):
+                    or week != "Any week" and f"Week {e.get('week')}" != week
+                    or bet_type != "Any bet type" and bet_type not in tracker.entry_types(e)):
                 continue
             text = " ".join([LEAGUE_NAMES.get(sport, sport), self.entry_team(e), e["kind"],
+                             *tracker.entry_types(e),
                              e["status"], f"week {e.get('week')}"]
                             + [leg.get("pick") or leg["label"] for leg in e["legs"]]
                             + [leg.get("game", "") for leg in e["legs"]]).lower()
@@ -1214,7 +1246,12 @@ class App:
             bet_type=self.bet_type.get(),
             pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
-    def build(self) -> None:
+    RECENT_SECONDS = 5 * 60  # a bet type or week viewed this recently reopens instantly
+
+    def build(self, quick: bool = False) -> None:
+        """Build bets for the chosen sport, week and bet type (in the background). With
+        `quick` (picking a bet type or week), a result from the last few minutes is
+        shown straight away instead."""
         if self.sport.get() == "nba":  # a preview for now: nothing to build
             self.render_nba()
             return
@@ -1223,6 +1260,15 @@ class App:
         except ValueError:
             self.say("Please use numbers for singles, legs, parlays, wager and payout.")
             return
+        key = (args.sport, args.date, args.week, args.bet_type, args.pays)
+        if not hasattr(self, "recent"):
+            self.recent: dict = {}
+        hit = self.recent.get(key)
+        if quick and hit and time.monotonic() - hit[0] < self.RECENT_SECONDS:
+            self.results.put(hit[1])
+            return
+        if not quick:
+            self.recent.clear()  # a fresh build (button or auto-update): forget older ones
         self.build_btn.configure(text="Loading...")
         self.cancel_update()
         self.countdown.set("Updating...")
@@ -1243,8 +1289,10 @@ class App:
                 injuries = (None, [], "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
-                self.results.put(("ok", args, singles, parlays, injuries,
-                                  self.track(args, singles, parlays + args.money_makers)))
+                item = ("ok", args, singles, parlays, injuries,
+                        self.track(args, singles, parlays + args.money_makers))
+                self.recent[key] = (time.monotonic(), item)
+                self.results.put(item)
             except (data.DataError, ValueError) as e:
                 self.results.put(("error", str(e)))
             except Exception as e:  # never leave the window stuck on "Loading..."

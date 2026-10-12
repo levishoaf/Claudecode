@@ -281,7 +281,8 @@ def main():
                 if e["kind"] == "single" else "Parlays",
                 "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
                           "game": leg.get("game", ""), "kickoff": leg.get("kickoff", ""),
-                          "prob": leg.get("win_prob")} for leg in e["legs"]]}
+                          "prob": leg.get("win_prob"), "type": tracker.leg_type_name(leg)}
+                         for leg in e["legs"]]}
     result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
     result["saved"] = [brief(e, "saved") for e in ledger["saved"]]
 
