@@ -126,6 +126,9 @@ up on the newest season; untested bet types keep the hand-scored tiers); parlay 
 a correction learned from graded parlays (`learn.parlay_prob`); injury news for games within
 2 hours is re-checked every 5 minutes (`board.late_statuses`); Bet History shows whether NFL
 picks beat the closing line (`nfl_edge/clv.py`). Refit calibration first, then signals.
+Every payout is shown for a $10 wager: the app has no Singles/Parlays/Legs/Wager boxes
+(defaults 30, 10, 3-5, $10), the web page has no Wager box, and the bot's commands have no
+wager option (`/place` still records what was really bet).
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
