@@ -122,3 +122,19 @@ class LegTypeTest(unittest.TestCase):
                                         "stat": "rushing_tds+receiving_tds"}), "Anytime TD")
         parlay = {"legs": [{"type": "moneyline"}, {"type": "spread"}, {"type": "moneyline"}]}
         self.assertEqual(entry_types(parlay), {"Moneyline", "Spread"})
+
+
+class ModelLineTest(unittest.TestCase):
+    def test_only_lines_fanduel_always_offers_count(self):
+        from nfl_edge.tracker import counted, model_line
+
+        ml = {"id": "a", "legs": [{"type": "moneyline"}]}
+        td = {"id": "b", "legs": [{"type": "player_stat", "stat": "rushing_tds+receiving_tds"}]}
+        alt = {"id": "c", "legs": [{"type": "spread"}]}
+        mixed = {"id": "d", "legs": [{"type": "moneyline"}, {"type": "player_stat",
+                                                             "stat": "receptions"}]}
+        self.assertEqual([model_line(e) for e in (ml, td, alt, mixed)],
+                         [False, False, True, True])
+        items = [("not placed", ml), ("not placed", alt), ("placed", mixed), ("saved", td)]
+        self.assertEqual([e["id"] for _, e in counted(items)], ["a", "d", "b"])  # placed counts
+        self.assertEqual(len(counted(items, model_lines=True)), 4)
