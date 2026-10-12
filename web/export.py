@@ -22,7 +22,8 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, every_line_of, of_type,  # noqa: E402
-                            make_or_break, money_maker_parlays, payout_parlays,
+                            MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, money_maker_parlays,
+                            payout_parlays,
                             rank_singles, type_max_prob)
 
 LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
@@ -147,19 +148,15 @@ def run(sport, week, label, ledger, this_week=False):
     if this_week:  # only the current week's picks count as picks the builder made
         tracker.record_generated(ledger, launcher.tracker_entries(
             singles, parlays, sport, season_for(datetime.now().date())))
-    def parlay(p, swing=False):
-        out = {"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
-               "breakeven": be(p.win_prob)}
-        if swing:  # the leg a money maker hangs on
-            out["swing"] = p.legs.index(make_or_break(p))
-        return out
+    def parlay(p):
+        return {"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
+                "breakeven": be(p.win_prob)}
 
     def picks(singles, parlays, pool):
-        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"],
-                                    10, parlays)
+        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"], 10)
         return {"singles": [bet(b, sport) for b in singles],
                 "parlays": [parlay(p) for p in parlays],
-                "money": [parlay(p, swing=True) for p in money]}
+                "money": [parlay(p) for p in money]}
 
     out = {"label": label, "week": week, **picks(singles, parlays, bets),
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
@@ -215,6 +212,7 @@ def main():
     learn.remember(tracker.all_entries(ledger))  # learn from every graded pick so far
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
+              "moneyWager": MONEY_MAKER_WAGER, "moneyLegs": MONEY_MAKER_LEGS,
               "nfl": [], "ncaaf": [], "betTypes": list(BET_TYPES), "sureTypes": list(SURE_TYPES)}
     weeks = board.nfl_weeks()
     current = weeks[0][0] if weeks else None

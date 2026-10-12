@@ -29,7 +29,8 @@ from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
-from nfl_edge.picks import BET_TYPES, empty_type_note, make_or_break, money_maker_parlays
+from nfl_edge.picks import (BET_TYPES, MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, empty_type_note,
+                            money_maker_parlays)
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -445,14 +446,13 @@ class App:
                          justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "money":
-            tk.Label(grid, text=("Riskier parlays that hang on one leg: two or three strong legs "
-                                 "plus one coin-flip leg (⚡ MAKE OR BREAK) that decides it. "
-                                 "About 1 in 5 win, paying about 5x your wager. The make-or-break "
-                                 "leg is never in the regular parlays."),
+            tk.Label(grid, text=(f"The likeliest {MONEY_MAKER_LEGS}-leg parlays, each leg from a "
+                                 f"different game, likeliest first, with the payout on a "
+                                 f"${MONEY_MAKER_WAGER:.0f} wager. No Weak legs, and no leg in "
+                                 "more than two of them."),
                      bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                      justify="left").pack(anchor="w", padx=6, pady=(6, 0))
-            self.parlays_tab(grid, money, args.stake,
-                             swing=True)
+            self.parlays_tab(grid, money, MONEY_MAKER_WAGER, money=True)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
         else:
@@ -489,7 +489,7 @@ class App:
         head.pack(fill="x")
         self.grid_cols(head)
         fd = getattr(self, "fd_mode", False)
-        last_text = "PAYS" if last == "pays" else (last or "")
+        last_text = "PAYS" if last == "pays" else (last or "").upper()
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
                                   (3, "ODDS" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
             tk.Label(head, text=text, bg=SUBTLE, fg=MUTED, font=self.f["label"]).grid(
@@ -582,27 +582,27 @@ class App:
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
                           extra=self.record_line(b))
 
-    def parlays_tab(self, parent, parlays, stake, swing: bool = False) -> None:
+    def parlays_tab(self, parent, parlays, stake, money: bool = False) -> None:
+        """Parlays, numbered P1.. (or M1.. for the Money Maker, paying on `stake`)."""
         if not parlays:
-            empty = ("No money makers here: this pick needs coin-flip legs (35-55% to win), "
-                     "and there aren't enough this week. Try All bets." if swing else
-                     self.empty_text("Not enough games for these parlays this week."))
+            empty = ("No money makers here: they need three games this week."
+                     if money else self.empty_text("Not enough games for these parlays this week."))
             tk.Label(parent, text=empty,
                      bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
-        table = self.list_table(parent, "")
+        table = self.list_table(parent, "", f"pays on ${stake:.0f}" if money else "pays")
         for i, p in enumerate(parlays, 1):
-            key = make_or_break(p) if swing else None
-            legs = "  ·  ".join(self.leg_text(b) for b in p.legs if b is not key)
-            if key is not None:
-                legs += f"  ·  ⚡ MAKE OR BREAK: {self.leg_text(key)}, {key.fair_prob:.0%} to hit"
+            legs = "  ·  ".join(self.leg_text(b) for b in p.legs)
             if any(b.confirm_line for b in p.legs):
                 legs = "CONFIRM LINES  ·  " + legs
             on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
-            self.list_row(table, f"M{i}" if swing else f"P{i}", f"{len(p.legs)}-leg parlay",
+            pays = None
+            if money:  # on the Money Maker's own wager, at FanDuel's price when known
+                pays = f"${stake * (p.decimal if on_fd else 1 / p.win_prob):,.2f}"
+            self.list_row(table, f"M{i}" if money else f"P{i}", f"{len(p.legs)}-leg parlay",
                           legs, p.win_prob,
-                          tuple(bets.label(b) for b in p.legs),
+                          tuple(bets.label(b) for b in p.legs), last=pays,
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None,
                           extra=[x for x in (self.legs_tier_line(p.legs),
                                              self.legs_record_line(p.legs)) if x])
@@ -1246,7 +1246,7 @@ class App:
                 pool, singles, parlays = bets.build(args)
                 # Money makers never lean on a Weak (red) leg.
                 args.money_makers = money_maker_parlays(
-                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10, parlays)
+                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10)
                 args.hit_rates = self.hit_rates(
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "College injury reports aren't in the free data.")

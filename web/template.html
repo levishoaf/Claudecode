@@ -344,8 +344,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
 
   // One list row per bet: the bet, its chance, the worst odds worth taking and the payout.
-  function listHead(first) {
-    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">pays</small></span><span class="r hide-sm">Pays</span></div>`;
+  function listHead(first, pays = "Pays") {
+    return `<div class="lrow lhead"><span>${first}</span><span>Bet</span><span class="r">Chance</span><span class="r">Worst odds<small class="show-sm">${esc(pays.toLowerCase())}</small></span><span class="r hide-sm">${esc(pays)}</span></div>`;
   }
   // Track records: how often a bet would have won in games already played.
   const rateColor = (r) => (r >= 0.7 ? "var(--good)" : r >= 0.5 ? "var(--warn)" : "var(--bad)");
@@ -428,15 +428,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
 
   // A money maker: its strong legs, then the one leg it hangs on.
+  // A Money Maker: one of the likeliest 3-leg parlays, paying on its own $50 wager.
+  const MONEY_WAGER = DATA.moneyWager || 50;
   function moneyRow(p, i) {
-    const s = p.legs[p.swing];
-    const rest = p.legs.filter((l, j) => j !== p.swing).map(legText).join(" · ");
     return `<div class="lrow">
       <span class="lnum">M${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${rest} · <span class="swing">⚡ Make or break: ${legText(s)}, ${pct(s.prob)} to hit</span></small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
-      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
-      <span class="r hide-sm">${money(wager() / p.prob)}</span>
+      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(MONEY_WAGER / p.prob)}</small></span>
+      <span class="r hide-sm">${money(MONEY_WAGER / p.prob)}</span>
     </div>`;
   }
 
@@ -680,7 +680,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     }
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
-    if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">Riskier parlays that hang on one leg: two or three strong legs plus one coin-flip leg (⚡ make or break) that decides it. About 1 in 5 win, paying about 5× your wager. The make-or-break leg is never in the regular parlays.</div><div class="blist">${listHead("")}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: they need coin-flip legs (35–55% to win), and there aren't enough this week. Try All bets.</div>`;
+    if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest ${DATA.moneyLegs || 3}-leg parlays, each leg from a different game, likeliest first, with the payout on a $${MONEY_WAGER} wager. No Weak legs, and no leg in more than two of them.</div><div class="blist">${listHead("", "Pays on $" + MONEY_WAGER)}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: they need three games this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
     html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Enter FanDuel's actual price on FanDuel to compare: a price better than the worst odds has positive expected value. Payout is what your wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet.</p>`;

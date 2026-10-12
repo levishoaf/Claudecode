@@ -28,7 +28,7 @@ from pathlib import Path
 import bets as launcher  # sets up paths and certificates, like the app
 from nfl_edge import botcore, data
 from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, empty_type_note,
-                            every_line_of, make_or_break, money_maker_parlays, of_type,
+                            every_line_of, MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, money_maker_parlays, of_type,
                             type_max_prob)
 
 ROOT = launcher.ROOT
@@ -123,25 +123,23 @@ class Core:
             out[0] += f"\n_{note}_"
         return out
 
-    def money(self, channel, sport, week, wager, kind="All bets") -> list[str]:
-        """Money makers: riskier parlays that hang on one coin-flip leg."""
+    def money(self, channel, sport, week, wager=MONEY_MAKER_WAGER,
+              kind="All bets") -> list[str]:
+        """Money makers: the likeliest 3-leg parlays, on a $50 wager."""
         pool, note, checked = self._typed(sport, week, 1, 99, kind)
         pool = [b for b in pool if getattr(b, "tier", "yellow") != "red"]  # never a Weak leg
-        regular = botcore.pick_parlays(pool, 10, 2, 6, pays=4.0)
-        money = money_maker_parlays(pool, 5, regular)
+        money = money_maker_parlays(pool, 5)
         self.last_money[channel] = (sport, money)
         self._record(sport, week, [], money)
         if not money:
-            return ["No money makers: they need coin-flip legs (35-55% to win), and there "
-                    "aren't enough for that pick this week. Try bet_type All bets."]
-        out = botcore.parlays_text(money, sport, wager)
+            return ["No money makers: they need three games for that pick this week. "
+                    "Try bet_type All bets."]
+        out = botcore.parlays_text(money, sport, MONEY_MAKER_WAGER)
         out[0] = (out[0].replace("parlays**", "money makers**").replace("bet:P1", "bet:M1")
-                  + "\nTwo or three strong legs plus one coin-flip leg (⚡) that decides it. "
-                  "About 1 in 5 win, paying about 5x your wager.")
-        for i, p in enumerate(money, 1):
-            s = make_or_break(p)
-            out[i] = (out[i].replace(f"**P{i}**", f"**M{i}**", 1)
-                      + f"\n⚡ Make or break: **{botcore._describe(s)}** ({s.fair_prob:.0%})")
+                  + f"\nThe likeliest {MONEY_MAKER_LEGS}-leg parlays, each leg from a "
+                  f"different game, with the payout on ${MONEY_MAKER_WAGER:.0f}.")
+        for i in range(1, len(money) + 1):
+            out[i] = out[i].replace(f"**P{i}**", f"**M{i}**", 1)
         if note and (not checked or kind not in SURE_TYPES):
             out[0] += f"\n_{note}_"
         return out
