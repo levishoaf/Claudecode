@@ -168,5 +168,25 @@ class ReportCardTest(unittest.TestCase):
         self.assertEqual(len(card["type"]), 1)
 
 
+
+class HeadToHeadWarningTest(unittest.TestCase):
+    def ml(self, pick="Detroit Lions"):
+        return SimpleNamespace(market="h2h", pick=pick, game="Detroit Lions @ Green Bay Packers")
+
+    def test_losing_record_warns(self):
+        h2h = SimpleNamespace(hits=1, games=3, results=("2026 L 10-24", "2025 W 30-20",
+                                                         "2025 L 17-27"))
+        w = insights.h2h_warning(self.ml(), h2h, 2026)
+        self.assertIn("lost 2 of 3 meetings with the Green Bay Packers since 2024", w)
+
+    def test_no_warning_otherwise(self):
+        even = SimpleNamespace(hits=1, games=2, results=("2026 W 24-10", "2025 L 17-27"))
+        self.assertIsNone(insights.h2h_warning(self.ml(), even, 2026))
+        one = SimpleNamespace(hits=0, games=1, results=("2026 L 10-24",))
+        self.assertIsNone(insights.h2h_warning(self.ml(), one, 2026))  # one game isn't a record
+        spread = SimpleNamespace(market="spreads", pick="Detroit Lions", game="x")
+        self.assertIsNone(insights.h2h_warning(spread, even, 2026))
+
+
 if __name__ == "__main__":
     unittest.main()

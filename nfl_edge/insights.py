@@ -326,6 +326,22 @@ def _ordinal(n: int) -> str:
 
 # ---------------------------------------------------------------- the tier
 
+def h2h_warning(b, h2h, season: int) -> str | None:
+    """A heads-up when a moneyline pick has lost most of its recent meetings with this
+    opponent. It's a warning only: on 2015-2025 games, teams with a losing record
+    against their opponent won as often as the betting market said, so it doesn't move
+    the chance."""
+    if b.market != "h2h" or not h2h or h2h.games < 2:
+        return None
+    losses = sum(" L " in r for r in h2h.results)
+    if losses <= h2h.hits:
+        return None
+    opp = next((t.strip() for t in b.game.split(" @ ") if t.strip() != b.pick), "opponent")
+    return (f"Head-to-head: lost {losses} of {h2h.games} meetings with the {opp} since "
+            f"{season - hitrate.H2H_SEASONS + 1} (a heads-up only; past seasons show it "
+            "doesn't change the chance)")
+
+
 def analyze(b, ctx: Context, rates: dict | None = None) -> Insight:
     """All the signals for one NFL bet, and its tier."""
     ins = Insight()
@@ -337,6 +353,9 @@ def analyze(b, ctx: Context, rates: dict | None = None) -> Insight:
 
     # Track record (this season, or last season while this one is short).
     rates = rates if rates is not None else hitrate.rates(b, ctx.players, ctx.games, ctx.season)
+    warning = h2h_warning(b, (rates or {}).get("h2h"), ctx.season)
+    if warning:
+        ins.flags.append(warning)
     now, last = (rates or {}).get(ctx.season), (rates or {}).get(ctx.season - 1)
     base = now if now and now.games >= 3 else last if last and last.games >= 6 else None
     if base:  # judged against the bet's own chance: a 55% bet that hit 50% is fine
