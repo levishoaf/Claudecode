@@ -132,7 +132,10 @@ wager option (`/place` still records what was really bet).
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
-each league by team, each team by week) with a search box and League/Result/Kind/Week
-filters that switch to one flat list of matches.
+each league by team, each team by week) with a search box and League/Result/Kind/Week/Bet type
+filters (`tracker.leg_type_name`) that switch to one flat list of matches.
+Speed: `data.read_csv` parses each cached file once per version; the app draws each tab
+once per build (`App.pane`) and reopens a bet type or week built in the last 5 minutes
+(`App.build(quick=True)`); keep these when changing the app.
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
 user's request because it kept stopping bets from loading; don't add it back.
