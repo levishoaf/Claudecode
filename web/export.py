@@ -22,7 +22,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, every_line_of, of_type,  # noqa: E402
-                            MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, fanduel_estimate,
+                            MONEY_MAKER_LEGS, fanduel_estimate,
                             money_maker_parlays,
                             payout_parlays,
                             rank_singles, type_max_prob)
@@ -154,7 +154,10 @@ def run(sport, week, label, ledger, this_week=False):
                 "breakeven": be(p.win_prob)}
 
     def picks(singles, parlays, pool):
-        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"], 10)
+        strong = (hitrate.strong_leg_check(season_for(datetime.now().date()))
+                  if sport == "nfl" else None)  # legs that keep winning come first
+        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"], 10,
+                                    strong=strong)
         return {"singles": [bet(b, sport) for b in singles],
                 "parlays": [parlay(p) for p in parlays],
                 "money": [dict(parlay(p), back=round(fanduel_estimate(p), 4)) for p in money]}
@@ -213,7 +216,7 @@ def main():
     learn.remember(tracker.all_entries(ledger))  # learn from every graded pick so far
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
-              "moneyWager": MONEY_MAKER_WAGER, "moneyLegs": MONEY_MAKER_LEGS,
+              "moneyLegs": MONEY_MAKER_LEGS,
               "nfl": [], "ncaaf": [], "betTypes": list(BET_TYPES), "sureTypes": list(SURE_TYPES)}
     weeks = board.nfl_weeks()
     current = weeks[0][0] if weeks else None

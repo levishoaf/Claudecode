@@ -29,7 +29,7 @@ from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
-from nfl_edge.picks import (BET_TYPES, MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, empty_type_note,
+from nfl_edge.picks import (BET_TYPES, MONEY_MAKER_LEGS, empty_type_note,
                             fanduel_estimate, money_maker_parlays)
 
 W, H = 1180, 870
@@ -446,14 +446,15 @@ class App:
                          justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "money":
-            tk.Label(grid, text=(f"The likeliest parlays that still at least double a "
-                                 f"${MONEY_MAKER_WAGER:.0f} wager if they win, even at FanDuel's "
-                                 f"prices: {MONEY_MAKER_LEGS[0]}-{MONEY_MAKER_LEGS[1]} legs from "
-                                 "different games, likeliest first. No Weak legs, and no leg in "
-                                 "more than two of them. Payouts are estimates; check the slip."),
+            tk.Label(grid, text=(f"The likeliest parlays that pay back at least double your "
+                                 f"wager if they win, even at FanDuel's prices: "
+                                 f"{MONEY_MAKER_LEGS[0]}-{MONEY_MAKER_LEGS[1]} legs from different "
+                                 "games. Parlays whose every leg has won at least 75% of the time "
+                                 "come first, then the likeliest of the rest. No Weak legs, and no "
+                                 "leg in more than two. Payouts are estimates; check the slip."),
                      bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                      justify="left").pack(anchor="w", padx=6, pady=(6, 0))
-            self.parlays_tab(grid, money, MONEY_MAKER_WAGER, money=True)
+            self.parlays_tab(grid, money, args.stake, money=True)
         elif self.tab == "injuries":
             self.injuries_tab(grid)
         else:
@@ -592,7 +593,7 @@ class App:
                      bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
-        table = self.list_table(parent, "", f"pays on ${stake:.0f}" if money else "pays")
+        table = self.list_table(parent, "", f"pays on ${stake:g}" if money else "pays")
         for i, p in enumerate(parlays, 1):
             legs = "  ·  ".join(self.leg_text(b) for b in p.legs)
             if any(b.confirm_line for b in p.legs):
@@ -1247,7 +1248,9 @@ class App:
                 pool, singles, parlays = bets.build(args)
                 # Money makers never lean on a Weak (red) leg.
                 args.money_makers = money_maker_parlays(
-                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10)
+                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10,
+                    strong=hitrate.strong_leg_check(bets.season_for(date.today()))
+                    if args.sport == "nfl" else None)
                 args.hit_rates = self.hit_rates(
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "College injury reports aren't in the free data.")

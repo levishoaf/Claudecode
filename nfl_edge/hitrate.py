@@ -151,3 +151,36 @@ def rates(b, players, games: list[dict], season: int) -> dict | None:
     if out is not None and b.market == "h2h":
         out["h2h"] = head_to_head(b, games, season)
     return out
+
+
+STRONG_RATE = 0.75  # a leg "keeps winning" if it hit at least this often
+
+
+def record_of(r: dict | None, season: int) -> HitRate | None:
+    """The record to judge a bet by: this season's once it has 3 games, else last
+    season's with 6 or more."""
+    now, last = (r or {}).get(season), (r or {}).get(season - 1)
+    return now if now and now.games >= 3 else last if last and last.games >= 6 else None
+
+
+def strong_leg_check(season: int, min_rate: float = STRONG_RATE):
+    """f(bet) -> True if the bet has won at least `min_rate` of the time (NFL), for the
+    Money Maker; None if the records can't be loaded."""
+    try:
+        from .insights import context
+
+        ctx = context(season)
+    except Exception:
+        return None
+    seen: dict = {}
+
+    def strong(b) -> bool:
+        key = (b.market, b.pick, b.point)
+        if key not in seen:
+            try:
+                rec = record_of(rates(b, ctx.players, ctx.games, season), season)
+            except Exception:
+                rec = None
+            seen[key] = bool(rec and rec.rate >= min_rate)
+        return seen[key]
+    return strong

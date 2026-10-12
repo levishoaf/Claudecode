@@ -162,3 +162,19 @@ class MoneyMakerTest(unittest.TestCase):
             for b in p.legs:
                 uses[b.pick] = uses.get(b.pick, 0) + 1
         self.assertLessEqual(max(uses.values()), 2)
+
+    def test_legs_that_keep_winning_come_first(self):
+        from datetime import datetime, timedelta, timezone
+
+        from nfl_edge.board import make_bet
+        from nfl_edge.picks import money_maker_parlays
+
+        kick = datetime.now(timezone.utc) + timedelta(days=2)
+        probs = [0.80, 0.78, 0.76, 0.72, 0.70, 0.66, 0.62, 0.55, 0.50, 0.46, 0.42, 0.38]
+        bets = [make_bet(f"T{i} @ H{i}", kick, "h2h", f"T{i}", None, p, f"g{i}", "x")
+                for i, p in enumerate(probs)]
+        strong = {"T2", "T4", "T5", "T6"}  # their records: 75%+ wins
+        money = money_maker_parlays(bets, 5, strong=lambda b: b.pick in strong)
+        self.assertTrue(all(b.pick in strong for b in money[0].legs))
+        firsts = [all(b.pick in strong for b in p.legs) for p in money]
+        self.assertEqual(firsts, sorted(firsts, reverse=True))  # strong ones lead

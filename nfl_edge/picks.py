@@ -279,7 +279,6 @@ def _leg_key(b: Bet) -> tuple:
 
 
 MONEY_MAKER_LEGS = (2, 4)  # fewest and most legs
-MONEY_MAKER_WAGER = 50.0  # the Money Maker tab shows each parlay's payout on $50
 MONEY_MAKER_RETURN = 2.0  # a win pays back at least this many times the wager
 FANDUEL_HOLD = 0.045  # FanDuel pays about this much under break-even, per leg
 
@@ -291,12 +290,16 @@ def fanduel_estimate(p: Parlay) -> float:
 
 def money_maker_parlays(bets: list[Bet], count: int, *, legs: tuple[int, int] = MONEY_MAKER_LEGS,
                         min_return: float = MONEY_MAKER_RETURN, max_uses: int = 2,
-                        pool_size: int = 24) -> list[Parlay]:
+                        pool_size: int = 24, strong=None) -> list[Parlay]:
     """The likeliest parlays (legs from different games) that, if they win, should pay
     back at least `min_return` times the wager even at FanDuel's prices, likeliest first.
-    A leg appears in at most `max_uses` of them, so the list isn't one parlay with a
-    single leg swapped each time."""
+    With `strong` (f(bet) -> bool, e.g. the leg keeps winning), parlays whose legs are
+    all strong come first. A leg appears in at most `max_uses` of them, so the list
+    isn't one parlay with a single leg swapped each time."""
     pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
+    if strong is not None:  # make room for strong legs further down the list too
+        pool += [b for b in rank_singles([b for b in bets if b not in pool and strong(b)],
+                                         pool_size, rank_by="prob", per_game=2)]
     found = []
     for n in range(legs[0], legs[1] + 1):
         for c in combinations(pool, n):
@@ -305,7 +308,9 @@ def money_maker_parlays(bets: list[Bet], count: int, *, legs: tuple[int, int] = 
             p = Parlay(c)
             if fanduel_estimate(p) >= min_return:
                 found.append(p)
-    found.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
+    def all_strong(p):
+        return strong is not None and all(strong(b) for b in p.legs)
+    found.sort(key=lambda p: (all_strong(p), p.win_prob, p.ev), reverse=True)
     chosen, uses = [], {}
     for p in found:
         if len(chosen) == count:
