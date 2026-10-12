@@ -201,7 +201,7 @@
    "win_prob": 0.7984,
    "odds": -396,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -217,8 +217,8 @@
      "pick": "Baltimore Ravens +11.5",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Baltimore Ravens +11.5 (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23"
     }
    ],
    "week": 5
@@ -928,7 +928,7 @@
    "win_prob": 0.7951,
    "odds": -388,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -945,8 +945,8 @@
      "pick": "Baltimore Ravens Team Total Over 12.5",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Baltimore Ravens Team Total Over 12.5 (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23 (BAL 30)"
     }
    ],
    "week": 5
@@ -4708,7 +4708,7 @@
    "win_prob": 0.7859,
    "odds": -367,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -4725,8 +4725,8 @@
      "pick": "Brian Robinson 25+ Rushing Yds",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson 25+ Rushing Yds (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "16 rushing yards"
     }
    ],
    "week": 5
@@ -4834,7 +4834,7 @@
    "win_prob": 0.7857,
    "odds": -367,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -4850,8 +4850,8 @@
      "pick": "Under 53.5",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Under 53.5 (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23 (total 53)"
     }
    ],
    "week": 5
@@ -5920,7 +5920,7 @@
    "win_prob": 0.6193,
    "odds": -163,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -5935,8 +5935,8 @@
      "pick": "Atlanta Falcons ML",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Atlanta Falcons ML (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BAL 30 - ATL 23"
     }
    ],
    "week": 5
@@ -6012,7 +6012,7 @@
    "win_prob": 0.6065,
    "odds": -154,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -6029,8 +6029,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -6332,7 +6332,7 @@
    "win_prob": 0.1715,
    "odds": 483,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -6395,8 +6395,8 @@
      "pick": "Atlanta Falcons ML",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Atlanta Falcons ML (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BAL 30 - ATL 23"
     }
    ],
    "week": 5
@@ -6760,7 +6760,7 @@
    "win_prob": 0.1985,
    "odds": 404,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -6841,8 +6841,8 @@
      "pick": "Atlanta Falcons ML",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Atlanta Falcons ML (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BAL 30 - ATL 23"
     }
    ],
    "week": 5
@@ -7078,7 +7078,7 @@
    "win_prob": 0.78,
    "odds": -355,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -7095,8 +7095,8 @@
      "pick": "Drake London 4+ Receptions",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Drake London 4+ Receptions (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "7 receptions"
     }
    ],
    "week": 5
@@ -8080,7 +8080,7 @@
    "win_prob": 0.2424,
    "odds": 313,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DEN_LAC",
@@ -8129,8 +8129,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -8336,7 +8336,7 @@
    "win_prob": 0.2354,
    "odds": 325,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DEN_LAC",
@@ -8385,8 +8385,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -8400,7 +8400,7 @@
    "win_prob": 0.2343,
    "odds": 327,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_LV_NE",
@@ -8449,8 +8449,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -9558,7 +9558,7 @@
    "win_prob": 0.5907,
    "odds": -144,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -9575,8 +9575,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -10094,7 +10094,7 @@
    "win_prob": 0.2573,
    "odds": 289,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -10127,8 +10127,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -10226,7 +10226,7 @@
    "win_prob": 0.2549,
    "odds": 292,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -10259,8 +10259,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -10360,7 +10360,7 @@
    "win_prob": 0.2506,
    "odds": 299,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -10395,8 +10395,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_BUF_LA",
@@ -12204,7 +12204,7 @@
    "win_prob": 0.2413,
    "odds": 315,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -12239,8 +12239,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CLE_NYJ",
@@ -12270,7 +12270,7 @@
    "win_prob": 0.2404,
    "odds": 316,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -12303,8 +12303,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_BUF_LA",
@@ -12336,7 +12336,7 @@
    "win_prob": 0.2387,
    "odds": 319,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -12369,8 +12369,8 @@
      "pick": "Atlanta Falcons ML",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Atlanta Falcons ML (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BAL 30 - ATL 23"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -13842,7 +13842,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -13877,8 +13877,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_IND_PIT",
@@ -14116,7 +14116,7 @@
    "win_prob": 0.2488,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -14149,8 +14149,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -15700,7 +15700,7 @@
    "win_prob": 0.249,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -15733,8 +15733,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -16750,7 +16750,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -16817,8 +16817,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -16898,7 +16898,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -16931,8 +16931,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CLE_NYJ",
@@ -17378,7 +17378,7 @@
    "win_prob": 0.2488,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -17411,8 +17411,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_MIN_NO",
@@ -17442,7 +17442,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -17475,8 +17475,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_MIN_NO",
@@ -19050,7 +19050,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -19083,8 +19083,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CLE_NYJ",
@@ -19532,7 +19532,7 @@
    "win_prob": 0.2489,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -19565,8 +19565,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -21950,7 +21950,7 @@
    "win_prob": 0.246,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -21969,8 +21969,8 @@
      "pick": "Brian Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Brian Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -22056,7 +22056,7 @@
    "win_prob": 0.2428,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -22075,8 +22075,8 @@
      "pick": "Derrick Henry Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Derrick Henry Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -22110,7 +22110,7 @@
    "win_prob": 0.2425,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BAL_ATL",
@@ -22129,8 +22129,8 @@
      "pick": "Bijan Robinson Anytime TD",
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "id": "2026_05_BAL_ATL|Bijan Robinson Anytime TD (Baltimore Ravens @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -23659,7 +23659,7 @@
    "win_prob": 0.522,
    "odds": -115,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "total",
@@ -23674,8 +23674,8 @@
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "pick": "Ravens-Falcons Over 43.5",
      "id": "2026_05_BAL_ATL|Ravens-Falcons Over 43.5",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23 (total 53)"
     }
    ],
    "source": "Paper bets: top 3 singles (week 5, 2026)",
@@ -24228,7 +24228,7 @@
    "win_prob": 0.8,
    "odds": -400,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "team_total",
@@ -24244,8 +24244,8 @@
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "pick": "Falcons team total Over 15.5",
      "id": "2026_05_BAL_ATL|Falcons team total Over 15.5",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23 (ATL 23)"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
@@ -24482,7 +24482,7 @@
    "win_prob": 0.797,
    "odds": -392,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "player_stat",
@@ -24498,8 +24498,8 @@
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "pick": "Drake London 40+ receiving yds",
      "id": "2026_05_BAL_ATL|Drake London 40+ receiving yds",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "118 receiving yards"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
@@ -25114,7 +25114,7 @@
    "win_prob": 0.786,
    "odds": -367,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "spread",
@@ -25129,8 +25129,8 @@
      "game": "Baltimore Ravens @ Atlanta Falcons",
      "pick": "Ravens +13.5 (alt)",
      "id": "2026_05_BAL_ATL|Ravens +13.5 (alt)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BAL 30 - ATL 23"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
