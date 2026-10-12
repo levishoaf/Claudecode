@@ -34,20 +34,16 @@ from nfl_edge.picks import BET_TYPES, empty_type_note, make_or_break, money_make
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
 CARD_W = 272  # bet cards, three across
-NUMBER_ROWS = (163, 752)  # yard numbers sit in the gaps between panels
 
 # Field (charcoal)
-TURF = ("#2b2b2e", "#252528")
-ENDZONE = "#1c1c1f"
-CHALK, CHALK_SOFT = "#8e8e94", "#5c5c62"
-
-# Sportsbook-style UI
-NAVY, NAVY_2 = "#0c1b33", "#13284a"
-BLUE, BLUE_DARK, BLUE_SOFT = "#1677ff", "#0f5fd6", "#e8f1ff"
-BG, CARD, BORDER = "#eef1f5", "#ffffff", "#d9e0e8"
-TEXT, MUTED, WHITE = "#0d1b2a", "#5b6b7f", "#ffffff"
-GREEN, AMBER, RED, TRACK = "#22a352", "#e0a100", "#d64545", "#e3e8ef"
-NEW_BADGE, MOVED_BADGE = "#1677ff", "#e07b00"
+# Sportsbook-style UI, in dark mode
+NAVY, NAVY_2 = "#111a2b", "#1b2740"
+BLUE, BLUE_DARK, BLUE_SOFT = "#3d8bff", "#2a6fdb", "#22314d"
+BG, CARD, BORDER = "#151a23", "#1d2430", "#2c3545"
+SUBTLE, INPUT = "#19202b", "#0f141c"  # nested rows; text boxes
+TEXT, MUTED, WHITE = "#e6ebf2", "#94a0b2", "#ffffff"
+GREEN, AMBER, RED, TRACK = "#2fb864", "#e8ad1c", "#ef5b5b", "#2a3343"
+NEW_BADGE, MOVED_BADGE = "#3d8bff", "#f08a24"
 # Bets you placed and picks you didn't, graded after the games.
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
 SPORTS = (("nfl", "NFL"), ("ncaaf", "College"), ("nba", "NBA"))
@@ -73,61 +69,20 @@ def chance_color(p: float) -> str:
     return GREEN if p >= 0.7 else AMBER if p >= 0.5 else RED
 
 
-def draw_field(c: tk.Canvas, w: float = W, h: float = H) -> None:
-    """An original football field: end zones, 5-yard stripes, yard lines,
-    hash marks and yard numbers, drawn to fill the window (redrawn when it's resized)."""
-    W, H = w, h  # noqa: N806  (the drawing below is in window units)
-    zone = W * 0.08
-    yard = (W - 2 * zone) / 100
-    c.create_rectangle(0, 0, W, H, fill=TURF[0], outline="", tags="field")
-    for i in range(20):
-        x0 = zone + i * 5 * yard
-        c.create_rectangle(x0, 0, x0 + 5 * yard, H, fill=TURF[i % 2], outline="", tags="field")
-    for x0 in (0, W - zone):
-        c.create_rectangle(x0, 0, x0 + zone, H, fill=ENDZONE, outline="", tags="field")
-    for side, x in ((90, zone / 2), (-90, W - zone / 2)):
-        c.create_text(x, H / 2, text="BET  BUILDER", angle=side, fill="#6e6e74",
-                      font=("Helvetica", 30, "bold"), tags="field")
-    for i in range(0, 101, 5):
-        x = zone + i * yard
-        c.create_line(x, 0, x, H, fill=CHALK if i % 10 == 0 else CHALK_SOFT,
-                      width=3 if i % 10 == 0 else 1, tags="field")
-    for i in range(1, 100):
-        x = zone + i * yard
-        for y in (H * 0.36, H * 0.64):
-            c.create_line(x, y - 5, x, y + 5, fill=CHALK_SOFT, tags="field")
-    for i in range(10, 100, 10):
-        x = zone + i * yard
-        n = str(i if i <= 50 else 100 - i)
-        for y, ang in zip((NUMBER_ROWS[0], H - (870 - NUMBER_ROWS[1])), (180, 0)):
-            c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"), tags="field")
-
-
-COURT = ("#c8945a", "#bf8a50")  # hardwood planks
-COURT_PAINT = "#1f4f8f"
-
-
-def draw_court(c: tk.Canvas, w: float = W, h: float = H) -> None:
-    """An original basketball court: hardwood, painted lanes, three-point arcs and the
-    center circle, drawn to fill the window (shown when NBA is picked)."""
-    c.create_rectangle(0, 0, w, h, fill=COURT[0], outline="", tags="field")
-    for i, y in enumerate(range(0, int(h) + 24, 24)):  # planks
-        c.create_rectangle(0, y, w, y + 24, fill=COURT[i % 2], outline="", tags="field")
-    line, mid = "#f4ead9", h / 2
-    c.create_rectangle(10, 10, w - 10, h - 10, outline=line, width=3, tags="field")
-    c.create_line(w / 2, 10, w / 2, h - 10, fill=line, width=3, tags="field")
-    c.create_oval(w / 2 - 70, mid - 70, w / 2 + 70, mid + 70, outline=line, width=3,
-                  tags="field")
-    lane_w, lane_h = w * 0.14, h * 0.26
-    for x0, sign in ((10, 1), (w - 10, -1)):
-        x1 = x0 + sign * lane_w
-        c.create_rectangle(min(x0, x1), mid - lane_h / 2, max(x0, x1), mid + lane_h / 2,
-                           fill=COURT_PAINT, outline=line, width=3, tags="field")
-        r = h * 0.43  # three-point arc
-        c.create_arc(x0 - r, mid - r, x0 + r, mid + r, start=-70 if sign == 1 else 110,
-                     extent=140, style="arc", outline=line, width=3, tags="field")
-    for side, x in ((90, w * 0.045), (-90, w - w * 0.045)):
-        c.create_text(x, h / 2, text="BET  BUILDER", angle=side, fill="#7a5530",
+def draw_backdrop(c: tk.Canvas, w: float = W, h: float = H) -> None:
+    """The same dark backdrop for every league: a soft top-to-bottom gradient, faint
+    diagonal pinstripes and the name down both sides (redrawn when resized)."""
+    top, bottom = (11, 14, 19), (20, 25, 35)
+    steps = 48
+    for i in range(steps):
+        t = i / (steps - 1)
+        rgb = "#%02x%02x%02x" % tuple(round(a + (b - a) * t) for a, b in zip(top, bottom))
+        c.create_rectangle(0, h * i / steps, w, h * (i + 1) / steps + 1, fill=rgb, outline="",
+                           tags="field")
+    for x in range(-int(h), int(w), 34):
+        c.create_line(x, h, x + h, 0, fill="#161c27", tags="field")
+    for side, x in ((90, (w - PANEL_W) / 4), (-90, w - (w - PANEL_W) / 4)):
+        c.create_text(x, h / 2, text="BET  BUILDER", angle=side, fill="#263042",
                       font=("Helvetica", 30, "bold"), tags="field")
 
 
@@ -135,7 +90,7 @@ class FlatButton(tk.Label):
     """A flat, modern button with a hover color."""
 
     def __init__(self, parent, text, command, kind="primary", font=None, **kw):
-        colors = {"primary": (BLUE, WHITE, BLUE_DARK), "secondary": (WHITE, BLUE, BLUE_SOFT),
+        colors = {"primary": (BLUE, WHITE, BLUE_DARK), "secondary": (CARD, BLUE, BLUE_SOFT),
                   "ghost": (NAVY_2, WHITE, "#1d3a66")}[kind]
         self.bg, self.fg, self.hover = colors
         super().__init__(parent, text=text, bg=self.bg, fg=self.fg, cursor="hand2",
@@ -182,9 +137,9 @@ class App:
             "odds": (15, "bold"), "label": (9, "bold")}.items()}
         self.style()
 
-        c = tk.Canvas(root, width=W, height=H, highlightthickness=0)
+        c = tk.Canvas(root, width=W, height=H, highlightthickness=0, bg=BG)
         c.pack(fill="both", expand=True)
-        draw_field(c)
+        draw_backdrop(c)
         self.mark = c.create_text(W - 12, H - 8, anchor="se", text="Levi Shoaf",
                                   fill="#8a8f99", font=self.f["tinyb"])  # owner watermark
         self.canvas = c
@@ -203,15 +158,18 @@ class App:
         s = ttk.Style(self.root)
         s.theme_use("clam")
         for name in ("TEntry", "TCombobox"):
-            s.configure(name, fieldbackground=WHITE, foreground=TEXT, bordercolor=BORDER,
-                        lightcolor=WHITE, darkcolor=WHITE, insertcolor=TEXT, padding=5,
-                        arrowcolor=BLUE, background=WHITE)
+            s.configure(name, fieldbackground=INPUT, foreground=TEXT, bordercolor=BORDER,
+                        lightcolor=INPUT, darkcolor=INPUT, insertcolor=TEXT, padding=5,
+                        arrowcolor=BLUE, background=CARD)
         # Keep a chosen week readable while the box has focus.
-        s.map("TCombobox", fieldbackground=[("readonly", WHITE)],
-              selectbackground=[("readonly", WHITE)], selectforeground=[("readonly", TEXT)],
-              foreground=[("readonly", TEXT)])
-        s.configure("Vertical.TScrollbar", troughcolor=BG, background="#c3ccd8",
-                    bordercolor=BG, arrowcolor=MUTED, lightcolor="#c3ccd8", darkcolor="#c3ccd8")
+        s.map("TCombobox", fieldbackground=[("readonly", INPUT)],
+              selectbackground=[("readonly", INPUT)], selectforeground=[("readonly", TEXT)],
+              foreground=[("readonly", TEXT)], background=[("active", BORDER)])
+        for opt, value in (("background", INPUT), ("foreground", TEXT),
+                           ("selectBackground", BLUE), ("selectForeground", WHITE)):
+            self.root.option_add(f"*TCombobox*Listbox.{opt}", value)  # the open list
+        s.configure("Vertical.TScrollbar", troughcolor=BG, background="#3a4558",
+                    bordercolor=BG, arrowcolor=MUTED, lightcolor="#3a4558", darkcolor="#3a4558")
 
     def header(self, c: tk.Canvas) -> None:
         top = tk.Frame(c, bg=NAVY)
@@ -318,7 +276,6 @@ class App:
         for k, b in self.seg_btns.items():
             b.set_kind("primary" if k == key else "ghost")
         if changed:
-            self.redraw_background()
             if key == "nba":  # the NBA is a preview: no bets are built for it yet
                 self.cancel_update()
                 self.games_box.configure(values=["NBA  ·  coming soon"])
@@ -329,13 +286,13 @@ class App:
             self.build()
 
     def redraw_background(self) -> None:
-        """A football field for the NFL and college, a basketball court for the NBA."""
+        """The dark backdrop, fitted to the window."""
         c = getattr(self, "canvas", None)
         if c is None:
             return
         w, h = getattr(self, "_size", None) or (W, H)
         c.delete("field")
-        (draw_court if self.sport.get() == "nba" else draw_field)(c, w, h)
+        draw_backdrop(c, w, h)
         c.tag_lower("field")
 
     def render_nba(self) -> None:
@@ -525,14 +482,14 @@ class App:
                          highlightthickness=1)
         table.pack(fill="x", padx=6, pady=(6, 0))
         tk.Frame(table, bg=CARD, width=int(PANEL_W) - 70, height=0).pack()  # full panel width
-        head = tk.Frame(table, bg="#f6f8fb")
+        head = tk.Frame(table, bg=SUBTLE)
         head.pack(fill="x")
         self.grid_cols(head)
         fd = getattr(self, "fd_mode", False)
         last_text = "PAYS" if last == "pays" else (last or "")
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
                                   (3, "ODDS" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
-            tk.Label(head, text=text, bg="#f6f8fb", fg=MUTED, font=self.f["label"]).grid(
+            tk.Label(head, text=text, bg=SUBTLE, fg=MUTED, font=self.f["label"]).grid(
                 row=0, column=col, sticky=anchor, padx=6, pady=5)
         return table
 
@@ -885,14 +842,14 @@ class App:
         # Search and filters: type anything (a team, a player, "week 5", "parlay").
         bar = tk.Frame(parent, bg=BG)
         bar.pack(fill="x", padx=6, pady=(10, 4))
-        box = tk.Frame(bar, bg=WHITE, highlightbackground=BORDER, highlightthickness=1)
+        box = tk.Frame(bar, bg=INPUT, highlightbackground=BORDER, highlightthickness=1)
         box.pack(side="left")
-        tk.Label(box, text="🔍", bg=WHITE, fg=MUTED, font=self.f["small"]).pack(side="left",
+        tk.Label(box, text="🔍", bg=INPUT, fg=MUTED, font=self.f["small"]).pack(side="left",
                                                                              padx=(6, 0))
         search = tk.Entry(box, textvariable=self.hist_query, width=25, relief="flat",
-                          bg=WHITE, fg=TEXT, font=self.f["body"], insertbackground=TEXT)
+                          bg=INPUT, fg=TEXT, font=self.f["body"], insertbackground=TEXT)
         search.pack(side="left", ipady=4, padx=(2, 6))
-        hint = tk.Label(box, text="Search a team, player or week", bg=WHITE, fg="#9aa6b5",
+        hint = tk.Label(box, text="Search a team, player or week", bg=INPUT, fg=MUTED,
                         font=self.f["small"])
 
         def show_hint(*_):
@@ -1039,13 +996,13 @@ class App:
         it's opened, and remembered open)."""
         wrap = tk.Frame(parent, bg=BG)
         wrap.pack(fill="x", padx=(6 + 18 * level, 6), pady=(6 if level == 0 else 2, 0))
-        bg = CARD if level == 0 else "#f6f8fb"
+        bg = CARD if level == 0 else SUBTLE
         head = tk.Frame(wrap, bg=bg, highlightbackground=BORDER, highlightthickness=1,
                         cursor="hand2")
         head.pack(fill="x")
         arrow = tk.Label(head, text="▸", bg=bg, fg=BLUE, font=self.f["bold"], width=2)
         arrow.pack(side="left", padx=(6, 0), pady=6 if level == 0 else 3)
-        tk.Label(head, text=title, bg=bg, fg=NAVY if level == 0 else TEXT,
+        tk.Label(head, text=title, bg=bg, fg=TEXT,
                  font=self.f["bold"] if level == 0 else self.f["small"] + ("bold",)
                  ).pack(side="left")
         tk.Label(head, text="   " + sub, bg=bg, fg=MUTED,
@@ -1108,7 +1065,7 @@ class App:
     def section_title(self, parent, title: str, sub: str) -> None:
         head = tk.Frame(parent, bg=BG)
         head.pack(fill="x", padx=6, pady=(10, 0))
-        tk.Label(head, text=title, bg=BG, fg=NAVY, font=self.f["bold"]).pack(side="left")
+        tk.Label(head, text=title, bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
         tk.Label(head, text="   " + sub, bg=BG, fg=MUTED,
                  font=self.f["tiny"]).pack(side="left", pady=(2, 0))
         tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)

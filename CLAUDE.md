@@ -114,5 +114,10 @@ replays past seasons to refit `nfl_edge/calibration.json` (kept per bet type onl
 beats the raw model on the newest season; bundled into the builds), and each build also
 learns from the ledger's graded picks (`learn.remember`, legs keep `raw_prob`). Refit the
 file each off-season.
+The app and web page are a dark-mode, multi-sport look with one generic backdrop for
+every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
+NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
+each league by team, each team by week) with a search box and League/Result/Kind/Week
+filters that switch to one flat list of matches.
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
 user's request because it kept stopping bets from loading; don't add it back.

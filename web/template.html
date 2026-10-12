@@ -3,35 +3,36 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: navy sportsbook header over a charcoal field; white bet cards in a responsive grid. Single committed dark look (the user's charcoal choice). */
+/* Layout: a dark sportsbook look for every league: slate header over a dark backdrop, dark cards. Single committed dark mode (the user's choice). */
 :root {
   color-scheme: dark;
-  --field: #2b2b2e;
-  --field-2: #252528;
-  --navy: #0c1b33;
-  --navy-2: #13284a;
-  --blue: #1677ff;
-  --blue-soft: #e8f1ff;
-  --card: #ffffff;
-  --ink: #111827;
-  --ink-2: #4b5563;
-  --line: #e5e7eb;
-  --on-dark: #f3f4f6;
-  --on-dark-2: #a8adb7;
-  --mark: #8a93a3;
-  --good: #128a4a;
-  --good-soft: #e3f5ea;
-  --warn: #b7791f;
-  --warn-soft: #fdf3dc;
-  --bad: #c62828;
-  --bad-soft: #fde7e7;
+  --navy: #111a2b;
+  --navy-2: #1b2740;
+  --blue: #3d8bff;
+  --blue-soft: #1c2b47;
+  --card: #1a212c;
+  --card-2: #151b25;
+  --ink: #e6ebf2;
+  --ink-2: #94a0b2;
+  --line: #2a3342;
+  --on-dark: #e6ebf2;
+  --on-dark-2: #94a0b2;
+  --mark: #7f8a9c;
+  --good: #2fb864;
+  --good-soft: #143322;
+  --warn: #e8ad1c;
+  --warn-soft: #3a2e10;
+  --bad: #ef5b5b;
+  --bad-soft: #3d1a1a;
   --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --body: "Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 body {
   background:
-    repeating-linear-gradient(90deg, var(--field) 0 80px, var(--field-2) 80px 160px);
+    repeating-linear-gradient(135deg, rgba(255,255,255,.012) 0 1px, transparent 1px 34px),
+    linear-gradient(180deg, #0b0e13, #141923) fixed;
+  min-height: 100vh;
   color: var(--on-dark);
   font-family: var(--body);
   font-size: 15px;
@@ -96,13 +97,13 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .legs li { display: flex; gap: 8px; align-items: baseline; border-left: 3px solid var(--line); padding-left: 8px; }
 .legs .lp { font-weight: 700; font-size: 12px; min-width: 30px; color: var(--ink-2); }
 
-.blist { background: var(--card); color: var(--ink); border-radius: 10px; overflow: hidden; }
+.blist { background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .lrow { display: grid; grid-template-columns: 34px minmax(0, 1fr) 62px 74px 82px; gap: 8px; align-items: center; width: 100%; padding: 8px 12px; border: 0; border-top: 1px solid var(--line); background: transparent; color: inherit; text-align: left; cursor: pointer; font-size: 14px; }
 .lrow:first-child { border-top: 0; }
 .lrow { cursor: default; }
 .lrow.on { background: var(--blue-soft); box-shadow: inset 3px 0 0 var(--blue); }
-.lhead { cursor: default; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); padding-block: 7px; background: #f6f8fb; }
-.lhead:hover { background: #f6f8fb; }
+.lhead { cursor: default; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); padding-block: 7px; background: var(--card-2); }
+.lhead:hover { background: var(--card-2); }
 .lrow .r { text-align: right; }
 .lnum { font-family: var(--display); font-weight: 700; color: var(--ink-2); }
 .lrow.on .lnum { color: var(--blue); }
@@ -158,7 +159,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .s-out { background: var(--bad); color: #fff; }
 .s-doubtful { background: var(--bad-soft); color: var(--bad); }
 .s-questionable { background: var(--warn-soft); color: var(--warn); }
-.s-dnp { background: #f1e4ff; color: #6b2bb5; }
+.s-dnp { background: #2c1f45; color: #c49bff; }
 .s-limited { background: var(--line); color: var(--ink-2); }
 .inj .who { min-width: 0; overflow-wrap: anywhere; }
 .inj .who small { color: var(--ink-2); }
@@ -185,12 +186,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 .summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .summary b { font-size: 16px; color: #fff; }
 .placerow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 7px; }
-.placerow input { width: 72px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; color: var(--ink); background: #fff; }
+.placerow input { width: 72px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; color: var(--ink); background: var(--card-2); }
 .placerow .btn { padding: 5px 12px; font-size: 12.5px; }
 .placed-ok { color: var(--good); font-weight: 700; }
 .slip-item { background: var(--card); color: var(--ink); border-radius: 10px; padding: 9px 12px; display: grid; gap: 6px; }
 .check { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
-.check input { width: 90px; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; color: var(--ink); background: #fff; }
+.check input { width: 90px; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; color: var(--ink); background: var(--card-2); }
 .verdict { font-weight: 700; }
 .v-good { color: var(--good); }
 .v-bad { color: var(--bad); }
@@ -212,17 +213,16 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 @media (prefers-reduced-motion: no-preference) { .card { transition: border-color .12s, box-shadow .12s; } }
 .pnote{font-size:12px;color:var(--mark);margin:0 0 6px}
 /* NBA preview: dark hardwood instead of the field */
-body.nba { background: repeating-linear-gradient(0deg, #4a3220 0 26px, #432d1d 26px 52px); }
 .tagline { font-size: 12px; color: var(--on-dark-2); letter-spacing: .03em; }
 .nba-card { background: var(--card); color: var(--ink); border-radius: 12px; padding: 16px 18px; }
 .nba-card h2 { margin: 0 0 6px; font-family: var(--display); font-size: 24px; text-transform: uppercase; letter-spacing: .02em; }
 .nba-card p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 70ch; }
 /* Bet History: filters, dropdowns and one-line rows */
 .hfilters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; align-items: center; }
-.hfilters input { flex: 1 1 220px; background: var(--card); color: var(--ink); border: 0; border-radius: 8px; padding: 9px 12px; font: inherit; }
+.hfilters input { flex: 1 1 220px; background: var(--card); border: 1px solid var(--line) !important; color: var(--ink); border: 0; border-radius: 8px; padding: 9px 12px; font: inherit; }
 .hfilters select { background: var(--card); color: var(--ink); border: 0; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; }
 .hfilters .x { color: var(--on-dark); }
-.dd { background: var(--card); color: var(--ink); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+.dd { background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; margin-top: 8px; overflow: hidden; }
 .dd > summary { cursor: pointer; list-style: none; padding: 11px 14px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .dd > summary::-webkit-details-marker { display: none; }
 .dd > summary::before { content: "▸"; color: var(--blue); font-weight: 700; width: 12px; }
@@ -230,7 +230,7 @@ body.nba { background: repeating-linear-gradient(0deg, #4a3220 0 26px, #432d1d 2
 .dd > summary b { font-size: 15.5px; }
 .dd > summary span { font-size: 12.5px; color: var(--ink-2); }
 .ddb { padding: 0 12px 12px; }
-.dd2 { background: #f6f8fb; border: 1px solid var(--line); margin-top: 6px; }
+.dd2 { background: var(--card-2); border: 1px solid var(--line); margin-top: 6px; }
 .dd2 > summary { padding: 8px 12px; }
 .dd2 > summary b { font-size: 14px; }
 .hweek { font-size: 12.5px; font-weight: 700; margin: 8px 2px 4px; }
@@ -649,7 +649,6 @@ body.nba { background: repeating-linear-gradient(0deg, #4a3220 0 26px, #432d1d 2
     const wk = current();
     document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sport === state.sport)));
     const nba = state.sport === "nba";  // a preview: no NBA bets are built yet
-    document.body.classList.toggle("nba", nba);
     const sel = $("week");
     sel.innerHTML = nba ? `<option>NBA · coming soon</option>`
       : weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
