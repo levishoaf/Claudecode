@@ -14,6 +14,7 @@ import tempfile
 import sys
 import threading
 import traceback
+from types import SimpleNamespace
 import time
 import tkinter as tk
 import tkinter.font as tkfont
@@ -49,6 +50,8 @@ GREEN, AMBER, RED, TRACK = "#22a352", "#e0a100", "#d64545", "#e3e8ef"
 NEW_BADGE, MOVED_BADGE = "#1677ff", "#e07b00"
 # Bets you placed and picks you didn't, graded after the games.
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
+SPORTS = (("nfl", "NFL"), ("ncaaf", "College"), ("nba", "NBA"))
+LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "nba": "NBA"}
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
 STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
@@ -98,6 +101,34 @@ def draw_field(c: tk.Canvas, w: float = W, h: float = H) -> None:
         n = str(i if i <= 50 else 100 - i)
         for y, ang in zip((NUMBER_ROWS[0], H - (870 - NUMBER_ROWS[1])), (180, 0)):
             c.create_text(x, y, text=n, fill=CHALK, angle=ang, font=("Helvetica", 24, "bold"), tags="field")
+
+
+COURT = ("#c8945a", "#bf8a50")  # hardwood planks
+COURT_PAINT = "#1f4f8f"
+
+
+def draw_court(c: tk.Canvas, w: float = W, h: float = H) -> None:
+    """An original basketball court: hardwood, painted lanes, three-point arcs and the
+    center circle, drawn to fill the window (shown when NBA is picked)."""
+    c.create_rectangle(0, 0, w, h, fill=COURT[0], outline="", tags="field")
+    for i, y in enumerate(range(0, int(h) + 24, 24)):  # planks
+        c.create_rectangle(0, y, w, y + 24, fill=COURT[i % 2], outline="", tags="field")
+    line, mid = "#f4ead9", h / 2
+    c.create_rectangle(10, 10, w - 10, h - 10, outline=line, width=3, tags="field")
+    c.create_line(w / 2, 10, w / 2, h - 10, fill=line, width=3, tags="field")
+    c.create_oval(w / 2 - 70, mid - 70, w / 2 + 70, mid + 70, outline=line, width=3,
+                  tags="field")
+    lane_w, lane_h = w * 0.14, h * 0.26
+    for x0, sign in ((10, 1), (w - 10, -1)):
+        x1 = x0 + sign * lane_w
+        c.create_rectangle(min(x0, x1), mid - lane_h / 2, max(x0, x1), mid + lane_h / 2,
+                           fill=COURT_PAINT, outline=line, width=3, tags="field")
+        r = h * 0.43  # three-point arc
+        c.create_arc(x0 - r, mid - r, x0 + r, mid + r, start=-70 if sign == 1 else 110,
+                     extent=140, style="arc", outline=line, width=3, tags="field")
+    for side, x in ((90, w * 0.045), (-90, w - w * 0.045)):
+        c.create_text(x, h / 2, text="BET  BUILDER", angle=side, fill="#7a5530",
+                      font=("Helvetica", 30, "bold"), tags="field")
 
 
 class FlatButton(tk.Label):
@@ -188,14 +219,14 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        tk.Label(row1, text="   Free data  ·  break-even odds", bg=NAVY, fg="#9fb0c8",
+        tk.Label(row1, text="   Multi-sport  ·  free data  ·  break-even odds", bg=NAVY, fg="#9fb0c8",
                  font=self.f["small"]).pack(side="left")
 
         self.sport = tk.StringVar(value="nfl")
         seg = tk.Frame(row1, bg=NAVY_2)
         seg.pack(side="right")
         self.seg_btns = {}
-        for key, text in (("nfl", "NFL"), ("ncaaf", "College")):
+        for key, text in SPORTS:
             b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
             b.pack(side="left")
             self.seg_btns[key] = b
@@ -273,9 +304,7 @@ class App:
             return
         self._size = (w, h)
         c = self.canvas
-        c.delete("field")
-        draw_field(c, w, h)
-        c.tag_lower("field")
+        self.redraw_background()
         c.coords(self.win_top, w / 2, 72)
         out_h = h - 266  # between the header and the bottom bar
         c.coords(self.win_out, w / 2, 192 + out_h / 2)
@@ -289,8 +318,41 @@ class App:
         for k, b in self.seg_btns.items():
             b.set_kind("primary" if k == key else "ghost")
         if changed:
+            self.redraw_background()
+            if key == "nba":  # the NBA is a preview: no bets are built for it yet
+                self.cancel_update()
+                self.games_box.configure(values=["NBA  ·  coming soon"])
+                self.when.set("NBA  ·  coming soon")
+                self.render_nba()
+                return
             self.load_weeks()
             self.build()
+
+    def redraw_background(self) -> None:
+        """A football field for the NFL and college, a basketball court for the NBA."""
+        c = getattr(self, "canvas", None)
+        if c is None:
+            return
+        w, h = getattr(self, "_size", None) or (W, H)
+        c.delete("field")
+        (draw_court if self.sport.get() == "nba" else draw_field)(c, w, h)
+        c.tag_lower("field")
+
+    def render_nba(self) -> None:
+        self.render(SimpleNamespace(sport="nba", money_makers=[], bet_type="All bets"),
+                    [], [], {})
+
+    def nba_placeholder(self, parent) -> None:
+        box = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        box.pack(fill="x", padx=6, pady=10)
+        tk.Label(box, text="NBA bets are coming", bg=CARD, fg=TEXT,
+                 font=self.f["h2"]).pack(anchor="w", padx=16, pady=(14, 4))
+        tk.Label(box, text=("This is a preview of the NBA layout. NBA moneylines, spreads, "
+                            "totals and player props will show here, with the same chances, "
+                            "track records and Bet History as football, once NBA data is "
+                            "added. Football picks are on the NFL and College tabs."),
+                 bg=CARD, fg=MUTED, font=self.f["small"], wraplength=760,
+                 justify="left").pack(anchor="w", padx=16, pady=(0, 14))
 
     def load_weeks(self) -> None:
         """Fill the Games list with this week and every later week known right now."""
@@ -361,13 +423,16 @@ class App:
         self.row_widgets = {}
         head = tk.Frame(self.body, bg=BG)
         head.pack(fill="x", padx=16, pady=(12, 2))
-        sport = "NFL" if args.sport == "nfl" else "College Football"
-        tk.Label(head, text=f"{sport}  ·  {bets.week_label(singles, parlays)}", bg=BG, fg=TEXT,
+        sport = {"nfl": "NFL", "ncaaf": "College Football", "nba": "NBA"}[args.sport]
+        when = ("2026-27 season" if args.sport == "nba"
+                else bets.week_label(singles, parlays))
+        tk.Label(head, text=f"{sport}  ·  {when}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
         checked = getattr(args, "fanduel_key", None)
         order = "best value first" if checked else "likeliest first"
         kind = getattr(args, "bet_type", "All bets")
-        tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
+        tk.Label(head, text="" if args.sport == "nba" else
+                 f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None))
@@ -375,7 +440,7 @@ class App:
             tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
                      bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
-        if board.NOTES.get("confirm_line"):
+        if board.NOTES.get("confirm_line") and args.sport != "nba":
             tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -391,7 +456,8 @@ class App:
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("money", f"Money Maker ({len(money)})"),
-                          ("injuries", f"Injuries ({len(self.injuries[1])})"),
+                          ("injuries", "Injuries" if args.sport == "nba"
+                           else f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
@@ -407,7 +473,9 @@ class App:
 
         grid = tk.Frame(self.body, bg=BG)
         grid.pack(fill="both", padx=10, pady=(6, 0))
-        if self.tab == "singles":
+        if args.sport == "nba" and self.tab != "history":
+            self.nba_placeholder(grid)
+        elif self.tab == "singles":
             self.singles_tab(grid, singles, previous)
         elif self.tab == "parlays":
             if board.NOTES.get("parlay_pool"):
@@ -429,11 +497,12 @@ class App:
             self.injuries_tab(grid)
         else:
             self.history_tab(grid)
-        tk.Label(self.body, text=("Every bet here was found on FanDuel; odds are FanDuel's from "
-                                  "the last check. EV is the expected profit per $1." if self.fd_mode else
-                                  "Odds shown are break-even: bet only if FanDuel pays that or "
-                                  "better."),
-                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+        if args.sport != "nba":
+            tk.Label(self.body, text=(
+                "Every bet here was found on FanDuel; odds are FanDuel's from the last check. "
+                "EV is the expected profit per $1." if self.fd_mode else
+                "Odds shown are break-even: bet only if FanDuel pays that or better."),
+                bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
 
     def show_tab(self, key: str) -> None:
         self.tab = key
@@ -781,71 +850,237 @@ class App:
             tracker.save(ledger, self.ledger_path)
         return ledger
 
+    # -------------------------------------------------------------- Bet History
+    HIST_RESULTS = {"Any result": None, "Won": "won", "Lost": "lost", "Pushed": "push",
+                    "Pending": "pending"}
+    HIST_KINDS = {"Singles + parlays": None, "Singles": "single", "Parlays": "parlay"}
+
     def history_tab(self, parent) -> None:
+        """The record at a glance, a search box and filters, then everything in
+        dropdowns: the report card, what the model learned, and each league by team."""
         items = tracker.history(self.ledger)
+        entries = [e for _, e in items]
+        if not hasattr(self, "hist_open"):  # remembered while the app is open
+            self.hist_open: set[str] = set()
+            self.hist_query = tk.StringVar(value="")
+            self.hist_league = tk.StringVar(value="All leagues")
+            self.hist_result = tk.StringVar(value="Any result")
+            self.hist_kind = tk.StringVar(value="Singles + parlays")
+            self.hist_week = tk.StringVar(value="Any week")
 
-        def tally(group) -> str:
-            n = {s: sum(e["status"] == s for _, e in group) for s in RESULT_STYLE}
-            return (f"{n['won']} won  ·  {n['lost']} lost"
-                    + (f"  ·  {n['push']} pushed" if n["push"] else "") + f"  ·  {n['pending']} pending")
-
-        top = tk.Frame(parent, bg=BG)
-        top.pack(fill="x", padx=6, pady=(6, 0))
-        tk.Label(top, text=tally(items), bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
-        FlatButton(top, "Check results now", self.build, "secondary",
+        top = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        top.pack(fill="x", padx=6, pady=(8, 0))
+        line = tk.Frame(top, bg=CARD)
+        line.pack(fill="x", padx=12, pady=(10, 2))
+        tk.Label(line, text=self.tally(entries), bg=CARD, fg=TEXT,
+                 font=self.f["bold"]).pack(side="left")
+        FlatButton(line, "Check results now", self.build, "secondary",
                    self.f["tinyb"]).pack(side="right")
-        # Win rate of settled bets, a bar per league, under the overall record.
         for sport, name in (("nfl", "NFL"), ("ncaaf", "College")):
-            group = [e for _, e in items if e.get("sport", "nfl") == sport]
-            self.win_bar(parent, name, sum(e["status"] == "won" for e in group),
-                         sum(e["status"] == "lost" for e in group))
-        self.report_card(parent, [e for _, e in items])
-        self.learned(parent)
-        for sport, name in (("nfl", "NFL"), ("ncaaf", "COLLEGE FOOTBALL")):
-            group = [x for x in items if x[1].get("sport", "nfl") == sport]
-            head = tk.Frame(parent, bg=BG)
-            head.pack(fill="x", padx=6, pady=(10, 0))
-            tk.Label(head, text=name, bg=BG, fg=NAVY, font=self.f["h2"]).pack(side="left")
-            tk.Label(head, text="   " + tally(group), bg=BG, fg=MUTED,
-                     font=self.f["small"]).pack(side="left", pady=(3, 0))
-            tk.Frame(parent, bg=BLUE, height=2).pack(fill="x", padx=6, pady=(0, 4))
-            if not group:
-                tk.Label(parent, text="No bets yet.", bg=BG, fg=MUTED,
-                         font=self.f["small"]).pack(anchor="w", padx=6)
-                continue
-            # Single bets by team (the team bet on, or the player's team), then game
-            # totals; parlays cover several teams, so they get their own section.
-            by_team: dict[str, list] = {}
-            for x in group:
-                if x[1]["kind"] == "single":
-                    team = tracker.leg_team(x[1]["legs"][0], sport, self.player_team) or "Other"
-                else:
-                    team = "Parlays"
-                by_team.setdefault(team, []).append(x)
-            order = sorted(t for t in by_team if t not in (tracker.GAME_TOTALS, "Other", "Parlays"))
-            order += [t for t in (tracker.GAME_TOTALS, "Other", "Parlays") if t in by_team]
-            for team in order:
-                th = tk.Frame(parent, bg=BG)
-                th.pack(fill="x", padx=6, pady=(10, 0))
-                tk.Label(th, text=team, bg=BG, fg=TEXT, font=self.f["bold"]).pack(side="left")
-                tk.Label(th, text="   " + tally(by_team[team]), bg=BG, fg=MUTED,
-                         font=self.f["tiny"]).pack(side="left", pady=(2, 0))
-                tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
-                self.history_weeks(parent, by_team[team], tally)
+            group = [e for e in entries if e.get("sport", "nfl") == sport]
+            self.win_bar(top, name, sum(e["status"] == "won" for e in group),
+                         sum(e["status"] == "lost" for e in group), bg=CARD)
+        tk.Frame(top, bg=CARD, height=8).pack()
 
-    def report_card(self, parent, entries) -> None:
+        # Search and filters: type anything (a team, a player, "week 5", "parlay").
+        bar = tk.Frame(parent, bg=BG)
+        bar.pack(fill="x", padx=6, pady=(10, 4))
+        box = tk.Frame(bar, bg=WHITE, highlightbackground=BORDER, highlightthickness=1)
+        box.pack(side="left")
+        tk.Label(box, text="🔍", bg=WHITE, fg=MUTED, font=self.f["small"]).pack(side="left",
+                                                                             padx=(6, 0))
+        search = tk.Entry(box, textvariable=self.hist_query, width=25, relief="flat",
+                          bg=WHITE, fg=TEXT, font=self.f["body"], insertbackground=TEXT)
+        search.pack(side="left", ipady=4, padx=(2, 6))
+        hint = tk.Label(box, text="Search a team, player or week", bg=WHITE, fg="#9aa6b5",
+                        font=self.f["small"])
+
+        def show_hint(*_):
+            if self.hist_query.get() or self.root.focus_get() is search:
+                hint.place_forget()
+            else:
+                hint.place(x=26, rely=0.5, anchor="w")
+        search.bind("<FocusIn>", show_hint)
+        search.bind("<FocusOut>", show_hint)
+        weeks = sorted({e.get("week") for e in entries if e.get("week")}, reverse=True)
+        for var, values, width in (
+                (self.hist_league, ["All leagues"] + [LEAGUE_NAMES[k] for k, _ in SPORTS], 12),
+                (self.hist_result, list(self.HIST_RESULTS), 9),
+                (self.hist_kind, list(self.HIST_KINDS), 13),
+                (self.hist_week, ["Any week"] + [f"Week {w}" for w in weeks], 8)):
+            cb = ttk.Combobox(bar, textvariable=var, values=values, width=width,
+                              state="readonly", font=self.f["small"])
+            cb.pack(side="left", padx=(6, 0))
+        clear = tk.Label(bar, text="Clear", bg=BG, fg=BLUE, cursor="hand2",
+                         font=self.f["small"])
+        clear.pack(side="left", padx=8)
+
+        results = tk.Frame(parent, bg=BG)
+        results.pack(fill="x")
+        job = [None]
+
+        def refresh():
+            job[0] = None
+            if not results.winfo_exists():
+                return
+            for w in results.winfo_children():
+                w.destroy()
+            if self.hist_filtered():
+                self.history_matches(results, entries)
+            else:
+                self.history_tree(results, entries)
+            show_hint()
+
+        def later(*_):  # wait for a pause in typing
+            if job[0] is not None:
+                self.root.after_cancel(job[0])
+            job[0] = self.root.after(250, refresh)
+
+        def reset(_=None):
+            self.hist_query.set("")
+            for var, value in ((self.hist_league, "All leagues"), (self.hist_result, "Any result"),
+                               (self.hist_kind, "Singles + parlays"),
+                               (self.hist_week, "Any week")):
+                var.set(value)
+        clear.bind("<Button-1>", reset)
+        for var in (self.hist_query, self.hist_league, self.hist_result, self.hist_kind,
+                    self.hist_week):
+            for trace in var.trace_info():  # only this view listens
+                var.trace_remove(*trace)
+            var.trace_add("write", later)
+        refresh()
+
+    def tally(self, entries) -> str:
+        n = {s: sum(e["status"] == s for e in entries) for s in RESULT_STYLE}
+        return (f"{n['won']} won  ·  {n['lost']} lost"
+                + (f"  ·  {n['push']} pushed" if n["push"] else "") + f"  ·  {n['pending']} pending")
+
+    def hist_filtered(self) -> bool:
+        return bool(self.hist_query.get().strip()) or (
+            self.hist_league.get(), self.hist_result.get(), self.hist_kind.get(),
+            self.hist_week.get()) != ("All leagues", "Any result", "Singles + parlays",
+                                      "Any week")
+
+    def entry_team(self, e: dict) -> str:
+        if e["kind"] != "single":
+            return "Parlays"
+        return tracker.leg_team(e["legs"][0], e.get("sport", "nfl"), self.player_team) or "Other"
+
+    def history_matches(self, parent, entries) -> None:
+        """Every bet matching the search and filters, newest first, in one list."""
+        league = {v: k for k, v in LEAGUE_NAMES.items()}.get(self.hist_league.get())
+        result = self.HIST_RESULTS[self.hist_result.get()]
+        kind = self.HIST_KINDS[self.hist_kind.get()]
+        week = self.hist_week.get()
+        words = self.hist_query.get().lower().split()
+        found = []
+        for e in entries:
+            sport = e.get("sport", "nfl")
+            if (league and sport != league or result and e["status"] != result
+                    or kind and e["kind"] != kind
+                    or week != "Any week" and f"Week {e.get('week')}" != week):
+                continue
+            text = " ".join([LEAGUE_NAMES.get(sport, sport), self.entry_team(e), e["kind"],
+                             e["status"], f"week {e.get('week')}"]
+                            + [leg.get("pick") or leg["label"] for leg in e["legs"]]
+                            + [leg.get("game", "") for leg in e["legs"]]).lower()
+            if all(w in text for w in words):
+                found.append(e)
+        found.sort(key=tracker.first_kickoff, reverse=True)
+        limit = 150
+        tk.Label(parent, text=(f"{len(found)} bet{'s' * (len(found) != 1)} found  ·  "
+                               + self.tally(found)) if found else
+                 "No bets match. Try fewer words, or Clear the filters.",
+                 bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=8, pady=(4, 4))
+        listing = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        if found:
+            listing.pack(fill="x", padx=6)
+        for e in found[:limit]:
+            self.history_row(listing, e, meta=True)
+        if len(found) > limit:
+            tk.Label(parent, text=f"Showing the newest {limit}. Narrow the search to see the rest.",
+                     bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=8, pady=4)
+
+    def history_tree(self, parent, entries) -> None:
+        """Collapsed dropdowns: report card, what the model learned, then each league
+        by team, each team by week."""
+        self.dropdown(parent, "card", "Model report card",
+                      "won vs the model's expected win rate",
+                      lambda body: self.report_card(body, entries, titled=False))
+        self.dropdown(parent, "learned", "What the model has learned",
+                      "chances corrected by how bets like them really did",
+                      lambda body: self.learned(body, titled=False))
+        for sport, _ in SPORTS:
+            group = [e for e in entries if e.get("sport", "nfl") == sport]
+            name = LEAGUE_NAMES[sport]
+
+            def league(body, sport=sport, group=group):
+                if not group:
+                    tk.Label(body, text=("No NBA bets yet: they'll show here once NBA bets "
+                                         "are built." if sport == "nba" else "No bets yet."),
+                             bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=24,
+                                                                       pady=4)
+                    return
+                by_team: dict[str, list] = {}
+                for e in group:
+                    by_team.setdefault(self.entry_team(e), []).append(e)
+                special = (tracker.GAME_TOTALS, "Other", "Parlays")
+                order = sorted(t for t in by_team if t not in special)
+                order += [t for t in special if t in by_team]
+                for team in order:
+                    self.dropdown(body, f"{sport}/{team}", team, self.tally(by_team[team]),
+                                  lambda b, these=by_team[team]: self.history_weeks(b, these),
+                                  level=1)
+            self.dropdown(parent, sport, name,
+                          self.tally(group) if group else "no bets yet", league)
+
+    def dropdown(self, parent, key: str, title: str, sub: str, fill, level: int = 0) -> None:
+        """A header that opens and closes the section under it (built the first time
+        it's opened, and remembered open)."""
+        wrap = tk.Frame(parent, bg=BG)
+        wrap.pack(fill="x", padx=(6 + 18 * level, 6), pady=(6 if level == 0 else 2, 0))
+        bg = CARD if level == 0 else "#f6f8fb"
+        head = tk.Frame(wrap, bg=bg, highlightbackground=BORDER, highlightthickness=1,
+                        cursor="hand2")
+        head.pack(fill="x")
+        arrow = tk.Label(head, text="▸", bg=bg, fg=BLUE, font=self.f["bold"], width=2)
+        arrow.pack(side="left", padx=(6, 0), pady=6 if level == 0 else 3)
+        tk.Label(head, text=title, bg=bg, fg=NAVY if level == 0 else TEXT,
+                 font=self.f["bold"] if level == 0 else self.f["small"] + ("bold",)
+                 ).pack(side="left")
+        tk.Label(head, text="   " + sub, bg=bg, fg=MUTED,
+                 font=self.f["small"] if level == 0 else self.f["tiny"]).pack(side="left")
+        body = tk.Frame(wrap, bg=BG)
+        built = []
+
+        def show(on: bool) -> None:
+            arrow.configure(text="▾" if on else "▸")
+            if on:
+                if not built:
+                    fill(body)
+                    built.append(True)
+                body.pack(fill="x", pady=(2, 4))
+            else:
+                body.pack_forget()
+
+        def toggle(_=None) -> None:
+            on = key not in self.hist_open
+            (self.hist_open.add if on else self.hist_open.discard)(key)
+            show(on)
+        for w in (head, *head.winfo_children()):
+            w.bind("<Button-1>", toggle)
+        if key in self.hist_open:
+            show(True)
+
+    def report_card(self, parent, entries, titled: bool = True) -> None:
         """The model's report card: how often each kind of bet actually won vs how often
         the model said it would, by bet type, by confidence tier and for parlays."""
         from nfl_edge.insights import report_card
 
         card = report_card(entries)
-        head = tk.Frame(parent, bg=BG)
-        head.pack(fill="x", padx=6, pady=(10, 0))
-        tk.Label(head, text="Model report card", bg=BG, fg=NAVY,
-                 font=self.f["bold"]).pack(side="left")
-        tk.Label(head, text="   settled bets: won vs the model's expected win rate",
-                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(side="left", pady=(2, 0))
-        tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+        if titled:  # a dropdown names it already
+            self.section_title(parent, "Model report card",
+                               "settled bets: won vs the model's expected win rate")
         if not any(card.values()):
             tk.Label(parent, text="No settled bets yet.", bg=BG, fg=MUTED,
                      font=self.f["small"]).pack(anchor="w", padx=6)
@@ -870,20 +1105,26 @@ class App:
                          + ("  ·  too few to judge" if n < 10 else ""),
                          bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
 
-    def learned(self, parent) -> None:
+    def section_title(self, parent, title: str, sub: str) -> None:
+        head = tk.Frame(parent, bg=BG)
+        head.pack(fill="x", padx=6, pady=(10, 0))
+        tk.Label(head, text=title, bg=BG, fg=NAVY, font=self.f["bold"]).pack(side="left")
+        tk.Label(head, text="   " + sub, bg=BG, fg=MUTED,
+                 font=self.f["tiny"]).pack(side="left", pady=(2, 0))
+        tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+
+    def learned(self, parent, titled: bool = True) -> None:
         """What the model has learned from past seasons and this season's graded picks."""
         from nfl_edge import learn
 
         rows = [r for r in learn.summary() if abs(r[4] - r[3]) >= 0.01 or r[2]]
         if not rows:
+            tk.Label(parent, text="Nothing learned yet.", bg=BG, fg=MUTED,
+                     font=self.f["small"]).pack(anchor="w", padx=18)
             return
-        head = tk.Frame(parent, bg=BG)
-        head.pack(fill="x", padx=6, pady=(10, 0))
-        tk.Label(head, text="What the model has learned", bg=BG, fg=NAVY,
-                 font=self.f["bold"]).pack(side="left")
-        tk.Label(head, text="   chances are corrected by how bets like them really did",
-                 bg=BG, fg=MUTED, font=self.f["tiny"]).pack(side="left", pady=(2, 0))
-        tk.Frame(parent, bg=BORDER, height=1).pack(fill="x", padx=6)
+        if titled:  # a dropdown names it already
+            self.section_title(parent, "What the model has learned",
+                               "chances are corrected by how bets like them really did")
         for name, past, live, said, real in rows:
             row = tk.Frame(parent, bg=BG)
             row.pack(fill="x", padx=18)
@@ -896,27 +1137,27 @@ class App:
             tk.Label(row, text=" · ".join(s for s in seen if s), bg=BG, fg=MUTED,
                      font=self.f["small"]).pack(side="left")
 
-    def win_bar(self, parent, name: str, won: int, lost: int) -> None:
+    def win_bar(self, parent, name: str, won: int, lost: int, bg: str = BG) -> None:
         """A league's green/red bar of settled bets won vs lost (out of 100%), filling in
         when shown."""
-        box = tk.Frame(parent, bg=BG)
-        box.pack(fill="x", padx=6, pady=(4, 2))
-        tk.Label(box, text=name, bg=BG, fg=TEXT, font=self.f["bold"], width=8,
+        box = tk.Frame(parent, bg=bg)
+        box.pack(fill="x", padx=12, pady=(4, 2))
+        tk.Label(box, text=name, bg=bg, fg=TEXT, font=self.f["bold"], width=8,
                  anchor="w").pack(side="left")
         total = won + lost
         if not total:
             tk.Label(box, text="No settled bets yet: the win rate shows once games finish.",
-                     bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left")
+                     bg=bg, fg=MUTED, font=self.f["small"]).pack(side="left")
             return
         share = won / total
-        width, height = int(PANEL_W) - 420, 18
+        width, height = int(PANEL_W) - 470, 18
         bar = tk.Canvas(box, width=width, height=height, bg=RED, highlightthickness=0)
         bar.pack(side="left")
         green = bar.create_rectangle(0, 0, 0, height, fill=GREEN, outline="")
         words = bar.create_text(8, height / 2, anchor="w", fill=WHITE, font=self.f["tinyb"],
                                 text="")
         tk.Label(box, text=f"  {share:.0%} won ({won})  ·  {1 - share:.0%} lost ({lost})",
-                 bg=BG, fg=TEXT, font=self.f["small"]).pack(side="left")
+                 bg=bg, fg=TEXT, font=self.f["small"]).pack(side="left")
 
         def grow(step=0, steps=24):  # fills in over about half a second
             frac = share * min(step / steps, 1) ** 0.6
@@ -931,57 +1172,52 @@ class App:
         cached = getattr(self, "_players", None)
         return cached[2].current_team.get(name_key(name)) if cached else None
 
-    def history_weeks(self, parent, items, tally) -> None:
-        """One team's (or the parlays') bets by week; in each week wins, then losses,
-        then pushes and pending bets."""
-        weeks = sorted({e.get("week") for _, e in items}, key=lambda w: -(w or -1))
-        for week in weeks:
-            in_week = [x for x in items if x[1].get("week") == week]
-            wk = tk.Frame(parent, bg=BG)
-            wk.pack(fill="x", padx=12, pady=(4, 0))
-            tk.Label(wk, text=f"Week {week}" if week else "Other", bg=BG, fg=TEXT,
-                     font=self.f["small"]).pack(side="left")
-            tk.Label(wk, text="   " + tally(in_week), bg=BG, fg=MUTED,
-                     font=self.f["tiny"]).pack(side="left", pady=(1, 0))
-            for status, label in (("won", "WON"), ("lost", "LOST"), ("push", "PUSHED"),
-                                  ("pending", "PENDING")):
-                these = sorted((e for _, e in in_week if e["status"] == status),
-                               key=tracker.first_kickoff, reverse=status != "pending")
-                if not these:
-                    continue
-                tk.Label(parent, text=f"{label}  ({len(these)})", bg=BG,
-                         fg=RESULT_STYLE[status][1], font=self.f["tinyb"]).pack(
-                    anchor="w", padx=18, pady=(3, 0))
-                holder = tk.Frame(parent, bg=BG)
-                holder.pack(fill="x")
-                cols = self.columns(holder, 3, CARD_W)
-                heights = [0, 0, 0]
-                for e in these:  # fill the shortest column, so there are no gaps
-                    col = heights.index(min(heights))
-                    heights[col] += 1 + (len(e["legs"]) if e["kind"] == "parlay" else 0) // 2
-                    self.history_row(cols[col], e)
+    def history_weeks(self, parent, entries) -> None:
+        """One team's (or the parlays') bets by week, newest week first; in each week
+        wins, then losses, then pushes and pending bets."""
+        order = {"won": 0, "lost": 1, "push": 2, "pending": 3}
+        for week in sorted({e.get("week") for e in entries}, key=lambda w: -(w or -1)):
+            these = sorted((e for e in entries if e.get("week") == week),
+                           key=lambda e: (order[e["status"]], tracker.first_kickoff(e)))
+            head = tk.Frame(parent, bg=BG)
+            head.pack(fill="x", padx=(44, 6), pady=(4, 1))
+            tk.Label(head, text=f"Week {week}" if week else "Other", bg=BG, fg=TEXT,
+                     font=self.f["tinyb"]).pack(side="left")
+            tk.Label(head, text="   " + self.tally(these), bg=BG, fg=MUTED,
+                     font=self.f["tiny"]).pack(side="left")
+            listing = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+            listing.pack(fill="x", padx=(44, 6))
+            for e in these:
+                self.history_row(listing, e)
 
-    def history_row(self, parent, e: dict) -> None:
-        """One compact line: the bet, its chance, and WON/LOST once it's settled."""
-        row = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
-        row.pack(fill="x", pady=2)
-        if e["status"] in ("won", "lost", "push"):
-            word = {"won": "WON", "lost": "LOST", "push": "PUSH"}[e["status"]]
-            tk.Label(row, text=f" {word} ", bg=RESULT_STYLE[e["status"]][1], fg=WHITE,
-                     font=self.f["tinyb"]).pack(side="right", padx=(0, 6), pady=4)
-        tk.Label(row, text=f"{e['win_prob']:.0%}", bg=CARD, fg=MUTED,
-                 font=self.f["bold"]).pack(side="right", padx=6)
+    def history_row(self, parent, e: dict, meta: bool = False) -> None:
+        """One line: the result, the bet, its chance (and with `meta` its league, team
+        and week, for search results)."""
+        row = tk.Frame(parent, bg=CARD)
+        row.pack(fill="x")
+        tk.Frame(row, bg=BORDER, height=1).pack(fill="x", side="bottom")
+        word, color = {"won": ("WON", GREEN), "lost": ("LOST", RED), "push": ("PUSH", "#8a96a8"),
+                       "pending": ("PENDING", BLUE)}[e["status"]]
+        tk.Label(row, text=word, bg=color if e["status"] != "pending" else CARD,
+                 fg=WHITE if e["status"] != "pending" else BLUE, font=self.f["tinyb"],
+                 width=8).pack(side="left", padx=(8, 8), pady=5)
+        tk.Label(row, text=f"{e['win_prob']:.0%}", bg=CARD, fg=MUTED, font=self.f["bold"],
+                 width=5, anchor="e").pack(side="right", padx=(4, 10))
         text = tk.Frame(row, bg=CARD)
-        text.pack(side="left", fill="x", padx=(8, 0), pady=3)
-        if e["kind"] == "single":
-            tk.Label(text, text=e["legs"][0].get("pick") or e["legs"][0]["label"], bg=CARD,
-                     fg=TEXT, font=self.f["tinyb"], wraplength=170, justify="left").pack(anchor="w")
-        else:
-            tk.Label(text, text=f"{len(e['legs'])}-leg parlay", bg=CARD, fg=TEXT,
-                     font=self.f["tinyb"]).pack(anchor="w")
-            tk.Label(text, text="  ·  ".join(leg.get("pick") or leg["label"] for leg in e["legs"]),
-                     bg=CARD, fg=MUTED, font=self.f["tiny"], wraplength=170,
-                     justify="left").pack(anchor="w")
+        text.pack(side="left", fill="x", expand=True, pady=3)
+        legs = [leg.get("pick") or leg["label"] for leg in e["legs"]]
+        title = legs[0] if e["kind"] == "single" else f"{len(legs)}-leg parlay"
+        tk.Label(text, text=title, bg=CARD, fg=TEXT, font=self.f["tinyb"],
+                 anchor="w").pack(fill="x")
+        details = [] if e["kind"] == "single" else ["  ·  ".join(legs)]
+        if meta:
+            details.append("  ·  ".join(x for x in (
+                LEAGUE_NAMES.get(e.get("sport", "nfl"), ""),
+                f"Week {e['week']}" if e.get("week") else "",
+                self.entry_team(e) if e["kind"] == "single" else "") if x))
+        for d in details:
+            tk.Label(text, text=d, bg=CARD, fg=MUTED, font=self.f["tiny"], anchor="w",
+                     justify="left", wraplength=640).pack(fill="x")
 
     def card(self, parent) -> tk.Frame:
         frame = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
@@ -1002,6 +1238,9 @@ class App:
             pays=float(self.pays.get()) if self.pays.get().strip() else None)
 
     def build(self) -> None:
+        if self.sport.get() == "nba":  # a preview for now: nothing to build
+            self.render_nba()
+            return
         try:
             args = self.args()
         except ValueError:
@@ -1065,6 +1304,8 @@ class App:
         """Show the countdown to the next automatic update."""
         if self.updating:
             self.countdown.set(self.updating)
+        elif self.sport.get() == "nba":
+            self.countdown.set("NBA preview")
         elif self.next_at is not None:
             left = max(int(self.next_at - time.monotonic() + 0.999), 0)
             self.countdown.set(f"⟳  Next update in {left // 60}:{left % 60:02d}")
@@ -1088,7 +1329,8 @@ class App:
             if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
                 self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args
-            self.render(args, self.singles, self.parlays, self.previous)
+            if self.sport.get() != "nba":  # switched to the NBA preview meanwhile
+                self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
         self.schedule()
         if self.selftest:

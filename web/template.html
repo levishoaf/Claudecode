@@ -211,6 +211,40 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 }
 @media (prefers-reduced-motion: no-preference) { .card { transition: border-color .12s, box-shadow .12s; } }
 .pnote{font-size:12px;color:var(--mark);margin:0 0 6px}
+/* NBA preview: dark hardwood instead of the field */
+body.nba { background: repeating-linear-gradient(0deg, #4a3220 0 26px, #432d1d 26px 52px); }
+.tagline { font-size: 12px; color: var(--on-dark-2); letter-spacing: .03em; }
+.nba-card { background: var(--card); color: var(--ink); border-radius: 12px; padding: 16px 18px; }
+.nba-card h2 { margin: 0 0 6px; font-family: var(--display); font-size: 24px; text-transform: uppercase; letter-spacing: .02em; }
+.nba-card p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 70ch; }
+/* Bet History: filters, dropdowns and one-line rows */
+.hfilters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; align-items: center; }
+.hfilters input { flex: 1 1 220px; background: var(--card); color: var(--ink); border: 0; border-radius: 8px; padding: 9px 12px; font: inherit; }
+.hfilters select { background: var(--card); color: var(--ink); border: 0; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; }
+.hfilters .x { color: var(--on-dark); }
+.dd { background: var(--card); color: var(--ink); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+.dd > summary { cursor: pointer; list-style: none; padding: 11px 14px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.dd > summary::-webkit-details-marker { display: none; }
+.dd > summary::before { content: "▸"; color: var(--blue); font-weight: 700; width: 12px; }
+.dd[open] > summary::before { content: "▾"; }
+.dd > summary b { font-size: 15.5px; }
+.dd > summary span { font-size: 12.5px; color: var(--ink-2); }
+.ddb { padding: 0 12px 12px; }
+.dd2 { background: #f6f8fb; border: 1px solid var(--line); margin-top: 6px; }
+.dd2 > summary { padding: 8px 12px; }
+.dd2 > summary b { font-size: 14px; }
+.hweek { font-size: 12.5px; font-weight: 700; margin: 8px 2px 4px; }
+.hweek span { font-weight: 500; color: var(--ink-2); margin-left: 8px; }
+.hrows { background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.hrow { display: grid; grid-template-columns: 66px minmax(0, 1fr) 44px; gap: 10px; align-items: center; padding: 7px 10px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink); }
+.hrow:first-child { border-top: 0; }
+.hrow .pill { text-align: center; }
+.hrow .hb { min-width: 0; overflow-wrap: anywhere; }
+.hrow .hb small { display: block; color: var(--ink-2); font-size: 11.5px; margin-top: 1px; }
+.hrow .hp { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--ink-2); text-align: right; }
+.hcount { font-size: 13px; color: var(--on-dark-2); margin: 4px 2px 8px; }
+.dd .hcount, .dd .card-rows { color: var(--ink-2); }
+.dd .card-rows b { color: var(--ink); }
 </style>
 
 <header class="top">
@@ -218,9 +252,11 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   <div class="wrap">
     <div class="bar1">
       <h1 class="brand">Bet <span>Builder</span></h1>
+      <span class="tagline">Multi-sport</span>
       <div class="seg" role="group" aria-label="League">
         <button id="sport-nfl" data-sport="nfl" aria-pressed="true">NFL</button>
         <button id="sport-ncaaf" data-sport="ncaaf" aria-pressed="false">College</button>
+        <button id="sport-nba" data-sport="nba" aria-pressed="false">NBA</button>
       </div>
       <select id="week" class="weeksel" aria-label="Games"></select>
       <div class="updated">Updated <b id="updated"></b></div>
@@ -259,7 +295,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     injFilter: "all",
     injSearch: ""
   };
-  if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
+  if (state.sport !== "nba" && (!DATA[state.sport] || !DATA[state.sport].length)) state.sport = "nfl";
   if (!["singles", "parlays", "money", "injuries", "history"].includes(state.tab)) state.tab = "singles";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -445,7 +481,6 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   const RESULTS = DATA.legResults || {};
   const HISTORY = DATA.history || [];
   const SAVED = DATA.saved || [];
-  state.histFilter = "all";
   let db = null;
   state.placed = [];  // bets placed on this page earlier (they stay in Bet History)
   state.checks = {};
@@ -471,6 +506,13 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       .concat(unplaced().map((e) => ["Not placed", e]))
       .concat(SAVED.filter((e) => !ids.has(e.id)).map((e) => ["Saved earlier", e]));
   }
+  // Bet History: the record at a glance, a search box and filters, then everything in
+  // dropdowns (report card, what the model learned, each league by team and week).
+  const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["nba", "NBA"]];
+  const HF = { q: "", league: "all", result: "all", kind: "all", week: "all" };
+  state.hist = { ...HF };
+  state.histOpen = new Set();
+  const histFiltered = () => Object.keys(HF).some((k) => state.hist[k] !== HF[k]);
   function historyView() {
     const all = historyList().map(([src, e]) => [src, e, entryStatus(e.legs)]);
     const tally = (list) => {
@@ -486,78 +528,100 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       const p = Math.round(100 * w / (w + l));
       return `<div class="wl"><b>${name}</b><div class="wl-bar"><span class="wl-g" data-w="${p}"></span></div><span class="wl-t">${p}% won (${w}) · ${100 - p}% lost (${l})</span></div>`;
     };
-    let html = `<div class="notice summary"><div><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}${reportCard()}</div>`;
-    const chip = (k, label) => `<button class="chip" data-hist="${k}" aria-pressed="${state.histFilter === k}">${label}</button>`;
-    html += `<div class="inj-tools">${chip("all", "All")}${chip("won", "Won")}${chip("lost", "Lost")}${chip("pending", "Pending")}</div>`;
     const first = (e) => e.legs.map((l) => l.kickoff || "9999").sort()[0];
     const weekOf = (e) => {
       if (e.week) return e.week;
       const ws = e.legs.map((l) => (DATA.gameWeeks || {})[(l.lid || "").split("|")[0]]).filter(Boolean);
       return ws.length ? Math.min(...ws) : null;
     };
-    for (const [sport, name] of [["nfl", "NFL"], ["ncaaf", "College football"]]) {
+    const teamOf = (e) => e.team || (e.kind !== "single" ? "Parlays"
+      : (DATA.legTeams || {})[(e.legs[0] || {}).lid] || "Other");
+    const leagueName = (k) => (LEAGUES.find(([x]) => x === k) || [k, k])[1];
+
+    let html = `<div class="notice summary"><div class="sumline"><b>${tally(all)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}</div>`;
+    const h = state.hist;
+    const weeks = [...new Set(all.map(([, e]) => weekOf(e)).filter(Boolean))].sort((a, b) => b - a);
+    const opt = (v, label, cur) => `<option value="${v}"${String(cur) === String(v) ? " selected" : ""}>${label}</option>`;
+    html += `<div class="hfilters">
+      <input id="hsearch" type="search" placeholder="Search a team, player or week" value="${esc(h.q)}" aria-label="Search bet history">
+      <select data-hf="league" aria-label="League">${opt("all", "All leagues", h.league)}${LEAGUES.map(([k, n]) => opt(k, n, h.league)).join("")}</select>
+      <select data-hf="result" aria-label="Result">${[["all", "Any result"], ["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]].map(([k, n]) => opt(k, n, h.result)).join("")}</select>
+      <select data-hf="kind" aria-label="Singles or parlays">${[["all", "Singles + parlays"], ["single", "Singles"], ["parlay", "Parlays"]].map(([k, n]) => opt(k, n, h.kind)).join("")}</select>
+      <select data-hf="week" aria-label="Week">${opt("all", "Any week", h.week)}${weeks.map((w) => opt(w, "Week " + w, h.week)).join("")}</select>
+      ${histFiltered() ? `<button class="x" data-hclear="1">Clear</button>` : ""}
+    </div>`;
+
+    if (histFiltered()) {  // one list of everything that matches, newest first
+      const words = h.q.toLowerCase().split(/\s+/).filter(Boolean);
+      const found = all.filter(([, e, s]) => {
+        const sport = e.sport || "nfl";
+        if (h.league !== "all" && sport !== h.league) return false;
+        if (h.result !== "all" && s !== h.result) return false;
+        if (h.kind !== "all" && (e.kind === "single" ? "single" : "parlay") !== h.kind) return false;
+        if (h.week !== "all" && String(weekOf(e)) !== String(h.week)) return false;
+        const text = [leagueName(sport), teamOf(e), e.kind, s, "week " + weekOf(e),
+          ...e.legs.map((l) => l.pick + " " + (l.game || ""))].join(" ").toLowerCase();
+        return words.every((w) => text.includes(w));
+      }).sort((a, b) => first(b[1]).localeCompare(first(a[1])));
+      const shown = found.slice(0, 200);
+      html += found.length
+        ? `<div class="hcount">${found.length} bet${found.length === 1 ? "" : "s"} found · ${tally(found)}</div><div class="hrows">${shown.map(([, e, s]) => histRow(e, s, [leagueName(e.sport || "nfl"), weekOf(e) ? "Week " + weekOf(e) : "", e.kind === "single" ? teamOf(e) : ""])).join("")}</div>${found.length > 200 ? `<div class="hcount">Showing the newest 200. Narrow the search to see the rest.</div>` : ""}`
+        : `<div class="empty">No bets match. Try fewer words, or Clear the filters.</div>`;
+      return html;
+    }
+
+    const dd = (key, title, sub, body, nested) =>
+      `<details class="dd${nested ? " dd2" : ""}" data-dd="${esc(key)}"${state.histOpen.has(key) ? " open" : ""}><summary><b>${esc(title)}</b><span>${esc(sub)}</span></summary><div class="ddb">${body}</div></details>`;
+    html += dd("card", "Model report card", "won vs the model's expected win rate", reportCardHtml());
+    html += dd("learned", "What the model has learned", "chances corrected by how bets like them really did", learnedHtml());
+    for (const [sport, name] of LEAGUES) {
       const group = all.filter(([, e]) => (e.sport || "nfl") === sport);
-      html += `<section class="hist-section"><h2 class="hist-head">${name}<span>${tally(group)}</span></h2>`;
-      if (!group.length) { html += `<div class="empty">No ${name} bets yet.</div></section>`; continue; }
-      // Single bets by team (the team bet on, or the player's team), then game totals;
-      // parlays cover several teams, so they get their own section.
+      if (!group.length) {
+        html += dd(sport, name, "no bets yet", `<div class="hcount">${sport === "nba" ? "No NBA bets yet: they'll show here once NBA bets are built." : "No bets yet."}</div>`);
+        continue;
+      }
       const special = ["Game totals", "Other", "Parlays"];
-      const teamOf = (e) => e.team || (e.kind !== "single" ? "Parlays"
-        : (DATA.legTeams || {})[(e.legs[0] || {}).lid] || "Other");
       const teams = [...new Set(group.map(([, e]) => teamOf(e)))];
       const order = teams.filter((t) => !special.includes(t)).sort().concat(special.filter((t) => teams.includes(t)));
-      let any = false;
-      for (const team of order) {
+      const rank = { won: 0, lost: 1, push: 2, pending: 3 };
+      const body = order.map((team) => {
         const ofTeam = group.filter(([, e]) => teamOf(e) === team);
-        const shown = state.histFilter === "all" ? ofTeam : ofTeam.filter(([, , s]) => s === state.histFilter);
-        if (!shown.length) continue;
-        any = true;
-        html += `<div class="team-head">${esc(team)}<span>${tally(ofTeam)}</span></div>`;
-        const weeks = [...new Set(shown.map(([, e]) => weekOf(e)))].sort((a, b) => (b ?? -1) - (a ?? -1));
-        for (const w of weeks) {
-          const list = shown.filter(([, e]) => weekOf(e) === w);
-          html += `<h3 class="week-head">${w ? "Week " + w : "Other"}<span>${tally(ofTeam.filter(([, e]) => weekOf(e) === w))}</span></h3>`;
-          // wins, then losses, then pushes and pending bets
-          for (const [st, label] of [["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]]) {
-            const these = list.filter(([, , s]) => s === st)
-              .sort((a, b) => st === "pending" ? first(a[1]).localeCompare(first(b[1])) : first(b[1]).localeCompare(first(a[1])));
-            if (!these.length) continue;
-            html += `<div class="res-head r-${st}">${label} (${these.length})</div>
-              <div class="hist-list">${these.map(([, e, s]) => histItem(e, s)).join("")}</div>`;
-          }
-        }
-      }
-      if (!any) html += `<div class="empty">None match this filter yet.</div>`;
-      html += `</section>`;
+        const ws = [...new Set(ofTeam.map(([, e]) => weekOf(e)))].sort((a, b) => (b ?? -1) - (a ?? -1));
+        const inner = ws.map((w) => {
+          const list = ofTeam.filter(([, e]) => weekOf(e) === w)
+            .sort((a, b) => rank[a[2]] - rank[b[2]] || first(a[1]).localeCompare(first(b[1])));
+          return `<div class="hweek">${w ? "Week " + w : "Other"}<span>${tally(list)}</span></div><div class="hrows">${list.map(([, e, s]) => histRow(e, s)).join("")}</div>`;
+        }).join("");
+        return dd(sport + "/" + team, team, tally(ofTeam), inner, true);
+      }).join("");
+      html += dd(sport, name, tally(group), body);
     }
     return html;
   }
-  // How the model did (won vs expected) and what it has learned from that.
-  function reportCard() {
-    const r = DATA.report, learned = DATA.learned || [];
+  function reportCardHtml() {
+    const r = DATA.report;
+    if (!r || !(r.tier.length || r.type.length || r.parlays.length)) return `<div class="hcount">No settled bets yet.</div>`;
     let html = "";
-    if (r && (r.tier.length || r.type.length || r.parlays.length)) {
-      html += `<div class="kind-head">Model report card<span>settled bets: won vs the model's expected win rate</span></div>`;
-      for (const [key, title] of [["tier", "By confidence"], ["type", "By bet type"], ["parlays", "Parlays"]]) {
-        if (!r[key].length) continue;
-        html += `<div class="card-rows"><i>${title}</i>` + r[key].map(([name, won, n, exp, act]) =>
-          `<div><b>${esc(name)}</b><span style="color:${act >= exp - 0.05 ? "var(--good)" : "var(--bad)"}">won ${won} of ${n} (${pct(act)})</span><span>expected ${pct(exp)}${n < 10 ? " · too few to judge" : ""}</span></div>`).join("") + `</div>`;
-      }
-    }
-    if (learned.length) {
-      html += `<div class="kind-head">What the model has learned<span>chances are corrected by how bets like them really did</span></div><div class="card-rows">`
-        + learned.map(([name, past, live, said, real]) =>
-          `<div><b>${esc(name)}</b><span style="color:${real < said - 0.01 ? "var(--bad)" : real > said + 0.01 ? "var(--good)" : "inherit"}">a ${pct(said)} bet really wins about ${pct(real)}</span><span>${[past ? past.toLocaleString() + " past bets" : "", live ? live + " graded this season" : ""].filter(Boolean).join(" · ")}</span></div>`).join("") + `</div>`;
+    for (const [key, title] of [["tier", "By confidence"], ["type", "By bet type"], ["parlays", "Parlays"]]) {
+      if (!r[key].length) continue;
+      html += `<div class="card-rows"><i>${title}</i>` + r[key].map(([name, won, n, exp, act]) =>
+        `<div><b>${esc(name)}</b><span style="color:${act >= exp - 0.05 ? "var(--good)" : "var(--bad)"}">won ${won} of ${n} (${pct(act)})</span><span>expected ${pct(exp)}${n < 10 ? " · too few to judge" : ""}</span></div>`).join("") + `</div>`;
     }
     return html;
   }
-  function histItem(e, status) {  // just the bet, its chance, and the result once it's in
-    const bet = e.kind === "single" ? `<b>${esc(e.legs[0].pick)}</b>`
-      : `<b>${e.legs.length}-leg parlay</b><small>${e.legs.map((l) => esc(l.pick)).join(" · ")}</small>`;
-    const result = status === "won" ? `<span class="pill p-won">WON</span>`
-      : status === "lost" ? `<span class="pill p-lost">LOST</span>`
-      : status === "push" ? `<span class="pill p-push">PUSH</span>` : "";
-    return `<div class="hist-item"><div class="hb">${bet}</div><span class="hp">${pct(e.prob)}</span>${result}</div>`;
+  function learnedHtml() {
+    const learned = DATA.learned || [];
+    if (!learned.length) return `<div class="hcount">Nothing learned yet.</div>`;
+    return `<div class="card-rows">` + learned.map(([name, past, live, said, real]) =>
+      `<div><b>${esc(name)}</b><span style="color:${real < said - 0.01 ? "var(--bad)" : real > said + 0.01 ? "var(--good)" : "inherit"}">a ${pct(said)} bet really wins about ${pct(real)}</span><span>${[past ? past.toLocaleString() + " past bets" : "", live ? live + " graded this season" : ""].filter(Boolean).join(" · ")}</span></div>`).join("") + `</div>`;
+  }
+  // One line per bet: the result, the bet (and its league, week and team in search results), its chance.
+  function histRow(e, status, meta) {
+    const word = { won: "WON", lost: "LOST", push: "PUSH", pending: "PENDING" }[status];
+    const legs = e.legs.map((l) => esc(l.pick));
+    const title = e.kind === "single" ? legs[0] : `${legs.length}-leg parlay`;
+    const sub = [e.kind === "single" ? "" : legs.join(" · "), (meta || []).filter(Boolean).map(esc).join(" · ")].filter(Boolean);
+    return `<div class="hrow"><span class="pill p-${status}">${word}</span><div class="hb"><b>${title}</b>${sub.map((x) => `<small>${x}</small>`).join("")}</div><span class="hp">${pct(e.prob)}</span></div>`;
   }
   function startDb(tries = 0) {
     if (!(window.claude && typeof window.claude.use === "function")) {
@@ -584,8 +648,11 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   function render() {
     const wk = current();
     document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sport === state.sport)));
+    const nba = state.sport === "nba";  // a preview: no NBA bets are built yet
+    document.body.classList.toggle("nba", nba);
     const sel = $("week");
-    sel.innerHTML = weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
+    sel.innerHTML = nba ? `<option>NBA · coming soon</option>`
+      : weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
     $("updated").textContent = DATA.updated;
     $("btype").innerHTML = typeOptions(weekData());
     document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
@@ -597,6 +664,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 
     let html = "";
     const future = /no lines yet/.test(wk.label);
+    if (nba && state.tab !== "history") {
+      $("main").innerHTML = `<section class="nba-card"><h2>NBA bets are coming</h2><p>This is a preview of the NBA layout. NBA moneylines, spreads, totals and player props will show here, with the same chances, track records and Bet History as football, once NBA data is added. Football picks are on the NFL and College tabs.</p></section>`;
+      return;
+    }
     if (state.tab === "singles" || state.tab === "parlays" || state.tab === "money") {
       if (future) html += `<div class="notice"><strong>No betting lines yet for this week.</strong> These come from the stats model alone, which is less reliable than market lines. They'll update once lines post.</div>`;
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
@@ -618,14 +689,28 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const wk = current();
     if (t.dataset.sport) { state.sport = t.dataset.sport; store.set("bb.sport", state.sport); render(); }
     else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
-    else if (t.dataset.hist) { state.histFilter = t.dataset.hist; render(); }
+    else if (t.dataset.hclear) { state.hist = { ...HF }; render(); }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
   });
   $("week").addEventListener("change", (e) => { state.week[state.sport] = +e.target.value; render(); });
   $("wager").addEventListener("input", render);
   $("btype").addEventListener("change", (e) => { state.betType = e.target.value; store.set("bb.type", state.betType); render(); });
+  document.addEventListener("change", (e) => {
+    const k = e.target.dataset && e.target.dataset.hf;
+    if (k) { state.hist[k] = e.target.value; render(); }
+  });
+  // Dropdowns stay open across refreshes.
+  document.addEventListener("toggle", (e) => {
+    const d = e.target;
+    if (d.dataset && d.dataset.dd) { if (d.open) state.histOpen.add(d.dataset.dd); else state.histOpen.delete(d.dataset.dd); }
+  }, true);
   document.addEventListener("input", (e) => {
     const t = e.target;
+    if (t.id === "hsearch") {
+      state.hist.q = t.value; render();
+      const s = $("hsearch"); s.focus(); s.setSelectionRange(s.value.length, s.value.length);
+      return;
+    }
     if (t.id === "injsearch") {
       state.injSearch = t.value; render();
       const s = $("injsearch"); s.focus(); s.setSelectionRange(s.value.length, s.value.length);
