@@ -137,13 +137,11 @@ class OddsLimitTest(unittest.TestCase):
 
 
 class MoneyMakerTest(unittest.TestCase):
-    def test_likeliest_three_leg_parlays(self):
+    def test_likeliest_parlays_that_double_the_wager(self):
         from datetime import datetime, timedelta, timezone
-        from itertools import combinations
-        from math import prod
 
         from nfl_edge.board import make_bet
-        from nfl_edge.picks import money_maker_parlays
+        from nfl_edge.picks import fanduel_estimate, money_maker_parlays
 
         kick = datetime.now(timezone.utc) + timedelta(days=2)
         probs = [0.80, 0.78, 0.76, 0.72, 0.70, 0.66, 0.62, 0.55, 0.50, 0.46, 0.42, 0.38]
@@ -151,14 +149,16 @@ class MoneyMakerTest(unittest.TestCase):
                 for i, p in enumerate(probs)]
         money = money_maker_parlays(bets, 5)
         self.assertEqual(len(money), 5)
-        self.assertTrue(all(len(p.legs) == 3 for p in money))
-        self.assertTrue(all(len({b.game for b in p.legs}) == 3 for p in money))
-        best = max(prod(c) for c in combinations(probs, 3))
-        self.assertAlmostEqual(money[0].win_prob, best, places=6)  # the likeliest first
+        for p in money:
+            self.assertTrue(2 <= len(p.legs) <= 4)
+            self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
+            self.assertGreaterEqual(fanduel_estimate(p), 2.0)  # at least doubles the wager
+            self.assertLess(p.win_prob, 0.5)
         chances = [p.win_prob for p in money]
         self.assertEqual(chances, sorted(chances, reverse=True))
+        self.assertGreater(chances[0], 0.40)  # the likeliest that still pays double
         uses = {}
         for p in money:
             for b in p.legs:
                 uses[b.pick] = uses.get(b.pick, 0) + 1
-        self.assertLessEqual(max(uses.values()), 2)  # varied, not one parlay reshuffled
+        self.assertLessEqual(max(uses.values()), 2)

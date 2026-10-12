@@ -22,7 +22,8 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, every_line_of, of_type,  # noqa: E402
-                            MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, money_maker_parlays,
+                            MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, fanduel_estimate,
+                            money_maker_parlays,
                             payout_parlays,
                             rank_singles, type_max_prob)
 
@@ -156,7 +157,7 @@ def run(sport, week, label, ledger, this_week=False):
         money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"], 10)
         return {"singles": [bet(b, sport) for b in singles],
                 "parlays": [parlay(p) for p in parlays],
-                "money": [parlay(p) for p in money]}
+                "money": [dict(parlay(p), back=round(fanduel_estimate(p), 4)) for p in money]}
 
     out = {"label": label, "week": week, **picks(singles, parlays, bets),
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},

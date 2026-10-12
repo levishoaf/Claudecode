@@ -278,17 +278,33 @@ def _leg_key(b: Bet) -> tuple:
     return (b.game, b.market, b.pick, b.point)
 
 
-MONEY_MAKER_LEGS = 3
+MONEY_MAKER_LEGS = (2, 4)  # fewest and most legs
 MONEY_MAKER_WAGER = 50.0  # the Money Maker tab shows each parlay's payout on $50
+MONEY_MAKER_RETURN = 2.0  # a win pays back at least this many times the wager
+FANDUEL_HOLD = 0.045  # FanDuel pays about this much under break-even, per leg
 
 
-def money_maker_parlays(bets: list[Bet], count: int, *, legs: int = MONEY_MAKER_LEGS,
-                        max_uses: int = 2, pool_size: int = 24) -> list[Parlay]:
-    """The likeliest `legs`-leg parlays, each leg from a different game, likeliest
-    first. A leg appears in at most `max_uses` of them, so the list isn't one parlay
-    with a single leg swapped each time."""
+def fanduel_estimate(p: Parlay) -> float:
+    """About what FanDuel would pay per $1 if it wins: break-even, less its cut per leg."""
+    return (1 / p.win_prob) * (1 - FANDUEL_HOLD) ** len(p.legs)
+
+
+def money_maker_parlays(bets: list[Bet], count: int, *, legs: tuple[int, int] = MONEY_MAKER_LEGS,
+                        min_return: float = MONEY_MAKER_RETURN, max_uses: int = 2,
+                        pool_size: int = 24) -> list[Parlay]:
+    """The likeliest parlays (legs from different games) that, if they win, should pay
+    back at least `min_return` times the wager even at FanDuel's prices, likeliest first.
+    A leg appears in at most `max_uses` of them, so the list isn't one parlay with a
+    single leg swapped each time."""
     pool = rank_singles(bets, pool_size, rank_by="prob", per_game=2)
-    found = [Parlay(c) for c in combinations(pool, legs) if len({b.game for b in c}) == legs]
+    found = []
+    for n in range(legs[0], legs[1] + 1):
+        for c in combinations(pool, n):
+            if len({b.game for b in c}) < n:
+                continue
+            p = Parlay(c)
+            if fanduel_estimate(p) >= min_return:
+                found.append(p)
     found.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
     chosen, uses = [], {}
     for p in found:

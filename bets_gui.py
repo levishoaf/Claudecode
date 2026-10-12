@@ -30,7 +30,7 @@ from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 from nfl_edge.picks import (BET_TYPES, MONEY_MAKER_LEGS, MONEY_MAKER_WAGER, empty_type_note,
-                            money_maker_parlays)
+                            fanduel_estimate, money_maker_parlays)
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -446,10 +446,11 @@ class App:
                          justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
         elif self.tab == "money":
-            tk.Label(grid, text=(f"The likeliest {MONEY_MAKER_LEGS}-leg parlays, each leg from a "
-                                 f"different game, likeliest first, with the payout on a "
-                                 f"${MONEY_MAKER_WAGER:.0f} wager. No Weak legs, and no leg in "
-                                 "more than two of them."),
+            tk.Label(grid, text=(f"The likeliest parlays that still at least double a "
+                                 f"${MONEY_MAKER_WAGER:.0f} wager if they win, even at FanDuel's "
+                                 f"prices: {MONEY_MAKER_LEGS[0]}-{MONEY_MAKER_LEGS[1]} legs from "
+                                 "different games, likeliest first. No Weak legs, and no leg in "
+                                 "more than two of them. Payouts are estimates; check the slip."),
                      bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
                      justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, money, MONEY_MAKER_WAGER, money=True)
@@ -585,7 +586,7 @@ class App:
     def parlays_tab(self, parent, parlays, stake, money: bool = False) -> None:
         """Parlays, numbered P1.. (or M1.. for the Money Maker, paying on `stake`)."""
         if not parlays:
-            empty = ("No money makers here: they need three games this week."
+            empty = ("No money makers here: not enough games this week."
                      if money else self.empty_text("Not enough games for these parlays this week."))
             tk.Label(parent, text=empty,
                      bg=BG,
@@ -598,8 +599,8 @@ class App:
                 legs = "CONFIRM LINES  ·  " + legs
             on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
             pays = None
-            if money:  # on the Money Maker's own wager, at FanDuel's price when known
-                pays = f"${stake * (p.decimal if on_fd else 1 / p.win_prob):,.2f}"
+            if money:  # on the Money Maker's wager: FanDuel's price, or about what it pays
+                pays = f"{'' if on_fd else '≈'}${stake * (p.decimal if on_fd else fanduel_estimate(p)):,.2f}"
             self.list_row(table, f"M{i}" if money else f"P{i}", f"{len(p.legs)}-leg parlay",
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), last=pays,
