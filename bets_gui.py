@@ -213,17 +213,6 @@ class App:
             w.pack(anchor="w")
             return w
 
-        def pair(label, a, b):
-            box = tk.Frame(row2, bg=NAVY)
-            box.pack(side="left", padx=(0, 5))
-            tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
-                     font=self.f["label"]).pack(anchor="w")
-            inner = tk.Frame(box, bg=NAVY)
-            inner.pack(anchor="w")
-            ttk.Entry(inner, textvariable=a, width=3, font=self.f["body"]).pack(side="left")
-            tk.Label(inner, text="–", bg=NAVY, fg=WHITE).pack(side="left", padx=2)
-            ttk.Entry(inner, textvariable=b, width=3, font=self.f["body"]).pack(side="left")
-
         self.games_box = field("Games", self.when, 16, ["Loading weeks..."])
         def chose_week(_event):
             self.games_box.selection_clear()
@@ -240,10 +229,8 @@ class App:
             self.build()
 
         self.type_box.bind("<<ComboboxSelected>>", chose_type)
-        field("Singles", self.n_singles, 3)
-        field("Parlays", self.n_parlays, 3)
-        pair("Legs", self.min_legs, self.max_legs)
-        field("Wager $", self.stake, 3)
+        # Singles (30), parlays (10), legs (3-5) and the wager ($10) keep their defaults;
+        # their boxes were taken out at the user's request.
         self.pays = tk.StringVar(value="40")
         field("Pays $", self.pays, 3)
         field("Refresh", self.refresh, 3)
