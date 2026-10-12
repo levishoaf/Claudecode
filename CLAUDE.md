@@ -114,6 +114,16 @@ replays past seasons to refit `nfl_edge/calibration.json` (kept per bet type onl
 beats the raw model on the newest season; bundled into the builds), and each build also
 learns from the ledger's graded picks (`learn.remember`, legs keep `raw_prob`). Refit the
 file each off-season.
+Accuracy pieces, each tested on past seasons before use: college moneylines are 90%
+betting market (ESPN scoreboard lines, `cfb.espn_lines`; history `cfb.history_lines`) and
+10% model; passing-yards props adjust for the pass defense (`board.DEFENSE_WEIGHT`; other
+prop tweaks tested worse and are off); tiers come from signal weights learned on the replay
+(`nfl_edge/signals.py`, `python -m nfl_edge.signals --write` refits `signal_weights.json`,
+bundled into the builds; each bet type may only move up or down where that direction held
+up on the newest season; untested bet types keep the hand-scored tiers); parlay chances get
+a correction learned from graded parlays (`learn.parlay_prob`); injury news for games within
+2 hours is re-checked every 5 minutes (`board.late_statuses`); Bet History shows whether NFL
+picks beat the closing line (`nfl_edge/clv.py`). Refit calibration first, then signals.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
