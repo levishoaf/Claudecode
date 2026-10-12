@@ -108,7 +108,7 @@ break-even less about 4.5% per leg); parlays whose every leg has won 75%+ of the
 (`hitrate.strong_leg_check`) come first, no Weak legs, no leg in more than two. Every NFL bet shows its track record (`nfl_edge/hitrate.py`): how often that exact bet
 would have won in games already played this season and last, and for moneylines the
 record against this week's opponent since two seasons back, game by game. Parlay legs
-show theirs, with the weakest leg named. The top singles mix props and game bets (`prop_share=0.5`). The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
+show theirs, with the weakest leg named. A moneyline pick that lost most of its meetings with this opponent since then gets a warning only (`insights.h2h_warning`): tested on 2015-2025, the head-to-head record didn't predict beyond the market, so it never moves the chance. The top singles mix props and game bets (`prop_share=0.5`). The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
 request: the app and web page only show bets, and every bet the builder makes is graded
 in Bet History. Bets placed on the page earlier stay there (the `placed` db collection).
 Chances are learned from results (`nfl_edge/learn.py`): `python -m nfl_edge.learn --write`
