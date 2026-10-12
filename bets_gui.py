@@ -1327,8 +1327,10 @@ class App:
                   f"{len(self.money)} money makers rendered")
             from nfl_edge import learn
 
-            if not learn.saved().get("groups"):  # calibration.json must ship in the build
-                print("selftest FAILED: no learned calibration")
+            from nfl_edge import signals
+
+            if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
+                print("selftest FAILED: no learned calibration or signal weights")
                 os._exit(1)
             self.root.after(500, self.root.destroy)
             return

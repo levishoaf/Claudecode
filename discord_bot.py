@@ -377,8 +377,10 @@ def selftest() -> int:
         print(parts[0][:600])
     from nfl_edge import learn
 
-    if not learn.saved().get("groups"):  # calibration.json must ship in the build
-        print("no learned calibration (calibration.json missing)")
+    from nfl_edge import signals
+
+    if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
+        print("no learned calibration or signal weights (calibration.json, signal_weights.json)")
         ok = False
     import discord  # noqa: F401  (the library is bundled and imports)
     print("selftest", "passed" if ok else "FAILED")
