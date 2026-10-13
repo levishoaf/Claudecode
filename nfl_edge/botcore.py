@@ -337,7 +337,9 @@ def history_text(ledger: dict, sport: str | None = None, week: int | None = None
     picks did. With show_picks, every pick is listed too."""
     placed = ledger["placed"]
     taken = {e.get("bet_id", e["id"]) for e in placed}
-    picks = [e for e in ledger["generated"] if e["id"] not in taken]
+    # The builder's picks on lines FanDuel may not have offered don't count.
+    picks = [e for e in ledger["generated"]
+             if e["id"] not in taken and not tracker.model_line(e)]
     lines = ["**Server bet history**"]
     if placed:
         lines.append("Placed bets: " + tracker.summary(placed, money=True))
@@ -373,7 +375,7 @@ def history_text(ledger: dict, sport: str | None = None, week: int | None = None
 def settled_text(entries: list[dict]) -> str | None:
     """The results post after games finish: each placed bet, then the picks tally."""
     placed = [e for e in entries if e.get("by")]
-    picks = [e for e in entries if not e.get("by")]
+    picks = [e for e in entries if not e.get("by") and not tracker.model_line(e)]
     if not placed and not picks:
         return None
     lines = ["**Results are in**"]

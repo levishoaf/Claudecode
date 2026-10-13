@@ -406,7 +406,7 @@ class App:
                           ("money", f"Money Maker ({len(money)})"),
                           ("injuries", "Injuries" if args.sport == "nba"
                            else f"Injuries ({len(self.injuries[1])})"),
-                          ("history", f"Bet History ({len(tracker.history(self.ledger))})")):
+                          ("history", f"Bet History ({len(self.history_items())})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
             tab.pack(side="left", padx=(0, 18))
@@ -739,13 +739,15 @@ class App:
         return rec[0] if rec[0] and rec[0].games else (rec[1] if rec[1] and rec[1].games else None)
 
     def leg_text(self, b) -> str:
-        """A parlay leg with its record, e.g. "Jahmyr Gibbs Anytime TD (4/4)"."""
+        """A parlay leg with the model's chance of it winning and its record, e.g.
+        "Jahmyr Gibbs Anytime TD 66% (4/4)"."""
         hr = self._leg_record(b)
         bits = [f"{hr.hits}/{hr.games}"] if hr else []
         h2h = self.h2h_text(b)
         if h2h:
             bits.append(h2h)
-        return _slip_selection(b) + (f" ({', '.join(bits)})" if bits else "")
+        return (f"{_slip_selection(b)} {b.fair_prob:.0%}"
+                + (f" ({', '.join(bits)})" if bits else ""))
 
     def legs_record_line(self, legs) -> tuple[str, str] | None:
         """The parlay's weakest leg by its record; colored by it."""
@@ -830,11 +832,31 @@ class App:
                     "Pending": "pending"}
     HIST_KINDS = {"Singles + parlays": None, "Singles": "single", "Parlays": "parlay"}
 
+    def history_items(self) -> list:
+        """Bet History's bets: placed ones and the builder's picks on lines FanDuel
+        offers; picks on model-made lines only when "Show model lines" is on."""
+        show = getattr(self, "hist_model", None)
+        return tracker.counted(tracker.history(self.ledger), bool(show and show.get()))
+
+    def refresh_history(self) -> None:
+        """Redraw Bet History (after "Show model lines" changes)."""
+        old = getattr(self, "panes", {}).pop("history", None)
+        if old is not None:
+            old.destroy()
+        if self.tab == "history" and getattr(self, "render_args", None):
+            self.pane("history").pack(fill="both")
+
     def history_tab(self, parent) -> None:
         """The record at a glance, a search box and filters, then everything in
         dropdowns: the report card, what the model learned, and each league by team."""
-        items = tracker.history(self.ledger)
+        if not hasattr(self, "hist_model"):
+            self.hist_model = tk.BooleanVar(value=False)
+        items = self.history_items()
         entries = [e for _, e in items]
+        self._placed_ids = {e["id"] for src, e in items if src == "placed"}
+        # The record (tally, win bars, report card) never counts model lines.
+        record = [e for _, e in tracker.counted(tracker.history(self.ledger))]
+        self._record = record
         if not hasattr(self, "hist_open"):  # remembered while the app is open
             self.hist_open: set[str] = set()
             self.hist_query = tk.StringVar(value="")
@@ -848,12 +870,12 @@ class App:
         top.pack(fill="x", padx=6, pady=(8, 0))
         line = tk.Frame(top, bg=CARD)
         line.pack(fill="x", padx=12, pady=(10, 2))
-        tk.Label(line, text=self.tally(entries), bg=CARD, fg=TEXT,
+        tk.Label(line, text=self.tally(record), bg=CARD, fg=TEXT,
                  font=self.f["bold"]).pack(side="left")
         FlatButton(line, "Check results now", self.build, "secondary",
                    self.f["tinyb"]).pack(side="right")
         for sport, name in (("nfl", "NFL"), ("ncaaf", "College")):
-            group = [e for e in entries if e.get("sport", "nfl") == sport]
+            group = [e for e in record if e.get("sport", "nfl") == sport]
             self.win_bar(top, name, sum(e["status"] == "won" for e in group),
                          sum(e["status"] == "lost" for e in group), bg=CARD)
         tk.Frame(top, bg=CARD, height=8).pack()
@@ -891,6 +913,13 @@ class App:
             cb = ttk.Combobox(drops, textvariable=var, values=values, width=width,
                               state="readonly", font=self.f["small"])
             cb.pack(side="left", padx=(0, 6))
+        tk.Checkbutton(parent, text="Show model lines (spreads, totals and \"X+\" props the "
+                                    "model made up; FanDuel may not have offered them, so "
+                                    "they're left out of the record)",
+                       variable=self.hist_model, command=self.refresh_history, bg=BG, fg=MUTED,
+                       selectcolor=INPUT, activebackground=BG, activeforeground=TEXT,
+                       highlightthickness=0, font=self.f["small"], anchor="w",
+                       wraplength=820, justify="left").pack(fill="x", padx=6, pady=(0, 4))
         clear = tk.Label(bar, text="Clear", bg=BG, fg=BLUE, cursor="hand2",
                          font=self.f["small"])
         clear.pack(side="left", padx=8)
@@ -989,7 +1018,7 @@ class App:
         by team, each team by week."""
         self.dropdown(parent, "card", "Model report card",
                       "won vs the model's expected win rate",
-                      lambda body: self.report_card(body, entries, titled=False))
+                      lambda body: self.report_card(body, self._record, titled=False))
         self.dropdown(parent, "learned", "What the model has learned",
                       "chances corrected by how bets like them really did",
                       lambda body: self.learned(body, titled=False))
@@ -1219,6 +1248,8 @@ class App:
         tk.Label(text, text=title, bg=CARD, fg=TEXT, font=self.f["tinyb"],
                  anchor="w").pack(fill="x")
         details = [] if e["kind"] == "single" else ["  ·  ".join(legs)]
+        if tracker.model_line(e) and e["id"] not in getattr(self, "_placed_ids", ()):
+            details.append("Model line: may not have been on FanDuel (not in the record)")
         if meta:
             details.append("  ·  ".join(x for x in (
                 LEAGUE_NAMES.get(e.get("sport", "nfl"), ""),

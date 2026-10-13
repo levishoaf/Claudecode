@@ -337,3 +337,20 @@ def leg_type_name(leg: dict) -> str:
 def entry_types(e: dict) -> set[str]:
     """The bet types in a single or parlay (a parlay can mix several)."""
     return {leg_type_name(leg) for leg in e.get("legs", [])}
+
+
+ALWAYS_OFFERED = {"Moneyline", "Anytime TD"}  # bets FanDuel lists exactly as shown
+
+
+def model_line(e: dict) -> bool:
+    """True if the bet has a leg on a line the model made up (a spread, total, team
+    total or "X+" prop): FanDuel may not have offered that exact line, so it isn't
+    counted in the record. Moneylines and anytime TDs always exist as shown."""
+    return not entry_types(e) <= ALWAYS_OFFERED
+
+
+def counted(items: list[tuple[str, dict]], model_lines: bool = False) -> list[tuple[str, dict]]:
+    """Bet History entries that count in the record: everything placed, plus the
+    builder's picks on lines FanDuel offers (all picks with `model_lines`)."""
+    return [(src, e) for src, e in items
+            if model_lines or src == "placed" or not model_line(e)]

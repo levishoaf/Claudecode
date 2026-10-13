@@ -264,10 +264,12 @@ def main():
     try:  # how the model did, and what it has learned from that
         from nfl_edge import insights
 
-        result["report"] = insights.report_card(tracker.all_entries(ledger))
+        # The record never counts picks on lines FanDuel may not have offered.
+        record = [e for e in tracker.all_entries(ledger) if not tracker.model_line(e)]
+        result["report"] = insights.report_card(record)
         from nfl_edge import clv, data as nfl_data
 
-        result["clv"] = clv.report(tracker.all_entries(ledger), nfl_data.games(None))
+        result["clv"] = clv.report(record, nfl_data.games(None))
         result["learned"] = [list(r) for r in learn.summary()
                              if abs(r[4] - r[3]) >= 0.01 or r[2]]
     except Exception:
@@ -277,6 +279,7 @@ def main():
                 "week": e.get("week"),
                 "prob": e["win_prob"], "odds": e["odds"], "stake": e.get("stake", 100),
                 "status": e["status"], "created": e["created"], "name": e.get("source", ""),
+                "model": tracker.model_line(e),
                 "team": (tracker.leg_team(e["legs"][0], e["sport"], player_team) or "Other")
                 if e["kind"] == "single" else "Parlays",
                 "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
