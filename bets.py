@@ -41,8 +41,8 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, best_parlays,  # noqa: E402
-                            every_line_of, mixed_parlays, of_type, payout_parlays,
+from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, UFC_TYPES,  # noqa: E402
+                            best_parlays, every_line_of, mixed_parlays, of_type, payout_parlays,
                             rank_singles, type_max_prob)
 
 
@@ -85,7 +85,11 @@ def leg_record(b, sport: str) -> dict | None:
         leg["main_line"] = b.main_line
     if getattr(b, "tier", None):  # graded later by tier in the report card
         leg["tier"] = b.tier
-    if b.market == "h2h":
+    if sport == "ufc" and b.market == "h2h":
+        leg.update(type="fight", fighter=b.pick)
+    elif b.market == "fight_distance":
+        leg.update(type="distance", yes=b.pick.endswith(" goes the distance"))
+    elif b.market == "h2h":
         leg.update(type="moneyline", team=team_code(b.pick))
     elif b.market in ("spreads", "alternate_spreads"):
         leg.update(type="spread", team=team_code(b.pick), point=b.point)
@@ -213,11 +217,15 @@ def build(args):
         rank = "ev"  # real prices: best chance-and-payout first
     elif args.sport == "ncaaf":
         bets, rank = cfb_board(day, lo, hi, week=week), "prob"
+    elif args.sport == "ufc":
+        bets, rank = board.ufc_board(lo, hi, card=week, day=day), "prob"
     else:
         # Only bets that are sure to be on FanDuel (moneylines, anytime TDs).
         bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
     kind = getattr(args, "bet_type", None) or "All bets"
     board.NOTES.pop("confirm_line", None)
+    if args.sport == "ufc" and kind not in UFC_TYPES:
+        kind = "All bets"
     if kind not in SURE_TYPES and args.sport == "nfl" and not key:
         # Every line of the type from the model, marked so its line gets confirmed on
         # FanDuel before betting.
@@ -279,7 +287,9 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
             return f"  << chance moved from {old:.0%}"
         return ""
 
-    print(f"\n{args.sport.upper()} | {week_label(singles, parlays)} | "
+    when = (board.NOTES.get("ufc_card", "") if args.sport == "ufc"
+            else week_label(singles, parlays))
+    print(f"\n{args.sport.upper()} | {when} | "
           f"updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
           "likeliest first\n")
     if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -358,7 +368,7 @@ def main() -> int:
         except AttributeError:
             pass
     p = argparse.ArgumentParser(description="Build FanDuel single bets and parlays from free data.")
-    p.add_argument("--sport", choices=["nfl", "ncaaf"])
+    p.add_argument("--sport", choices=["nfl", "ncaaf", "ufc"])
     p.add_argument("--date", help="'week' (this week's games, default), 'today' or YYYY-MM-DD (Eastern)")
     p.add_argument("--week", type=int, help="a specific week, e.g. 6 (default: this week)")
     p.add_argument("--singles", type=int, help="how many single bets")

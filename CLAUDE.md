@@ -1,7 +1,7 @@
 # Project notes for Claude
 
 `nfl_edge` finds value bets on FanDuel for the NFL (`--sport nfl`) and
-college football (`--sport ncaaf`). See README.md for usage. Saved paper
+college football (`--sport ncaaf`), plus UFC fights (`--sport ufc`). See README.md for usage. Saved paper
 bets live in `bets/` and are graded with `python -m nfl_edge.grade <file>`.
 
 ## The user's standing betting preference
@@ -129,6 +129,13 @@ picks beat the closing line (`nfl_edge/clv.py`). Refit calibration first, then s
 Every payout is shown for a $10 wager: the app has no Singles/Parlays/Legs/Wager boxes
 (defaults 30, 10, 3-5, $10), the web page has no Wager box, and the bot's commands have no
 wager option (`/place` still records what was really bet).
+**UFC** (`--sport ufc`, `nfl_edge/ufc.py`, `board.ufc_board`): every fight's moneyline and
+whether it goes the distance, for the next few cards (Contender Series tryouts left out).
+Fight history and fighter bios come from ESPN (cached; 2014 on). Chances come from Elo
+ratings plus age, reach, experience, layoff and form, fit on 2020-2023 and tested on
+2024 on (`python -m nfl_edge.ufc --write` refits `ufc_weights.json`, bundled into the
+builds; refit each year). No FanDuel or market UFC prices are free, so the odds are
+break-even and the page says to trust FanDuel's price where it disagrees a lot.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,

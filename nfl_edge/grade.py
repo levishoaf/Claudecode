@@ -32,6 +32,10 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
     g = games.get(leg["game_id"])
     if g is None:
         return "pending", "game not found"
+    if "a_name" in g:  # a UFC fight
+        from .ufc import grade_leg as grade_fight
+
+        return grade_fight(leg, g)
     if g["home_score"] == "":
         return "pending", "not final yet"
     home, away = int(float(g["home_score"])), int(float(g["away_score"]))
@@ -88,7 +92,11 @@ def college_games(season: int, source: str | None = None) -> dict[str, dict]:
 
 
 def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, str]]:
-    if bet.get("sport") == "ncaaf":
+    if bet.get("sport") == "ufc":
+        from .ufc import fights_by_id
+
+        games = fights_by_id(bet["season"])
+    elif bet.get("sport") == "ncaaf":
         games = college_games(bet["season"], games_source)
     else:
         games = {g["game_id"]: g for g in data.games(games_source)}

@@ -43,6 +43,8 @@ def _describe(bet: Bet) -> str:
     if bet.market in ("team_totals", "alternate_team_totals"):
         team, side = bet.pick.rsplit(" ", 1)
         return f"{team} Team Total {side} {bet.point:g}"
+    if bet.market == "fight_distance":
+        return bet.pick
     if bet.point is None:
         return f"{bet.pick} ML"
     if bet.market in ("totals", "alternate_totals"):
@@ -74,7 +76,8 @@ def parlay_stake(p: Parlay, bankroll: float, kelly_mult: float, max_pct: float) 
 SLIP_WIDTH = 52
 SLIP_MARKETS = {"h2h": "MONEYLINE", "spreads": "SPREAD", "totals": "TOTAL POINTS",
                 "alternate_spreads": "ALT SPREAD", "alternate_totals": "ALT TOTAL POINTS",
-                "team_totals": "TEAM TOTAL POINTS", "alternate_team_totals": "ALT TEAM TOTAL"}
+                "team_totals": "TEAM TOTAL POINTS", "alternate_team_totals": "ALT TEAM TOTAL",
+                "fight_distance": "GO THE DISTANCE?"}
 try:
     from zoneinfo import ZoneInfo
 

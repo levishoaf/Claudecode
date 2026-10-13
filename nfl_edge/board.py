@@ -448,6 +448,66 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
     return [b for b in out if lo <= b.fair_prob <= hi]
 
 
+# ---------------------------------------------------------------- UFC
+
+UFC_CARDS_AHEAD = 4
+
+
+def ufc_cards(now: datetime | None = None) -> list[tuple[str, str, datetime]]:
+    """[(event id, card name, start)] for the next few UFC cards."""
+    from . import ufc
+
+    return [(eid, name, datetime.fromisoformat(bs[0]["date"].replace("Z", "+00:00")))
+            for eid, name, bs in ufc.upcoming_cards(now)[:UFC_CARDS_AHEAD]]
+
+
+def ufc_board(lo: float, hi: float, card: str | None = None, day: date | None = None,
+              now: datetime | None = None) -> list[Bet]:
+    """Each fight's moneylines (both fighters) and whether it goes the distance, from the
+    UFC model, for one card (default: the next one) or one day's fights."""
+    from . import ufc
+
+    now = now or datetime.now(timezone.utc)
+    cards = ufc.upcoming_cards(now)
+    if day is not None:
+        bouts = [b for _, _, bs in cards for b in bs
+                 if datetime.fromisoformat(b["date"].replace("Z", "+00:00"))
+                 .astimezone(EASTERN).date() == day]
+        name = "Today's fights"
+    else:
+        chosen = next((c for c in cards if c[0] == card), cards[0] if cards else None)
+        bouts, name = (chosen[2], chosen[1]) if chosen else ([], "No UFC card scheduled")
+    NOTES["ufc_card"] = name
+    test = (ufc.weights().get("test") or {}).get("win") or {}
+    if test:
+        NOTES["ufc_model"] = (
+            f"UFC chances come from the fight model: on {test['n']:,} recent fights it never "
+            f"saw, its favorite won {test['likelier_won']:.0%}. It knows only UFC fights, so "
+            "fighters new to the UFC lean on age, reach and few results; where FanDuel's "
+            "price disagrees a lot, trust the price.")
+    if not bouts:
+        return []
+    ratings = ufc.current_ratings()
+    numbers = ufc.card_numbers(now.year)
+    out = []
+    for b in bouts:
+        if not b["a_name"] or not b["b_name"]:
+            continue
+        kick = datetime.fromisoformat(b["date"].replace("Z", "+00:00")).astimezone(EASTERN)
+        p_a, p_distance = ufc.chances(b, ratings)
+        game = f"{b['a_name']} vs {b['b_name']}"
+        week = numbers.get(b["id"])
+        for fighter, p in ((b["a_name"], p_a), (b["b_name"], 1 - p_a)):
+            out.append(make_bet(game, kick, "h2h", fighter, None, p, b["id"], "UFC model",
+                                week=week))
+        fight = f"{ufc.last_name(b['a_name'])} vs {ufc.last_name(b['b_name'])}"
+        for pick, p in ((f"{fight} goes the distance", p_distance),
+                        (f"{fight} doesn't go the distance", 1 - p_distance)):
+            out.append(make_bet(game, kick, "fight_distance", pick, None, p, b["id"],
+                                "UFC model", week=week))
+    return [b for b in out if lo <= b.fair_prob <= hi]
+
+
 # ---------------------------------------------------------------- injury report
 
 SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]

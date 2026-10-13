@@ -148,6 +148,11 @@ def first_kickoff(e: dict) -> str:
 
 def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[str, tuple]:
     """{game_id: (kickoff ISO time, 'Away @ Home')} for one season."""
+    if sport == "ufc":
+        from .ufc import fights_by_id
+
+        return {i: (b["date"].replace("Z", "+00:00"), f"{b['a_name']} vs {b['b_name']}")
+                for i, b in fights_by_id(season).items()}
     if sport == "ncaaf":
         from . import cfb
 
@@ -169,6 +174,10 @@ def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[s
 
 def game_weeks(sport: str, season: int, games_source: str | None = None) -> dict[str, int]:
     """{game_id: week} for one season."""
+    if sport == "ufc":
+        from .ufc import card_numbers
+
+        return card_numbers(season)
     if sport == "ncaaf":
         from . import cfb
 
@@ -256,8 +265,14 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
         key = (e["sport"], e["season"])
         try:
             if key not in games:
-                games[key] = (college_games(e["season"], games_source) if e["sport"] == "ncaaf"
-                              else {g["game_id"]: g for g in data.games(games_source)})
+                if e["sport"] == "ufc":
+                    from .ufc import fights_by_id
+
+                    games[key] = fights_by_id(e["season"])
+                else:
+                    games[key] = (college_games(e["season"], games_source)
+                                  if e["sport"] == "ncaaf"
+                                  else {g["game_id"]: g for g in data.games(games_source)})
             if leg["type"] in ("passing_tds", "player_stat") and e["season"] not in stats:
                 try:
                     stats[e["season"]] = data.read_csv(STATS_URL.format(season=e["season"]),
@@ -311,6 +326,10 @@ def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None
     kind = leg.get("type")
     if kind == "total":
         return GAME_TOTALS
+    if kind == "fight":
+        return leg.get("fighter")
+    if kind == "distance":
+        return "Fight distance"
     if kind == "player_stat":
         team = player_team(leg.get("player", ""))
     else:
@@ -321,7 +340,7 @@ def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None
 
 
 LEG_TYPES = {"moneyline": "Moneyline", "spread": "Spread", "total": "Total points",
-             "team_total": "Team totals"}
+             "team_total": "Team totals", "fight": "Moneyline", "distance": "Fight distance"}
 STAT_TYPES = {"receiving_yards": "Receiving yards", "receptions": "Receptions",
               "rushing_yards": "Rushing yards", "passing_yards": "Passing yards",
               "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD"}
@@ -339,7 +358,8 @@ def entry_types(e: dict) -> set[str]:
     return {leg_type_name(leg) for leg in e.get("legs", [])}
 
 
-ALWAYS_OFFERED = {"Moneyline", "Anytime TD"}  # bets FanDuel lists exactly as shown
+# Bets FanDuel lists exactly as shown (UFC: every fight's "go the distance?" too).
+ALWAYS_OFFERED = {"Moneyline", "Anytime TD", "Fight distance"}
 
 
 def model_line(e: dict) -> bool:

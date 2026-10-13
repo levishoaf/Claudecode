@@ -56,7 +56,11 @@ BET_TYPES = {
     "Rushing yards": ("player_rush_yds",),
     "Receiving yards": ("player_reception_yds",),
     "Receptions": ("player_receptions",),
+    "Fight distance": ("fight_distance",),
 }
+# The bet types each league has (the Bet type menu).
+UFC_TYPES = ("All bets", "Moneyline", "Fight distance")
+FOOTBALL_TYPES = tuple(t for t in BET_TYPES if t not in ("Fight distance",))
 # Worst odds a bet type may have, e.g. receiving yards only at -300 or better.
 TYPE_MIN_ODDS = {"Receiving yards": -300}
 
@@ -79,7 +83,7 @@ def within_odds(bets: list[Bet], kind: str | None) -> list[Bet]:
 
 
 # Types on the free board, which only has bets sure to be on FanDuel.
-SURE_TYPES = ("All bets", "Moneyline", "Anytime TD")
+SURE_TYPES = ("All bets", "Moneyline", "Anytime TD", "Fight distance")
 
 
 def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
@@ -105,6 +109,8 @@ CONFIRM_NOTE = ("{kind} lines marked CONFIRM LINE come from the model, not FanDu
 
 def empty_type_note(kind: str, sport: str, checked: bool) -> str:
     """Why a chosen bet type has no bets."""
+    if sport == "ufc":
+        return f"No {kind.lower()} bets on this card."
     if sport == "ncaaf" and kind not in ("All bets", "Moneyline"):
         return "College bets are moneylines only."
     return f"No {kind.lower()} bets for this week."
