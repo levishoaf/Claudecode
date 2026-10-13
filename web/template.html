@@ -212,6 +212,10 @@ main { padding-block: 18px; display: grid; gap: 14px; }
 }
 @media (prefers-reduced-motion: no-preference) { .card { transition: border-color .12s, box-shadow .12s; } }
 .pnote{font-size:12px;color:var(--mark);margin:0 0 6px}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin: 0 0 10px; font-size: 12px; }
+.lg-item { display: inline-flex; align-items: baseline; gap: 6px; }
+.lg-item b { font-weight: 700; }
+.lg-m { color: var(--ink-2); }
 /* NBA preview: dark hardwood instead of the field */
 .tagline { font-size: 12px; color: var(--on-dark-2); letter-spacing: .03em; }
 .nba-card { background: var(--card); color: var(--ink); border-radius: 12px; padding: 16px 18px; }
@@ -672,6 +676,20 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
 
   // ---- confirming bets on FanDuel (the free data can't see FanDuel's menu)
+  // What the numbers and symbols on each bet mean.
+  function legendHtml() {
+    const item = (sample, meaning) => `<span class="lg-item">${sample}<span class="lg-m">${meaning}</span></span>`;
+    return `<div class="legend">
+      ${item(`<b style="color:var(--good)">78%</b> <b style="color:var(--blue)">66%</b> <b style="color:var(--warn)">55%</b>`, "the model's chance this bet wins")}
+      ${item(`<b style="color:var(--good)">(4/5)</b>`, "times this exact bet won this season")}
+      ${item(`<b style="color:var(--good)">3-1 vs Browns</b>`, "record vs this week's opponent since 2024")}
+      ${item(`<b style="color:var(--good)">● Strong</b> <b style="color:var(--warn)">● Mixed</b> <b style="color:var(--bad)">● Weak</b>`, "confidence tier")}
+      ${item(`<b style="color:var(--warn)">⚠</b>`, "a warning: injury, QB change, travel, head-to-head")}
+      ${item(`<b style="color:var(--blue)">Worst odds</b>`, "the lowest price still worth taking")}
+      ${item(`<b>Pays on $10</b>`, "what $10 returns at those odds, stake included")}
+      ${item(`<span class="badge b-q">Confirm line</span>`, "the model's line: check FanDuel has it")}
+    </div>`;
+  }
   function render() {
     const wk = current();
     document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sport === state.sport)));
@@ -699,6 +717,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
       if (wk.late) html += `<div class="notice">⏱ ${esc(wk.late)}.</div>`;
     }
+    if (["singles", "parlays", "money"].includes(state.tab)) html += legendHtml();
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest parlays that pay back at least double your $${wager()} wager if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 4]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first, then the likeliest of the rest. No Weak legs, and no leg in more than two. Payouts are estimates; check the slip.</div><div class="blist">${listHead("", "Pays on $" + wager())}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: not enough games this week.</div>`;

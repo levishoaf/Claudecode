@@ -397,6 +397,8 @@ class App:
                      bg=BG, fg=GREEN if ready else MOVED_BADGE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
 
+        if args.sport != "nba":
+            self.legend(self.body)
         money = getattr(args, "money_makers", [])
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
@@ -465,6 +467,41 @@ class App:
         else:
             self.history_tab(grid)
         return grid
+
+    LEGEND = [  # (sample, its color, what it means); None color = plain text
+        [("68%", "chance", "the model's chance this bet wins"),
+         ("(4/5)", GREEN, "times this exact bet won this season")],
+        [("3-1 vs Browns", GREEN, "vs this week's opponent since 2024"),
+         ("● Strong  ● Mixed  ● Weak", None, "confidence tier"),
+         ("⚠", AMBER, "a warning")],
+        [("Worst odds", BLUE, "lowest price worth taking"),
+         ("Pays on $10", None, "what $10 returns, stake included"),
+         ("Confirm line", MOVED_BADGE, "check FanDuel has this line")],
+    ]
+
+    def legend(self, parent) -> None:
+        """What the numbers and symbols on each bet mean, in two short rows."""
+        box = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
+        box.pack(fill="x", padx=16, pady=(8, 0))
+        for row in self.LEGEND:
+            line = tk.Frame(box, bg=CARD)
+            line.pack(fill="x", padx=10, pady=(5, 0 if row is not self.LEGEND[-1] else 6))
+            for sample, color, meaning in row:
+                item = tk.Frame(line, bg=CARD)
+                item.pack(side="left", padx=(0, 16))
+                if color == "chance":  # chances are colored by how likely they are
+                    for text, c in (("72%", GREEN), ("58%", AMBER), ("40%", RED)):
+                        tk.Label(item, text=text, bg=CARD, fg=c,
+                                 font=self.f["tinyb"]).pack(side="left", padx=(0, 3))
+                elif sample.startswith("●"):
+                    for word, c in (("● Strong", GREEN), ("● Mixed", AMBER), ("● Weak", RED)):
+                        tk.Label(item, text=word, bg=CARD, fg=c,
+                                 font=self.f["tinyb"]).pack(side="left", padx=(0, 3))
+                else:
+                    tk.Label(item, text=sample, bg=CARD, fg=color or TEXT,
+                             font=self.f["tinyb"]).pack(side="left")
+                tk.Label(item, text=" " + meaning, bg=CARD, fg=MUTED,
+                         font=self.f["tiny"]).pack(side="left")
 
     def show_tab(self, key: str) -> None:
         """Switch tabs: hide the current one and show the other (drawn once, then kept)."""
