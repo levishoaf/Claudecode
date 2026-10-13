@@ -42,7 +42,7 @@
    "win_prob": 0.7995,
    "odds": -399,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -59,8 +59,8 @@
      "pick": "Dalton Kincaid 2+ Receptions",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Dalton Kincaid 2+ Receptions (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "1 receptions"
     }
    ],
    "week": 5
@@ -106,7 +106,7 @@
    "win_prob": 0.7992,
    "odds": -398,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -123,8 +123,8 @@
      "pick": "Josh Allen 150+ Passing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "210 passing yards"
     }
    ],
    "week": 5
@@ -232,7 +232,7 @@
    "win_prob": 0.7969,
    "odds": -392,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -249,8 +249,8 @@
      "pick": "Blake Corum 20+ Rushing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "19 rushing yards"
     }
    ],
    "week": 5
@@ -960,7 +960,7 @@
    "win_prob": 0.5058,
    "odds": -102,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -977,8 +977,8 @@
      "pick": "Blake Corum 20+ Rushing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "19 rushing yards"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -1027,7 +1027,7 @@
    "win_prob": 0.5058,
    "odds": -102,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -1044,8 +1044,8 @@
      "pick": "Blake Corum 20+ Rushing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Blake Corum 20+ Rushing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "19 rushing yards"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -3674,7 +3674,7 @@
    "win_prob": 0.4041,
    "odds": 147,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -3691,8 +3691,8 @@
      "pick": "Josh Allen 150+ Passing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Josh Allen 150+ Passing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "210 passing yards"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -4298,7 +4298,7 @@
    "win_prob": 0.7966,
    "odds": -392,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -4314,8 +4314,8 @@
      "pick": "Los Angeles Rams +6.5",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams +6.5 (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BUF 37 - LA 34"
     }
    ],
    "week": 5
@@ -4329,7 +4329,7 @@
    "win_prob": 0.7938,
    "odds": -385,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -4346,8 +4346,8 @@
      "pick": "Davante Adams 25+ Receiving Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams 25+ Receiving Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "51 receiving yards"
     }
    ],
    "week": 5
@@ -4740,7 +4740,7 @@
    "win_prob": 0.7859,
    "odds": -367,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -4757,8 +4757,8 @@
      "pick": "Matthew Stafford 200+ Passing Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Matthew Stafford 200+ Passing Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "383 passing yards"
     }
    ],
    "week": 5
@@ -5028,7 +5028,7 @@
    "win_prob": 0.5011,
    "odds": -100,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_MIN_NO",
@@ -5080,8 +5080,8 @@
      "pick": "Davante Adams 25+ Receiving Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams 25+ Receiving Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "51 receiving yards"
     }
    ],
    "week": 5
@@ -5095,7 +5095,7 @@
    "win_prob": 0.4995,
    "odds": 100,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -5130,8 +5130,8 @@
      "pick": "Davante Adams 25+ Receiving Yds",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams 25+ Receiving Yds (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "51 receiving yards"
     },
     {
      "game_id": "2026_05_PHI_JAX",
@@ -5950,7 +5950,7 @@
    "win_prob": 0.6125,
    "odds": -158,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -5965,8 +5965,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     }
    ],
    "week": 5
@@ -6410,7 +6410,7 @@
    "win_prob": 0.1697,
    "odds": 489,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -6473,8 +6473,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     }
    ],
    "week": 5
@@ -9622,7 +9622,7 @@
    "win_prob": 0.5769,
    "odds": -136,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -9639,8 +9639,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -9714,7 +9714,7 @@
    "win_prob": 0.5671,
    "odds": -131,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_BUF_LA",
@@ -9731,8 +9731,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -12072,7 +12072,7 @@
    "win_prob": 0.2447,
    "odds": 309,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -12105,8 +12105,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -12138,7 +12138,7 @@
    "win_prob": 0.2425,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -12171,8 +12171,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -12402,7 +12402,7 @@
    "win_prob": 0.2382,
    "odds": 320,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -12435,8 +12435,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -13778,7 +13778,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -13809,8 +13809,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     },
     {
      "game_id": "2026_05_CHI_GB",
@@ -13988,7 +13988,7 @@
    "win_prob": 0.2493,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -14021,8 +14021,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_IND_PIT",
@@ -14052,7 +14052,7 @@
    "win_prob": 0.249,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -14083,8 +14083,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     },
     {
      "game_id": "2026_05_SF_SEA",
@@ -14246,7 +14246,7 @@
    "win_prob": 0.248,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -14279,8 +14279,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_MIN_NO",
@@ -15442,7 +15442,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -15475,8 +15475,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     },
     {
      "game_id": "2026_05_MIN_NO",
@@ -15570,7 +15570,7 @@
    "win_prob": 0.2491,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -15619,8 +15619,8 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Kyren Williams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -17026,7 +17026,7 @@
    "win_prob": 0.2465,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -17075,8 +17075,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -17154,7 +17154,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_05_CIN_MIA",
@@ -17219,8 +17219,8 @@
      "pick": "Los Angeles Rams ML",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Los Angeles Rams ML (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BUF 37 - LA 34"
     }
    ],
    "week": 5
@@ -17314,7 +17314,7 @@
    "win_prob": 0.2491,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_PHI_JAX",
@@ -17347,8 +17347,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_05_CLE_NYJ",
@@ -17506,7 +17506,7 @@
    "win_prob": 0.2482,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -17555,8 +17555,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -19404,7 +19404,7 @@
    "win_prob": 0.2495,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_DET_ARI",
@@ -19453,8 +19453,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -19468,7 +19468,7 @@
    "win_prob": 0.2491,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_05_HOU_TEN",
@@ -19517,8 +19517,8 @@
      "pick": "Davante Adams Anytime TD",
      "game": "Buffalo Bills @ Los Angeles Rams",
      "id": "2026_05_BUF_LA|Davante Adams Anytime TD (Buffalo Bills @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "2 rushing tds+receiving tds"
     }
    ],
    "week": 5
@@ -27859,6 +27859,1475 @@
     }
    ],
    "week": 6
+  },
+  {
+   "id": "single:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.8752,
+   "odds": -702,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -900,
+     "stake": 100,
+     "win_prob": 0.8752,
+     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.8752,
+     "market_prob": 0.8882,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-18T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.7257,
+   "odds": -265,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7257,
+     "label": "Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.7135,
+     "market_prob": 0.7273,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "kickoff": "2026-10-18T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_ARI_LA|Davante Adams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.6125,
+   "odds": -158,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -158,
+     "stake": 100,
+     "win_prob": 0.6125,
+     "label": "Davante Adams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.6452,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Davante Adams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:05:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Davante Adams Anytime TD",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Davante Adams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.5829,
+   "odds": -140,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5829,
+     "label": "Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.6224,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kyren Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:05:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Kyren Williams Anytime TD",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_BUF_LV|James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.5152,
+   "odds": -106,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -106,
+     "stake": 100,
+     "win_prob": 0.5152,
+     "label": "James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.5914,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "James Cook",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "James Cook Anytime TD",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_BUF_LV|Brock Bowers Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.5096,
+   "odds": -104,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5096,
+     "label": "Brock Bowers Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.5885,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Brock Bowers",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Brock Bowers Anytime TD",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Brock Bowers Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders) + 2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers) + 2026_06_TEN_IND|Jonathan Taylor Anytime TD (Tennessee Titans @ Indianapolis Colts)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7257,
+     "label": "Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.7135,
+     "market_prob": 0.7273,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "kickoff": "2026-10-18T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_TEN_IND",
+     "odds": -176,
+     "stake": 100,
+     "win_prob": 0.6372,
+     "label": "Jonathan Taylor Anytime TD (Tennessee Titans @ Indianapolis Colts)",
+     "raw_prob": 0.6693,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jonathan Taylor",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jonathan Taylor Anytime TD",
+     "game": "Tennessee Titans @ Indianapolis Colts",
+     "id": "2026_06_TEN_IND|Jonathan Taylor Anytime TD (Tennessee Titans @ Indianapolis Colts)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -119,
+     "stake": 100,
+     "win_prob": 0.5437,
+     "label": "Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "raw_prob": 0.6059,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Javonte Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Javonte Williams Anytime TD",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams) + 2026_06_BAL_CLE|Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns) + 2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers) + 2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -900,
+     "stake": 100,
+     "win_prob": 0.8752,
+     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.8752,
+     "market_prob": 0.8882,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-18T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_NYJ_NE",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7733,
+     "label": "New England Patriots ML (New York Jets @ New England Patriots)",
+     "raw_prob": 0.7562,
+     "market_prob": 0.7644,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "NE",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New England Patriots ML",
+     "game": "New York Jets @ New England Patriots",
+     "id": "2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_BAL_CLE",
+     "odds": -238,
+     "stake": 100,
+     "win_prob": 0.6829,
+     "label": "Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns)",
+     "raw_prob": 0.676,
+     "market_prob": 0.6865,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BAL",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Baltimore Ravens ML",
+     "game": "Baltimore Ravens @ Cleveland Browns",
+     "id": "2026_06_BAL_CLE|Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -119,
+     "stake": 100,
+     "win_prob": 0.5437,
+     "label": "Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "raw_prob": 0.6059,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Javonte Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Javonte Williams Anytime TD",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams) + 2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers) + 2026_06_LAC_KC|Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs) + 2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2498,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -900,
+     "stake": 100,
+     "win_prob": 0.8752,
+     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.8752,
+     "market_prob": 0.8882,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-18T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_WAS_SF",
+     "odds": -410,
+     "stake": 100,
+     "win_prob": 0.8033,
+     "label": "San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "raw_prob": 0.7873,
+     "market_prob": 0.7892,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "SF",
+     "kickoff": "2026-10-20T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "San Francisco 49ers ML",
+     "game": "Washington Commanders @ San Francisco 49ers",
+     "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_LAC_KC",
+     "odds": -192,
+     "stake": 100,
+     "win_prob": 0.6573,
+     "label": "Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs)",
+     "raw_prob": 0.6986,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kenneth Walker III",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Kenneth Walker III Anytime TD",
+     "game": "Los Angeles Chargers @ Kansas City Chiefs",
+     "id": "2026_06_LAC_KC|Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -119,
+     "stake": 100,
+     "win_prob": 0.5437,
+     "label": "Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "raw_prob": 0.6059,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Javonte Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Javonte Williams Anytime TD",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams) + 2026_06_CHI_ATL|Chicago Bears ML (Chicago Bears @ Atlanta Falcons) + 2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers) + 2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2497,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -900,
+     "stake": 100,
+     "win_prob": 0.8752,
+     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.8752,
+     "market_prob": 0.8882,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-18T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_NYJ_NE",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7733,
+     "label": "New England Patriots ML (New York Jets @ New England Patriots)",
+     "raw_prob": 0.7562,
+     "market_prob": 0.7644,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "NE",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New England Patriots ML",
+     "game": "New York Jets @ New England Patriots",
+     "id": "2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -159,
+     "stake": 100,
+     "win_prob": 0.6135,
+     "label": "Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "raw_prob": 0.6461,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian Watson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian Watson Anytime TD",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_CHI_ATL",
+     "odds": -175,
+     "stake": 100,
+     "win_prob": 0.6049,
+     "label": "Chicago Bears ML (Chicago Bears @ Atlanta Falcons)",
+     "raw_prob": 0.6098,
+     "market_prob": 0.6166,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CHI",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bears ML",
+     "game": "Chicago Bears @ Atlanta Falcons",
+     "id": "2026_06_CHI_ATL|Chicago Bears ML (Chicago Bears @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams) + 2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders) + 2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots) + 2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2496,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_NYJ_NE",
+     "odds": -355,
+     "stake": 100,
+     "win_prob": 0.7733,
+     "label": "New England Patriots ML (New York Jets @ New England Patriots)",
+     "raw_prob": 0.7562,
+     "market_prob": 0.7644,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "NE",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New England Patriots ML",
+     "game": "New York Jets @ New England Patriots",
+     "id": "2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_TEN_IND",
+     "odds": -340,
+     "stake": 100,
+     "win_prob": 0.7673,
+     "label": "Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
+     "raw_prob": 0.7508,
+     "market_prob": 0.7568,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "IND",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Indianapolis Colts ML",
+     "game": "Tennessee Titans @ Indianapolis Colts",
+     "id": "2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7257,
+     "label": "Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.7135,
+     "market_prob": 0.7273,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "kickoff": "2026-10-18T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5829,
+     "label": "Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.6224,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kyren Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:05:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Kyren Williams Anytime TD",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_BUF_LV|James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders) + 2026_06_CHI_ATL|Chicago Bears ML (Chicago Bears @ Atlanta Falcons) + 2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_WAS_SF",
+     "odds": -410,
+     "stake": 100,
+     "win_prob": 0.8033,
+     "label": "San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "raw_prob": 0.7873,
+     "market_prob": 0.7892,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "SF",
+     "kickoff": "2026-10-20T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "San Francisco 49ers ML",
+     "game": "Washington Commanders @ San Francisco 49ers",
+     "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_CHI_ATL",
+     "odds": -175,
+     "stake": 100,
+     "win_prob": 0.6049,
+     "label": "Chicago Bears ML (Chicago Bears @ Atlanta Falcons)",
+     "raw_prob": 0.6098,
+     "market_prob": 0.6166,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CHI",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bears ML",
+     "game": "Chicago Bears @ Atlanta Falcons",
+     "id": "2026_06_CHI_ATL|Chicago Bears ML (Chicago Bears @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -106,
+     "stake": 100,
+     "win_prob": 0.5152,
+     "label": "James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.5914,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "James Cook",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "James Cook Anytime TD",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|James Cook Anytime TD (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers) + 2026_06_LAC_KC|Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs) + 2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts) + 2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2478,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_WAS_SF",
+     "odds": -410,
+     "stake": 100,
+     "win_prob": 0.8033,
+     "label": "San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "raw_prob": 0.7873,
+     "market_prob": 0.7892,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "SF",
+     "kickoff": "2026-10-20T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "San Francisco 49ers ML",
+     "game": "Washington Commanders @ San Francisco 49ers",
+     "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_TEN_IND",
+     "odds": -340,
+     "stake": 100,
+     "win_prob": 0.7673,
+     "label": "Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
+     "raw_prob": 0.7508,
+     "market_prob": 0.7568,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "IND",
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Indianapolis Colts ML",
+     "game": "Tennessee Titans @ Indianapolis Colts",
+     "id": "2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_LAC_KC",
+     "odds": -192,
+     "stake": 100,
+     "win_prob": 0.6573,
+     "label": "Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs)",
+     "raw_prob": 0.6986,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kenneth Walker III",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Kenneth Walker III Anytime TD",
+     "game": "Los Angeles Chargers @ Kansas City Chiefs",
+     "id": "2026_06_LAC_KC|Kenneth Walker III Anytime TD (Los Angeles Chargers @ Kansas City Chiefs)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -159,
+     "stake": 100,
+     "win_prob": 0.6135,
+     "label": "Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "raw_prob": 0.6461,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian Watson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T20:20:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian Watson Anytime TD",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams) + 2026_06_BAL_CLE|Derrick Henry Anytime TD (Baltimore Ravens @ Cleveland Browns) + 2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-13T10:31:11+00:00",
+   "win_prob": 0.2468,
+   "odds": 305,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7257,
+     "label": "Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "raw_prob": 0.7135,
+     "market_prob": 0.7273,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "kickoff": "2026-10-18T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Buffalo Bills ML (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_BAL_CLE",
+     "odds": -141,
+     "stake": 100,
+     "win_prob": 0.5843,
+     "label": "Derrick Henry Anytime TD (Baltimore Ravens @ Cleveland Browns)",
+     "raw_prob": 0.623,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Baltimore Ravens @ Cleveland Browns",
+     "id": "2026_06_BAL_CLE|Derrick Henry Anytime TD (Baltimore Ravens @ Cleveland Browns)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.5829,
+     "label": "Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "raw_prob": 0.6224,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kyren Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-18T16:05:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Kyren Williams Anytime TD",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Kyren Williams Anytime TD (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "parlay:401856723|Alabama ML (Alabama @ Tennessee) + 401856833|Utah ML (Utah @ Colorado) + 401858268|SMU ML (Virginia @ SMU) + 401860903|Oregon State ML (Washington State @ Oregon State) + 401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP) + 401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-13T10:31:52+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860903",
+     "odds": -963,
+     "stake": 100,
+     "win_prob": 0.9059,
+     "label": "Oregon State ML (Washington State @ Oregon State)",
+     "raw_prob": 0.8849,
+     "market_prob": 0.8849,
+     "type": "moneyline",
+     "team": "Oregon State",
+     "kickoff": "2026-10-17T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oregon State ML",
+     "game": "Washington State @ Oregon State",
+     "id": "401860903|Oregon State ML (Washington State @ Oregon State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856833",
+     "odds": -881,
+     "stake": 100,
+     "win_prob": 0.898,
+     "label": "Utah ML (Utah @ Colorado)",
+     "raw_prob": 0.8729,
+     "market_prob": 0.8729,
+     "type": "moneyline",
+     "team": "Utah",
+     "kickoff": "2026-10-17T22:15:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Utah ML",
+     "game": "Utah @ Colorado",
+     "id": "401856833|Utah ML (Utah @ Colorado)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871091",
+     "odds": -830,
+     "stake": 100,
+     "win_prob": 0.8925,
+     "label": "Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "raw_prob": 0.868,
+     "market_prob": 0.868,
+     "type": "moneyline",
+     "team": "Louisiana Tech",
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana Tech ML",
+     "game": "Louisiana Tech @ UL Monroe",
+     "id": "401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856723",
+     "odds": -251,
+     "stake": 100,
+     "win_prob": 0.7147,
+     "label": "Alabama ML (Alabama @ Tennessee)",
+     "raw_prob": 0.741,
+     "market_prob": 0.741,
+     "type": "moneyline",
+     "team": "Alabama",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alabama ML",
+     "game": "Alabama @ Tennessee",
+     "id": "401856723|Alabama ML (Alabama @ Tennessee)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864523",
+     "odds": -246,
+     "stake": 100,
+     "win_prob": 0.711,
+     "label": "San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "raw_prob": 0.7388,
+     "market_prob": 0.7388,
+     "type": "moneyline",
+     "team": "San Jos\u00e9 State",
+     "kickoff": "2026-10-17T21:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Jos\u00e9 State ML",
+     "game": "San Jos\u00e9 State @ UTEP",
+     "id": "401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858268",
+     "odds": -241,
+     "stake": 100,
+     "win_prob": 0.7065,
+     "label": "SMU ML (Virginia @ SMU)",
+     "raw_prob": 0.7362,
+     "market_prob": 0.7362,
+     "type": "moneyline",
+     "team": "SMU",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "SMU ML",
+     "game": "Virginia @ SMU",
+     "id": "401858268|SMU ML (Virginia @ SMU)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858262|Stanford ML (Elon @ Stanford) + 401858264|Virginia Tech ML (Georgia Tech @ Virginia Tech) + 401858269|Wake Forest ML (Wake Forest @ California) + 401864522|Wyoming ML (Northern Illinois @ Wyoming) + 401866478|Miami (OH) ML (Akron @ Miami (OH)) + 401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-13T10:31:52+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858262",
+     "odds": -1571,
+     "stake": 100,
+     "win_prob": 0.9402,
+     "label": "Stanford ML (Elon @ Stanford)",
+     "raw_prob": 0.9328,
+     "market_prob": 0.9328,
+     "type": "moneyline",
+     "team": "Stanford",
+     "kickoff": "2026-10-17T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Stanford ML",
+     "game": "Elon @ Stanford",
+     "id": "401858262|Stanford ML (Elon @ Stanford)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871091",
+     "odds": -830,
+     "stake": 100,
+     "win_prob": 0.8925,
+     "label": "Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "raw_prob": 0.868,
+     "market_prob": 0.868,
+     "type": "moneyline",
+     "team": "Louisiana Tech",
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana Tech ML",
+     "game": "Louisiana Tech @ UL Monroe",
+     "id": "401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866478",
+     "odds": -338,
+     "stake": 100,
+     "win_prob": 0.7715,
+     "label": "Miami (OH) ML (Akron @ Miami (OH))",
+     "raw_prob": 0.7756,
+     "market_prob": 0.7756,
+     "type": "moneyline",
+     "team": "Miami (OH)",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami (OH) ML",
+     "game": "Akron @ Miami (OH)",
+     "id": "401866478|Miami (OH) ML (Akron @ Miami (OH))",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858264",
+     "odds": -315,
+     "stake": 100,
+     "win_prob": 0.7593,
+     "label": "Virginia Tech ML (Georgia Tech @ Virginia Tech)",
+     "raw_prob": 0.7672,
+     "market_prob": 0.7672,
+     "type": "moneyline",
+     "team": "Virginia Tech",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Virginia Tech ML",
+     "game": "Georgia Tech @ Virginia Tech",
+     "id": "401858264|Virginia Tech ML (Georgia Tech @ Virginia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858269",
+     "odds": -310,
+     "stake": 100,
+     "win_prob": 0.756,
+     "label": "Wake Forest ML (Wake Forest @ California)",
+     "raw_prob": 0.7653,
+     "market_prob": 0.7653,
+     "type": "moneyline",
+     "team": "Wake Forest",
+     "kickoff": "2026-10-17T22:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Wake Forest ML",
+     "game": "Wake Forest @ California",
+     "id": "401858269|Wake Forest ML (Wake Forest @ California)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864522",
+     "odds": -235,
+     "stake": 100,
+     "win_prob": 0.7014,
+     "label": "Wyoming ML (Northern Illinois @ Wyoming)",
+     "raw_prob": 0.7332,
+     "market_prob": 0.7332,
+     "type": "moneyline",
+     "team": "Wyoming",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Wyoming ML",
+     "game": "Northern Illinois @ Wyoming",
+     "id": "401864522|Wyoming ML (Northern Illinois @ Wyoming)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856723|Alabama ML (Alabama @ Tennessee) + 401856809|Notre Dame ML (Notre Dame @ BYU) + 401858264|Virginia Tech ML (Georgia Tech @ Virginia Tech) + 401860903|Oregon State ML (Washington State @ Oregon State) + 401866478|Miami (OH) ML (Akron @ Miami (OH)) + 401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-13T10:31:52+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860903",
+     "odds": -963,
+     "stake": 100,
+     "win_prob": 0.9059,
+     "label": "Oregon State ML (Washington State @ Oregon State)",
+     "raw_prob": 0.8849,
+     "market_prob": 0.8849,
+     "type": "moneyline",
+     "team": "Oregon State",
+     "kickoff": "2026-10-17T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oregon State ML",
+     "game": "Washington State @ Oregon State",
+     "id": "401860903|Oregon State ML (Washington State @ Oregon State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871091",
+     "odds": -830,
+     "stake": 100,
+     "win_prob": 0.8925,
+     "label": "Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "raw_prob": 0.868,
+     "market_prob": 0.868,
+     "type": "moneyline",
+     "team": "Louisiana Tech",
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana Tech ML",
+     "game": "Louisiana Tech @ UL Monroe",
+     "id": "401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866478",
+     "odds": -338,
+     "stake": 100,
+     "win_prob": 0.7715,
+     "label": "Miami (OH) ML (Akron @ Miami (OH))",
+     "raw_prob": 0.7756,
+     "market_prob": 0.7756,
+     "type": "moneyline",
+     "team": "Miami (OH)",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami (OH) ML",
+     "game": "Akron @ Miami (OH)",
+     "id": "401866478|Miami (OH) ML (Akron @ Miami (OH))",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856809",
+     "odds": -335,
+     "stake": 100,
+     "win_prob": 0.77,
+     "label": "Notre Dame ML (Notre Dame @ BYU)",
+     "raw_prob": 0.7745,
+     "market_prob": 0.7745,
+     "type": "moneyline",
+     "team": "Notre Dame",
+     "kickoff": "2026-10-17T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Notre Dame ML",
+     "game": "Notre Dame @ BYU",
+     "id": "401856809|Notre Dame ML (Notre Dame @ BYU)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858264",
+     "odds": -315,
+     "stake": 100,
+     "win_prob": 0.7593,
+     "label": "Virginia Tech ML (Georgia Tech @ Virginia Tech)",
+     "raw_prob": 0.7672,
+     "market_prob": 0.7672,
+     "type": "moneyline",
+     "team": "Virginia Tech",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Virginia Tech ML",
+     "game": "Georgia Tech @ Virginia Tech",
+     "id": "401858264|Virginia Tech ML (Georgia Tech @ Virginia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856723",
+     "odds": -251,
+     "stake": 100,
+     "win_prob": 0.7147,
+     "label": "Alabama ML (Alabama @ Tennessee)",
+     "raw_prob": 0.741,
+     "market_prob": 0.741,
+     "type": "moneyline",
+     "team": "Alabama",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alabama ML",
+     "game": "Alabama @ Tennessee",
+     "id": "401856723|Alabama ML (Alabama @ Tennessee)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856719|Georgia ML (Auburn @ Georgia) + 401856723|Alabama ML (Alabama @ Tennessee) + 401856809|Notre Dame ML (Notre Dame @ BYU) + 401860904|Fresno State ML (Fresno State @ San Diego State) + 401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-13T10:31:52+00:00",
+   "win_prob": 0.2483,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856719",
+     "odds": -1373,
+     "stake": 100,
+     "win_prob": 0.9321,
+     "label": "Georgia ML (Auburn @ Georgia)",
+     "raw_prob": 0.9229,
+     "market_prob": 0.9229,
+     "type": "moneyline",
+     "team": "Georgia",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia ML",
+     "game": "Auburn @ Georgia",
+     "id": "401856719|Georgia ML (Auburn @ Georgia)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856809",
+     "odds": -335,
+     "stake": 100,
+     "win_prob": 0.77,
+     "label": "Notre Dame ML (Notre Dame @ BYU)",
+     "raw_prob": 0.7745,
+     "market_prob": 0.7745,
+     "type": "moneyline",
+     "team": "Notre Dame",
+     "kickoff": "2026-10-17T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Notre Dame ML",
+     "game": "Notre Dame @ BYU",
+     "id": "401856809|Notre Dame ML (Notre Dame @ BYU)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856723",
+     "odds": -251,
+     "stake": 100,
+     "win_prob": 0.7147,
+     "label": "Alabama ML (Alabama @ Tennessee)",
+     "raw_prob": 0.741,
+     "market_prob": 0.741,
+     "type": "moneyline",
+     "team": "Alabama",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alabama ML",
+     "game": "Alabama @ Tennessee",
+     "id": "401856723|Alabama ML (Alabama @ Tennessee)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860904",
+     "odds": -247,
+     "stake": 100,
+     "win_prob": 0.7121,
+     "label": "Fresno State ML (Fresno State @ San Diego State)",
+     "raw_prob": 0.7395,
+     "market_prob": 0.7395,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-10-17T22:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ San Diego State",
+     "id": "401860904|Fresno State ML (Fresno State @ San Diego State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864523",
+     "odds": -246,
+     "stake": 100,
+     "win_prob": 0.711,
+     "label": "San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "raw_prob": 0.7388,
+     "market_prob": 0.7388,
+     "type": "moneyline",
+     "team": "San Jos\u00e9 State",
+     "kickoff": "2026-10-17T21:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Jos\u00e9 State ML",
+     "game": "San Jos\u00e9 State @ UTEP",
+     "id": "401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856833|Utah ML (Utah @ Colorado) + 401858491|Northwestern ML (Northwestern @ Michigan State) + 401860903|Oregon State ML (Washington State @ Oregon State) + 401860904|Fresno State ML (Fresno State @ San Diego State) + 401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP) + 401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-13T10:31:52+00:00",
+   "win_prob": 0.2436,
+   "odds": 310,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860903",
+     "odds": -963,
+     "stake": 100,
+     "win_prob": 0.9059,
+     "label": "Oregon State ML (Washington State @ Oregon State)",
+     "raw_prob": 0.8849,
+     "market_prob": 0.8849,
+     "type": "moneyline",
+     "team": "Oregon State",
+     "kickoff": "2026-10-17T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oregon State ML",
+     "game": "Washington State @ Oregon State",
+     "id": "401860903|Oregon State ML (Washington State @ Oregon State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856833",
+     "odds": -881,
+     "stake": 100,
+     "win_prob": 0.898,
+     "label": "Utah ML (Utah @ Colorado)",
+     "raw_prob": 0.8729,
+     "market_prob": 0.8729,
+     "type": "moneyline",
+     "team": "Utah",
+     "kickoff": "2026-10-17T22:15:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Utah ML",
+     "game": "Utah @ Colorado",
+     "id": "401856833|Utah ML (Utah @ Colorado)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871091",
+     "odds": -830,
+     "stake": 100,
+     "win_prob": 0.8925,
+     "label": "Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "raw_prob": 0.868,
+     "market_prob": 0.868,
+     "type": "moneyline",
+     "team": "Louisiana Tech",
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana Tech ML",
+     "game": "Louisiana Tech @ UL Monroe",
+     "id": "401871091|Louisiana Tech ML (Louisiana Tech @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860904",
+     "odds": -247,
+     "stake": 100,
+     "win_prob": 0.7121,
+     "label": "Fresno State ML (Fresno State @ San Diego State)",
+     "raw_prob": 0.7395,
+     "market_prob": 0.7395,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-10-17T22:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ San Diego State",
+     "id": "401860904|Fresno State ML (Fresno State @ San Diego State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864523",
+     "odds": -246,
+     "stake": 100,
+     "win_prob": 0.711,
+     "label": "San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "raw_prob": 0.7388,
+     "market_prob": 0.7388,
+     "type": "moneyline",
+     "team": "San Jos\u00e9 State",
+     "kickoff": "2026-10-17T21:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Jos\u00e9 State ML",
+     "game": "San Jos\u00e9 State @ UTEP",
+     "id": "401864523|San Jos\u00e9 State ML (San Jos\u00e9 State @ UTEP)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858491",
+     "odds": -233,
+     "stake": 100,
+     "win_prob": 0.6994,
+     "label": "Northwestern ML (Northwestern @ Michigan State)",
+     "raw_prob": 0.732,
+     "market_prob": 0.732,
+     "type": "moneyline",
+     "team": "Northwestern",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Northwestern ML",
+     "game": "Northwestern @ Michigan State",
+     "id": "401858491|Northwestern ML (Northwestern @ Michigan State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
   }
  ],
  "saved": [
@@ -29281,7 +30750,7 @@
    "win_prob": 0.79,
    "odds": -376,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "team_total",
@@ -29297,8 +30766,8 @@
      "game": "Buffalo Bills @ Los Angeles Rams",
      "pick": "Bills team total Over 18.5 (Mon)",
      "id": "2026_05_BUF_LA|Bills team total Over 18.5 (Mon)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BUF 37 - LA 34 (BUF 37)"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
@@ -29345,7 +30814,7 @@
    "win_prob": 0.789,
    "odds": -375,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "player_stat",
@@ -29361,8 +30830,8 @@
      "game": "Buffalo Bills @ Los Angeles Rams",
      "pick": "Matthew Stafford 200+ passing yds (Mon)",
      "id": "2026_05_BUF_LA|Matthew Stafford 200+ passing yds (Mon)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "383 passing yards"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
@@ -29628,7 +31097,7 @@
    "win_prob": 0.785,
    "odds": -366,
    "stake": 100,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "type": "spread",
@@ -29643,8 +31112,8 @@
      "game": "Buffalo Bills @ Los Angeles Rams",
      "pick": "Bills +13.5 (alt, Mon)",
      "id": "2026_05_BUF_LA|Bills +13.5 (alt, Mon)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "BUF 37 - LA 34"
     }
    ],
    "source": "Paper bets: top 30 singles, all markets (week 5, 2026)",
