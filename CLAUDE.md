@@ -137,7 +137,7 @@ filters (`tracker.leg_type_name`) that switch to one flat list of matches. The r
 (tally, win bars, report card, closing line, bot history) counts only bets on lines FanDuel
 always offers plus anything placed (`tracker.model_line`, `tracker.counted`); model-line
 picks show only with "Show model lines", labeled. Learning still uses every graded result.
-Parlay legs (app, web, bot slips) show each leg's own model chance.
+Parlay legs (app, web, bot slips) show each leg's own model chance. A legend at the top (`App.legend`, `legendHtml` on the page) explains the chances, records, tiers, warnings and columns.
 Speed: `data.read_csv` parses each cached file once per version; the app draws each tab
 once per build (`App.pane`) and reopens a bet type or week built in the last 5 minutes
 (`App.build(quick=True)`); keep these when changing the app.
