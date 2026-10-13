@@ -739,13 +739,15 @@ class App:
         return rec[0] if rec[0] and rec[0].games else (rec[1] if rec[1] and rec[1].games else None)
 
     def leg_text(self, b) -> str:
-        """A parlay leg with its record, e.g. "Jahmyr Gibbs Anytime TD (4/4)"."""
+        """A parlay leg with the model's chance of it winning and its record, e.g.
+        "Jahmyr Gibbs Anytime TD 66% (4/4)"."""
         hr = self._leg_record(b)
         bits = [f"{hr.hits}/{hr.games}"] if hr else []
         h2h = self.h2h_text(b)
         if h2h:
             bits.append(h2h)
-        return _slip_selection(b) + (f" ({', '.join(bits)})" if bits else "")
+        return (f"{_slip_selection(b)} {b.fair_prob:.0%}"
+                + (f" ({', '.join(bits)})" if bits else ""))
 
     def legs_record_line(self, legs) -> tuple[str, str] | None:
         """The parlay's weakest leg by its record; colored by it."""

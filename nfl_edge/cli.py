@@ -136,7 +136,7 @@ def format_slip(p: Parlay, wager: float, break_even: bool = False) -> list[str]:
         if i:
             out.append(line())
         out += [line(f"● {_slip_selection(b)}", _fmt_american(leg_odds(b))),
-                line(f"  {_slip_market(b)}"),
+                line(f"  {_slip_market(b)}", f"{b.fair_prob:.0%} to win"),
                 line(f"  {b.game}"),
                 line(f"  {_slip_time(b)}")]
     estimate = (f"Our estimate: {p.win_prob:.1%} to win" if break_even

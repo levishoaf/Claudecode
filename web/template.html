@@ -401,7 +401,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const r = legRec(l), m = l.hist && l.hist.h2h, bits = [];
     if (r) bits.push(`${r[0]}/${r[1]}`);
     if (m && m.n) bits.push(`${m.w}-${m.n - m.w} vs ${m.opp.split(" ").pop()}`);
-    return esc(l.label) + (bits.length ? ` (${esc(bits.join(", "))})` : "");
+    // The leg's own chance (the model's), then its record.
+    return `${esc(l.label)} <b class="legp" style="color:${color(l.prob)}">${pct(l.prob)}</b>` + (bits.length ? ` (${esc(bits.join(", "))})` : "");
   }
   function weakestLine(legs) {
     const w = legs.map((l) => [legRec(l), l]).filter(([r]) => r).sort((a, b) => a[0][0] / a[0][1] - b[0][0] / b[0][1])[0];
