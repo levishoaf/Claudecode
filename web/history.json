@@ -35396,6 +35396,68 @@
     }
    ],
    "week": 7
+  },
+  {
+   "id": "single:401908032|Los Angeles Dodgers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-14T10:54:47+00:00",
+   "win_prob": 0.6145,
+   "odds": -159,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908032",
+     "odds": -159,
+     "stake": 100,
+     "win_prob": 0.6145,
+     "label": "Los Angeles Dodgers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+     "market_prob": 0.6145,
+     "type": "moneyline",
+     "team": "Los Angeles Dodgers",
+     "kickoff": "2026-10-14T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Dodgers ML",
+     "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 14",
+     "id": "401908032|Los Angeles Dodgers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 30
+  },
+  {
+   "id": "single:401908032|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-14T10:54:47+00:00",
+   "win_prob": 0.5734,
+   "odds": -134,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908032",
+     "odds": -134,
+     "stake": 100,
+     "win_prob": 0.5734,
+     "label": "Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+     "type": "run_line",
+     "team": "Milwaukee Brewers",
+     "point": 1.5,
+     "kickoff": "2026-10-14T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Milwaukee Brewers +1.5",
+     "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 14",
+     "id": "401908032|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 14)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 30
   }
  ],
  "saved": [
