@@ -225,13 +225,12 @@ def placed_entries(path):
     return out
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("out")
-    ap.add_argument("--placed", help="JSON list of the page's placed bets")
-    a = ap.parse_args()
-
-    ledger = tracker.load(HISTORY)
+def build_result(history: Path = HISTORY, placed: str | None = None,
+                 import_saved: bool = True) -> dict:
+    """Everything the page (and the phone app's server) shows: every league's weeks with
+    their singles, parlays, money makers and bet types, the Multi-Lays and Bet History.
+    Picks shown for this week are logged (and graded) in the `history` ledger."""
+    ledger = tracker.load(history)
     learn.remember(tracker.all_entries(ledger))  # learn from every graded pick so far
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
@@ -287,15 +286,16 @@ def main():
         traceback.print_exc()
         result["multi"] = []
 
-    if a.placed:
-        ledger["placed"] = placed_entries(a.placed)
+    if placed:
+        ledger["placed"] = placed_entries(placed)
         for e in ledger["placed"]:  # their teams, for Bet History
             for leg in e["legs"]:
                 LEG_TEAMS.setdefault(leg["id"], tracker.leg_team(
                     leg, e["sport"], player_team if e["sport"] == "nfl" else lambda n: None)
                     or "Other")
     try:  # paper bets saved as files in bets/ join the Bet History
-        tracker.import_saved(ledger, sorted((ROOT / "bets").glob("*.json")))
+        if import_saved:
+            tracker.import_saved(ledger, sorted((ROOT / "bets").glob("*.json")))
     except Exception:
         traceback.print_exc()
     try:
@@ -312,7 +312,7 @@ def main():
     results = {leg["id"]: [leg["status"], leg["detail"]]
                for e in tracker.all_entries(ledger) for leg in e["legs"]}
     ledger["placed"] = []
-    tracker.save(ledger, HISTORY)
+    tracker.save(ledger, history)
     result["legResults"] = results
     result["legTeams"] = LEG_TEAMS
     try:  # how the model did, and what it has learned from that
@@ -343,11 +343,20 @@ def main():
     result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
     result["saved"] = [brief(e, "saved") for e in ledger["saved"]]
 
+    return result
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("out")
+    ap.add_argument("--placed", help="JSON list of the page's placed bets")
+    a = ap.parse_args()
+    result = build_result(placed=a.placed)
     payload = json.dumps(result, default=str).replace("</", "<\\/")
     page = (ROOT / "web" / "template.html").read_text().replace("__DATA__", payload)
     Path(a.out).write_text(page)
     print({s: [(x["label"], len(x["singles"]), len(x["parlays"])) for x in result[s]]
-           for s in ("nfl", "ncaaf", "ufc", "mlb")}, "history:", len(ledger["generated"]))
+           for s in ("nfl", "ncaaf", "ufc", "mlb")}, "history:", len(result["history"]))
 
 
 if __name__ == "__main__":

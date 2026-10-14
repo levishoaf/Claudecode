@@ -1,0 +1,42 @@
+# The iPhone app's Xcode project, generated with XcodeGen (`xcodegen` in this folder)
+# so the project itself isn't kept in git. See ios/README.md.
+name: BetBuilder
+options:
+  bundleIdPrefix: com.betbuilder
+  deploymentTarget:
+    iOS: "16.0"
+packages:
+  RevenueCat:
+    url: https://github.com/RevenueCat/purchases-ios-spm.git
+    from: "5.0.0"
+targets:
+  BetBuilder:
+    type: application
+    platform: iOS
+    sources:
+      - path: BetBuilder
+    dependencies:
+      - package: RevenueCat
+        product: RevenueCat
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.betbuilder.app
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Bet Builder
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIUserInterfaceStyle: Dark
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        # Filled in at build time (see ios/README.md); empty means demo data / no purchases.
+        BET_API_URL: ""
+        REVENUECAT_API_KEY: ""
+    info:
+      path: BetBuilder/Info.plist
+      properties:
+        BetAPIURL: $(BET_API_URL)
+        RevenueCatAPIKey: $(REVENUECAT_API_KEY)
