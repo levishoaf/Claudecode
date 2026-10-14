@@ -154,11 +154,20 @@ def season_days(year: int) -> list[date]:
     return [date(year, 3, 15) + timedelta(days=i) for i in range(235)]  # to early November
 
 
+def _day_or_none(when: date) -> list[dict]:
+    """A past day ESPN can't send right now is skipped (and tried again next time)
+    instead of stopping the whole board."""
+    try:
+        return day(when)
+    except data.DataError:
+        return []
+
+
 def season(year: int) -> list[dict]:
     today = datetime.now(timezone.utc).date()
     days = [d for d in season_days(year) if d <= today + timedelta(days=7)]
     with ThreadPoolExecutor(8) as pool:
-        out = [g for games in pool.map(day, days) for g in games]
+        out = [g for games in pool.map(_day_or_none, days) for g in games]
     return out
 
 
@@ -319,7 +328,17 @@ def build() -> dict:
              g["home_score"] > g["away_score"]) for g, f in decided
             if g["date"] >= "2026" and lines.get(g["id"], {}).get("home_ml")
             and lines[g["id"]].get("away_ml")]
-    result = {"weights": weights, "cover": cover, "market_share": 1.0}
+    # Each team's rating as the newest season opened, so a fresh install only downloads
+    # that season (see current_ratings).
+    newest = max(int(g["date"][:4]) for g in games)
+    opening = Ratings()
+    for g in games:
+        if int(g["date"][:4]) >= newest:
+            break
+        opening.update(g)
+    opening._new_season(newest)
+    result = {"weights": weights, "cover": cover, "market_share": 1.0,
+              "season_start": {str(newest): {t: round(r, 2) for t, r in opening.elo.items()}}}
     if test:
         result["test"] = {
             "games": len(test),
@@ -375,7 +394,19 @@ def upcoming_days(now: datetime | None = None, ahead: int = 6) -> list[date]:
 
 
 def current_ratings() -> Ratings:
-    ratings, _ = replay(history())
+    """Ratings after the latest game. The builds carry each team's rating at the start of
+    the newest season (mlb_weights.json "season_start"), so only this season's days are
+    downloaded; without it, every season since FIRST_SEASON is replayed."""
+    year = datetime.now(timezone.utc).year
+    start = (weights().get("season_start") or {}).get(str(year))
+    if not start:
+        ratings, _ = replay(history())
+        return ratings
+    games = history(year, year)
+    ratings = Ratings()
+    ratings.elo, ratings.year = dict(start), year
+    for g in games:
+        ratings.update(g)
     return ratings
 
 

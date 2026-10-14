@@ -145,7 +145,11 @@ season's closing lines, the line (cut taken out) beat our model (team Elo + the 
 runs allowed this season; last season's ERA added nothing, and ESPN's archived ERAs are
 season-final, so never use them as of a game) and no mix helped, so a posted line's chance
 is used as is and the model only fills in games with no line yet (labeled "No line yet").
-`python -m nfl_edge.mlb --write` refits `mlb_weights.json` (bundled into the builds). The
+`python -m nfl_edge.mlb --write` refits `mlb_weights.json` (bundled into the builds; it also
+carries each team's rating at the newest season's start, so a fresh install downloads only
+that season). Likewise `ufc_weights.json` carries every fighter's record (`ufc.snapshot`),
+so only this year's cards are downloaded; refit both before releases so the snapshots stay
+recent. A day or card ESPN can't send is skipped, never fatal. The
 Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); series repeat
 matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for

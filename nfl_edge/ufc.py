@@ -26,9 +26,15 @@ TRYOUTS = "Dana White's Contender Series"  # not offered: tryouts, fighters new 
 WEIGHTS_FILE = Path(__file__).with_name("ufc_weights.json")
 
 
-def _get(url: str) -> dict:
-    with urllib.request.urlopen(url, timeout=30) as resp:
-        return json.loads(resp.read())
+def _get(url: str, tries: int = 3) -> dict:
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(url, timeout=30) as resp:
+                return json.loads(resp.read())
+        except Exception:
+            if i == tries - 1:
+                raise
+            time.sleep(1.5 * 2 ** i)  # ESPN turns away bursts; wait and retry
 
 
 def _event_on(event_id: str, start: datetime) -> dict | None:
@@ -366,7 +372,7 @@ def build(first_train: str = FIRST_TRAIN) -> dict:
             if best is None or ll < best[0]:
                 best = (ll, k, new_k)
     K, NEW_K = best[1], best[2]
-    _, rows = replay(bouts, known)
+    final, rows = replay(bouts, known)
     win = [(w, b["winner"] == "a", b["date"]) for b, w, _ in rows if b["winner"]]
     length = [(ln, went_distance(b), b["date"]) for b, _, ln in rows
               if went_distance(b) is not None]
@@ -402,6 +408,7 @@ def build(first_train: str = FIRST_TRAIN) -> dict:
         "win": scaled(_fit(train_w + test_w, WIN_FEATURES, mirror=True), stretch),
         "distance": _fit(train_d + test_d, DISTANCE_FEATURES, mirror=False),
         "test": test,
+        "ratings": snapshot(final, bouts),
     }
 
 
@@ -429,9 +436,6 @@ def main(argv=None) -> None:
         WEIGHTS_FILE.write_text(json.dumps(result, indent=1) + "\n")
         print(f"wrote {WEIGHTS_FILE}")
 
-
-if __name__ == "__main__":
-    main()
 
 
 # ---------------------------------------------------------------- cards, bets, grading
@@ -491,12 +495,36 @@ def upcoming_cards(now: datetime | None = None) -> list[tuple[str, str, list[dic
     return sorted(out, key=lambda c: c[2][0]["date"])
 
 
+def snapshot(ratings: Ratings, bouts: list[dict]) -> dict:
+    """Every fighter's record as of the newest finished fight, shipped in the builds so a
+    fresh install doesn't download every card since FIRST_SEASON (see current_ratings)."""
+    done = [b["date"] for b in bouts if b.get("done")]
+    return {"asof": max(done) if done else "", "decision_rate": round(ratings.decision_rate, 4),
+            "fighters": {i: [round(r.elo, 2), r.fights, r.decisions,
+                             r.last.isoformat() if r.last else None, r.results[-3:]]
+                         for i, r in ratings.fighters.items() if r.fights}}
+
+
 def current_ratings() -> Ratings:
-    """Every fighter's record after the latest finished fight."""
-    weights()  # the fitted Elo settings
-    bouts = history()
-    known = bios({b["a"] for b in bouts} | {b["b"] for b in bouts})
-    ratings, _ = replay(bouts, known)
+    """Every fighter's record after the latest finished fight: the shipped snapshot plus
+    the fights since (only this year's cards are downloaded), or, without a snapshot,
+    every card since FIRST_SEASON. Bios are fetched as fights are priced (chances)."""
+    snap = weights().get("ratings")  # also loads the fitted Elo settings
+    if not snap:
+        bouts = history()
+        known = bios({b["a"] for b in bouts} | {b["b"] for b in bouts})
+        ratings, _ = replay(bouts, known)
+        return ratings
+    ratings = Ratings({})
+    ratings.decision_rate = snap["decision_rate"]
+    for i, (elo, fights, decisions, last, results) in snap["fighters"].items():
+        ratings.fighters[i] = Record(elo, fights, decisions,
+                                     date.fromisoformat(last) if last else None, list(results))
+    newer = history(int(snap["asof"][:4]))
+    seen = {b["id"] for b in newer if b["date"] <= snap["asof"]}
+    for b in newer:
+        if b["date"] > snap["asof"] and b["id"] not in seen:
+            ratings.update(b)
     return ratings
 
 
@@ -508,3 +536,7 @@ def chances(b: dict, ratings: Ratings) -> tuple[float, float]:
     ratings.bios.update(bios({b["a"], b["b"]}))
     win, length = ratings.features(b)
     return win_prob(w, win), distance_prob(w, length)
+
+
+if __name__ == "__main__":
+    main()
