@@ -57,10 +57,18 @@ BET_TYPES = {
     "Receiving yards": ("player_reception_yds",),
     "Receptions": ("player_receptions",),
     "Fight distance": ("fight_distance",),
+    "Run line": ("run_line",),
+    "Total runs": ("totals_runs",),
 }
 # The bet types each league has (the Bet type menu).
 UFC_TYPES = ("All bets", "Moneyline", "Fight distance")
-FOOTBALL_TYPES = tuple(t for t in BET_TYPES if t not in ("Fight distance",))
+MLB_TYPES = ("All bets", "Moneyline", "Run line", "Total runs")
+FOOTBALL_TYPES = tuple(t for t in BET_TYPES if t not in ("Fight distance", "Run line", "Total runs"))
+
+
+def league_types(sport: str) -> tuple:
+    """The Bet type menu for a league."""
+    return {"ufc": UFC_TYPES, "mlb": MLB_TYPES}.get(sport, FOOTBALL_TYPES)
 # Worst odds a bet type may have, e.g. receiving yards only at -300 or better.
 TYPE_MIN_ODDS = {"Receiving yards": -300}
 
@@ -83,7 +91,7 @@ def within_odds(bets: list[Bet], kind: str | None) -> list[Bet]:
 
 
 # Types on the free board, which only has bets sure to be on FanDuel.
-SURE_TYPES = ("All bets", "Moneyline", "Anytime TD", "Fight distance")
+SURE_TYPES = ("All bets", "Moneyline", "Anytime TD", "Fight distance", "Run line")
 
 
 def of_type(bets: list[Bet], kind: str | None) -> list[Bet]:
@@ -111,6 +119,9 @@ def empty_type_note(kind: str, sport: str, checked: bool) -> str:
     """Why a chosen bet type has no bets."""
     if sport == "ufc":
         return f"No {kind.lower()} bets on this card."
+    if sport == "mlb":
+        return (f"No {kind.lower()} bets for this day: DraftKings hasn't posted totals yet."
+                if kind == "Total runs" else f"No {kind.lower()} bets for this day.")
     if sport == "ncaaf" and kind not in ("All bets", "Moneyline"):
         return "College bets are moneylines only."
     return f"No {kind.lower()} bets for this week."

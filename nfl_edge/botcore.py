@@ -24,9 +24,9 @@ from .picks import mixed_parlays, payout_parlays, rank_singles
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
 SEARCH_RANGE = (0.03, 0.97)  # /chance looks through bets of nearly any chance
-SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC"}
+SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB"}
 RESULT_ICON = {"won": "✅ WON", "lost": "❌ LOST", "push": "➖ PUSH", "pending": "⏳"}
-NOTE_TAG = {"Questionable": " `Q`", "Did not practice": " `DNP`"}
+NOTE_TAG = {"Questionable": " `Q`", "Did not practice": " `DNP`", "No line yet": " *no line yet*"}
 
 
 # ------------------------------------------------------------------ boards
@@ -48,6 +48,10 @@ class Boards:
                 return hit[1]
         if sport == "ufc":  # the next card's fights
             bets = board.ufc_board(lo, hi)
+        elif sport == "mlb":  # the next 7 days (a day or two of playoff games is too few)
+            bets = board.mlb_board(lo, hi, all_days=True, every_line=True)
+            if sure_only and not every_line:  # totals only when picked: lines differ
+                bets = [b for b in bets if b.market != "totals_runs"]
         else:
             bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
                     else nfl_board(None, lo, hi, week=week, every_line=every_line,
@@ -79,6 +83,8 @@ def break_even(p: float) -> str:
 def week_of(bets, sport: str = "nfl") -> str:
     if sport == "ufc":  # a UFC card, not a week
         return board.NOTES.get("ufc_card", "next card")
+    if sport == "mlb":
+        return board.NOTES.get("mlb_day", "next 7 days")
     weeks = sorted({b.week for b in bets if b.week})
     return f"Week {weeks[0]}" if len(weeks) == 1 else (
         f"Weeks {weeks[0]}–{weeks[-1]}" if weeks else "this week")
@@ -351,7 +357,7 @@ def history_text(ledger: dict, sport: str | None = None, week: int | None = None
         lines += record_by_member(placed)
     else:
         lines.append("No placed bets yet. Log one with `/place`.")
-    for key in (("nfl", "ncaaf", "ufc") if sport is None else (sport,)):
+    for key in (("nfl", "ncaaf", "ufc", "mlb") if sport is None else (sport,)):
         mine = [e for e in placed if e["sport"] == key]
         theirs = [e for e in picks if e["sport"] == key]
         weeks = sorted({e.get("week") for e in mine + theirs if week is None or e.get("week") == week},
@@ -453,7 +459,7 @@ def pick_parlays(bets, count: int, min_legs: int, max_legs: int,
 
 def season_of(sport: str) -> int:
     """The season a bet is filed under: the calendar year for UFC."""
-    return datetime.now().year if sport == "ufc" else season_now()
+    return datetime.now().year if sport in ("ufc", "mlb") else season_now()
 
 
 def season_now() -> int:

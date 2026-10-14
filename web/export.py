@@ -22,6 +22,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
+                            league_types,
                             MONEY_MAKER_LEGS, fanduel_estimate,
                             money_maker_parlays,
                             payout_parlays,
@@ -134,12 +135,17 @@ def annotate(bets, sport):
 
 def season_of(sport):
     today = datetime.now().date()
-    return today.year if sport == "ufc" else season_for(today)
+    return today.year if sport in ("ufc", "mlb") else season_for(today)
 
 
 def run(sport, week, label, ledger, this_week=False):
     if sport == "ufc":
         bets = board.ufc_board(LO, HI, card=str(week))
+    elif sport == "mlb":  # week: a day as YYYYMMDD, or MLB_ALL_DAYS for the next 7 days
+        everyday = week == board.MLB_ALL_DAYS
+        when = None if everyday else datetime.strptime(str(week), "%Y%m%d").date()
+        full_mlb = board.mlb_board(LO, HI, day=when, all_days=everyday, every_line=True)
+        bets = [b for b in full_mlb if b.market != "totals_runs"]
     else:
         bets = annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
                         else nfl_board(None, LO, HI, week=week), sport)
@@ -174,17 +180,21 @@ def run(sport, week, label, ledger, this_week=False):
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
            "late": board.NOTES.get("late", "") if sport == "nfl" else "",
            "poolNote": pool_note,
-           "modelNote": board.NOTES.get("ufc_model", "") if sport == "ufc" else ""}
+           "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model"}.get(sport, ""), ""),
+           "starters": board.NOTES.get("mlb_starters", "") if sport == "mlb" else ""}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
     full = annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
                     if sport == "nfl" else [], sport)
-    for kind in (UFC_TYPES if sport == "ufc" else BET_TYPES):  # each type's own top 30
+    if sport == "mlb":  # totals only when picked: the line may differ on FanDuel
+        full = full_mlb
+    for kind in (league_types(sport) if sport in ("ufc", "mlb") else BET_TYPES):  # top 30 each
         cap = type_max_prob(kind)
         if cap is not None and sport == "nfl":  # likeliest lines within the odds limit
             some = every_line_of(annotate(nfl_board(None, LO, min(HI, cap), week=week,
                                                     always_offered=False), sport), kind)
         else:
-            some = of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind)
+            some = (of_type(full, kind) if sport == "mlb" and kind == "Total runs"
+                    else of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind))
         if kind != "All bets" and some:
             regular = payout_parlays(legs_pool(some)[0], PARLAY_PAYS, 10)
             out["types"][kind] = picks(rank_singles(some, 30, rank_by="prob", per_game=3,
@@ -226,8 +236,9 @@ def main():
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
               "moneyLegs": MONEY_MAKER_LEGS,
-              "nfl": [], "ncaaf": [], "ufc": [], "betTypes": list(BET_TYPES),
-              "ufcTypes": list(UFC_TYPES), "sureTypes": list(SURE_TYPES)}
+              "nfl": [], "ncaaf": [], "ufc": [], "mlb": [], "betTypes": list(BET_TYPES),
+              "ufcTypes": list(UFC_TYPES), "sureTypes": list(SURE_TYPES),
+              "leagueTypes": {s: list(league_types(s)) for s in ("nfl", "ncaaf", "ufc", "mlb")}}
     weeks = board.nfl_weeks()
     current = weeks[0][0] if weeks else None
     for w, posted in weeks:
@@ -248,6 +259,19 @@ def main():
         try:
             result["ufc"].append(run("ufc", int(eid), f"{short} · {start.astimezone(EASTERN):%b} "
                                      f"{start.astimezone(EASTERN).day}", ledger, i == 0))
+        except Exception:
+            traceback.print_exc()
+
+    mlb_days = board.mlb_days()
+    for i, (d, lines) in enumerate(mlb_days):
+        try:
+            result["mlb"].append(run("mlb", int(f"{d:%Y%m%d}"), f"{d:%a %b} {d.day}"
+                                     + ("" if lines else " · no line yet"), ledger, i == 0))
+        except Exception:
+            traceback.print_exc()
+    if mlb_days:
+        try:
+            result["mlb"].append(run("mlb", board.MLB_ALL_DAYS, "Next 7 days", ledger))
         except Exception:
             traceback.print_exc()
 
@@ -311,7 +335,7 @@ def main():
     page = (ROOT / "web" / "template.html").read_text().replace("__DATA__", payload)
     Path(a.out).write_text(page)
     print({s: [(x["label"], len(x["singles"]), len(x["parlays"])) for x in result[s]]
-           for s in ("nfl", "ncaaf", "ufc")}, "history:", len(ledger["generated"]))
+           for s in ("nfl", "ncaaf", "ufc", "mlb")}, "history:", len(ledger["generated"]))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,30 @@
+{
+ "weights": {
+  "elo": 0.4404,
+  "home": 0.1189,
+  "sp_now": 0.0822
+ },
+ "cover": {
+  "home": {
+   "bias": -0.7244,
+   "p": 1.0156
+  },
+  "away": {
+   "bias": -0.4794,
+   "p": 0.9631
+  }
+ },
+ "market_share": 1.0,
+ "test": {
+  "games": 1888,
+  "model": {
+   "log_loss": 0.6866,
+   "likelier_won": 0.544
+  },
+  "market": {
+   "log_loss": 0.6827,
+   "likelier_won": 0.5599
+  },
+  "note": "the line beat the model and no mix of the two helped, so a posted line's chance is used as is (market_share 1.0)"
+ }
+}

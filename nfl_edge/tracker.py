@@ -153,6 +153,12 @@ def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[s
 
         return {i: (b["date"].replace("Z", "+00:00"), f"{b['a_name']} vs {b['b_name']}")
                 for i, b in fights_by_id(season).items()}
+    if sport == "mlb":
+        from . import mlb
+
+        return {g["id"]: (g["date"].replace("Z", "+00:00"),
+                          f"{g['away_name']} @ {g['home_name']}, {mlb.us_date(g):%b} "
+                          f"{mlb.us_date(g).day}") for g in mlb.season(season)}
     if sport == "ncaaf":
         from . import cfb
 
@@ -178,6 +184,10 @@ def game_weeks(sport: str, season: int, games_source: str | None = None) -> dict
         from .ufc import card_numbers
 
         return card_numbers(season)
+    if sport == "mlb":
+        from .mlb import game_weeks as mlb_weeks
+
+        return mlb_weeks(season)
     if sport == "ncaaf":
         from . import cfb
 
@@ -269,6 +279,10 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
                     from .ufc import fights_by_id
 
                     games[key] = fights_by_id(e["season"])
+                elif e["sport"] == "mlb":
+                    from .mlb import games_by_id
+
+                    games[key] = games_by_id(e["season"])
                 else:
                     games[key] = (college_games(e["season"], games_source)
                                   if e["sport"] == "ncaaf"
@@ -340,7 +354,8 @@ def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None
 
 
 LEG_TYPES = {"moneyline": "Moneyline", "spread": "Spread", "total": "Total points",
-             "team_total": "Team totals", "fight": "Moneyline", "distance": "Fight distance"}
+             "team_total": "Team totals", "fight": "Moneyline", "distance": "Fight distance",
+             "run_line": "Run line"}
 STAT_TYPES = {"receiving_yards": "Receiving yards", "receptions": "Receptions",
               "rushing_yards": "Rushing yards", "passing_yards": "Passing yards",
               "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD"}
@@ -359,7 +374,7 @@ def entry_types(e: dict) -> set[str]:
 
 
 # Bets FanDuel lists exactly as shown (UFC: every fight's "go the distance?" too).
-ALWAYS_OFFERED = {"Moneyline", "Anytime TD", "Fight distance"}
+ALWAYS_OFFERED = {"Moneyline", "Anytime TD", "Fight distance", "Run line"}  # MLB: always 1.5
 
 
 def model_line(e: dict) -> bool:

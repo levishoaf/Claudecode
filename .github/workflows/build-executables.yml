@@ -48,7 +48,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          COMMON="--onefile --collect-data tzdata --collect-data certifi --add-data nfl_edge/factors.json:nfl_edge --add-data nfl_edge/calibration.json:nfl_edge --add-data nfl_edge/signal_weights.json:nfl_edge --add-data nfl_edge/ufc_weights.json:nfl_edge"
+          COMMON="--onefile --collect-data tzdata --collect-data certifi --add-data nfl_edge/factors.json:nfl_edge --add-data nfl_edge/calibration.json:nfl_edge --add-data nfl_edge/signal_weights.json:nfl_edge --add-data nfl_edge/ufc_weights.json:nfl_edge --add-data nfl_edge/mlb_weights.json:nfl_edge"
           pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Console)" bets.py
           pyinstaller $COMMON --windowed --name "Bet Builder by Levi Shoaf" bets_gui.py
           pyinstaller $COMMON --name "Bet Builder by Levi Shoaf (Discord Bot)" discord_bot.py

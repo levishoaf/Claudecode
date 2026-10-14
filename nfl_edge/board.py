@@ -508,6 +508,79 @@ def ufc_board(lo: float, hi: float, card: str | None = None, day: date | None = 
     return [b for b in out if lo <= b.fair_prob <= hi]
 
 
+# ---------------------------------------------------------------- MLB
+
+def mlb_days(now: datetime | None = None) -> list[tuple[date, bool]]:
+    """[(day, lines posted?)] for the next days with MLB games."""
+    from . import mlb
+
+    return [(d, any(g.get("lines") for g in mlb.day(d) if g["state"] == "pre"))
+            for d in mlb.upcoming_days(now)]
+
+
+NO_LINE = "No line yet"
+MLB_ALL_DAYS = 1  # the Games menu's "Next 7 days" (other values are YYYYMMDD days)
+
+
+def mlb_board(lo: float, hi: float, day: date | None = None, now: datetime | None = None,
+              every_line: bool = False, all_days: bool = False) -> list[Bet]:
+    """One day's games (default: the next day with games): each team's moneyline and run
+    line (FanDuel always offers both, the run line at 1.5) and, with `every_line`, the
+    game's total runs at DraftKings' line (marked to confirm on FanDuel)."""
+    from . import mlb
+
+    now = now or datetime.now(timezone.utc)
+    days = mlb.upcoming_days(now) if all_days or day is None else [day]
+    if not all_days:
+        days = days[:1]
+    if not days:
+        NOTES["mlb_day"] = "No MLB games scheduled"
+        return []
+    NOTES["mlb_day"] = ("Next 7 days" if all_days else f"{days[0]:%A, %b} {days[0].day}")
+    games = [g for d in days for g in mlb.day(d) if g["state"] == "pre"]
+    if not games:
+        return []
+    ratings = mlb.current_ratings()
+    out, starters = [], []
+    for g in games:
+        kick = datetime.fromisoformat(g["date"].replace("Z", "+00:00")).astimezone(EASTERN)
+        c = mlb.chances(g, ratings)
+        on = mlb.us_date(g)  # series repeat a matchup: the date tells the games apart
+        game = f"{g['away_name']} @ {g['home_name']}, {on:%b} {on.day}"
+        week = mlb.season_week(on)
+        hs, aws = (g.get("home_sp") or {}).get("name"), (g.get("away_sp") or {}).get("name")
+        if hs or aws:
+            starters.append(f"{g['away']} {aws or 'TBD'} vs {g['home']} {hs or 'TBD'}")
+        mine = []
+        for team, p in ((g["home_name"], c["home"]), (g["away_name"], 1 - c["home"])):
+            mine.append(make_bet(game, kick, "h2h", team, None, p, g["id"], c["source"], week=week))
+        line = c["rl_line"]
+        for team, point, p in ((g["home_name"], line, c["home_rl"]),
+                               (g["away_name"], -line, c["away_rl"])):
+            mine.append(make_bet(game, kick, "run_line", team, point, p, g["id"], c["source"],
+                                 week=week))
+        if c["source"] != "DraftKings line":
+            for b in mine:  # the model alone: weaker than a posted line
+                b.note = NO_LINE
+        out += mine
+        if every_line and c["over"] is not None:
+            for side, p in (("Over", c["over"]), ("Under", 1 - c["over"])):
+                b = make_bet(game, kick, "totals_runs", side, float(c["total"]), p, g["id"],
+                             "DraftKings line", week=week)
+                b.confirm_line = True  # FanDuel's total can sit half a run away
+                out.append(b)
+    NOTES["mlb_starters"] = " · ".join(starters)
+    test = (mlb.weights().get("test") or {})
+    NOTES["mlb_model"] = (
+        "MLB chances are DraftKings' lines with the sportsbook's cut taken out: on "
+        f"{test.get('games', 0):,} games this season the line's favorite won "
+        f"{(test.get('market') or {}).get('likelier_won', 0):.0%}, better than our own model "
+        f"({(test.get('model') or {}).get('likelier_won', 0):.0%}), so the model only fills in "
+        "games with no line yet. Baseball favorites lose often: chances rarely top 70%."
+        if test else "")
+    return [b for b in out if lo <= b.fair_prob <= hi]
+
+
 # ---------------------------------------------------------------- injury report
 
 SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]

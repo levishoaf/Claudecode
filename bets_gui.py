@@ -29,7 +29,7 @@ from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
-from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, UFC_TYPES,
+from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, league_types,
                             empty_type_note,
                             fanduel_estimate, money_maker_parlays)
 
@@ -48,8 +48,10 @@ GREEN, AMBER, RED, TRACK = "#2fb864", "#e8ad1c", "#ef5b5b", "#2a3343"
 NEW_BADGE, MOVED_BADGE = "#3d8bff", "#f08a24"
 # Bets you placed and picks you didn't, graded after the games.
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
-SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("nba", "NBA"))
-LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "nba": "NBA"}
+SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("mlb", "MLB"),
+          ("nba", "NBA"))
+LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB",
+                "nba": "NBA"}
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
 STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
@@ -266,7 +268,7 @@ class App:
         for k, b in self.seg_btns.items():
             b.set_kind("primary" if k == key else "ghost")
         if changed:
-            types = list(UFC_TYPES if key == "ufc" else FOOTBALL_TYPES)
+            types = list(league_types(key))
             if hasattr(self, "type_box"):
                 self.type_box.configure(values=types)
                 if self.bet_type.get() not in types:
@@ -313,7 +315,13 @@ class App:
             if self.sport.get() == "ufc":
                 for eid, name, start in board.ufc_cards():
                     short = name.split(":", 1)[-1].strip()
-                    values[f"{short}  ·  {start.astimezone(board.EASTERN):%b %-d}"] = eid
+                    start = start.astimezone(board.EASTERN)  # (%-d isn't on Windows)
+                    values[f"{short}  ·  {start:%b} {start.day}"] = eid
+            elif self.sport.get() == "mlb":
+                for i, (d, lines) in enumerate(board.mlb_days()):
+                    name = f"{d:%a %b} {d.day}"
+                    values[name + ("" if lines else "  ·  no line yet")] = int(f"{d:%Y%m%d}")
+                values["Next 7 days"] = board.MLB_ALL_DAYS
             elif self.sport.get() == "ncaaf":
                 for i, w in enumerate(board.cfb_weeks()):
                     values[f"Week {w}" + ("  ·  this week" if i == 0 else "")] = w
@@ -323,7 +331,8 @@ class App:
                     values[f"Week {w}  ·  {tag}"] = w
         except data.DataError:
             pass
-        values["Today's fights" if self.sport.get() == "ufc" else "Today's games"] = None
+        if self.sport.get() != "mlb":  # MLB lists each day already
+            values["Today's fights" if self.sport.get() == "ufc" else "Today's games"] = None
         self.week_values = values
         self.games_box.configure(values=list(values))
         self.when.set(next(iter(values)))
@@ -379,10 +388,11 @@ class App:
         self.row_widgets = {}
         head = tk.Frame(self.body, bg=BG)
         head.pack(fill="x", padx=16, pady=(12, 2))
-        sport = {"nfl": "NFL", "ncaaf": "College Football", "ufc": "UFC",
+        sport = {"nfl": "NFL", "ncaaf": "College Football", "ufc": "UFC", "mlb": "MLB",
                  "nba": "NBA"}[args.sport]
         when = ("2026-27 season" if args.sport == "nba"
                 else board.NOTES.get("ufc_card", "") if args.sport == "ufc"
+                else board.NOTES.get("mlb_day", "") if args.sport == "mlb"
                 else bets.week_label(singles, parlays))
         tk.Label(head, text=f"{sport}  ·  {when}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
@@ -404,6 +414,12 @@ class App:
         if args.sport == "ufc" and board.NOTES.get("ufc_model"):
             tk.Label(self.body, text="ⓘ " + board.NOTES["ufc_model"], bg=BG, fg=MUTED,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+        if args.sport == "mlb":
+            for icon, key in (("ⓘ ", "mlb_model"), ("⚾ Starters: ", "mlb_starters")):
+                if board.NOTES.get(key):
+                    tk.Label(self.body, text=icon + board.NOTES[key], bg=BG, fg=MUTED,
+                             font=self.f["small"], wraplength=820,
+                             justify="left").pack(anchor="w", padx=16)
         if args.sport == "nfl" and board.NOTES.get("late"):
             tk.Label(self.body, text="⏱ " + board.NOTES["late"], bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
@@ -504,7 +520,7 @@ class App:
         """What the numbers and symbols on each bet mean, in a few short rows."""
         box = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
         box.pack(fill="x", padx=16, pady=(8, 0))
-        rows = self.UFC_LEGEND if sport == "ufc" else self.LEGEND
+        rows = self.UFC_LEGEND if sport in ("ufc", "mlb") else self.LEGEND
         for row in rows:
             line = tk.Frame(box, bg=CARD)
             line.pack(fill="x", padx=10, pady=(5, 0 if row is not rows[-1] else 6))
@@ -639,7 +655,7 @@ class App:
             return
         table = self.list_table(parent, "#")
         for i, b in enumerate(singles, 1):
-            title = _slip_selection(b) + {"Questionable": "  (Q)",
+            title = _slip_selection(b) + {"Questionable": "  (Q)", board.NO_LINE: "  · no line yet",
                                           "Did not practice": "  (DNP)"}.get(b.note, "")
             old = previous.get(bets.label(b)) if previous else None
             if previous and old is None:
@@ -805,7 +821,8 @@ class App:
         h2h = self.h2h_text(b)
         if h2h:
             bits.append(h2h)
-        return (f"{_slip_selection(b)} {b.fair_prob:.0%}"
+        when = f" ({b.game.rsplit(', ', 1)[1]})" if ", " in b.game else ""  # MLB: the day
+        return (f"{_slip_selection(b)}{when} {b.fair_prob:.0%}"
                 + (f" ({', '.join(bits)})" if bits else ""))
 
     def legs_record_line(self, legs) -> tuple[str, str] | None:
@@ -865,7 +882,8 @@ class App:
     # -------------------------------------------------------------- tracking
     def track(self, args, singles, parlays) -> dict:
         """Log the shown picks for the coming week and grade finished games (worker thread)."""
-        season = date.today().year if args.sport == "ufc" else bets.season_for(date.today())
+        season = (date.today().year if args.sport in ("ufc", "mlb")
+                  else bets.season_for(date.today()))
         # Only this week's picks (or today's games) count as picks the builder made.
         this_week = args.week is None or args.week == next(iter(self.week_values.values()), None)
         with self.ledger_lock:
@@ -1378,7 +1396,10 @@ class App:
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "UFC: a fighter who pulls out drops off the card when "
                                       "ESPN updates it (checked every few hours)."
-                            if args.sport == "ufc"
+                            if args.sport == "ufc" else
+                            "MLB: the probable starters are listed above the bets; a late "
+                            "pitching change moves the line, and bets refresh with it."
+                            if args.sport == "mlb"
                             else "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
@@ -1465,6 +1486,10 @@ class App:
 
             if not ufc.weights().get("win"):  # the UFC model must ship in the build too
                 print("selftest FAILED: no UFC model weights")
+            from nfl_edge import mlb
+
+            if not mlb.weights().get("weights"):  # and the MLB one
+                print("selftest FAILED: no MLB model weights")
             if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
                 print("selftest FAILED: no learned calibration or signal weights")
                 os._exit(1)

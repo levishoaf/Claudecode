@@ -38,7 +38,7 @@ SETTINGS = ROOT / "discord bot settings.json"
 TOKEN_FILE = ROOT / "discord token.txt"
 CHECK_MINUTES = 10  # how often finished games are graded
 
-SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC"}
+SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB"}
 
 
 def read_token() -> str | None:
@@ -89,6 +89,9 @@ class Core:
         """(bets of the type, note, checked). Types that aren't sure to be on FanDuel
         get every model line, marked to confirm on FanDuel."""
         pool, note, checked = self._pool(sport, week, lo, hi)
+        if sport == "mlb" and kind == "Total runs":  # DraftKings' total: confirm on FanDuel
+            out = of_type(self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False), kind)
+            return out, CONFIRM_NOTE.format(kind=kind) if out else note, checked
         if kind in SURE_TYPES or sport != "nfl":
             return of_type(pool, kind), note, checked
         cap = type_max_prob(kind)  # likeliest lines within the odds limit
@@ -374,6 +377,9 @@ def selftest() -> int:
         out["ufc"] = core.bets("ufc", 10, 1, 99, None, 10.0)
         out["ufc distance"] = core.bets("ufc", 5, 1, 99, None, 10.0, "Fight distance")
         out["ufc moneymaker"] = core.money(4, "ufc", None, 10.0)
+        out["mlb"] = core.bets("mlb", 10, 1, 99, None, 10.0)
+        out["mlb totals"] = core.bets("mlb", 5, 1, 99, None, 10.0, "Total runs")
+        out["mlb parlays"] = core.parlays(5, "mlb", 2, 2, 4, 1, 99, None, 10.0, 40.0)
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]
@@ -388,10 +394,13 @@ def selftest() -> int:
     if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
         print("no learned calibration or signal weights (calibration.json, signal_weights.json)")
         ok = False
-    from nfl_edge import ufc
+    from nfl_edge import mlb, ufc
 
     if not ufc.weights().get("win"):
         print("no UFC model weights (ufc_weights.json)")
+        ok = False
+    if not mlb.weights().get("weights"):
+        print("no MLB model weights (mlb_weights.json)")
         ok = False
     import discord  # noqa: F401  (the library is bundled and imports)
     print("selftest", "passed" if ok else "FAILED")

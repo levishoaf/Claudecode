@@ -1,7 +1,7 @@
 # Project notes for Claude
 
 `nfl_edge` finds value bets on FanDuel for the NFL (`--sport nfl`) and
-college football (`--sport ncaaf`), plus UFC fights (`--sport ufc`). See README.md for usage. Saved paper
+college football (`--sport ncaaf`), plus UFC fights (`--sport ufc`) and MLB (`--sport mlb`). See README.md for usage. Saved paper
 bets live in `bets/` and are graded with `python -m nfl_edge.grade <file>`.
 
 ## The user's standing betting preference
@@ -137,6 +137,17 @@ ratings plus age, reach, experience, layoff and form, fit on 2020-2023 and teste
 builds; refit each year). No FanDuel or market UFC prices are free, so the odds are
 break-even and the page says to trust FanDuel's price where it disagrees a lot. The bot
 has UFC too (`sport:UFC`, the next card).
+**MLB** (`--sport mlb`, `nfl_edge/mlb.py`, `board.mlb_board`): each game's moneyline and
+run line (always 1.5 on FanDuel, so both are on the default board) and, when Total runs is
+picked, DraftKings' total (marked Confirm line). Games, scores, probable starters and
+DraftKings lines come from ESPN's scoreboard (cached per day, 2021 on). Tested on this
+season's closing lines, the line (cut taken out) beat our model (team Elo + the starter's
+runs allowed this season; last season's ERA added nothing, and ESPN's archived ERAs are
+season-final, so never use them as of a game) and no mix helped, so a posted line's chance
+is used as is and the model only fills in games with no line yet (labeled "No line yet").
+`python -m nfl_edge.mlb --write` refits `mlb_weights.json` (bundled into the builds). The
+Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); series repeat
+matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,

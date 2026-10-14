@@ -51,6 +51,9 @@ button, input, select { font: inherit; }
 .seg { display: inline-flex; background: var(--navy-2); border-radius: 999px; padding: 3px; }
 .seg button { border: 0; background: transparent; color: var(--on-dark-2); padding: 6px 16px; border-radius: 999px; font-weight: 700; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+.seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.seg button { white-space: nowrap; flex: none; }
+@media (max-width: 480px) { .seg button { padding: 6px 11px; } }
 .weeksel { background: var(--navy-2); color: var(--on-dark); border: 1px solid #2a4170; border-radius: 8px; padding: 7px 10px; font-weight: 600; max-width: 100%; }
 .updated { margin-left: auto; color: var(--on-dark-2); font-size: 13px; }
 .updated b { color: var(--on-dark); font-weight: 600; }
@@ -263,6 +266,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
         <button id="sport-nfl" data-sport="nfl" aria-pressed="true">NFL</button>
         <button id="sport-ncaaf" data-sport="ncaaf" aria-pressed="false">College Football</button>
         <button id="sport-ufc" data-sport="ufc" aria-pressed="false">UFC</button>
+        <button id="sport-mlb" data-sport="mlb" aria-pressed="false">MLB</button>
         <button id="sport-nba" data-sport="nba" aria-pressed="false">NBA</button>
       </div>
       <select id="week" class="weeksel" aria-label="Games"></select>
@@ -327,8 +331,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     return { ...wk, singles: t.singles, parlays: t.parlays, money: t.money || [] };
   }
   function typeOptions(wk) {
-    const kinds = state.sport === "ufc" ? (DATA.ufcTypes || ["All bets"])
-      : (DATA.betTypes || ["All bets"]).filter((k) => !(DATA.ufcTypes || []).includes(k) || ["All bets", "Moneyline"].includes(k));
+    const kinds = (DATA.leagueTypes || {})[state.sport] || DATA.betTypes || ["All bets"];
     return kinds.map((k) => {
       const has = k === "All bets" || (wk.types || {})[k];
       if (!has && state.sport === "ncaaf" && k !== state.betType) return "";  // college: moneylines only
@@ -341,6 +344,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (k === "All bets") return fallback;
     if (state.sport === "ncaaf" && k !== "Moneyline") return "College bets are moneylines only.";
     if (state.sport === "ufc") return `No ${k.toLowerCase()} bets on this card.`;
+    if (state.sport === "mlb") return k === "Total runs" ? "No total runs bets for this day: DraftKings hasn't posted totals yet." : `No ${k.toLowerCase()} bets for this day.`;
     return `No ${k.toLowerCase()} bets for this week.`;
   }
   function parlayId(p) { return "P:" + p.legs.map((l) => l.id).join(" | "); }
@@ -349,6 +353,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (confirm) return '<span class="badge b-q">Confirm line</span>' + badge(note);
     if (note === "Questionable") return '<span class="badge b-q">Q</span>';
     if (note === "Did not practice") return '<span class="badge b-dnp">DNP</span>';
+    if (note === "No line yet") return '<span class="badge b-q">No line yet</span>';
     return "";
   }
 
@@ -410,7 +415,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (r) bits.push(`${r[0]}/${r[1]}`);
     if (m && m.n) bits.push(`${m.w}-${m.n - m.w} vs ${m.opp.split(" ").pop()}`);
     // The leg's own chance (the model's), then its record.
-    return `${esc(l.label)} <b class="legp" style="color:${color(l.prob)}">${pct(l.prob)}</b>` + (bits.length ? ` (${esc(bits.join(", "))})` : "");
+    const day = /, [A-Z][a-z]{2} \d+$/.test(l.game || "") ? ` (${l.game.split(", ").pop()})` : "";  // MLB: the day
+    return `${esc(l.label)}${esc(day)} <b class="legp" style="color:${color(l.prob)}">${pct(l.prob)}</b>` + (bits.length ? ` (${esc(bits.join(", "))})` : "");
   }
   function weakestLine(legs) {
     const w = legs.map((l) => [legRec(l), l]).filter(([r]) => r).sort((a, b) => a[0][0] / a[0][1] - b[0][0] / b[0][1])[0];
@@ -456,6 +462,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   const SSHORT = { "Did not practice": "DNP" };
   function injuriesView(wk) {
     const inj = wk.injuries;
+    if (!inj && state.sport === "mlb") return `<div class="empty">MLB: the probable starters are listed above the bets. A late pitching change moves the line, and the bets refresh with it.</div>`;
     if (!inj && state.sport === "ufc") return `<div class="empty">UFC: a fighter who pulls out drops off the card when ESPN updates it (checked every few hours), so check the final card after Friday's weigh-ins.</div>`;
     if (!inj) return `<div class="empty">Injury reports are for NFL games. Switch to NFL to see them.</div>`;
     let players = inj.players;
@@ -523,11 +530,11 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
   // Bet History: the record at a glance, a search box and filters, then everything in
   // dropdowns (report card, what the model learned, each league by team and week).
-  const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["ufc", "UFC"], ["nba", "NBA"]];
+  const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["ufc", "UFC"], ["mlb", "MLB"], ["nba", "NBA"]];
   const HF = { q: "", league: "all", result: "all", kind: "all", week: "all", type: "all" };
   // A leg's bet type, as the Bet type menu names it (nfl_edge/tracker.leg_type_name).
   const LEG_TYPES = { moneyline: "Moneyline", spread: "Spread", total: "Total points", team_total: "Team totals",
-    fight: "Moneyline", distance: "Fight distance" };
+    fight: "Moneyline", distance: "Fight distance", run_line: "Run line" };
   const STAT_TYPES = { receiving_yards: "Receiving yards", receptions: "Receptions", rushing_yards: "Rushing yards",
     passing_yards: "Passing yards", passing_tds: "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD" };
   function legType(l) {
@@ -565,7 +572,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       : (DATA.legTeams || {})[(e.legs[0] || {}).lid] || "Other");
     const leagueName = (k) => (LEAGUES.find(([x]) => x === k) || [k, k])[1];
 
-    let html = `<div class="notice summary"><div class="sumline"><b>${tally(record)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}${bar("ufc", "UFC")}</div>`;
+    let html = `<div class="notice summary"><div class="sumline"><b>${tally(record)}</b></div>${bar("nfl", "NFL")}${bar("ncaaf", "College")}${bar("ufc", "UFC")}${bar("mlb", "MLB")}</div>`;
     const h = state.hist;
     const weeks = [...new Set(all.map(([, e]) => weekOf(e)).filter(Boolean))].sort((a, b) => b - a);
     const kinds = [...new Set(all.flatMap(([, e]) => typesOf(e)))].sort();
@@ -685,7 +692,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   // What the numbers and symbols on each bet mean.
   function legendHtml() {
     const item = (sample, meaning) => `<span class="lg-item">${sample}<span class="lg-m">${meaning}</span></span>`;
-    if (state.sport === "ufc") return `<div class="legend">
+    if (state.sport === "ufc" || state.sport === "mlb") return `<div class="legend">
       ${item(`<b style="color:var(--good)">78%</b> <b style="color:var(--blue)">66%</b> <b style="color:var(--warn)">55%</b>`, "the model's chance this bet wins")}
       ${item(`<b style="color:var(--blue)">Worst odds</b>`, "the lowest price still worth taking")}
       ${item(`<b>Pays on $10</b>`, "what $10 returns at those odds, stake included")}
@@ -728,6 +735,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       else if (wk.note) html += `<div class="notice">${esc(wk.note)}.</div>`;
       if (wk.late) html += `<div class="notice">⏱ ${esc(wk.late)}.</div>`;
       if (wk.modelNote) html += `<div class="notice">ⓘ ${esc(wk.modelNote)}</div>`;
+      if (wk.starters) html += `<div class="notice">⚾ Starters: ${esc(wk.starters)}</div>`;
     }
     if (["singles", "parlays", "money"].includes(state.tab)) html += legendHtml();
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
@@ -735,7 +743,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest parlays that pay back at least double your $${wager()} wager if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 4]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first, then the likeliest of the rest. No Weak legs, and no leg in more than two. Payouts are estimates; check the slip.</div><div class="blist">${listHead("", "Pays on $" + wager())}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: not enough games this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
-    if (state.sport === "ufc") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the model's chance. They aren't FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. UFC bets are each fight's moneyline and whether it goes the distance (all scheduled rounds), both offered by FanDuel for every fight. Parlay chances assume different fights are independent.</p>`;
+    if (state.sport === "mlb") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the chance shown. MLB chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines and run lines (FanDuel always offers the run line at 1.5). Total runs uses DraftKings' total, marked Confirm line: check FanDuel has the same total. Payout is what a $10 wager returns at break-even odds, stake included.</p>`;
+    else if (state.sport === "ufc") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the model's chance. They aren't FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. UFC bets are each fight's moneyline and whether it goes the distance (all scheduled rounds), both offered by FanDuel for every fight. Parlay chances assume different fights are independent.</p>`;
     else html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Enter FanDuel's actual price on FanDuel to compare: a price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet.</p>`;
     $("main").innerHTML = html;
     requestAnimationFrame(() => requestAnimationFrame(() =>
@@ -748,8 +757,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     const wk = current();
     if (t.dataset.sport) {
       state.sport = t.dataset.sport; store.set("bb.sport", state.sport);
-      const ufcOnly = (DATA.ufcTypes || []).filter((k) => !["All bets", "Moneyline"].includes(k));
-      if ((state.sport === "ufc") !== ufcOnly.includes(state.betType) && !["All bets", "Moneyline"].includes(state.betType)) state.betType = "All bets";
+      const kinds = (DATA.leagueTypes || {})[state.sport];
+      if (kinds && !kinds.includes(state.betType)) state.betType = "All bets";
       render();
     }
     else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }

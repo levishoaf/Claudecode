@@ -45,7 +45,7 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
             return "lost", f"tie, {score}"
         winner = g["home_team"] if home > away else g["away_team"]
         return ("won" if winner == leg["team"] else "lost"), score
-    if leg["type"] == "spread":
+    if leg["type"] in ("spread", "run_line"):
         margin = home - away if leg["team"] == g["home_team"] else away - home
         covered = margin + leg["point"]
         return ("won" if covered > 0 else "push" if covered == 0 else "lost"), score
@@ -96,6 +96,10 @@ def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, s
         from .ufc import fights_by_id
 
         games = fights_by_id(bet["season"])
+    elif bet.get("sport") == "mlb":
+        from .mlb import games_by_id
+
+        games = games_by_id(bet["season"])
     elif bet.get("sport") == "ncaaf":
         games = college_games(bet["season"], games_source)
     else:

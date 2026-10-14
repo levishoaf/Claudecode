@@ -47,7 +47,7 @@ def _describe(bet: Bet) -> str:
         return bet.pick
     if bet.point is None:
         return f"{bet.pick} ML"
-    if bet.market in ("totals", "alternate_totals"):
+    if bet.market in ("totals", "alternate_totals", "totals_runs"):
         return f"{bet.pick} {bet.point:g}"
     return f"{bet.pick} {bet.point:+g}"
 
@@ -77,7 +77,8 @@ SLIP_WIDTH = 52
 SLIP_MARKETS = {"h2h": "MONEYLINE", "spreads": "SPREAD", "totals": "TOTAL POINTS",
                 "alternate_spreads": "ALT SPREAD", "alternate_totals": "ALT TOTAL POINTS",
                 "team_totals": "TEAM TOTAL POINTS", "alternate_team_totals": "ALT TEAM TOTAL",
-                "fight_distance": "GO THE DISTANCE?"}
+                "fight_distance": "GO THE DISTANCE?", "run_line": "RUN LINE",
+                "totals_runs": "TOTAL RUNS"}
 try:
     from zoneinfo import ZoneInfo
 
