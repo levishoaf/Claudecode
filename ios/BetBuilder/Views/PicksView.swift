@@ -50,11 +50,11 @@ struct PicksView: View {
     private var controls: some View {
         Section {
             Picker("League", selection: $league) {
-                ForEach(leagues) { Text($0.name).tag($0.id) }
+                ForEach(leagues) { Text($0.id == "ncaaf" ? "College" : $0.name).tag($0.id) }
             }
             .pickerStyle(.segmented)
             .onChange(of: league) { _ in
-                week = nil
+                week = current?.weeks.first?.week
                 if !(current?.types.contains(type) ?? false) { type = "All bets" }
                 Task { await load() }
             }
@@ -82,8 +82,8 @@ struct PicksView: View {
 
     @ViewBuilder
     private func notes(_ board: Board) -> some View {
-        let lines = [board.modelNote, board.note, board.starters.map { "Starters: \($0)" }]
-            .compactMap { $0 }.filter { !$0.isEmpty }
+        let starters = (board.starters ?? "").isEmpty ? nil : "Starters: \(board.starters ?? "")"
+        let lines = [board.modelNote, board.note, starters].compactMap { $0 }.filter { !$0.isEmpty }
         if !lines.isEmpty {
             Section {
                 ForEach(lines, id: \.self) {
@@ -135,7 +135,10 @@ struct PicksView: View {
         guard leagues.isEmpty else { return }
         do {
             leagues = try await API.shared.leagues().leagues
-            if let first = leagues.first(where: { !$0.weeks.isEmpty }) { league = first.id }
+            if let first = leagues.first(where: { !$0.weeks.isEmpty }) {
+                league = first.id
+                week = first.weeks.first?.week
+            }
         } catch {
             self.error = error.localizedDescription
         }
