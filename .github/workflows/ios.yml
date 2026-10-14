@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write  # the screenshots go to the ios-screenshots branch
 
 jobs:
   build:
@@ -67,3 +67,13 @@ jobs:
           name: iphone-screenshots
           path: ios/shots
           retention-days: 30
+
+      - name: Save the screenshots to the ios-screenshots branch
+        working-directory: ios/shots
+        run: |
+          git init -q -b ios-screenshots
+          git add *.png
+          git -c user.name="github-actions" -c user.email="actions@github.com" \
+            commit -q -m "iPhone screenshots for ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" \
+            ios-screenshots
