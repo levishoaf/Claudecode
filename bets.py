@@ -113,14 +113,46 @@ def leg_record(b, sport: str) -> dict | None:
     return leg
 
 
+def season_of(sport: str, day: date | None = None) -> int:
+    """The season a league's bets are filed under (UFC and MLB: the calendar year)."""
+    day = day or date.today()
+    return day.year if sport in ("ufc", "mlb") else season_for(day)
+
+
+LEAGUES = ("nfl", "ncaaf", "ufc", "mlb")
+
+
+def league_pools(pays: float | None = None) -> dict[str, list]:
+    """Each league's default board (this week, the next card, the next 7 days of MLB)
+    for Multi-Lays: {league: bets}; a league that can't load right now is left out."""
+    out = {}
+    for sport in LEAGUES:
+        args = argparse.Namespace(
+            sport=sport, date="week", week=board.MLB_ALL_DAYS if sport == "mlb" else None,
+            singles=30, parlays=0, legs=3, min_legs=3, max_legs=5, stake=10.0,
+            min_prob=MIN_PROB, max_prob=MAX_PROB, per_game=3, allow_overlap=False,
+            games_file=None, bet_type="All bets", pays=pays)
+        try:
+            pool, _, _ = build(args)
+        except Exception:  # one league down never blocks the others
+            continue
+        if pool:
+            out[sport] = pool
+    return out
+
+
 def tracker_entries(singles, parlays, sport: str, season: int) -> list[dict]:
-    """The shown picks as bet-tracker entries (see nfl_edge/tracker.py)."""
+    """The shown picks as bet-tracker entries (see nfl_edge/tracker.py). Multi-Lays
+    (sport "multi") file each leg under its own league and season."""
     from nfl_edge import tracker
 
     def legs_of(bets_):
         legs = []
         for b in bets_:
-            leg = leg_record(b, sport)
+            league = getattr(b, "league", None) if sport == "multi" else sport
+            leg = leg_record(b, league) if league else None
+            if leg is not None and sport == "multi":
+                leg.update(sport=league, season=season_of(league))
             if leg is None:
                 return None
             leg["kickoff"] = b.commence_time.isoformat()
@@ -136,7 +168,7 @@ def tracker_entries(singles, parlays, sport: str, season: int) -> list[dict]:
         if legs := legs_of(group):
             entry = tracker.make_entry(kind, legs, prob, sport, season)
             weeks = [b.week for b in group if b.week]
-            if weeks:
+            if weeks and sport != "multi":
                 entry["week"] = min(weeks)
             out.append(entry)
     return out

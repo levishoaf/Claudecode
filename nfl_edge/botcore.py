@@ -24,7 +24,8 @@ from .picks import mixed_parlays, payout_parlays, rank_singles
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
 SEARCH_RANGE = (0.03, 0.97)  # /chance looks through bets of nearly any chance
-SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB"}
+SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB",
+              "multi": "Multi-Lays"}
 RESULT_ICON = {"won": "✅ WON", "lost": "❌ LOST", "push": "➖ PUSH", "pending": "⏳"}
 NOTE_TAG = {"Questionable": " `Q`", "Did not practice": " `DNP`", "No line yet": " *no line yet*"}
 
@@ -85,6 +86,8 @@ def week_of(bets, sport: str = "nfl") -> str:
         return board.NOTES.get("ufc_card", "next card")
     if sport == "mlb":
         return board.NOTES.get("mlb_day", "next 7 days")
+    if sport == "multi":
+        return "every league"
     weeks = sorted({b.week for b in bets if b.week})
     return f"Week {weeks[0]}" if len(weeks) == 1 else (
         f"Weeks {weeks[0]}–{weeks[-1]}" if weeks else "this week")
@@ -459,7 +462,7 @@ def pick_parlays(bets, count: int, min_legs: int, max_legs: int,
 
 def season_of(sport: str) -> int:
     """The season a bet is filed under: the calendar year for UFC."""
-    return datetime.now().year if sport in ("ufc", "mlb") else season_now()
+    return datetime.now().year if sport in ("ufc", "mlb", "multi") else season_now()
 
 
 def season_now() -> int:

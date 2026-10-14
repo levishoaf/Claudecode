@@ -279,6 +279,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Single bets<span class="count" id="n-singles"></span></button>
       <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="count" id="n-parlays"></span></button>
+      <button role="tab" id="tab-multi" data-tab="multi" aria-selected="false">Multi-Lays<span class="count" id="n-multi"></span></button>
       <button role="tab" id="tab-money" data-tab="money" aria-selected="false">Money Maker<span class="count" id="n-money"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="count" id="n-injuries"></span></button>
       <button role="tab" id="tab-history" data-tab="history" aria-selected="false">Bet History<span class="count" id="n-history"></span></button>
@@ -306,7 +307,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     injSearch: ""
   };
   if (state.sport !== "nba" && (!DATA[state.sport] || !DATA[state.sport].length)) state.sport = "nfl";
-  if (!["singles", "parlays", "money", "injuries", "history"].includes(state.tab)) state.tab = "singles";
+  if (!["singles", "parlays", "multi", "money", "injuries", "history"].includes(state.tab)) state.tab = "singles";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
@@ -415,7 +416,8 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (r) bits.push(`${r[0]}/${r[1]}`);
     if (m && m.n) bits.push(`${m.w}-${m.n - m.w} vs ${m.opp.split(" ").pop()}`);
     // The leg's own chance (the model's), then its record.
-    const day = /, [A-Z][a-z]{2} \d+$/.test(l.game || "") ? ` (${l.game.split(", ").pop()})` : "";  // MLB: the day
+    let day = /, [A-Z][a-z]{2} \d+$/.test(l.game || "") ? ` (${l.game.split(", ").pop()})` : "";  // MLB: the day
+    if (l.league) day += ` [${LEAGUE_SHORT[l.league] || l.league}]`;  // a Multi-Lay leg's league
     return `${esc(l.label)}${esc(day)} <b class="legp" style="color:${color(l.prob)}">${pct(l.prob)}</b>` + (bits.length ? ` (${esc(bits.join(", "))})` : "");
   }
   function weakestLine(legs) {
@@ -433,10 +435,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       <span class="r hide-sm">${money(wager() / b.prob)}</span>
     </div>`;
   }
-  function parlayRow(p, i) {
+  const LEAGUE_SHORT = { nfl: "NFL", ncaaf: "CFB", ufc: "UFC", mlb: "MLB" };
+  function parlayRow(p, i, multi) {
+    const leagues = multi === true ? " · " + [...new Set(p.legs.map((l) => LEAGUE_SHORT[l.league] || ""))].sort().join(" + ") : "";
     return `<div class="lrow">
-      <span class="lnum">P${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
+      <span class="lnum">${multi === true ? "X" : "P"}${i + 1}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay${leagues}</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
       <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
       <span class="r hide-sm">${money(wager() / p.prob)}</span>
@@ -530,7 +534,7 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   }
   // Bet History: the record at a glance, a search box and filters, then everything in
   // dropdowns (report card, what the model learned, each league by team and week).
-  const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["ufc", "UFC"], ["mlb", "MLB"], ["nba", "NBA"]];
+  const LEAGUES = [["nfl", "NFL"], ["ncaaf", "College football"], ["ufc", "UFC"], ["mlb", "MLB"], ["nba", "NBA"], ["multi", "Multi-Lays"]];
   const HF = { q: "", league: "all", result: "all", kind: "all", week: "all", type: "all" };
   // A leg's bet type, as the Bet type menu names it (nfl_edge/tracker.leg_type_name).
   const LEG_TYPES = { moneyline: "Moneyline", spread: "Spread", total: "Total points", team_total: "Team totals",
@@ -721,12 +725,13 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     $("n-singles").textContent = wk.singles.length;
     $("n-parlays").textContent = wk.parlays.length;
     $("n-money").textContent = (wk.money || []).length;
+    $("n-multi").textContent = (DATA.multi || []).length;
     $("n-injuries").textContent = wk.injuries ? wk.injuries.players.length : "–";
     $("n-history").textContent = historyList().length;
 
     let html = "";
     const future = /no lines yet/.test(wk.label);
-    if (nba && state.tab !== "history") {
+    if (nba && !["history", "multi"].includes(state.tab)) {
       $("main").innerHTML = `<section class="nba-card"><h2>NBA bets are coming</h2><p>This is a preview of the NBA layout. NBA moneylines, spreads, totals and player props will show here, with the same chances, track records and Bet History as football, once NBA data is added. Football picks are on the NFL and College tabs.</p></section>`;
       return;
     }
@@ -737,8 +742,9 @@ main { padding-block: 18px; display: grid; gap: 14px; }
       if (wk.modelNote) html += `<div class="notice">ⓘ ${esc(wk.modelNote)}</div>`;
       if (wk.starters) html += `<div class="notice">⚾ Starters: ${esc(wk.starters)}</div>`;
     }
-    if (["singles", "parlays", "money"].includes(state.tab)) html += legendHtml();
+    if (["singles", "parlays", "multi", "money"].includes(state.tab)) html += legendHtml();
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
+    if (state.tab === "multi") html += (DATA.multi || []).length ? `<div class="pnote">Parlays with legs from at least two leagues (NFL, College Football, UFC, MLB): ${(DATA.multiLegs || [2, 4]).join("–")} legs from different games, each paying at least $40 back on a $10 wager, likeliest first. Legs are the likeliest bets on each league's default board (this week, the next UFC card, the next 7 days of MLB), and they're the same whichever league is picked. The Parlays tab stays with the league you picked.</div><div class="blist">${listHead("")}${DATA.multi.map((p, i) => parlayRow(p, i, true)).join("")}</div>` : `<div class="empty">No Multi-Lays right now: fewer than two leagues have games.</div>`;
     if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest parlays that pay back at least double your $${wager()} wager if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 4]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first, then the likeliest of the rest. No Weak legs, and no leg in more than two. Payouts are estimates; check the slip.</div><div class="blist">${listHead("", "Pays on $" + wager())}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: not enough games this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);

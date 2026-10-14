@@ -29,7 +29,8 @@ from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
-from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, league_types,
+from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS,
+                            league_types, multi_lays,
                             empty_type_note,
                             fanduel_estimate, money_maker_parlays)
 
@@ -51,7 +52,8 @@ LEDGER = Path.home() / "Bet Builder" / "my bets.json"
 SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("mlb", "MLB"),
           ("nba", "NBA"))
 LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB",
-                "nba": "NBA"}
+                "nba": "NBA", "multi": "Multi-league"}
+LEAGUE_SHORT = {"nfl": "NFL", "ncaaf": "CFB", "ufc": "UFC", "mlb": "MLB"}
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
 STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
@@ -437,6 +439,8 @@ class App:
         self.tab_labels, self.tab_lines = {}, {}
         for key, text in (("singles", f"Single bets ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
+                          ("multi", "Multi-Lays" + (f" ({len(self.multi_now())})"
+                                                    if self.multi_now() is not None else "")),
                           ("money", f"Money Maker ({len(money)})"),
                           ("injuries", "Injuries" if args.sport == "nba"
                            else f"Injuries ({len(self.injuries[1])})"),
@@ -473,7 +477,9 @@ class App:
             return self.panes[key]
         args, singles, parlays, previous = self.render_args
         grid = self.panes[key] = tk.Frame(self.tab_host, bg=BG)
-        if args.sport == "nba" and key != "history":
+        if key == "multi":  # every league's bets: the same whichever league is picked
+            self.multi_tab(grid)
+        elif args.sport == "nba" and key != "history":
             self.nba_placeholder(grid)
         elif key == "singles":
             self.singles_tab(grid, singles, previous)
@@ -670,7 +676,68 @@ class App:
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
                           extra=self.record_line(b))
 
-    def parlays_tab(self, parent, parlays, stake, money: bool = False) -> None:
+    MULTI_SECONDS = 5 * 60  # Multi-Lays are rebuilt at most this often
+
+    def multi_now(self):
+        """This session's Multi-Lays if built in the last few minutes for this payout, else
+        None."""
+        hit = getattr(self, "multi", None)
+        pays = self.multi_target()
+        if hit and hit[2] == pays and time.monotonic() - hit[0] < self.MULTI_SECONDS:
+            return hit[1]
+        return None
+
+    def multi_target(self) -> float:
+        try:
+            return float(self.pays.get()) / 10 if self.pays.get().strip() else 4.0
+        except ValueError:
+            return 4.0
+
+    def multi_tab(self, parent) -> None:
+        """Parlays mixing leagues; built in the background the first time it's opened."""
+        tk.Label(parent, text=(
+            f"Parlays with legs from at least two leagues (NFL, College Football, UFC, MLB): "
+            f"{MULTI_LEGS[0]}-{MULTI_LEGS[1]} legs from different games, each paying at least "
+            f"${self.multi_target() * 10:g} back on $10 (Pays $), likeliest first. Each leg is "
+            "the likeliest bets of its league's default board (this week, the next UFC card, "
+            "the next 7 days of MLB). The Parlays tab stays with the league you picked."),
+            bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+            justify="left").pack(anchor="w", padx=6, pady=(6, 4))
+        found = self.multi_now()
+        if found is None:
+            tk.Label(parent, text="Building Multi-Lays from every league (about 20 seconds)...",
+                     bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            self.start_multi()
+            return
+        if not found:
+            tk.Label(parent, text="No Multi-Lays right now: fewer than two leagues have games.",
+                     bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        self.parlays_tab(parent, found, 10, multi=True)
+
+    def start_multi(self) -> None:
+        if getattr(self, "multi_running", False):
+            return
+        self.multi_running = True
+        target = self.multi_target()
+
+        def work():
+            try:
+                found = multi_lays(bets.league_pools(), target, 10)
+                with self.ledger_lock:  # graded in Bet History like every other pick
+                    ledger = tracker.load(self.ledger_path)
+                    tracker.record_generated(ledger, bets.tracker_entries(
+                        [], found, "multi", date.today().year))
+                    tracker.save(ledger, self.ledger_path)
+                self.results.put(("multi", found, target))
+            except Exception:
+                traceback.print_exc()
+                self.results.put(("multi", [], target))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def parlays_tab(self, parent, parlays, stake, money: bool = False,
+                    multi: bool = False) -> None:
         """Parlays, numbered P1.. (or M1.. for the Money Maker, paying on `stake`)."""
         if not parlays:
             empty = ("No money makers here: not enough games this week."
@@ -688,7 +755,10 @@ class App:
             pays = None
             if money:  # on the Money Maker's wager: FanDuel's price, or about what it pays
                 pays = f"{'' if on_fd else '≈'}${stake * (p.decimal if on_fd else fanduel_estimate(p)):,.2f}"
-            self.list_row(table, f"M{i}" if money else f"P{i}", f"{len(p.legs)}-leg parlay",
+            name = f"{len(p.legs)}-leg parlay"
+            if multi:
+                name += "  ·  " + " + ".join(sorted({LEAGUE_SHORT[b.league] for b in p.legs}))
+            self.list_row(table, f"M{i}" if money else f"X{i}" if multi else f"P{i}", name,
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), last=pays,
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None,
@@ -822,6 +892,8 @@ class App:
         if h2h:
             bits.append(h2h)
         when = f" ({b.game.rsplit(', ', 1)[1]})" if ", " in b.game else ""  # MLB: the day
+        if getattr(b, "league", None):  # a Multi-Lay leg: which league
+            when += f" [{LEAGUE_SHORT[b.league]}]"
         return (f"{_slip_selection(b)}{when} {b.fair_prob:.0%}"
                 + (f" ({', '.join(bits)})" if bits else ""))
 
@@ -982,7 +1054,8 @@ class App:
         drops = tk.Frame(parent, bg=BG)  # the filters, on their own line under the search
         drops.pack(fill="x", padx=6, pady=(0, 4))
         for var, values, width in (
-                (self.hist_league, ["All leagues"] + [LEAGUE_NAMES[k] for k, _ in SPORTS], 12),
+                (self.hist_league, ["All leagues"] + [LEAGUE_NAMES[k] for k, _ in SPORTS]
+                 + [LEAGUE_NAMES["multi"]], 12),
                 (self.hist_result, list(self.HIST_RESULTS), 9),
                 (self.hist_kind, list(self.HIST_KINDS), 13),
                 (self.hist_week, ["Any week"] + [f"Week {w}" for w in weeks], 8),
@@ -1099,9 +1172,9 @@ class App:
         self.dropdown(parent, "learned", "What the model has learned",
                       "chances corrected by how bets like them really did",
                       lambda body: self.learned(body, titled=False))
-        for sport, _ in SPORTS:
+        for sport, _ in SPORTS + (("multi", "Multi-Lays"),):
             group = [e for e in entries if e.get("sport", "nfl") == sport]
-            name = LEAGUE_NAMES[sport]
+            name = "Multi-Lays" if sport == "multi" else LEAGUE_NAMES[sport]
 
             def league(body, sport=sport, group=group):
                 if not group:
@@ -1459,6 +1532,19 @@ class App:
         try:
             item = self.results.get_nowait()
         except queue.Empty:
+            self.root.after(150, self.poll)
+            return
+        if item[0] == "multi":  # Multi-Lays finished building in the background
+            self.multi_running = False
+            self.multi = (time.monotonic(), item[1], item[2])
+            if getattr(self, "panes", None) is not None:
+                old = self.panes.pop("multi", None)
+                if old is not None:
+                    old.destroy()
+                if "multi" in getattr(self, "tab_labels", {}):
+                    self.tab_labels["multi"].configure(text=f"Multi-Lays ({len(item[1])})")
+                if self.tab == "multi":
+                    self.pane("multi").pack(fill="both")
             self.root.after(150, self.poll)
             return
         self.build_btn.configure(text="Build bets")

@@ -22,7 +22,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
-                            league_types,
+                            league_types, multi_lays, MULTI_LEGS,
                             MONEY_MAKER_LEGS, fanduel_estimate,
                             money_maker_parlays,
                             payout_parlays,
@@ -107,7 +107,7 @@ def bet(b, sport):
             "price": _fmt_american(b.fd_price) if b.priced else None, "note": b.note or "",
             "confirm": b.confirm_line, "hist": track_record(b, sport),
             "week": b.week, "raw": round(b.raw_prob, 4) if getattr(b, "raw_prob", None) else None,
-            "tier": tier_of(b)}
+            "tier": tier_of(b), "league": getattr(b, "league", None)}
 
 
 def tier_of(b):
@@ -274,6 +274,18 @@ def main():
             result["mlb"].append(run("mlb", board.MLB_ALL_DAYS, "Next 7 days", ledger))
         except Exception:
             traceback.print_exc()
+
+    try:  # Multi-Lays: parlays mixing leagues, the same whichever league is picked
+        found = multi_lays(launcher.league_pools(), PARLAY_PAYS, 10)
+        tracker.record_generated(ledger, launcher.tracker_entries(
+            [], found, "multi", datetime.now().year))
+        result["multi"] = [{"legs": [bet(b, b.league) for b in p.legs],
+                            "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob)}
+                           for p in found]
+        result["multiLegs"] = list(MULTI_LEGS)
+    except Exception:
+        traceback.print_exc()
+        result["multi"] = []
 
     if a.placed:
         ledger["placed"] = placed_entries(a.placed)

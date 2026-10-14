@@ -202,7 +202,7 @@ def annotate_weeks(ledger: dict, games_source: str | None = None) -> None:
     """Give every entry a "week" (its first leg's), for grouping the history."""
     weeks: dict[tuple, dict] = {}
     for e in all_entries(ledger):
-        if e.get("week"):
+        if e.get("week") or e["sport"] == "multi":  # Multi-Lays mix leagues' weeks
             continue
         key = (e["sport"], e["season"])
         if key not in weeks:
@@ -272,30 +272,31 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
     stats: dict[int, list] = {}
     settled = 0
     for e, leg in todo:
-        key = (e["sport"], e["season"])
+        sport, season = leg.get("sport", e["sport"]), leg.get("season", e["season"])  # Multi-Lays
+        key = (sport, season)
         try:
             if key not in games:
-                if e["sport"] == "ufc":
+                if sport == "ufc":
                     from .ufc import fights_by_id
 
-                    games[key] = fights_by_id(e["season"])
-                elif e["sport"] == "mlb":
+                    games[key] = fights_by_id(season)
+                elif sport == "mlb":
                     from .mlb import games_by_id
 
-                    games[key] = games_by_id(e["season"])
+                    games[key] = games_by_id(season)
                 else:
-                    games[key] = (college_games(e["season"], games_source)
-                                  if e["sport"] == "ncaaf"
+                    games[key] = (college_games(season, games_source)
+                                  if sport == "ncaaf"
                                   else {g["game_id"]: g for g in data.games(games_source)})
-            if leg["type"] in ("passing_tds", "player_stat") and e["season"] not in stats:
+            if leg["type"] in ("passing_tds", "player_stat") and season not in stats:
                 try:
-                    stats[e["season"]] = data.read_csv(STATS_URL.format(season=e["season"]),
-                                                       max_age=1800)
+                    stats[season] = data.read_csv(STATS_URL.format(season=season),
+                                                  max_age=1800)
                 except data.DataError:
-                    stats[e["season"]] = []
+                    stats[season] = []
         except data.DataError:
             continue
-        status, detail = grade_leg(leg, games[key], stats.get(e["season"], []))
+        status, detail = grade_leg(leg, games[key], stats.get(season, []))
         leg["detail"] = detail
         if status != "pending":
             leg["status"] = status

@@ -153,6 +153,15 @@ so only this year's cards are downloaded; refit both before releases so the snap
 recent. A day or card ESPN can't send is skipped, never fatal. The
 Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); series repeat
 matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
+The **Parlays** tab uses only the picked league. The **Multi-Lays** tab (`picks.multi_lays`,
+`bets.league_pools`, bot `/multilays`, place with `bet:X1`) holds parlays mixing leagues:
+2-4 legs from at least two of NFL, college, UFC and MLB (each league's default board:
+this week, the next card, the next 7 days), different games, paying at least the Pays $
+target on $10, likeliest first; it's the same whichever league is picked. The app builds
+it in the background when the tab is opened (about 20 seconds) and keeps it 5 minutes.
+They're graded in Bet History as sport "multi": each leg carries its own "sport" and
+"season" (`tracker.regrade`), and no week. Parlay chances use their own league's learned
+correction (`parlays.league_of`); mixed parlays get none.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,

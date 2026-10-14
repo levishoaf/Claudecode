@@ -22,6 +22,20 @@ from .odds import american_to_decimal, decimal_to_american, kelly_fraction
 MAX_CANDIDATES = 40
 
 
+def league_of(b) -> str:
+    """The league a bet is from: set on Multi-Lay legs, else told by its source."""
+    if getattr(b, "league", None):
+        return b.league
+    source = " ".join(b.books)
+    if "college" in source:
+        return "ncaaf"
+    if "UFC" in source:
+        return "ufc"
+    if "MLB" in source or "DraftKings" in source:
+        return "mlb"
+    return "nfl"
+
+
 @dataclass
 class Parlay:
     legs: tuple[Bet, ...]
@@ -33,8 +47,11 @@ class Parlay:
         season's graded parlays did (learn.parlay_prob)."""
         from .learn import parlay_prob
 
-        sport = "ncaaf" if any("college" in " ".join(b.books) for b in self.legs) else "nfl"
-        return parlay_prob(prod(b.fair_prob for b in self.legs), sport)
+        leagues = {league_of(b) for b in self.legs}
+        raw = prod(b.fair_prob for b in self.legs)
+        if len(leagues) > 1:  # a Multi-Lay: no league's correction fits it
+            return raw
+        return parlay_prob(raw, leagues.pop())
 
     @property
     def decimal(self) -> float:

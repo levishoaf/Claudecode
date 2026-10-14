@@ -75,6 +75,7 @@ class Core:
         self.ledger = botcore.ServerLedger(ledger_path)
         self.last_parlays: dict[int, tuple[str, list]] = {}  # channel -> (sport, parlays)
         self.last_money: dict[int, tuple[str, list]] = {}  # channel -> (sport, money makers)
+        self.last_multi: dict[int, tuple[str, list]] = {}  # channel -> ("multi", Multi-Lays)
 
     def _record(self, sport, week, singles, parlays) -> None:
         if week is None:  # only this week's picks count as picks the builder made
@@ -155,6 +156,25 @@ class Core:
             out[0] += f"\n_{note}_"
         return out
 
+    def multi(self, channel, wager, pays=40.0) -> list[str]:
+        """Multi-Lays: parlays mixing leagues, each paying at least `pays` on $10."""
+        from nfl_edge.picks import multi_lays
+
+        found = multi_lays(launcher.league_pools(), pays / 10, 5)
+        self.last_multi[channel] = ("multi", found)
+        self.ledger.record_shown(launcher.tracker_entries([], found, "multi",
+                                                          botcore.season_of("multi")))
+        if not found:
+            return ["No Multi-Lays right now: fewer than two leagues have games."]
+        out = botcore.parlays_text(found, "multi", wager)
+        out[0] = (out[0].replace("bet:P1", "bet:X1")
+                  + f"\nParlays with legs from at least two leagues (NFL, College Football, "
+                  f"UFC, MLB), each paying at least ${pays:g} back on $10, likeliest first.")
+        for i, p in enumerate(found, 1):
+            leagues = " + ".join(sorted({botcore.SPORT_NAME[b.league] for b in p.legs}))
+            out[i] = out[i].replace(f"**P{i}**", f"**X{i}** ({leagues})", 1)
+        return out
+
     def find(self, sport, query):
         return botcore.search(self.boards.get(sport, None, *botcore.SEARCH_RANGE, every_line=True),
                               query)
@@ -174,18 +194,18 @@ class Core:
             return "Odds look like -150 or +240."
         if stake <= 0:
             return "The stake has to be more than $0."
-        m = re.fullmatch(r"\s*([pPmM])(\d+)\s*", query)
+        m = re.fullmatch(r"\s*([pPmMxX])(\d+)\s*", query)
         if m:
             kind = m.group(1).upper()
-            shown_sport, parlays = (self.last_parlays if kind == "P" else self.last_money).get(
-                channel, (sport, []))
+            shown_sport, parlays = {"P": self.last_parlays, "M": self.last_money,
+                                    "X": self.last_multi}[kind].get(channel, (sport, []))
             n = int(m.group(2))
             if not 1 <= n <= len(parlays):
-                cmd = "/parlays" if kind == "P" else "/moneymaker"
+                cmd = {"P": "/parlays", "M": "/moneymaker", "X": "/multilays"}[kind]
                 return f"Run `{cmd}` in this channel first, then place one with `bet:{kind}1`."
             entries = launcher.tracker_entries([], [parlays[n - 1]], shown_sport,
                                                botcore.season_of(shown_sport))
-            what = f"{'Parlay' if kind == 'P' else 'Money maker'} {kind}{n}"
+            what = f"{dict(P='Parlay', M='Money maker', X='Multi-Lay')[kind]} {kind}{n}"
         else:
             matches = self.find(sport, query)
             if not matches:
@@ -275,6 +295,11 @@ def run_bot(token: str) -> None:
     async def moneymaker_cmd(interaction: discord.Interaction, sport: str = "nfl",
                              week: int | None = None, bet_type: str = "All bets"):
         await work(interaction, core.money, interaction.channel_id, sport, week, WAGER, bet_type)
+
+    @tree.command(name="multilays",
+                  description="Parlays mixing leagues: NFL, college football, UFC and MLB legs")
+    async def multilays_cmd(interaction: discord.Interaction):
+        await work(interaction, core.multi, interaction.channel_id, WAGER)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
@@ -380,6 +405,8 @@ def selftest() -> int:
         out["mlb"] = core.bets("mlb", 10, 1, 99, None, 10.0)
         out["mlb totals"] = core.bets("mlb", 5, 1, 99, None, 10.0, "Total runs")
         out["mlb parlays"] = core.parlays(5, "mlb", 2, 2, 4, 1, 99, None, 10.0, 40.0)
+        out["multilays"] = core.multi(6, 10.0)
+        out["place multi-lay"] = core.place(6, "nfl", "X1", None, 10, 4, "Tester 4")
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]

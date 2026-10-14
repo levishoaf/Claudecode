@@ -344,3 +344,41 @@ def money_maker_parlays(bets: list[Bet], count: int, *, legs: tuple[int, int] = 
 def make_or_break(p: Parlay) -> Bet:
     """The parlay's riskiest leg: the one it hangs on."""
     return min(p.legs, key=lambda b: b.fair_prob)
+
+
+MULTI_LEGS = (2, 4)
+
+
+def multi_lays(pools: dict[str, list[Bet]], target: float, count: int, *,
+               legs: tuple[int, int] = MULTI_LEGS, per_league: int = 8,
+               max_uses: int = 2) -> list[Parlay]:
+    """Parlays mixing leagues ("Multi-Lays"): each has legs from at least two of `pools`
+    ({league: bets}) and from different games, pays at least `target` times the wager
+    (stake included, at break-even), likeliest first; a leg is in at most `max_uses`.
+    Each leg gets a `league` attribute for display and grading."""
+    pool: list[Bet] = []
+    for league, bets in pools.items():
+        top = rank_singles([b for b in bets if getattr(b, "tier", "") != "red"], per_league,
+                           rank_by="prob", per_game=1)
+        for b in top:
+            b.league = league
+        pool += top
+    found = []
+    for n in range(legs[0], legs[1] + 1):
+        for c in combinations(pool, n):
+            if len({b.league for b in c}) < 2 or len({(b.league, b.game) for b in c}) < n:
+                continue
+            p = Parlay(c)
+            if 1 / p.win_prob >= target:
+                found.append(p)
+    found.sort(key=lambda p: (p.win_prob, p.ev), reverse=True)
+    chosen, uses = [], {}
+    for p in found:
+        if len(chosen) == count:
+            break
+        if any(uses.get(_leg_key(b), 0) >= max_uses for b in p.legs):
+            continue
+        chosen.append(p)
+        for b in p.legs:
+            uses[_leg_key(b)] = uses.get(_leg_key(b), 0) + 1
+    return chosen
