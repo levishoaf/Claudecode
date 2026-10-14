@@ -38,7 +38,7 @@ SETTINGS = ROOT / "discord bot settings.json"
 TOKEN_FILE = ROOT / "discord token.txt"
 CHECK_MINUTES = 10  # how often finished games are graded
 
-SPORTS = {"nfl": "NFL", "ncaaf": "College football"}
+SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC"}
 
 
 def read_token() -> str | None:
@@ -79,7 +79,7 @@ class Core:
     def _record(self, sport, week, singles, parlays) -> None:
         if week is None:  # only this week's picks count as picks the builder made
             self.ledger.record_shown(launcher.tracker_entries(singles, parlays, sport,
-                                                              botcore.season_now()))
+                                                              botcore.season_of(sport)))
 
     def _pool(self, sport, week, lo, hi):
         """(bets, note, checked): the bets sure to be on FanDuel (moneylines, anytime TDs)."""
@@ -171,7 +171,6 @@ class Core:
             return "Odds look like -150 or +240."
         if stake <= 0:
             return "The stake has to be more than $0."
-        season = botcore.season_now()
         m = re.fullmatch(r"\s*([pPmM])(\d+)\s*", query)
         if m:
             kind = m.group(1).upper()
@@ -181,13 +180,14 @@ class Core:
             if not 1 <= n <= len(parlays):
                 cmd = "/parlays" if kind == "P" else "/moneymaker"
                 return f"Run `{cmd}` in this channel first, then place one with `bet:{kind}1`."
-            entries = launcher.tracker_entries([], [parlays[n - 1]], shown_sport, season)
+            entries = launcher.tracker_entries([], [parlays[n - 1]], shown_sport,
+                                               botcore.season_of(shown_sport))
             what = f"{'Parlay' if kind == 'P' else 'Money maker'} {kind}{n}"
         else:
             matches = self.find(sport, query)
             if not matches:
                 return "Couldn't find that bet. Try the team or player name and the line."
-            entries = launcher.tracker_entries([matches[0]], [], sport, season)
+            entries = launcher.tracker_entries([matches[0]], [], sport, botcore.season_of(sport))
             what = botcore._describe(matches[0])
         if not entries:
             return "That bet can't be tracked (no game found for it)."
@@ -371,6 +371,9 @@ def selftest() -> int:
         out["results"] = core.check_results() or "(nothing settled)"
         out["injuries"] = botcore.injuries_text("BUF")
         out["college"] = core.bets("ncaaf", 5, 1, 99, None, 10.0)
+        out["ufc"] = core.bets("ufc", 10, 1, 99, None, 10.0)
+        out["ufc distance"] = core.bets("ufc", 5, 1, 99, None, 10.0, "Fight distance")
+        out["ufc moneymaker"] = core.money(4, "ufc", None, 10.0)
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]
@@ -384,6 +387,11 @@ def selftest() -> int:
 
     if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
         print("no learned calibration or signal weights (calibration.json, signal_weights.json)")
+        ok = False
+    from nfl_edge import ufc
+
+    if not ufc.weights().get("win"):
+        print("no UFC model weights (ufc_weights.json)")
         ok = False
     import discord  # noqa: F401  (the library is bundled and imports)
     print("selftest", "passed" if ok else "FAILED")

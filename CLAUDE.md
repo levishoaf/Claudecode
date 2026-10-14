@@ -135,7 +135,8 @@ Fight history and fighter bios come from ESPN (cached; 2014 on). Chances come fr
 ratings plus age, reach, experience, layoff and form, fit on 2020-2023 and tested on
 2024 on (`python -m nfl_edge.ufc --write` refits `ufc_weights.json`, bundled into the
 builds; refit each year). No FanDuel or market UFC prices are free, so the odds are
-break-even and the page says to trust FanDuel's price where it disagrees a lot.
+break-even and the page says to trust FanDuel's price where it disagrees a lot. The bot
+has UFC too (`sport:UFC`, the next card).
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,

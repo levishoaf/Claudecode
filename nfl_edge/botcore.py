@@ -24,7 +24,7 @@ from .picks import mixed_parlays, payout_parlays, rank_singles
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
 SEARCH_RANGE = (0.03, 0.97)  # /chance looks through bets of nearly any chance
-SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football"}
+SPORT_NAME = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC"}
 RESULT_ICON = {"won": "✅ WON", "lost": "❌ LOST", "push": "➖ PUSH", "pending": "⏳"}
 NOTE_TAG = {"Questionable": " `Q`", "Did not practice": " `DNP`"}
 
@@ -46,9 +46,12 @@ class Boards:
             hit = self._cache.get(key)
             if hit and time.monotonic() - hit[0] < self.ttl:
                 return hit[1]
-        bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
-                else nfl_board(None, lo, hi, week=week, every_line=every_line,
-                               always_offered=sure_only and not every_line))
+        if sport == "ufc":  # the next card's fights
+            bets = board.ufc_board(lo, hi)
+        else:
+            bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
+                    else nfl_board(None, lo, hi, week=week, every_line=every_line,
+                                   always_offered=sure_only and not every_line))
         if sport == "nfl":
             try:  # confidence tiers: matchup, usage, floor, injuries, rest, weather
                 from . import insights
@@ -73,7 +76,9 @@ def break_even(p: float) -> str:
     return _fmt_american(decimal_to_american(1 / p))
 
 
-def week_of(bets) -> str:
+def week_of(bets, sport: str = "nfl") -> str:
+    if sport == "ufc":  # a UFC card, not a week
+        return board.NOTES.get("ufc_card", "next card")
     weeks = sorted({b.week for b in bets if b.week})
     return f"Week {weeks[0]}" if len(weeks) == 1 else (
         f"Weeks {weeks[0]}–{weeks[-1]}" if weeks else "this week")
@@ -83,7 +88,7 @@ def singles_text(singles, sport: str, wager: float) -> str:
     if not singles:
         return "No bets in that chance range. Try a wider range."
     on_fd = all(getattr(b, "on_fanduel", False) for b in singles)
-    lines = [f"**{SPORT_NAME[sport]} · {week_of(singles)} · top {len(singles)} single bets**",
+    lines = [f"**{SPORT_NAME[sport]} · {week_of(singles, sport)} · top {len(singles)} single bets**",
              ("Every bet was found on FanDuel; odds are FanDuel's. Best value first."
               if on_fd else
               "Odds are break-even unless marked FanDuel: bet only if FanDuel pays that or "
@@ -136,7 +141,7 @@ def parlays_text(parlays, sport: str, wager: float) -> list[str]:
     """One message per parlay, each a FanDuel-style slip."""
     if not parlays:
         return ["Not enough games for those parlays."]
-    out = [f"**{SPORT_NAME[sport]} · {week_of([b for p in parlays for b in p.legs])} · "
+    out = [f"**{SPORT_NAME[sport]} · {week_of([b for p in parlays for b in p.legs], sport)} · "
            f"top {len(parlays)} parlays** (place one with `/place bet:P1`)"]
     for i, p in enumerate(parlays, 1):
         on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
@@ -346,7 +351,7 @@ def history_text(ledger: dict, sport: str | None = None, week: int | None = None
         lines += record_by_member(placed)
     else:
         lines.append("No placed bets yet. Log one with `/place`.")
-    for key in (("nfl", "ncaaf") if sport is None else (sport,)):
+    for key in (("nfl", "ncaaf", "ufc") if sport is None else (sport,)):
         mine = [e for e in placed if e["sport"] == key]
         theirs = [e for e in picks if e["sport"] == key]
         weeks = sorted({e.get("week") for e in mine + theirs if week is None or e.get("week") == week},
@@ -357,7 +362,8 @@ def history_text(ledger: dict, sport: str | None = None, week: int | None = None
         for w in weeks:
             wk_placed = [e for e in mine if e.get("week") == w]
             wk_picks = [e for e in theirs if e.get("week") == w]
-            lines.append(f"**{'Week ' + str(w) if w else 'Other'}**")
+            unit = "Card" if key == "ufc" else "Week"  # UFC: the year's card number
+            lines.append(f"**{unit + ' ' + str(w) if w else 'Other'}**")
             for e in sorted(wk_placed, key=lambda e: (e["status"] == "pending",
                                                       tracker.first_kickoff(e))):
                 lines.append(placed_line(e))
@@ -443,6 +449,11 @@ def pick_parlays(bets, count: int, min_legs: int, max_legs: int,
     if pays:
         return payout_parlays(bets, pays, count, min_legs=min_legs, max_legs=max_legs)
     return mixed_parlays(bets, min_legs, max_legs, count)
+
+
+def season_of(sport: str) -> int:
+    """The season a bet is filed under: the calendar year for UFC."""
+    return datetime.now().year if sport == "ufc" else season_now()
 
 
 def season_now() -> int:
