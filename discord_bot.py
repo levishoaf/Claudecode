@@ -4,14 +4,19 @@
     python3 discord_bot.py              # asks for the bot token the first time
     python3 discord_bot.py --selftest   # checks everything except the Discord connection
 
-Slash commands: /bets, /parlays, /chance, /place, /remove, /history,
-/injuries and /results-here. The whole server shares one bet history,
+Slash commands: /bets, /parlays, /multilays, /moneymaker, /chance, /place,
+/remove, /history, /injuries and /results-here. The whole server shares one bet history,
 saved in "discord bets.json" next to this program. Placed bets and the
 picks the bot showed are graded after the games, and results are posted in
 the channel chosen with /results-here.
 
 The token is read from the DISCORD_BOT_TOKEN environment variable or from
 "discord token.txt" next to this program. Keep it secret.
+
+On Windows the downloaded bot also: offers to start whenever you sign in
+(a small file in your Startup folder; `--startup on` / `--startup off`), updates
+itself from the latest release (at start and every few hours), and opens its own
+invite link while it isn't in any server yet.
 """
 
 from __future__ import annotations
@@ -23,10 +28,17 @@ import os
 import re
 import sys
 import tempfile
+import webbrowser
 from pathlib import Path
 
 import bets as launcher  # sets up paths and certificates, like the app
-from nfl_edge import botcore, data
+from nfl_edge import botcore, data, updater
+
+try:  # discord.py reads the slash commands' type hints (strings here) from this module
+    import discord
+    from discord import app_commands
+except ImportError:  # --startup and the command logic work without the library
+    discord = app_commands = None
 from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SURE_TYPES, empty_type_note,
                             every_line_of, fanduel_estimate,
                             money_maker_parlays, of_type,
@@ -37,21 +49,100 @@ LEDGER = ROOT / "discord bets.json"
 SETTINGS = ROOT / "discord bot settings.json"
 TOKEN_FILE = ROOT / "discord token.txt"
 CHECK_MINUTES = 10  # how often finished games are graded
+UPDATE_HOURS = 6  # how often the downloaded bot looks for a newer release
+# What the bot may do in a server: view channels, send messages, embed links and read
+# message history (Discord permission bits 1024 + 2048 + 16384 + 65536).
+PERMISSIONS = 84992
+STARTUP_NAME = "Bet Builder Discord Bot.cmd"
 
 SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB"}
 
 
+def clean_token(text: str) -> str:
+    """A pasted token without quotes, spaces or a "Bot " in front."""
+    text = text.strip().strip('"\'').strip()
+    return text[4:].strip() if text.lower().startswith("bot ") else text
+
+
+def interactive() -> bool:
+    return bool(sys.stdin and sys.stdin.isatty())
+
+
 def read_token() -> str | None:
-    token = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
+    token = clean_token(os.environ.get("DISCORD_BOT_TOKEN", ""))
     if not token and TOKEN_FILE.exists():
-        token = TOKEN_FILE.read_text().strip()
-    if not token and sys.stdin and sys.stdin.isatty():
-        print("Paste your Discord bot token (from discord.com/developers → your app → Bot):")
-        token = input("> ").strip()
+        token = clean_token(TOKEN_FILE.read_text())
+    if not token and interactive():
+        print("Paste your Discord bot token (discord.com/developers → your app → Bot → "
+              "Reset Token → Copy), then press Enter.\n"
+              "In this window, right-click pastes. The token won't be shown again; it's "
+              "saved next to this program.")
+        token = clean_token(input("> "))
         if token:
             TOKEN_FILE.write_text(token + "\n")
-            print(f"Saved to {TOKEN_FILE}. Keep that file private.")
+            print(f"Saved to {TOKEN_FILE}. Keep that file private: anyone with it controls "
+                  "your bot.")
     return token or None
+
+
+def invite_link(app_id: int) -> str:
+    return (f"https://discord.com/oauth2/authorize?client_id={app_id}"
+            f"&permissions={PERMISSIONS}&scope=bot%20applications.commands")
+
+
+# ---------------------------------------------------------------- Windows niceties
+
+def startup_file() -> Path | None:
+    """The file in the Windows Startup folder that starts the bot at sign-in."""
+    folder = os.environ.get("APPDATA")
+    if sys.platform != "win32" or not folder:
+        return None
+    return Path(folder) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup" / \
+        STARTUP_NAME
+
+
+def set_startup(on: bool) -> str:
+    """Start the bot whenever you sign in to Windows (on), or stop doing that (off)."""
+    path = startup_file()
+    if path is None:
+        return "Starting with the computer is only set up for the Windows bot."
+    if not on:
+        path.unlink(missing_ok=True)
+        return "The bot won't start by itself any more."
+    if not getattr(sys, "frozen", False):
+        return "Starting with Windows works for the downloaded bot (the .exe), not from source."
+    exe = Path(sys.executable).resolve()  # updates keep the same name, so this stays right
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f'@echo off\r\ncd /d "{exe.parent}"\r\n'
+                    f'start "Bet Builder Discord Bot" /min "{exe}"\r\n')
+    return ("The bot will start (minimized) whenever you sign in to Windows. "
+            "To stop that, run it with --startup off.")
+
+
+def offer_startup(settings: dict) -> None:
+    """Ask once, the first time the downloaded Windows bot runs."""
+    if settings.get("startup_asked") or startup_file() is None or not interactive() \
+            or not getattr(sys, "frozen", False):
+        return
+    answer = input("Start the bot automatically whenever you sign in to Windows? [Y/n] ")
+    print(set_startup(not answer.strip().lower().startswith("n")))
+    settings["startup_asked"] = True
+    save_settings(settings)
+
+
+def update_now() -> bool:
+    """Install a newer build of the bot if there is one. True when the new version was
+    started, so this one must quit."""
+    try:
+        found = updater.available(assets=updater.BOT_ASSETS)
+        if not found:
+            return False
+        print(f"Updating the bot to build {found.build}; it reopens in a new window...")
+        updater.install(found, console=True, assets=updater.BOT_ASSETS)
+        return True
+    except updater.UpdateError as e:
+        print(f"Couldn't update right now ({e}); trying again later.")
+        return False
 
 
 def load_settings() -> dict:
@@ -232,9 +323,9 @@ class Core:
         return botcore.settled_text(self.ledger.regrade())
 
 
-def run_bot(token: str) -> None:
-    import discord
-    from discord import app_commands
+def run_bot(token: str | None, connect: bool = True):
+    """Set up the slash commands and run the bot. With connect=False (the self-test),
+    stop before connecting and return the command tree."""
     from discord.ext import tasks
 
     settings = load_settings()
@@ -358,6 +449,13 @@ def run_bot(token: str) -> None:
                 for part in botcore.chunks(text):
                     await channel.send(part)
 
+    @tasks.loop(hours=UPDATE_HOURS)
+    async def update_loop():
+        if update_loop.current_loop == 0:  # just checked at start
+            return
+        if await asyncio.to_thread(update_now):
+            await client.close()  # the new version is starting in its own window
+
     @client.event
     async def on_ready():
         for guild in client.guilds:  # commands show up right away in each server
@@ -365,14 +463,30 @@ def run_bot(token: str) -> None:
             await tree.sync(guild=guild)
         if not grade_loop.is_running():
             grade_loop.start()
-        print(f"Bet Builder bot is online as {client.user} in {len(client.guilds)} server(s). "
-              "Press Ctrl+C to stop.")
+        if updater.can_update(assets=updater.BOT_ASSETS) and not update_loop.is_running():
+            update_loop.start()
+        link = invite_link(client.application_id or client.user.id)
+        names = ", ".join(g.name for g in client.guilds)
+        print(f"Bet Builder bot is online as {client.user}"
+              + (f" in: {names}." if names else "."))
+        print(f"Add it to a server with this link: {link}")
+        if not client.guilds:  # not in a server yet: open the invite page
+            print("It isn't in any server yet, so the invite page is opening in your browser.")
+            try:
+                webbrowser.open(link)
+            except Exception:
+                pass
+        print("Leave this window open (minimizing is fine) for the bot to answer. "
+              "Close it or press Ctrl+C to stop.")
 
     @client.event
     async def on_guild_join(guild):
         tree.copy_global_to(guild=guild)
         await tree.sync(guild=guild)
+        print(f"Joined {guild.name}: type / in a channel there to see the commands.")
 
+    if not connect:
+        return tree
     client.run(token)
 
 
@@ -429,7 +543,15 @@ def selftest() -> int:
     if not mlb.weights().get("weights"):
         print("no MLB model weights (mlb_weights.json)")
         ok = False
-    import discord  # noqa: F401  (the library is bundled and imports)
+    # Build every slash command as Discord would see them (without connecting): a
+    # command Discord can't read would stop the bot as it starts.
+    try:
+        names = sorted(c.name for c in run_bot(None, connect=False).get_commands())
+        print("--- slash commands:", ", ".join(names))
+        ok &= len(names) >= 10
+    except Exception as e:
+        print(f"slash commands FAILED to build: {e!r}")
+        ok = False
     print("selftest", "passed" if ok else "FAILED")
     return 0 if ok else 1
 
@@ -442,23 +564,43 @@ def main() -> int:
             pass
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--selftest", action="store_true", help=argparse.SUPPRESS)
+    ap.add_argument("--startup", choices=["on", "off"],
+                    help="start the bot whenever you sign in to Windows, or stop doing that")
     args = ap.parse_args()
     if args.selftest:
         return selftest()
-    token = read_token()
-    if not token:
-        print("No bot token. Put it in DISCORD_BOT_TOKEN or in", TOKEN_FILE)
-        return 1
-    try:
-        run_bot(token)
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:  # e.g. a wrong token
-        print(f"The bot stopped: {e}")
-        if sys.stdin and sys.stdin.isatty():
-            input("Press Enter to close.")
-        return 1
-    return 0
+    if args.startup:
+        print(set_startup(args.startup == "on"))
+        return 0
+    if sys.platform == "win32":
+        os.system("title Bet Builder Discord Bot")
+    updater.cleanup(assets=updater.BOT_ASSETS)
+    if update_now():  # a newer build is opening in its own window
+        return 0
+    for attempt in range(3):
+        token = read_token()
+        if not token:
+            print("No bot token. Put it in DISCORD_BOT_TOKEN or in", TOKEN_FILE)
+            return 1
+        offer_startup(load_settings())
+        try:
+            run_bot(token)
+            return 0
+        except KeyboardInterrupt:
+            return 0
+        except Exception as e:
+            if type(e).__name__ == "LoginFailure":  # a wrong or reset token
+                print("Discord didn't accept that token. On discord.com/developers open your "
+                      "app → Bot → Reset Token → Copy, and paste the new one.")
+                TOKEN_FILE.unlink(missing_ok=True)
+                if interactive() and attempt < 2:
+                    continue
+            else:
+                print(f"The bot stopped: {e}")
+            if interactive():
+                input("Press Enter to close.")
+            return 1
+    return 1
 
 
 if __name__ == "__main__":

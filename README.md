@@ -174,19 +174,21 @@ compare live FanDuel prices with an Odds API key.
 ## Discord bot
 
 The same picks, win chances and bet history in your Discord server. It runs
-on your computer, so it answers while the bot program is open.
+on your computer, so it answers while the bot program is open (minimized is
+fine).
 
-**Commands**
+**Commands** (every payout is shown for a $10 wager)
 
 | Command | What it does |
 |---|---|
-| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL or College football), `count`, `min_chance`, `max_chance`, `week`, `wager`. |
-| `/parlays` | Top parlays as bet slips (P1, P2, …). Options: `count`, `min_legs`, `max_legs`, `week`, `wager`. |
-| `/moneymaker` | Money makers (M1, M2, …): riskier parlays that hang on one coin-flip leg, paying about 5× the wager. |
-| `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, any line or prop threshold, and whether FanDuel's price is worth it. |
-| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places parlay P1 from the last `/parlays` in that channel, `bet:M1` money maker M1 from the last `/moneymaker`). |
+| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL, College football, UFC, MLB), `count`, `week`, `bet_type`. |
+| `/parlays` | Top parlays from one league as bet slips (P1, P2, …). Options: `sport`, `count`, `min_legs`, `max_legs`, `week`, `pays`, `bet_type`. |
+| `/multilays` | Multi-Lays (X1, X2, …): parlays mixing leagues (NFL, college, UFC, MLB). |
+| `/moneymaker` | Money makers (M1, M2, …): the likeliest parlays that pay back at least double the wager. |
+| `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, and whether FanDuel's price is worth it. |
+| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1`, `bet:M1` or `bet:X1` places that parlay from the last list in the channel). |
 | `/remove bet:Ravens` | Removes one of your logged bets. |
-| `/history` | The server's bet history by sport and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. Options: `sport`, `week`, `show_picks`. |
+| `/history` | The server's bet history by league and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. |
 | `/injuries team:Bills` | This week's NFL injury report. |
 | `/results-here` | (Server managers) Posts results in this channel as games finish. |
 
@@ -194,26 +196,33 @@ The whole server shares one history, saved in `discord bets.json` next to the
 program. Placed bets and the picks the bot showed are graded every 10 minutes
 once their games are final.
 
-**Set it up (once, about 10 minutes)**
+**Set it up on Windows (once, about 10 minutes)**
 
-1. Go to <https://discord.com/developers/applications>, click **New
-   Application**, and name it (e.g. *Bet Builder*).
-2. Open **Bot** in the left menu. Click **Reset Token**, then **Copy**. This
-   is the bot's password: never share it or post it anywhere.
-3. Open **OAuth2 → URL Generator**. Tick **bot** and **applications.commands**;
-   under bot permissions tick **Send Messages**, **Embed Links** and **Read
-   Message History**. Open the generated link and add the bot to your server.
-4. Download the Discord bot (`BetBuilder-Windows-DiscordBot.exe` or
-   `BetBuilder-Mac-DiscordBot.zip`) from the latest release
-   (see *Download the standalone program* above), put it in its own folder and
-   run it. The first time, it asks for the token and saves it as
-   `discord token.txt` in that folder. Keep that file private.
-5. In Discord, type `/` and the bot's commands appear. In the channel where you
-   want results posted, run `/results-here`.
+1. Go to <https://discord.com/developers/applications> (sign in with your
+   Discord account), click **New Application**, name it (e.g. *Bet Builder*),
+   accept the terms and click **Create**.
+2. Open **Bot** in the left menu. Click **Reset Token**, confirm, then
+   **Copy**. This is the bot's password: never share it or post it anywhere.
+   (Leave the "Privileged Gateway Intents" switches off; the bot doesn't need them.)
+3. Download `BetBuilder-Windows-DiscordBot.exe` from the latest release, make a
+   folder for it (e.g. *Documents\\Bet Builder Bot*), move it there and
+   double-click it. If Windows says "Windows protected your PC", click **More
+   info → Run anyway** (the program isn't signed).
+4. When it asks, right-click in its window to paste the token and press Enter.
+   It saves it as `discord token.txt` in that folder. Keep that file private.
+5. It asks whether to start whenever you sign in to Windows: press Enter for
+   yes. (Change it later with `--startup on` or `--startup off`.)
+6. Your browser opens the bot's invite page: pick your server and click
+   **Authorize**. (The link is also printed in the bot's window.)
+7. In Discord, type `/` in your server and the bot's commands appear. In the
+   channel where you want results posted, run `/results-here`.
 
-Keep the program running (and the computer awake) for the bot to answer. Close
-the window or press Ctrl+C to stop it. With Python installed you can run it
-from source instead: `pip install discord.py` then `python3 discord_bot.py`.
+Keep its window open (minimized is fine) and the computer awake for the bot to
+answer. It updates itself from the latest release when there's a new one. Close
+the window or press Ctrl+C to stop it. On a Mac, use
+`BetBuilder-Mac-DiscordBot.zip` the same way (it doesn't start with the
+computer or update itself). With Python installed you can run it from source
+instead: `pip install discord.py` then `python3 discord_bot.py`.
 
 ## Setup
 

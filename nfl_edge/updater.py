@@ -49,10 +49,14 @@ class Update:
     notes: str = ""
 
 
-def can_update(platform: str | None = None) -> bool:
-    """True for a built app (with a build number) on Windows or Mac."""
+# The Discord bot updates itself the same way (Windows only: the Mac bot is a bare program).
+BOT_ASSETS = {"win32": "BetBuilder-Windows-DiscordBot.exe"}
+
+
+def can_update(platform: str | None = None, assets: dict = ASSETS) -> bool:
+    """True for a built program (with a build number) on a platform in `assets`."""
     return bool(getattr(sys, "frozen", False)) and BUILD > 0 and \
-        (platform or sys.platform) in ASSETS
+        (platform or sys.platform) in assets
 
 
 def _get_json(url: str, opener=None):
@@ -69,7 +73,7 @@ def _get_json(url: str, opener=None):
         raise UpdateError(f"couldn't reach GitHub ({getattr(e, 'reason', e)})")
 
 
-def latest(platform: str | None = None, opener=None) -> Update | None:
+def latest(platform: str | None = None, opener=None, assets: dict = ASSETS) -> Update | None:
     """The newest published build for this platform, or None if there isn't one."""
     release = _get_json(API.format(repo=REPO), opener)
     if not release:
@@ -77,7 +81,7 @@ def latest(platform: str | None = None, opener=None) -> Update | None:
     tag = str(release.get("tag_name", ""))
     if not tag.startswith(TAG_PREFIX) or not tag[len(TAG_PREFIX):].isdigit():
         return None
-    name = ASSETS.get(platform or sys.platform)
+    name = assets.get(platform or sys.platform)
     asset = next((a for a in release.get("assets", []) if a.get("name") == name), None)
     if asset is None:
         return None
@@ -85,11 +89,11 @@ def latest(platform: str | None = None, opener=None) -> Update | None:
                   int(asset.get("size", 0)), release.get("body") or "")
 
 
-def available(opener=None) -> Update | None:
+def available(opener=None, assets: dict = ASSETS) -> Update | None:
     """A newer build than this one, if there is one (None when running from source)."""
-    if not can_update():
+    if not can_update(assets=assets):
         return None
-    found = latest(opener=opener)
+    found = latest(opener=opener, assets=assets)
     return found if found and found.build > BUILD else None
 
 
@@ -181,9 +185,9 @@ def app_path() -> Path:
     return mac_app_path() if sys.platform == "darwin" else Path(sys.executable).resolve()
 
 
-def cleanup() -> None:
+def cleanup(assets: dict = ASSETS) -> None:
     """Delete what an earlier update left behind (called when the app starts)."""
-    if not can_update():
+    if not can_update(assets=assets):
         return
     try:
         target = app_path()
@@ -207,10 +211,12 @@ def mac_app_path(executable: str | None = None) -> Path:
     return app
 
 
-def install(update: Update, progress=None, opener=None) -> None:
+def install(update: Update, progress=None, opener=None, console: bool = False,
+            assets: dict = ASSETS) -> None:
     """Download the update, swap it in for this app and start it. The caller must
-    quit right after this returns."""
-    if not can_update():
+    quit right after this returns. With `console` (the Discord bot), the new version
+    opens in its own console window."""
+    if not can_update(assets=assets):
         raise UpdateError("only the downloaded app can update itself")
     target = app_path()
     work = Path(tempfile.mkdtemp(prefix="bet-builder-update-"))
@@ -240,7 +246,8 @@ def install(update: Update, progress=None, opener=None) -> None:
             raise UpdateError(f"couldn't replace the app ({e.strerror or e})")
         try:
             if sys.platform == "win32":
-                flags = 0x00000008 | 0x00000200  # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+                flags = (0x00000010 if console  # CREATE_NEW_CONSOLE: the bot's window
+                         else 0x00000008 | 0x00000200)  # DETACHED_PROCESS | NEW_PROCESS_GROUP
                 subprocess.Popen(command, env=clean_env(), cwd=str(target.parent),
                                  creationflags=flags, close_fds=True)
             else:

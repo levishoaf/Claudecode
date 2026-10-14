@@ -88,7 +88,14 @@ the whole server (`discord bets.json` next to the program). Discord is not
 reachable from this workspace, so check changes with
 `python3 discord_bot.py --selftest`, which runs every command's logic against
 live data without connecting. The token lives in `discord token.txt` on the
-user's machine; never ask for it here or commit it.
+user's machine; never ask for it here or commit it. The slash commands' type hints are
+strings (`from __future__ import annotations`), which discord.py looks up in the module, so
+`discord` and `app_commands` must stay imported at module level; the self-test builds every
+command (`run_bot(None, connect=False)`) so a broken one fails the build. The Windows bot
+offers to start at sign-in (`--startup on/off`, a .cmd in the Startup folder), updates
+itself from `BetBuilder-Windows-DiscordBot.exe` (`updater.BOT_ASSETS`, every 6 hours), opens
+its invite link when it's in no server (`invite_link`, permissions 84992), and forgets a
+token Discord rejects so it can ask again.
 
 ## Making sure bets are on FanDuel
 
