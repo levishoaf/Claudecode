@@ -48,7 +48,7 @@ GREEN, AMBER, RED, TRACK = "#2fb864", "#e8ad1c", "#ef5b5b", "#2a3343"
 NEW_BADGE, MOVED_BADGE = "#3d8bff", "#f08a24"
 # Bets you placed and picks you didn't, graded after the games.
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
-SPORTS = (("nfl", "NFL"), ("ncaaf", "College"), ("ufc", "UFC"), ("nba", "NBA"))
+SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("nba", "NBA"))
 LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "nba": "NBA"}
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
@@ -190,8 +190,6 @@ class App:
             b = FlatButton(seg, text, lambda k=key: self.pick_sport(k), "ghost", self.f["bold"])
             b.pack(side="left")
             self.seg_btns[key] = b
-        tk.Label(row1, textvariable=self.countdown, bg=NAVY, fg=WHITE,
-                 font=self.f["bold"]).pack(side="right", padx=(0, 14))
         self.pick_sport("nfl")
 
         row2 = tk.Frame(top, bg=NAVY)
@@ -239,6 +237,9 @@ class App:
 
         btns = tk.Frame(row2, bg=NAVY)
         btns.pack(side="right", anchor="s")
+        # The countdown sits by Build bets (the league buttons fill the top row).
+        tk.Label(btns, textvariable=self.countdown, bg=NAVY, fg=WHITE,
+                 font=self.f["bold"]).pack(side="left", padx=(0, 14))
         self.build_btn = FlatButton(btns, "Build bets", self.build, "primary", self.f["bold"])
         self.build_btn.pack(side="left")
         self.win_top = c.create_window(W / 2, 72, window=top, width=PANEL_W)
