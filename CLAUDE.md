@@ -147,7 +147,8 @@ season-final, so never use them as of a game) and no mix helped, so a posted lin
 is used as is and the model only fills in games with no line yet (labeled "No line yet").
 `python -m nfl_edge.mlb --write` refits `mlb_weights.json` (bundled into the builds; it also
 carries each team's rating at the newest season's start, so a fresh install downloads only
-that season). Likewise `ufc_weights.json` carries every fighter's record (`ufc.snapshot`),
+that season). Likewise `ufc_weights.json` carries every active fighter's record (a fight in the last
+3 years or booked on a card; `ufc.snapshot`),
 so only this year's cards are downloaded; refit both before releases so the snapshots stay
 recent. A day or card ESPN can't send is skipped, never fatal. The
 Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); series repeat

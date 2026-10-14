@@ -495,14 +495,23 @@ def upcoming_cards(now: datetime | None = None) -> list[tuple[str, str, list[dic
     return sorted(out, key=lambda c: c[2][0]["date"])
 
 
+ACTIVE_DAYS = 3 * 365  # fighters out longer than this are left out of the snapshot
+
+
 def snapshot(ratings: Ratings, bouts: list[dict]) -> dict:
-    """Every fighter's record as of the newest finished fight, shipped in the builds so a
-    fresh install doesn't download every card since FIRST_SEASON (see current_ratings)."""
+    """Every active fighter's record (a fight in the last 3 years, or booked on a card) as
+    of the newest finished fight, shipped in the builds so a fresh install doesn't download
+    every card since FIRST_SEASON (see current_ratings). Retired fighters still shape the
+    fitted weights."""
     done = [b["date"] for b in bouts if b.get("done")]
+    newest = _day({"date": max(done)}) if done else date.today()
+    booked = {b[k] for b in bouts if not b.get("done") for k in ("a", "b")}  # returning
     return {"asof": max(done) if done else "", "decision_rate": round(ratings.decision_rate, 4),
             "fighters": {i: [round(r.elo, 2), r.fights, r.decisions,
                              r.last.isoformat() if r.last else None, r.results[-3:]]
-                         for i, r in ratings.fighters.items() if r.fights}}
+                         for i, r in ratings.fighters.items()
+                         if r.fights and (i in booked or r.last
+                                          and (newest - r.last).days <= ACTIVE_DAYS)}}
 
 
 def current_ratings() -> Ratings:
