@@ -229,6 +229,42 @@ def save_odds_api_key(key: str) -> None:
     ODDS_KEY_FILE.write_text(key.strip() + "\n")
 
 
+ODDS_NOTE: dict[str, str] = {}
+from nfl_edge.lines import BOOK_NAMES, book_name  # noqa: E402,F401
+
+
+def real_offers(sport: str, week: int | None = None) -> list:
+    """Every FanDuel line in the league priced against every sportsbook (nfl_edge/lines.py),
+    [] without a key or when the odds can't be had right now (never stops the board).
+    NFL props of players listed Out, Doubtful or Questionable are left out."""
+    from nfl_edge import lines, realodds
+
+    feed = realodds.feed()
+    if feed is None:
+        return []
+    try:
+        offers = lines.board(sport, feed)
+    except Exception:
+        return []
+    if sport == "nfl" and offers:
+        try:
+            from nfl_edge import fanduel
+            from nfl_edge.context import name_key
+
+            out = {k for k, v in fanduel.injury_statuses(week or 0).items()
+                   if v in ("Out", "Doubtful", "Questionable")}
+            offers = [o for o in offers if not o.subject or name_key(o.subject) not in out]
+        except Exception:
+            pass
+    pulled = feed.pulled.get(f"main-{sport}")
+    when = datetime.fromtimestamp(pulled, EASTERN) if pulled else None
+    ODDS_NOTE["note"] = (
+        f"Real odds: FanDuel's prices against every sportsbook"
+        + (f", checked {clock(when, with_date=True)} ET" if when else "")
+        + (f" · {feed.credits} API credits left" if feed.credits is not None else ""))
+    return offers
+
+
 # Win chance range in %: no limit, so the board shows the likeliest bets.
 MIN_PROB, MAX_PROB = 1.0, 99.0
 
@@ -279,6 +315,22 @@ def build(args):
             board.NOTES["confirm_line"] = CONFIRM_NOTE.format(kind=kind)
     else:
         bets = of_type(bets, kind)
+    # Real odds (nfl_edge/realodds.py, with an Odds API key): FanDuel's prices, the true
+    # chance from every sportsbook, and for the NFL FanDuel's own prop lines.
+    board.NOTES.pop("odds", None)
+    if getattr(args, "real_odds", True) and not key:
+        offers = real_offers(args.sport, week if args.sport == "nfl" else None)
+        if offers:
+            from nfl_edge import realodds
+
+            bets = realodds.apply(bets, args.sport, offers)
+            args.value_offers = realodds.value_list(offers)  # the Value tab
+            bets = [b for b in of_type(bets, kind) if lo <= b.fair_prob <= hi]
+            board.NOTES["odds"] = ODDS_NOTE.get("note", "")
+            if any(b.confirm_line for b in bets):
+                board.NOTES["confirm_line"] = CONFIRM_NOTE.format(kind=kind)
+            else:
+                board.NOTES.pop("confirm_line", None)
     # NFL: each bet's statistics and confidence tier (nfl_edge/insights.py); parlays use
     # Strong (green) legs, or Strong and Mixed when there aren't enough, never Weak.
     board.NOTES.pop("parlay_pool", None)
@@ -342,7 +394,12 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
         print("  None found. Try a wider chance range or a different date.")
     for i, b in enumerate(singles, 1):
         when = clock(b.commence_time.astimezone(EASTERN), with_date=False)
-        extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
+        if getattr(b, "on_fanduel", False):  # real odds: FanDuel's price and the best one
+            extra = f", FanDuel {_fmt_american(b.fd_price)}, value {b.ev:+.1%}"
+            if getattr(b, "best_price", b.fd_price) > b.fd_price:
+                extra += f", best {_fmt_american(b.best_price)} at {book_name(b.best_book)}"
+        else:
+            extra = f", consensus price {_fmt_american(b.fd_price)}" if b.priced else ""
         print(f"{i:>2}. {b.fair_prob:.0%}  {_describe(b)}  ({break_even(b.fair_prob)}{extra})"
               f"  {b.game}, {when} ET{NOTE_TAGS.get(b.note, '')}{'  [confirm line]' if b.confirm_line else ''}{mark(b)}")
     if previous:

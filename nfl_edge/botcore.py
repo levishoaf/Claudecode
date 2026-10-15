@@ -15,6 +15,7 @@ import time
 from datetime import datetime
 
 from . import board, learn, tracker
+from .lines import book_name
 from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
@@ -57,6 +58,16 @@ class Boards:
             bets = (cfb_board(None, lo, hi, week=week) if sport == "ncaaf"
                     else nfl_board(None, lo, hi, week=week, every_line=every_line,
                                    always_offered=sure_only and not every_line))
+        try:  # real sportsbook odds, with an Odds API key: FanDuel's price and the market's chance
+            import bets as launcher
+            from . import realodds
+
+            offers = launcher.real_offers(sport, week if sport == "nfl" else None)
+            if offers:
+                bets = [b for b in realodds.apply(bets, sport, offers)
+                        if lo <= b.fair_prob <= hi]
+        except Exception:  # never block the bets
+            pass
         if sport == "nfl":
             try:  # confidence tiers: matchup, usage, floor, injuries, rest, weather
                 from . import insights
@@ -106,6 +117,11 @@ def singles_text(singles, sport: str, wager: float) -> str:
         if getattr(b, "on_fanduel", False):
             price = (f"FanDuel {_fmt_american(b.fd_price)} · EV {b.ev:+.1%} · ${wager:g} pays "
                      f"${wager * american_to_decimal(b.fd_price):,.2f}")
+            best = getattr(b, "best_price", None)
+            if best is not None and best > b.fd_price:
+                price += f" · better: {_fmt_american(best)} at {book_name(b.best_book)}"
+            if getattr(b, "check", False):
+                price += " · ⚠ far from other books, check the news"
         else:
             price = (f"worst odds {break_even(b.fair_prob)} · ${wager:g} pays "
                      f"${wager / b.fair_prob:,.2f}")
