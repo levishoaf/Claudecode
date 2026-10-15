@@ -322,6 +322,7 @@ class ServerLedger:
         def change(ledger):
             for e in tracker.all_entries(ledger):
                 before[e["id"]] = e["status"]
+            tracker.withdraw_injured(ledger)  # since listed Out/Doubtful/Questionable
             tracker.regrade(ledger)
             tracker.annotate_weeks(ledger)
             settled.extend(e for e in tracker.all_entries(ledger)

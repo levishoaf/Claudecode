@@ -23,7 +23,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import data
-from .grade import STATS_URL, college_games, grade_leg
+from .grade import OLD_DNP, STATS_URL, college_games, grade_leg
 from .odds import american_to_decimal, decimal_to_american
 
 TRACK_DAYS = 8  # only picks for games this soon are logged as generated
@@ -125,6 +125,39 @@ def profit(entry: dict) -> float:
     if entry["status"] == "lost":
         return -entry["stake"]
     return 0.0
+
+
+HURT = ("Out", "Doubtful", "Questionable")
+
+
+def withdraw_injured(ledger: dict, statuses: dict[str, str] | None = None,
+                     now: datetime | None = None) -> int:
+    """Drop logged picks (never placed ones) with an NFL player who has since been listed
+    Out, Doubtful or Questionable, before his game starts: the board leaves such players
+    out, so a pick logged earlier in the week no longer counts. Returns how many."""
+    from .context import name_key
+
+    now = now or datetime.now(timezone.utc)
+
+    def upcoming_players(e):
+        return [leg for leg in e["legs"] if leg.get("player") and leg["status"] == "pending"
+                and leg.get("sport", e.get("sport")) == "nfl" and leg.get("kickoff")
+                and datetime.fromisoformat(leg["kickoff"]) > now]
+
+    todo = [e for e in ledger.get("generated", []) if upcoming_players(e)]
+    if not todo:
+        return 0
+    if statuses is None:
+        try:
+            from .fanduel import injury_statuses
+
+            statuses = injury_statuses(0)
+        except Exception:  # no injury news right now: keep everything
+            return 0
+    hurt = {e["id"] for e in todo
+            if any(statuses.get(name_key(leg["player"])) in HURT for leg in upcoming_players(e))}
+    ledger["generated"] = [e for e in ledger["generated"] if e["id"] not in hurt]
+    return len(hurt)
 
 
 def all_entries(ledger: dict) -> list[dict]:
@@ -262,8 +295,11 @@ def import_saved(ledger: dict, paths, games_source: str | None = None) -> int:
 def regrade(ledger: dict, games_source: str | None = None) -> int:
     """Grade every unsettled leg whose game has kicked off. Returns legs newly settled."""
     now = datetime.now(timezone.utc)
-    entries = [e for e in all_entries(ledger) if e["status"] == "pending"]
-    todo = [(e, leg) for e in entries for leg in e["legs"] if leg["status"] == "pending"
+    # A player who didn't play was once graded a loss; FanDuel refunds those, so look again.
+    entries = [e for e in all_entries(ledger) if e["status"] == "pending"
+               or any(leg.get("detail") == OLD_DNP for leg in e["legs"])]
+    todo = [(e, leg) for e in entries for leg in e["legs"]
+            if (leg["status"] == "pending" or leg.get("detail") == OLD_DNP)
             and (not leg.get("kickoff")
                  or datetime.fromisoformat(leg["kickoff"]) < now - timedelta(hours=2))]
     if not todo:

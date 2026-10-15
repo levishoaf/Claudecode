@@ -164,9 +164,16 @@ def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
     return sorted(out, key=lambda b: order[id(b)])
 
 
+# Parlays have at most 3 legs. Graded so far, 2-3 leg parlays won about as often as
+# their chance said (33% vs 25-29%) and 4-6 leg ones far less (4-17% vs 25-29%); and
+# FanDuel takes its cut on every leg, about 4.5% each, so each extra leg costs value.
+MAX_LEGS = 3
+
+
 def best_parlays(bets: list[Bet], legs: int, count: int, *, allow_overlap: bool = False,
                  min_prob: float = 0.0, rank_by: str = "ev") -> list[Parlay]:
-    """Best `count` parlays of exactly `legs` legs from different games."""
+    """Best `count` parlays of exactly `legs` legs (at most MAX_LEGS) from different games."""
+    legs = min(legs, MAX_LEGS)
     pool = rank_singles(bets, 10_000, min_prob, rank_by=rank_by)
     # Keep the search affordable: shrink the pool until the combinations fit.
     while len(pool) > legs and comb(len(pool), legs) > MAX_COMBOS:
@@ -201,6 +208,8 @@ def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
     different games for its own legs, no two parlays are identical, and no
     single bet appears in more than `max_uses` parlays.
     """
+    max_legs = min(max_legs, MAX_LEGS)
+    min_legs = min(min_legs, max_legs)
     sizes = list(range(min_legs, max_legs + 1))
     quota = {n: count // len(sizes) for n in sizes}
     for n in sizes[: count % len(sizes)]:
@@ -239,7 +248,7 @@ def mixed_parlays(bets: list[Bet], min_legs: int, max_legs: int, count: int, *,
 
 
 def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int = 2,
-                   max_legs: int = 6, tolerance: float = 0.05, rank_by: str = "prob",
+                   max_legs: int = MAX_LEGS, tolerance: float = 0.05, rank_by: str = "prob",
                    max_uses: int = 3, pool_size: int = 20) -> list[Parlay]:
     """`count` parlays that each pay at least `target` times the wager (stake
     included) and as little over it as possible, likeliest to win first (best
@@ -249,6 +258,8 @@ def payout_parlays(bets: list[Bet], target: float, count: int, *, min_legs: int 
     and `tolerance` above it, the band widens step by step up to 50% above.
     No bet appears in more than `max_uses` parlays when that can be avoided.
     """
+    max_legs = min(max_legs, MAX_LEGS)
+    min_legs = min(min_legs, max_legs)
     # The likeliest bets, plus the likeliest of those long enough that max_legs of
     # them can reach the target (when every bet is very likely, e.g. 25+ yards).
     cap = target ** (-1 / max_legs)
@@ -295,7 +306,7 @@ def _leg_key(b: Bet) -> tuple:
     return (b.game, b.market, b.pick, b.point)
 
 
-MONEY_MAKER_LEGS = (2, 4)  # fewest and most legs
+MONEY_MAKER_LEGS = (2, MAX_LEGS)  # fewest and most legs
 MONEY_MAKER_RETURN = 2.0  # a win pays back at least this many times the wager
 FANDUEL_HOLD = 0.045  # FanDuel pays about this much under break-even, per leg
 
@@ -346,7 +357,7 @@ def make_or_break(p: Parlay) -> Bet:
     return min(p.legs, key=lambda b: b.fair_prob)
 
 
-MULTI_LEGS = (2, 4)
+MULTI_LEGS = (2, MAX_LEGS)
 
 
 def multi_lays(pools: dict[str, list[Bet]], target: float, count: int, *,

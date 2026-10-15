@@ -109,7 +109,7 @@ the default board ("All bets"). The user asked for every bet when they choose a
 bet type, so the Bet type menu's other types (spreads, totals, yardage and other
 props) show every model line, marked **Confirm line** (`Bet.confirm_line`, `picks.every_line_of`). Receiving yards bets are only listed at -300 or better (`picks.TYPE_MIN_ODDS`):
 each player's likeliest line within that limit. The **Money Maker** tab (`picks.money_maker_parlays`, bot `/moneymaker`) holds the
-likeliest parlays (2-4 legs from different games) that pay back at least double the
+likeliest parlays (2-3 legs from different games) that pay back at least double the
 user's wager if they win, judged at an estimated FanDuel payout (`picks.fanduel_estimate`:
 break-even less about 4.5% per leg); parlays whose every leg has won 75%+ of the time
 (`hitrate.strong_leg_check`) come first, no Weak legs, no leg in more than two. Every NFL bet shows its track record (`nfl_edge/hitrate.py`): how often that exact bet
@@ -134,7 +134,7 @@ a correction learned from graded parlays (`learn.parlay_prob`); injury news for 
 2 hours is re-checked every 5 minutes (`board.late_statuses`); Bet History shows whether NFL
 picks beat the closing line (`nfl_edge/clv.py`). Refit calibration first, then signals.
 Every payout is shown for a $10 wager: the app has no Singles/Parlays/Legs/Wager boxes
-(defaults 30, 10, 3-5, $10), the web page has no Wager box, and the bot's commands have no
+(defaults 30, 10, 2-3, $10), the web page has no Wager box, and the bot's commands have no
 wager option (`/place` still records what was really bet).
 **UFC** (`--sport ufc`, `nfl_edge/ufc.py`, `board.ufc_board`): every fight's moneyline and
 whether it goes the distance, for the next few cards (Contender Series tryouts left out).
@@ -162,7 +162,7 @@ Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); seri
 matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
 The **Parlays** tab uses only the picked league. The **Multi-Lays** tab (`picks.multi_lays`,
 `bets.league_pools`, bot `/multilays`, place with `bet:X1`) holds parlays mixing leagues:
-2-4 legs from at least two of NFL, college, UFC and MLB (each league's default board:
+2-3 legs from at least two of NFL, college, UFC and MLB (each league's default board:
 this week, the next card, the next 7 days), different games, paying at least the Pays $
 target on $10, likeliest first; it's the same whichever league is picked. The app builds
 it in the background when the tab is opened (about 20 seconds) and keeps it 5 minutes.
@@ -198,5 +198,15 @@ Parlay legs (app, web, bot slips) show each leg's own model chance. A legend at 
 Speed: `data.read_csv` parses each cached file once per version; the app draws each tab
 once per build (`App.pane`) and reopens a bet type or week built in the last 5 minutes
 (`App.build(quick=True)`); keep these when changing the app.
+Parlays have at most 3 legs (`picks.MAX_LEGS`, enforced inside every parlay builder):
+graded 4-6 leg parlays won far less than their chance said, and FanDuel's cut comes off
+every leg. A prop whose player didn't take the field is a refund ("push"), as on FanDuel,
+not a loss (`grade.took_field`, nflverse snap counts; one who played and recorded nothing
+loses). Logged picks on players since listed Out, Doubtful or Questionable are dropped
+before kickoff (`tracker.withdraw_injured`), so the record only grades picks the board
+still showed. College games with no market line are labeled No line yet (model only).
+Before trusting a few weeks of live results over the replay, check sample sizes: in 2026
+week 5-6 the props and college picks looked overconfident, but the 2024-2025 replay showed
+them on target, and one week's results swing widely.
 The automatic FanDuel check (reading FanDuel's own site data) was removed at the
 user's request because it kept stopping bets from loading; don't add it back.

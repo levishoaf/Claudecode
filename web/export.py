@@ -331,6 +331,7 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
     except Exception:
         traceback.print_exc()
     try:
+        tracker.withdraw_injured(ledger)  # since listed Out/Doubtful/Questionable
         tracker.regrade(ledger)
     except Exception:
         traceback.print_exc()

@@ -108,6 +108,8 @@ def _reprice(bet: Bet, offer) -> None:
     bet.books_count, bet.sharp = offer.books, offer.sharp
     bet.check, bet.rough = offer.check, offer.rough
     bet.confirm_line = False  # it's FanDuel's own line
+    if bet.note == "No line yet":
+        bet.note = ""
     bet.on_fanduel = True
 
 

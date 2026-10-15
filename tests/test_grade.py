@@ -22,7 +22,8 @@ class GradeTest(unittest.TestCase):
         leg = {"type": "passing_tds", "game_id": "g1", "player": "C.J. Stroud", "min": 1}
         self.assertEqual(grade_leg(leg, GAMES, STATS), ("won", "2 passing TDs"))
         self.assertEqual(grade_leg(dict(leg, min=3), GAMES, STATS)[0], "lost")
-        self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "lost")
+        # No stats and no snap counts for the game: he didn't play, so FanDuel refunds it.
+        self.assertEqual(grade_leg(dict(leg, player="Someone Else"), GAMES, STATS)[0], "push")
         self.assertEqual(grade_leg(dict(leg, game_id="g2"), GAMES, STATS)[0], "pending")
 
     def test_player_stat(self):

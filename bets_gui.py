@@ -200,7 +200,7 @@ class App:
         row2.pack(fill="x", padx=18, pady=(6, 14))
         self.when = tk.StringVar(value="Loading weeks...")
         self.n_singles, self.n_parlays = tk.StringVar(value="30"), tk.StringVar(value="10")
-        self.min_legs, self.max_legs = tk.StringVar(value="3"), tk.StringVar(value="5")
+        self.min_legs, self.max_legs = tk.StringVar(value="2"), tk.StringVar(value="3")
         self.stake, self.refresh = tk.StringVar(value="10"), tk.StringVar(value="5")
 
         def field(label, var, width, values=None):
@@ -232,7 +232,7 @@ class App:
             self.build(quick=True)
 
         self.type_box.bind("<<ComboboxSelected>>", chose_type)
-        # Singles (30), parlays (10), legs (3-5) and the wager ($10) keep their defaults;
+        # Singles (30), parlays (10), legs (2-3) and the wager ($10) keep their defaults;
         # their boxes were taken out at the user's request.
         self.pays = tk.StringVar(value="40")
         field("Pays $", self.pays, 3)
@@ -1052,6 +1052,7 @@ class App:
                 except Exception:
                     pass
             try:
+                tracker.withdraw_injured(ledger)  # since listed Out/Doubtful/Questionable
                 tracker.regrade(ledger)
                 tracker.annotate_weeks(ledger)
             except Exception:  # never let grading break the board
@@ -1503,8 +1504,8 @@ class App:
             date="today" if self.when.get() in ("Today's games", "Today's fights") else "week",
             week=self.week_values.get(self.when.get()),
             singles=int(self.n_singles.get() or 30),
-            legs=int(self.min_legs.get() or 3), min_legs=int(self.min_legs.get() or 3),
-            max_legs=int(self.max_legs.get() or 5), parlays=int(self.n_parlays.get() or 0),
+            legs=int(self.min_legs.get() or 2), min_legs=int(self.min_legs.get() or 2),
+            max_legs=int(self.max_legs.get() or 3), parlays=int(self.n_parlays.get() or 0),
             stake=float(self.stake.get() or 10), min_prob=bets.MIN_PROB,
             max_prob=bets.MAX_PROB, per_game=3, allow_overlap=False, games_file=None,
             bet_type=self.bet_type.get(),

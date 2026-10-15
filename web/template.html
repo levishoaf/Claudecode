@@ -462,14 +462,20 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     return `<div class="pnote">${offers.length} FanDuel lines checked against every sportsbook: ${firm} with value at FanDuel, and a better price at another US book on ${better}. Value is what $1 at FanDuel's price earns on average at the true chance (every book's price with its cut taken out, sharp books counting most). Best value first.</div><div class="blist"><div class="lrow lhead"><span>#</span><span>Bet</span><span class="r">Chance</span><span class="r">FanDuel</span><span class="r hide-sm">Value</span></div>${rows}</div>`;
   }
   const LEAGUE_SHORT = { nfl: "NFL", ncaaf: "CFB", ufc: "UFC", mlb: "MLB" };
+  // A parlay's FanDuel payout per $1 when every leg has FanDuel's real price, else null.
+  const fdDecimal = (p) => (p.legs.length && p.legs.every((l) => l.fd) ? p.legs.reduce((d, l) => d * amToDec(l.fd.price), 1) : null);
+  const decToAmText = (d) => fmtAm(decToAm(d));
+  const fdParlayLine = (p, dec) => `<small style="color:${p.prob * dec > 1 ? "var(--good)" : "var(--ink-2)"}">FanDuel ${esc(decToAmText(dec))} (legs' prices multiplied; check the slip) · value ${p.prob * dec > 1 ? "+" : ""}${((p.prob * dec - 1) * 100).toFixed(1)}%</small>`;
   function parlayRow(p, i, multi) {
+    const dec = fdDecimal(p);
+    const pays = dec ? wager() * dec : wager() / p.prob;
     const leagues = multi === true ? " · " + [...new Set(p.legs.map((l) => LEAGUE_SHORT[l.league] || ""))].sort().join(" + ") : "";
     return `<div class="lrow">
       <span class="lnum">${multi === true ? "X" : "P"}${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay${leagues}</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay${leagues}</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}${dec ? fdParlayLine(p, dec) : ""}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
-      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ${money(wager() / p.prob)}</small></span>
-      <span class="r hide-sm">${money(wager() / p.prob)}</span>
+      <span class="r lodds">${esc(dec ? decToAmText(dec) : p.breakeven)}<small class="show-sm">pays ${money(pays)}</small></span>
+      <span class="r hide-sm">${money(pays)}</span>
     </div>`;
   }
 
@@ -477,13 +483,15 @@ main { padding-block: 18px; display: grid; gap: 14px; }
   // A Money Maker: one of the likeliest parlays that at least doubles its $10 wager,
   // paid about what FanDuel would pay (p.back per $1).
   function moneyRow(p, i) {
-    const back = wager() * (p.back || 1 / p.prob);
+    const dec = fdDecimal(p);
+    const back = wager() * (dec || p.back || 1 / p.prob);
+    const about = dec ? "" : "≈";
     return `<div class="lrow">
       <span class="lnum">M${i + 1}</span>
-      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}</span>
+      <span class="lbet"><b>${p.legs.length}-leg parlay</b>${p.legs.some((l) => l.confirm) ? badge("", true) : ""}<small>${p.legs.map(legText).join(" · ")}</small>${legsTierLine(p.legs)}${weakestLine(p.legs)}${dec ? fdParlayLine(p, dec) : ""}</span>
       <span class="r lpct" style="color:${color(p.prob)}">${pct(p.prob)}</span>
-      <span class="r lodds">${esc(p.breakeven)}<small class="show-sm">pays ≈${money(back)}</small></span>
-      <span class="r hide-sm">≈${money(back)}</span>
+      <span class="r lodds">${esc(dec ? decToAmText(dec) : p.breakeven)}<small class="show-sm">pays ${about}${money(back)}</small></span>
+      <span class="r hide-sm">${about}${money(back)}</span>
     </div>`;
   }
 
@@ -774,11 +782,12 @@ main { padding-block: 18px; display: grid; gap: 14px; }
     if (state.tab === "singles") html += wk.singles.length ? `<div class="blist">${listHead("#", "Pays on $10", wk.singles.some((b) => b.fd) ? "Odds" : "Worst odds")}${wk.singles.map(singleRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("No bets for this week yet."))}</div>`;
     if (state.tab === "value") html += valueView();
     if (state.tab === "multi") html += (DATA.multi || []).length ? `<div class="pnote">Parlays with legs from at least two leagues (NFL, College Football, UFC, MLB): ${(DATA.multiLegs || [2, 4]).join("–")} legs from different games, each paying at least $40 back on a $10 wager, likeliest first. Legs are the likeliest bets on each league's default board (this week, the next UFC card, the next 7 days of MLB), and they're the same whichever league is picked. The Parlays tab stays with the league you picked.</div><div class="blist">${listHead("")}${DATA.multi.map((p, i) => parlayRow(p, i, true)).join("")}</div>` : `<div class="empty">No Multi-Lays right now: fewer than two leagues have games.</div>`;
-    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
+    if (state.tab === "parlays") html += wk.parlays.length ? `<div class="pnote">Every parlay pays at least $40 back on a $10 wager (4× your stake), likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</div><div class="blist">${listHead("", "Pays on $10", wk.parlays.some((p) => fdDecimal(p)) ? "Odds" : "Worst odds")}${wk.parlays.map(parlayRow).join("")}</div>` : `<div class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</div>`;
     if (state.tab === "money") html += (wk.money || []).length ? `<div class="pnote">The likeliest parlays that pay back at least double your $${wager()} wager if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 4]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first, then the likeliest of the rest. No Weak legs, and no leg in more than two. Payouts are estimates; check the slip.</div><div class="blist">${listHead("", "Pays on $" + wager())}${wk.money.map(moneyRow).join("")}</div>` : `<div class="empty">No money makers here: not enough games this week.</div>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
-    if (state.sport === "mlb") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the chance shown. MLB chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines and run lines (FanDuel always offers the run line at 1.5). Total runs uses DraftKings' total, marked Confirm line: check FanDuel has the same total. Payout is what a $10 wager returns at break-even odds, stake included.</p>`;
+    if (DATA.oddsNote && wk.singles.some((b) => b.fd)) html += `<p class="foot">*Bets marked FanDuel show FanDuel's real price, and their chance is the true chance from every other sportsbook (each book's price with its cut taken out, sharp books counting most), so value is what $1 at FanDuel's price earns on average. Payout is what a $10 wager returns at FanDuel's price, stake included. Bets without a FanDuel price show break-even odds instead: the worst price still worth taking. Parlays priced at FanDuel multiply the legs' prices; FanDuel's slip may differ a little. Parlays have at most 3 legs: FanDuel's cut comes off every leg.</p>`;
+    else if (state.sport === "mlb") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the chance shown. MLB chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines and run lines (FanDuel always offers the run line at 1.5). Total runs uses DraftKings' total, marked Confirm line: check FanDuel has the same total. Payout is what a $10 wager returns at break-even odds, stake included.</p>`;
     else if (state.sport === "ufc") html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking at the model's chance. They aren't FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. UFC bets are each fight's moneyline and whether it goes the distance (all scheduled rounds), both offered by FanDuel for every fight. Parlay chances assume different fights are independent.</p>`;
     else html += `<p class="foot">*Odds shown are break-even: the worst price still worth taking, from public consensus lines and game logs. They aren't FanDuel's prices, so expected value at these odds is zero. Enter FanDuel's actual price on FanDuel to compare: a price better than the worst odds has positive expected value. Payout is what a $10 wager returns at break-even odds, stake included. Worst odds is the lowest price still worth taking. Parlay chances assume legs from different games are independent. All bets shows only moneylines and anytime touchdown scorers for starters: bets with no line, so they're on FanDuel as shown. Other bet types (spreads, totals, yardage and other props) come from the model at lines FanDuel may not offer, so they're marked Confirm line: check FanDuel has that exact line before you bet.</p>`;
     $("main").innerHTML = html;

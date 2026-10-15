@@ -442,8 +442,11 @@ def cfb_board(day: date | None, lo: float, hi: float, now: datetime | None = Non
             source = "market line + college model"
         game = f"{r['away_team']} @ {r['home_team']}"
         for team, p in ((r["home_team"], p_home), (r["away_team"], 1 - p_home)):
-            out.append(make_bet(game, kick, "h2h", team, None, p, r["game_id"], source,
-                                week=int(r["week"])))
+            b = make_bet(game, kick, "h2h", team, None, p, r["game_id"], source,
+                         week=int(r["week"]))
+            if market is None and not b.note:  # the model alone: no betting line to lean on
+                b.note = NO_LINE
+            out.append(b)
     learn.adjust(out, "ncaaf")
     return [b for b in out if lo <= b.fair_prob <= hi]
 

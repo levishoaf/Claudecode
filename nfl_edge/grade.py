@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import data
@@ -25,6 +26,48 @@ from .odds import american_to_decimal
 
 STATS_URL = ("https://github.com/nflverse/nflverse-data/releases/download/"
              "stats_player/stats_player_week_{season}.csv")
+
+
+OLD_DNP = "no stats recorded (did not play)"  # graded a loss before; it's a refund
+DNP = "did not play: refunded"
+_SNAPS: dict[int, dict[str, set[str]]] = {}
+
+
+def took_field(leg: dict) -> bool | None:
+    """Whether the player was on the field in the leg's game (nflverse snap counts),
+    or None when that game's snap counts aren't posted yet. FanDuel refunds a prop
+    on a player who doesn't play, but one who plays and records nothing loses."""
+    from .context import name_key
+
+    try:
+        season = int(str(leg["game_id"])[:4])
+    except ValueError:
+        return None
+    if season not in _SNAPS:
+        by_game: dict[str, set[str]] = {}
+        try:
+            rows = data.release("snap_counts", season, season)
+        except data.DataError:
+            rows = []
+        for r in rows:
+            got = by_game.setdefault(r["game_id"], set())
+            if float(r.get("offense_snaps") or 0) + float(r.get("st_snaps") or 0) > 0:
+                got.add(name_key(r["player"]))
+        _SNAPS[season] = by_game
+    seen = _SNAPS[season].get(leg["game_id"])
+    if not seen:
+        return None
+    return name_key(leg["player"]) in seen
+
+
+def _no_stats(leg: dict) -> tuple[str, str]:
+    played = took_field(leg)
+    if played is None:  # snap counts usually post within a day or two
+        kickoff = leg.get("kickoff")
+        if kickoff and datetime.fromisoformat(kickoff) > datetime.now(timezone.utc) - timedelta(days=4):
+            return "pending", "waiting for snap counts"
+        return "push", DNP
+    return ("lost", "played, no stats recorded") if played else ("push", DNP)
 
 
 def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str, str]:
@@ -64,7 +107,7 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
         if row is None:
             if not any(s["game_id"] == leg["game_id"] for s in stats):
                 return "pending", "player stats not posted yet"
-            return "lost", "no stats recorded (did not play)"
+            return _no_stats(leg)
         value = int(sum(float(row.get(c) or 0) for c in stat.split("+")))
         if stat == "passing_tds":
             detail = f"{value} passing TD{'s' * (value != 1)}"

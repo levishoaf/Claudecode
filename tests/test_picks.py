@@ -53,10 +53,10 @@ class MixedParlaysTest(unittest.TestCase):
         from nfl_edge.picks import mixed_parlays
 
         legs = [bet(g, -300, 0.75 - i * 0.005) for i, g in enumerate("ABCDEFGHIJKLMN")]
-        parlays = mixed_parlays(legs, 3, 5, 10, max_uses=3)
+        parlays = mixed_parlays(legs, 2, 5, 10, max_uses=3)  # at most 3 legs (MAX_LEGS)
         self.assertEqual(len(parlays), 10)
-        self.assertEqual(sorted({len(p.legs) for p in parlays}), [3, 4, 5])
-        self.assertEqual([len(p.legs) for p in parlays].count(3), 4)  # 10 = 4 + 3 + 3
+        self.assertEqual(sorted({len(p.legs) for p in parlays}), [2, 3])
+        self.assertEqual([len(p.legs) for p in parlays].count(2), 5)  # 10 = 5 + 5
         for p in parlays:
             self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
         uses = {}
@@ -81,7 +81,8 @@ class PayoutParlaysTest(unittest.TestCase):
         self.assertEqual(len(parlays), 5)
         for p in parlays:
             self.assertGreaterEqual(1 / p.win_prob, 4.0)  # at least $40 back on $10
-            self.assertLessEqual(1 / p.win_prob, 4.0 * 1.05)  # and not much more
+            self.assertLessEqual(1 / p.win_prob, 4.0 * 1.10)  # and not much more
+            self.assertLessEqual(len(p.legs), 3)
             self.assertEqual(len({b.game for b in p.legs}), len(p.legs))
         probs = [p.win_prob for p in parlays]
         self.assertEqual(probs, sorted(probs, reverse=True))

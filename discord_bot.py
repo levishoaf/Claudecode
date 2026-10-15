@@ -372,8 +372,8 @@ def run_bot(token: str | None, connect: bool = True):
                            bet_type="Only one type of bet, e.g. Anytime TD (default: all)")
     async def parlays_cmd(interaction: discord.Interaction, sport: str = "nfl",
                           count: app_commands.Range[int, 1, 10] = 3,
-                          min_legs: app_commands.Range[int, 2, 8] = 2,
-                          max_legs: app_commands.Range[int, 2, 8] = 6,
+                          min_legs: app_commands.Range[int, 2, 3] = 2,
+                          max_legs: app_commands.Range[int, 2, 3] = 3,
                           week: int | None = None, pays: float = 40.0,
                           bet_type: str = "All bets"):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
