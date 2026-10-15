@@ -93,8 +93,9 @@ class Snapshot:
             except Exception:  # odds are extra: never stop the boards
                 traceback.print_exc()
                 offers = []
-            value[league] = [o.to_json() for o in sorted(offers, key=lambda o: o.ev,
-                                                         reverse=True)]
+            # Firm value first; rough estimates and lines to check after, then the rest.
+            value[league] = [o.to_json() for o in sorted(offers, key=lambda o: (
+                o.ev > 0 and not o.rough and not o.check, o.ev), reverse=True)]
         with self._lock:
             self.value, self.value_at = value, time.time()
 
