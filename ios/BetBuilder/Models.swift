@@ -116,3 +116,50 @@ struct RecordLeg: Decodable {
     let pick: String
     let game: String?
 }
+
+struct ValueBoard: Decodable {
+    let locked: Bool
+    let updated: String?
+    let summary: ValueSummary
+    let offers: [LineOffer]
+}
+
+struct ValueSummary: Decodable {
+    let lines: Int
+    let plusEv: Int
+    let betterElsewhere: Int
+}
+
+/// One FanDuel line priced against every sportsbook (server: nfl_edge/lines.py).
+struct LineOffer: Decodable, Identifiable {
+    let eventId: String
+    let game: String
+    let start: String
+    let market: String
+    let label: String
+    let fanduel: Int
+    let best: Int
+    let bestBook: String
+    let chance: Double
+    let ev: Double
+    let bestEv: Double
+    let books: Int
+    let sharp: Bool
+    let check: Bool
+    let rough: Bool
+
+    var id: String { "\(eventId)|\(label)" }
+    var isProp: Bool { !["h2h", "spreads", "totals"].contains(market) }
+
+    static func american(_ price: Int) -> String { price > 0 ? "+\(price)" : "\(price)" }
+
+    /// Sportsbook keys as people know them.
+    static func bookName(_ key: String) -> String {
+        let names = ["fanduel": "FanDuel", "draftkings": "DraftKings", "betmgm": "BetMGM",
+                     "williamhill_us": "Caesars", "espnbet": "ESPN BET", "fanatics": "Fanatics",
+                     "betrivers": "BetRivers", "betonlineag": "BetOnline", "bovada": "Bovada",
+                     "mybookieag": "MyBookie", "lowvig": "LowVig", "betus": "BetUS",
+                     "hardrockbet": "Hard Rock", "ballybet": "Bally Bet"]
+        return names[key] ?? key.capitalized
+    }
+}

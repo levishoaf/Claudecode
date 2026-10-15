@@ -57,9 +57,10 @@ jobs:
           shoot 1-singles -startTab 0 -startSection 0
           shoot 2-parlays -startTab 0 -startSection 1
           shoot 3-money-maker -startTab 0 -startSection 2
-          shoot 4-multi-lays -startTab 1
-          shoot 5-record -startTab 2
-          shoot 6-more -startTab 3
+          shoot 4-value -startTab 1
+          shoot 5-multi-lays -startTab 2
+          shoot 6-record -startTab 3
+          shoot 7-more -startTab 4
           ls -la shots
 
       - uses: actions/upload-artifact@v4

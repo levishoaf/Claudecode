@@ -91,3 +91,28 @@ class ServerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipIf(TestClient is None, "fastapi isn't installed")
+class ValueTest(unittest.TestCase):
+    def test_value_is_for_subscribers(self):
+        os.environ["NO_BACKGROUND"] = "1"
+        from server import app as server
+        server.SNAPSHOT.result = json.loads(json.dumps(SAMPLE))
+        offer = {"market": "player_pass_yds", "ev": 0.05, "check": False, "best": 110,
+                 "fanduel": 100, "label": "Bo Nix Over 197.5 Passing Yds"}
+        line = {"market": "h2h", "ev": -0.02, "check": False, "best": -140, "fanduel": -150,
+                "label": "Broncos ML"}
+        server.SNAPSHOT.value = {"nfl": [offer, line]}
+        client = TestClient(server.app)
+        with mock.patch.dict(os.environ, {"ALLOW_ALL": "0"}):
+            os.environ.pop("REVENUECAT_SECRET", None)
+            free = client.get("/v1/value/nfl").json()
+        self.assertTrue(free["locked"])
+        self.assertEqual(free["offers"], [])
+        self.assertEqual(free["summary"], {"lines": 2, "plusEv": 1, "betterElsewhere": 2})
+        with mock.patch.dict(os.environ, {"ALLOW_ALL": "1"}):
+            props = client.get("/v1/value/nfl?kind=props").json()
+            plus = client.get("/v1/value/nfl?min_ev=0").json()
+        self.assertEqual([o["label"] for o in props["offers"]], ["Bo Nix Over 197.5 Passing Yds"])
+        self.assertEqual(len(plus["offers"]), 1)

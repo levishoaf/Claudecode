@@ -51,6 +51,9 @@ class Snapshot:
     """The latest build of every board, rebuilt in the background."""
 
     def __init__(self):
+        self.value: dict[str, list[dict]] = {}  # league -> every FanDuel line, priced
+        self.value_at = 0.0
+        self.feed = None
         self.result: dict | None = None
         self.built_at = 0.0
         self.error = ""
@@ -74,6 +77,27 @@ class Snapshot:
         with self._lock:
             self.result, self.built_at, self.error = result, time.time(), ""
 
+    def rebuild_value(self) -> None:
+        """Real odds from every sportsbook (nfl_edge/lines.py), when ODDS_API_KEY is set.
+        The feed decides what's due, so this spends credits only on schedule."""
+        from nfl_edge import lines
+
+        if self.feed is None:
+            self.feed = lines.Feed(folder=DATA_DIR / "odds")
+        if not self.feed.enabled:
+            return
+        value = {}
+        for league in LEAGUES:
+            try:
+                offers = lines.board(league, self.feed)
+            except Exception:  # odds are extra: never stop the boards
+                traceback.print_exc()
+                offers = []
+            value[league] = [o.to_json() for o in sorted(offers, key=lambda o: o.ev,
+                                                         reverse=True)]
+        with self._lock:
+            self.value, self.value_at = value, time.time()
+
     def start(self) -> None:
         if self._thread is not None:
             return
@@ -81,6 +105,7 @@ class Snapshot:
         def loop():
             while True:
                 self.rebuild()
+                self.rebuild_value()
                 time.sleep(REFRESH)
         self._thread = threading.Thread(target=loop, daemon=True)
         self._thread.start()
@@ -204,3 +229,26 @@ def record(limit: int = Query(100, ge=1, le=500)) -> dict:
     return {"updated": r["updated"], "won": won, "lost": lost,
             "pending": sum(e["status"] == "pending" for e in picks),
             "report": r.get("report"), "recent": done[:limit]}
+
+
+@app.get("/v1/value/{sport}")
+def value(sport: str, kind: str = Query("all", pattern="^(all|lines|props)$"),
+          min_ev: float = -1.0, x_user_id: str | None = Header(None)) -> dict:
+    """Every line FanDuel offers in a league (game lines and player props), priced
+    against every sportsbook: FanDuel's price, the best price and where, the true
+    chance and the value at each. Best value first. Subscribers only; others get the
+    counts."""
+    if sport not in LEAGUES:
+        raise HTTPException(404, f"Unknown league {sport}")
+    offers = SNAPSHOT.value.get(sport, [])
+    if kind != "all":
+        props = {"lines": False, "props": True}[kind]
+        offers = [o for o in offers if (o["market"] not in ("h2h", "spreads", "totals")) == props]
+    offers = [o for o in offers if o["ev"] >= min_ev]
+    summary = {"lines": len(offers), "plusEv": sum(o["ev"] > 0 and not o["check"] for o in offers),
+               "betterElsewhere": sum(o["best"] > o["fanduel"] for o in offers)}
+    updated = (time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(SNAPSHOT.value_at))
+               if SNAPSHOT.value_at else None)
+    if subscriber(x_user_id):
+        return {"locked": False, "updated": updated, "summary": summary, "offers": offers}
+    return {"locked": True, "updated": updated, "summary": summary, "offers": []}

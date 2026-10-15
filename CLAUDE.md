@@ -169,6 +169,23 @@ it in the background when the tab is opened (about 20 seconds) and keeps it 5 mi
 They're graded in Bet History as sport "multi": each leg carries its own "sport" and
 "season" (`tracker.regrade`), and no week. Parlay chances use their own league's learned
 correction (`parlays.league_of`); mixed parlays get none.
+**Real odds** (`nfl_edge/lines.py`, needs `ODDS_API_KEY`; The Odds API): every line FanDuel
+offers (game lines, NFL/college/MLB player props, UFC fights) priced against every US book
+and Pinnacle: the true chance is the other books' prices with their cut removed (power
+devig, sharp books weighted; FanDuel left out of its own comparison; junk two-sided prices
+dropped; yardage props at other numbers moved to FanDuel's with `SHIFT_SD`, counts only at
+the same number; "Yes"-only anytime TDs estimated with `ONE_SIDED_CUT` and marked rough;
+lines FanDuel prices far from every book marked check). `Feed` caches pulls under the data
+folder and spends credits only on schedule (game lines every `ODDS_MAIN_MINUTES`, props
+every `ODDS_PROP_MINUTES`, more often within 3 hours of the game) and never below
+`ODDS_MIN_CREDITS`; a failed pull keeps the last good one. The sessions that build this
+can't see the key (it's loaded when a session starts), so live pulls run in short helper
+sessions; `odds-samples` branch and `tests/fixtures/odds` hold real responses.
+**iPhone app and server** (`ios/`, `server/`, branch `ios-app` until launch): `server/app.py`
+serves the boards (`web/export.build_result`), Multi-Lays, the record and `/v1/value/{league}`
+(the priced lines), checking subscribers with RevenueCat; `ios/` is SwiftUI (XcodeGen
+`project.yml`), built and screenshotted on a Mac by `.github/workflows/ios.yml` (screenshots
+pushed to the `ios-screenshots` branch); demo data in `ios/BetBuilder/Demo`.
 The app and web page are a dark-mode, multi-sport look with one generic backdrop for
 every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,

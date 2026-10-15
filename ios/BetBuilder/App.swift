@@ -30,12 +30,14 @@ struct ContentView: View {
         TabView(selection: $tab) {
             PicksView()
                 .tabItem { Label("Picks", systemImage: "list.number") }.tag(0)
+            ValueView()
+                .tabItem { Label("Value", systemImage: "dollarsign.circle") }.tag(1)
             MultiView()
-                .tabItem { Label("Multi-Lays", systemImage: "square.stack.3d.up") }.tag(1)
+                .tabItem { Label("Multi-Lays", systemImage: "square.stack.3d.up") }.tag(2)
             RecordView()
-                .tabItem { Label("Record", systemImage: "chart.bar") }.tag(2)
+                .tabItem { Label("Record", systemImage: "chart.bar") }.tag(3)
             SettingsView()
-                .tabItem { Label("More", systemImage: "ellipsis.circle") }.tag(3)
+                .tabItem { Label("More", systemImage: "ellipsis.circle") }.tag(4)
         }
     }
 }

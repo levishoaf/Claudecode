@@ -37,6 +37,10 @@ final class API {
 
     func multi() async throws -> MultiLays { try await get("/v1/multi", demo: "multi") }
 
+    func value(_ league: String, kind: String) async throws -> ValueBoard {
+        try await get("/v1/value/\(league)?kind=\(kind)", demo: "value-\(league)")
+    }
+
     func record() async throws -> Record { try await get("/v1/record?limit=100", demo: "record") }
 
     private func get<T: Decodable>(_ path: String, demo name: String) async throws -> T {
