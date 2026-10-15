@@ -1,0 +1,80 @@
+name: iPhone app
+
+# Builds the iPhone app (ios/) on a Mac, runs it in the iPhone simulator on its demo
+# data and saves screenshots of each screen. Once the App Store accounts exist, the
+# same job will also send signed builds to TestFlight (see ios/README.md).
+on:
+  push:
+    branches: [ios-app, claude/fanduel-nfl-ev-finder]
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # the screenshots go to the ios-screenshots branch
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate the Xcode project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build for the simulator
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project BetBuilder.xcodeproj -scheme BetBuilder \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 60
+
+      - name: Screenshots on demo data
+        working-directory: ios
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devs = [d for r, ds in json.load(sys.stdin)['devices'].items() if 'iOS' in r for d in ds]
+          phones = [d for d in devs if d['name'].startswith('iPhone') and 'Pro' in d['name']] or \
+                   [d for d in devs if d['name'].startswith('iPhone')]
+          print(phones[-1]['udid'])")
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          APP=$(find build/Build/Products -name 'BetBuilder.app' -maxdepth 3 | head -1)
+          xcrun simctl install "$UDID" "$APP"
+          mkdir -p shots
+          shoot() {  # name, then launch arguments
+            name=$1; shift
+            xcrun simctl terminate "$UDID" com.betbuilder.app 2>/dev/null || true
+            xcrun simctl launch "$UDID" com.betbuilder.app -demo "$@"
+            sleep 8
+            xcrun simctl io "$UDID" screenshot "shots/$name.png"
+          }
+          shoot 1-singles -startTab 0 -startSection 0
+          shoot 2-parlays -startTab 0 -startSection 1
+          shoot 3-money-maker -startTab 0 -startSection 2
+          shoot 4-value -startTab 1
+          shoot 5-multi-lays -startTab 2
+          shoot 6-record -startTab 3
+          shoot 7-more -startTab 4
+          ls -la shots
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iphone-screenshots
+          path: ios/shots
+          retention-days: 30
+
+      - name: Save the screenshots to the ios-screenshots branch
+        working-directory: ios/shots
+        run: |
+          git init -q -b ios-screenshots
+          git add *.png
+          git -c user.name="github-actions" -c user.email="actions@github.com" \
+            commit -q -m "iPhone screenshots for ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" \
+            ios-screenshots
