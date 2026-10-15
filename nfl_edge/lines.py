@@ -47,6 +47,12 @@ PROP_LABELS = {
     "pitcher_strikeouts": "Strikeouts",
 }
 TARGET = "fanduel"
+# Where the best price may be: legal, regulated US sportsbooks. Offshore and European
+# books still help set the true chance, but aren't suggested.
+BEST_BOOKS = {"fanduel", "draftkings", "betmgm", "williamhill_us", "espnbet", "fanatics",
+              "betrivers", "hardrockbet", "ballybet", "betparx", "fliff", "windcreek",
+              "unibet_us", "superbook", "wynnbet", "pointsbetus", "betfred_us"}
+MAIN_REGIONS = "us,us2,eu"  # us2 adds ESPN BET, Fanatics, Hard Rock and others
 # Sharp books set the true price: their opinion counts most (Pinnacle comes from the
 # EU region). Every other book counts once.
 SHARP = {"pinnacle": 3.0, "circasports": 2.0, "betonlineag": 1.5, "lowvig": 1.5}
@@ -87,6 +93,7 @@ class Feed:
     get: object = None
     credits: int | None = None
     pulled: dict = field(default_factory=dict)  # cache name -> unix time
+    stretch: float = 1.0  # schedule multiplier so the plan's credits last the month
 
     def __post_init__(self):
         self.key = self.key or os.environ.get("ODDS_API_KEY")
@@ -116,7 +123,7 @@ class Feed:
         file = self.folder / f"{name}.json"
         if not self.enabled:
             return None
-        fresh = time.time() - self.pulled.get(name, 0) < minutes * 60
+        fresh = time.time() - self.pulled.get(name, 0) < minutes * self.stretch * 60
         if file.exists() and fresh:
             return json.loads(file.read_text())
         if self.credits is not None and self.credits <= MIN_CREDITS:
@@ -132,10 +139,26 @@ class Feed:
         self._save_state()
         return body
 
+    def budget(self, now: datetime | None = None) -> None:
+        """Stretch the schedule so the credits left last until the plan renews (the
+        1st of the month): the full schedule on a big plan, a few pulls a day on the
+        free one."""
+        if self.credits is None:
+            return
+        now = now or datetime.now(timezone.utc)
+        renew = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
+        days = max((renew - now).total_seconds() / 86400, 1.0)
+        per_day = max(self.credits - MIN_CREDITS, 0) / days
+        regions = len(MAIN_REGIONS.split(","))
+        planned = sum(regions * len(MAIN_MARKETS[s]) * 1440 / MAIN_MINUTES for s in SPORT_KEYS) + \
+            sum(PROP_GAMES[s] * len(PROP_MARKETS[s]) * 1440 / PROP_MINUTES for s in PROP_MARKETS)
+        self.stretch = max(1.0, planned / per_day) if per_day > 0 else float("inf")
+
     def main(self, sport: str) -> list[dict]:
-        """Every upcoming game's moneyline, spread and total at every US book and Pinnacle."""
+        """Every upcoming game's moneyline, spread and total at every US book (both US
+        regions) and the European ones, Pinnacle among them."""
         body = self._cached(f"main-{sport}", MAIN_MINUTES, f"/sports/{SPORT_KEYS[sport]}/odds",
-                            {"regions": "us,eu", "markets": ",".join(MAIN_MARKETS[sport])})
+                            {"regions": MAIN_REGIONS, "markets": ",".join(MAIN_MARKETS[sport])})
         return body if isinstance(body, list) else []
 
     def props(self, sport: str, events: list[dict], now: datetime | None = None) -> list[dict]:
@@ -319,7 +342,7 @@ def price(event: dict, sport: str, devig: str = "power") -> list[Offer]:
                 chance, books_used = sum(yes) / len(yes) / ONE_SIDED_CUT, len(yes)
             else:
                 continue
-            us = {b: o[side][0] for b, o in books.items() if side in o and b != "pinnacle"}
+            us = {b: o[side][0] for b, o in books.items() if side in o and b in BEST_BOOKS}
             best_book = max(us, key=lambda b: (us[b], b == TARGET))
             offer = Offer(sport, event["id"], game, start, market, subject, side, point,
                           fd_price, us[best_book], best_book, chance, books_used, sharp)
@@ -331,9 +354,22 @@ def price(event: dict, sport: str, devig: str = "power") -> list[Offer]:
 
 def board(sport: str, feed: Feed, props: bool = True, now: datetime | None = None) -> list[Offer]:
     """Every line FanDuel offers in a league, game lines and props, priced."""
+    feed.budget(now)
     events = feed.main(sport)
     offers = [o for e in events for o in price(e, sport)]
     if props:
         offers += [o for e in feed.props(sport, events, now) for o in price(e, sport)]
     now = now or datetime.now(timezone.utc)
     return [o for o in offers if o.start > now]
+
+
+BOOK_NAMES = {"fanduel": "FanDuel", "draftkings": "DraftKings", "betmgm": "BetMGM",
+              "williamhill_us": "Caesars", "espnbet": "ESPN BET", "fanatics": "Fanatics",
+              "betrivers": "BetRivers", "betonlineag": "BetOnline", "bovada": "Bovada",
+              "mybookieag": "MyBookie", "lowvig": "LowVig", "betus": "BetUS",
+              "hardrockbet": "Hard Rock", "ballybet": "Bally Bet", "betanysports": "BetAnySports",
+              "pinnacle": "Pinnacle"}
+
+
+def book_name(key: str) -> str:
+    return BOOK_NAMES.get(key, key.replace("_", " ").title())

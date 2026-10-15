@@ -183,7 +183,8 @@ class Core:
         pool, note, checked = self._pool(sport, week, lo, hi)
         if sport == "mlb" and kind == "Total runs":  # DraftKings' total: confirm on FanDuel
             out = of_type(self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False), kind)
-            return out, CONFIRM_NOTE.format(kind=kind) if out else note, checked
+            return out, (CONFIRM_NOTE.format(kind=kind) if any(b.confirm_line for b in out)
+                         else note), checked
         if kind in SURE_TYPES or sport != "nfl":
             return of_type(pool, kind), note, checked
         cap = type_max_prob(kind)  # likeliest lines within the odds limit

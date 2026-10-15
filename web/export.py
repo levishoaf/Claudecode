@@ -107,7 +107,12 @@ def bet(b, sport):
             "price": _fmt_american(b.fd_price) if b.priced else None, "note": b.note or "",
             "confirm": b.confirm_line, "hist": track_record(b, sport),
             "week": b.week, "raw": round(b.raw_prob, 4) if getattr(b, "raw_prob", None) else None,
-            "tier": tier_of(b), "league": getattr(b, "league", None)}
+            "tier": tier_of(b), "league": getattr(b, "league", None),
+            "fd": {"price": b.fd_price, "ev": round(b.ev, 4), "best": getattr(b, "best_price", b.fd_price),
+                   "bestBook": launcher.book_name(getattr(b, "best_book", "fanduel")),
+                   "books": getattr(b, "books_count", 0), "sharp": getattr(b, "sharp", False),
+                   "check": getattr(b, "check", False), "rough": getattr(b, "rough", False)}
+            if getattr(b, "on_fanduel", False) else None}
 
 
 def tier_of(b):
@@ -138,17 +143,36 @@ def season_of(sport):
     return today.year if sport in ("ufc", "mlb") else season_for(today)
 
 
+OFFERS: dict = {}  # (league, week) -> real odds (nfl_edge/lines.py), pulled once per export
+
+
+def offers_for(sport, week=None):
+    key = (sport, week if sport == "nfl" else None)
+    if key not in OFFERS:
+        OFFERS[key] = launcher.real_offers(sport, key[1])
+    return OFFERS[key]
+
+
+def with_odds(bets, sport, week=None):
+    """Real odds on the board, when there's an Odds API key (see nfl_edge/realodds.py)."""
+    from nfl_edge import realodds
+
+    offers = offers_for(sport, week)
+    return realodds.apply(bets, sport, offers) if offers else bets
+
+
 def run(sport, week, label, ledger, this_week=False):
     if sport == "ufc":
-        bets = board.ufc_board(LO, HI, card=str(week))
+        bets = with_odds(board.ufc_board(LO, HI, card=str(week)), sport)
     elif sport == "mlb":  # week: a day as YYYYMMDD, or MLB_ALL_DAYS for the next 7 days
         everyday = week == board.MLB_ALL_DAYS
         when = None if everyday else datetime.strptime(str(week), "%Y%m%d").date()
-        full_mlb = board.mlb_board(LO, HI, day=when, all_days=everyday, every_line=True)
+        full_mlb = with_odds(board.mlb_board(LO, HI, day=when, all_days=everyday,
+                                             every_line=True), sport)
         bets = [b for b in full_mlb if b.market != "totals_runs"]
     else:
-        bets = annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
-                        else nfl_board(None, LO, HI, week=week), sport)
+        bets = with_odds(annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
+                                  else nfl_board(None, LO, HI, week=week), sport), sport, week)
     singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
                            prop_share=0.5 if sport == "nfl" else None)
 
@@ -183,15 +207,16 @@ def run(sport, week, label, ledger, this_week=False):
            "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model"}.get(sport, ""), ""),
            "starters": board.NOTES.get("mlb_starters", "") if sport == "mlb" else ""}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
-    full = annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
-                    if sport == "nfl" else [], sport)
+    full = with_odds(annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
+                              if sport == "nfl" else [], sport), sport, week)
     if sport == "mlb":  # totals only when picked: the line may differ on FanDuel
         full = full_mlb
     for kind in (league_types(sport) if sport in ("ufc", "mlb") else BET_TYPES):  # top 30 each
         cap = type_max_prob(kind)
         if cap is not None and sport == "nfl":  # likeliest lines within the odds limit
-            some = every_line_of(annotate(nfl_board(None, LO, min(HI, cap), week=week,
-                                                    always_offered=False), sport), kind)
+            some = every_line_of(with_odds(annotate(nfl_board(None, LO, min(HI, cap), week=week,
+                                                              always_offered=False), sport),
+                                           sport, week), kind)
         else:
             some = (of_type(full, kind) if sport == "mlb" and kind == "Total runs"
                     else of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind))
@@ -274,6 +299,13 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
         except Exception:
             traceback.print_exc()
 
+    from nfl_edge import realodds
+
+    result["value"] = {s: realodds.value_list(offers_for(s)) for s in ("nfl", "ncaaf", "ufc", "mlb")}
+    result["oddsNote"] = launcher.ODDS_NOTE.get("note", "") if any(result["value"].values()) else ""
+    for offers in result["value"].values():
+        for o in offers:
+            o["bestBook"] = launcher.book_name(o["bestBook"])
     try:  # Multi-Lays: parlays mixing leagues, the same whichever league is picked
         found = multi_lays(launcher.league_pools(), PARLAY_PAYS, 10)
         tracker.record_generated(ledger, launcher.tracker_entries(

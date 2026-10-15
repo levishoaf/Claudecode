@@ -362,6 +362,8 @@ class App:
         chk.pack(fill="x", padx=14, pady=10)
         FlatButton(chk, "Check for updates", lambda: self.updates and self.updates.check(manual=True),
                    "secondary", self.f["bold"]).pack(side="right")
+        FlatButton(chk, "Real odds", self.ask_odds_key, "secondary",
+                   self.f["bold"]).pack(side="right", padx=(0, 8))
         # Update messages show here.
         self.verdict = tk.Label(chk, text="", bg=NAVY, fg="#9fb0c8",
                                 anchor="w", justify="left", font=self.f["small"],
@@ -405,20 +407,24 @@ class App:
                  f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
-        self.fd_mode = bool(getattr(args, "fanduel_key", None))
+        self.fd_mode = bool(getattr(args, "fanduel_key", None)) or any(
+            getattr(b, "on_fanduel", False) for b in singles)  # real odds: FanDuel's prices
         if self.fd_mode and board.NOTES.get("fanduel"):
             tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
                      bg=BG, fg=BLUE,
                      font=self.f["small"]).pack(anchor="w", padx=16)
+        if board.NOTES.get("odds") and args.sport != "nba":
+            tk.Label(self.body, text="✓ " + board.NOTES["odds"], bg=BG, fg=GREEN,
+                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if board.NOTES.get("confirm_line") and args.sport != "nba":
             tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
-        if args.sport == "ufc" and board.NOTES.get("ufc_model"):
+        if args.sport == "ufc" and board.NOTES.get("ufc_model") and not board.NOTES.get("odds"):
             tk.Label(self.body, text="ⓘ " + board.NOTES["ufc_model"], bg=BG, fg=MUTED,
                      font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
         if args.sport == "mlb":
             for icon, key in (("ⓘ ", "mlb_model"), ("⚾ Starters: ", "mlb_starters")):
-                if board.NOTES.get(key):
+                if board.NOTES.get(key) and not (key == "mlb_model" and board.NOTES.get("odds")):
                     tk.Label(self.body, text=icon + board.NOTES[key], bg=BG, fg=MUTED,
                              font=self.f["small"], wraplength=820,
                              justify="left").pack(anchor="w", padx=16)
@@ -437,17 +443,19 @@ class App:
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
         self.tab_labels, self.tab_lines = {}, {}
-        for key, text in (("singles", f"Single bets ({len(singles)})"),
+        for key, text in (("singles", f"Singles ({len(singles)})"),
                           ("parlays", f"Parlays ({len(parlays)})"),
                           ("multi", "Multi-Lays" + (f" ({len(self.multi_now())})"
                                                     if self.multi_now() is not None else "")),
                           ("money", f"Money Maker ({len(money)})"),
+                          ("value", "Value" + (f" ({len(getattr(args, 'value_offers', []))})"
+                                               if getattr(args, "value_offers", None) else "")),
                           ("injuries", "Injuries" if args.sport == "nba"
                            else f"Injuries ({len(self.injuries[1])})"),
-                          ("history", f"Bet History ({len(self.history_items())})")):
+                          ("history", f"History ({len(self.history_items())})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
-            tab.pack(side="left", padx=(0, 18))
+            tab.pack(side="left", padx=(0, 14))
             lbl = tk.Label(tab, text=text, bg=BG, fg=BLUE if on else MUTED, cursor="hand2",
                            font=self.f["bold"])
             lbl.pack()
@@ -479,6 +487,8 @@ class App:
         grid = self.panes[key] = tk.Frame(self.tab_host, bg=BG)
         if key == "multi":  # every league's bets: the same whichever league is picked
             self.multi_tab(grid)
+        elif key == "value" and args.sport != "nba":
+            self.value_tab(grid, getattr(args, "value_offers", None))
         elif args.sport == "nba" and key != "history":
             self.nba_placeholder(grid)
         elif key == "singles":
@@ -674,7 +684,61 @@ class App:
                           f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, bets.label(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
-                          extra=self.record_line(b))
+                          extra=(self.record_line(b) or []) + self.odds_lines(b) or None)
+
+    def ask_odds_key(self) -> None:
+        """Save an Odds API key (the-odds-api.com) so bets show real sportsbook prices."""
+        from tkinter import simpledialog
+
+        have = bets.odds_api_key()
+        key = simpledialog.askstring(
+            "Real odds",
+            "Paste your key from the-odds-api.com to see FanDuel's real prices and the best "
+            "price at every sportsbook" + (" (a key is saved; paste a new one to replace it, "
+                                            "or leave blank to keep it)" if have else "") + ":",
+            parent=self.root, show="•")
+        if key and key.strip():
+            bets.save_odds_api_key(key)
+            self.verdict.configure(text="Real odds are on. Building bets with them...")
+            self.build()
+
+    def value_tab(self, parent, offers) -> None:
+        """Every line FanDuel offers in this league (game lines and props) priced against
+        every sportsbook, firm value first."""
+        if not offers:
+            tk.Label(parent, text=(
+                "Real odds are off. With a free key from the-odds-api.com, every bet shows "
+                "FanDuel's real price, its true chance from every sportsbook, its value and the "
+                "best price elsewhere, and this tab lists them all. Click Real odds at the "
+                "bottom to add your key."), bg=BG, fg=TEXT, font=self.f["body"],
+                wraplength=820, justify="left").pack(anchor="w", padx=6, pady=8)
+            return
+        firm = sum(o["ev"] > 0 and not o["rough"] and not o["check"] for o in offers)
+        better = sum(o["best"] > o["fanduel"] for o in offers)
+        tk.Label(parent, text=(
+            f"{len(offers)} FanDuel lines checked against every sportsbook: {firm} with value at "
+            f"FanDuel, and a better price at another US book on {better}. Value is what $1 at "
+            "FanDuel's price earns on average at the true chance (every book's price with its "
+            "cut taken out, sharp books counting most). Best value first."),
+            bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+            justify="left").pack(anchor="w", padx=6, pady=(6, 0))
+        self.fd_mode = True  # these are FanDuel's own prices
+        table = self.list_table(parent, "#", "value")
+        for i, o in enumerate(offers[:60], 1):
+            when = datetime.fromisoformat(o["start"]).astimezone(board.EASTERN)
+            extra = []
+            if o["best"] > o["fanduel"]:
+                extra.append((f"Better price: {_fmt_american(o['best'])} at "
+                              f"{bets.book_name(o['bestBook'])}", BLUE))
+            if o["check"]:
+                extra.append(("⚠ Far from every other book: check the news", AMBER))
+            if o["rough"]:
+                extra.append(("Rough: only Yes prices posted", MUTED))
+            self.list_row(table, str(i), o["label"],
+                          f"{o['game']}  ·  {_clock(when)} ET  ·  {o['books']} books"
+                          + ("  ·  incl. Pinnacle" if o["sharp"] else ""),
+                          o["chance"], price=o["fanduel"], ev=o["ev"],
+                          last=f"{o['ev']:+.1%}", extra=extra or None)
 
     MULTI_SECONDS = 5 * 60  # Multi-Lays are rebuilt at most this often
 
@@ -798,6 +862,25 @@ class App:
                 return chance_color(hr.rate)
         return MUTED
 
+    def odds_lines(self, b) -> list[tuple[str, str]]:
+        """Real odds (with an Odds API key): FanDuel's price and its value, the best price
+        at another US sportsbook, and warnings."""
+        if not getattr(b, "on_fanduel", False):
+            return []
+        n = getattr(b, "books_count", 0)
+        out = [(f"FanDuel {_fmt_american(b.fd_price)}  ·  value {b.ev:+.1%}  ·  true chance from "
+                f"{n} other book{'s' * (n != 1)}{' incl. Pinnacle' if getattr(b, 'sharp', False) else ''}",
+                GREEN if b.ev > 0 else MUTED)]
+        best = getattr(b, "best_price", b.fd_price)
+        if best > b.fd_price:
+            out.append((f"Better price: {_fmt_american(best)} at {bets.book_name(b.best_book)}", BLUE))
+        if getattr(b, "check", False):
+            out.append(("⚠ FanDuel is far from every other book: check the news (an injury or a "
+                        "stale line), not free money", AMBER))
+        if getattr(b, "rough", False):
+            out.append(("Rough: books post only Yes on this, so the chance is estimated", MUTED))
+        return out
+
     def record_line(self, b) -> tuple[str, str] | None:
         """How often this exact bet would have won in games already played."""
         rec = self._record(b)
@@ -813,7 +896,7 @@ class App:
         if matchup:
             lines.append(matchup)
         raw = getattr(b, "raw_prob", None)
-        if raw is not None and abs(raw - b.fair_prob) >= 0.02:
+        if raw is not None and abs(raw - b.fair_prob) >= 0.02 and not getattr(b, "on_fanduel", False):
             lines.append((f"Learned: the model said {raw:.0%}; bets like this have really won "
                           f"about {b.fair_prob:.0%}, so that's the chance shown", MUTED))
         ins = getattr(b, "insight", None)
