@@ -1,0 +1,11 @@
+main-nfl.json 493
+main-ncaaf.json 487
+main-mlb.json 481
+main-ufc.json 479
+events-nfl.json 479
+events-ncaaf.json 479
+events-mlb.json 479
+props-nfl-1.json 473
+props-nfl-2.json 467
+props-mlb-1.json 463
+props-ncaaf-1.json 459
