@@ -26978,7 +26978,7 @@
    "win_prob": 0.3801,
    "odds": 163,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_SEA_DEN",
@@ -26997,8 +26997,8 @@
      "pick": "Emanuel Wilson Anytime TD",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Emanuel Wilson Anytime TD (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -37663,7 +37663,7 @@
    "win_prob": 0.408,
    "odds": 145,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_SEA_DEN",
@@ -37682,8 +37682,8 @@
      "pick": "Jaxon Smith-Njigba Anytime TD",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Jaxon Smith-Njigba Anytime TD (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -40949,7 +40949,7 @@
    "win_prob": 0.6721,
    "odds": -205,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_SEA_DEN",
@@ -40966,8 +40966,8 @@
      "pick": "Bo Nix Under 1.5 Passing TDs",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "0 passing TDs"
     }
    ],
    "week": 6
@@ -41714,8 +41714,8 @@
      "pick": "Bo Nix Under 1.5 Passing TDs",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "0 passing TDs"
     }
    ],
    "week": 6
@@ -43959,8 +43959,8 @@
      "pick": "Bo Nix Under 1.5 Passing TDs",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "0 passing TDs"
     },
     {
      "game_id": "401908372",
@@ -44143,8 +44143,8 @@
      "pick": "Bo Nix Under 1.5 Passing TDs",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "0 passing TDs"
     },
     {
      "game_id": "401923630",
@@ -46399,6 +46399,37 @@
      "pick": "Cleveland Guardians ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 31
+  },
+  {
+   "id": "single:401908026|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-16T12:56:20+00:00",
+   "win_prob": 0.5011,
+   "odds": -100,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908026",
+     "odds": -100,
+     "stake": 100,
+     "win_prob": 0.5011,
+     "label": "Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "market_prob": 0.5011,
+     "type": "moneyline",
+     "team": "Tampa Bay Rays",
+     "kickoff": "2026-10-16T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Tampa Bay Rays ML",
+     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
+     "id": "401908026|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
      "detail": ""
     }
