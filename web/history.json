@@ -20034,7 +20034,7 @@
      "game": "Colorado State @ Texas State",
      "id": "401860923|Texas State ML (Colorado State @ Texas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -20514,7 +20514,7 @@
      "game": "Colorado State @ Texas State",
      "id": "401860923|Texas State ML (Colorado State @ Texas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856720",
@@ -20640,7 +20640,7 @@
      "game": "Colorado State @ Texas State",
      "id": "401860923|Texas State ML (Colorado State @ Texas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401860903",
@@ -21394,7 +21394,7 @@
      "game": "Colorado State @ Texas State",
      "id": "401860923|Texas State ML (Colorado State @ Texas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856809",
@@ -21520,7 +21520,7 @@
      "game": "Colorado State @ Texas State",
      "id": "401860923|Texas State ML (Colorado State @ Texas State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856809",
@@ -26508,7 +26508,7 @@
    "win_prob": 0.5802,
    "odds": -138,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_SEA_DEN",
@@ -26526,8 +26526,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -26998,7 +26998,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Emanuel Wilson Anytime TD (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -29578,7 +29578,7 @@
    "win_prob": 0.2572,
    "odds": 289,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_NYJ_NE",
@@ -29653,8 +29653,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -29758,7 +29758,7 @@
    "win_prob": 0.2513,
    "odds": 298,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_LAC_KC",
@@ -29833,8 +29833,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -30013,7 +30013,7 @@
    "win_prob": 0.2489,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_TEN_IND",
@@ -30071,8 +30071,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -30919,7 +30919,7 @@
    "win_prob": 0.2549,
    "odds": 292,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_ARI_LA",
@@ -30994,8 +30994,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -31082,7 +31082,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_ARI_LA",
@@ -31158,8 +31158,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -33974,7 +33974,7 @@
    "win_prob": 0.2489,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_ARI_LA",
@@ -34050,8 +34050,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -34354,7 +34354,7 @@
    "win_prob": 0.2548,
    "odds": 293,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_BAL_CLE",
@@ -34410,8 +34410,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -34425,7 +34425,7 @@
    "win_prob": 0.2511,
    "odds": 298,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_ARI_LA",
@@ -34500,8 +34500,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -34515,7 +34515,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_LAC_KC",
@@ -34572,8 +34572,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -37137,8 +37137,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     },
     {
      "game_id": "401908034",
@@ -37597,8 +37597,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     },
     {
      "game_id": "401908025",
@@ -37616,8 +37616,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ]
   },
@@ -37683,7 +37683,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Jaxon Smith-Njigba Anytime TD (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -37982,7 +37982,7 @@
    "win_prob": 0.2541,
    "odds": 294,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_BUF_LV",
@@ -38019,8 +38019,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     },
     {
      "game_id": "2026_06_PIT_TB",
@@ -38310,7 +38310,7 @@
    "win_prob": 0.2473,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_TEN_IND",
@@ -38368,8 +38368,8 @@
      "pick": "Seattle Seahawks ML",
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Seattle Seahawks ML (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "SEA 14 - DEN 17"
     }
    ],
    "week": 6
@@ -39531,7 +39531,7 @@
    "win_prob": 0.6536,
    "odds": -189,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908025",
@@ -39547,8 +39547,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ],
    "week": 30
@@ -39562,7 +39562,7 @@
    "win_prob": 0.6002,
    "odds": -150,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908033",
@@ -39578,8 +39578,8 @@
      "pick": "Los Angeles Dodgers ML",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Los Angeles Dodgers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -39593,7 +39593,7 @@
    "win_prob": 0.5758,
    "odds": -136,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908033",
@@ -39609,8 +39609,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -39624,7 +39624,7 @@
    "win_prob": 0.5342,
    "odds": -115,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908025",
@@ -39640,8 +39640,8 @@
      "pick": "Cleveland Guardians ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ],
    "week": 30
@@ -39655,7 +39655,7 @@
    "win_prob": 0.2266,
    "odds": 341,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908025",
@@ -39671,8 +39671,8 @@
      "pick": "Cleveland Guardians ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     },
     {
      "game_id": "401908033",
@@ -39688,8 +39688,8 @@
      "pick": "Los Angeles Dodgers -1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Los Angeles Dodgers -1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -39703,7 +39703,7 @@
    "win_prob": 0.2136,
    "odds": 368,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908025",
@@ -39719,8 +39719,8 @@
      "pick": "Cleveland Guardians ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     },
     {
      "game_id": "401908033",
@@ -39736,8 +39736,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -39751,7 +39751,7 @@
    "win_prob": 0.2079,
    "odds": 381,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908033",
@@ -39767,8 +39767,8 @@
      "pick": "Los Angeles Dodgers ML",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Los Angeles Dodgers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     },
     {
      "game_id": "401908025",
@@ -39784,8 +39784,8 @@
      "pick": "Cleveland Guardians -1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Cleveland Guardians -1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ],
    "week": 30
@@ -39799,7 +39799,7 @@
    "win_prob": 0.1995,
    "odds": 401,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908033",
@@ -39815,8 +39815,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     },
     {
      "game_id": "401908025",
@@ -39832,8 +39832,8 @@
      "pick": "Cleveland Guardians -1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Cleveland Guardians -1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ],
    "week": 30
@@ -39847,7 +39847,7 @@
    "win_prob": 0.1976,
    "odds": 406,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908025",
@@ -39863,8 +39863,8 @@
      "pick": "Tampa Bay Rays ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     },
     {
      "game_id": "401908033",
@@ -39880,8 +39880,8 @@
      "pick": "Los Angeles Dodgers -1.5",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Los Angeles Dodgers -1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -39895,7 +39895,7 @@
    "win_prob": 0.1862,
    "odds": 437,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908025",
@@ -39911,8 +39911,8 @@
      "pick": "Tampa Bay Rays ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     },
     {
      "game_id": "401908033",
@@ -39928,8 +39928,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 15",
      "id": "401908033|Milwaukee Brewers ML (Milwaukee Brewers @ Los Angeles Dodgers, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 6 - Los Angeles Dodgers 4"
     }
    ],
    "week": 30
@@ -40020,8 +40020,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ]
   },
@@ -40204,8 +40204,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ]
   },
@@ -40941,38 +40941,6 @@
    "week": 6
   },
   {
-   "id": "single:2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-   "kind": "single",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-15T08:31:27+00:00",
-   "win_prob": 0.6859,
-   "odds": -218,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.6859,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 6
-  },
-  {
    "id": "single:2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
    "kind": "single",
    "sport": "nfl",
@@ -40999,7 +40967,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -41470,94 +41438,6 @@
    "week": 6
   },
   {
-   "id": "parlay:2026_06_BAL_CLE|Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns) + 2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles) + 2026_06_CHI_ATL|Jahan Dotson 2+ Receptions (Chicago Bears @ Atlanta Falcons) + 2026_06_LAC_KC|Kansas City Chiefs ML (Los Angeles Chargers @ Kansas City Chiefs)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-15T08:31:27+00:00",
-   "win_prob": 0.2683,
-   "odds": 273,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_LAC_KC",
-     "odds": -430,
-     "stake": 100,
-     "win_prob": 0.7986,
-     "label": "Kansas City Chiefs ML (Los Angeles Chargers @ Kansas City Chiefs)",
-     "raw_prob": 0.8118,
-     "market_prob": 0.7986,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "KC",
-     "kickoff": "2026-10-18T20:25:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Kansas City Chiefs ML",
-     "game": "Los Angeles Chargers @ Kansas City Chiefs",
-     "id": "2026_06_LAC_KC|Kansas City Chiefs ML (Los Angeles Chargers @ Kansas City Chiefs)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_BAL_CLE",
-     "odds": -230,
-     "stake": 100,
-     "win_prob": 0.6944,
-     "label": "Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns)",
-     "raw_prob": 0.6918,
-     "market_prob": 0.6944,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "BAL",
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Baltimore Ravens ML",
-     "game": "Baltimore Ravens @ Cleveland Browns",
-     "id": "2026_06_BAL_CLE|Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.6859,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CHI_ATL",
-     "odds": -162,
-     "stake": 100,
-     "win_prob": 0.622,
-     "label": "Jahan Dotson 2+ Receptions (Chicago Bears @ Atlanta Falcons)",
-     "type": "player_stat",
-     "player": "Jahan Dotson",
-     "stat": "receptions",
-     "min": 2,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "RECEPTIONS",
-     "pick": "Jahan Dotson 2+ Receptions",
-     "game": "Chicago Bears @ Atlanta Falcons",
-     "id": "2026_06_CHI_ATL|Jahan Dotson 2+ Receptions (Chicago Bears @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 6
-  },
-  {
    "id": "parlay:2026_06_ARI_LA|Jacoby Brissett Under 1.5 Passing TDs (Arizona Cardinals @ Los Angeles Rams) + 2026_06_BAL_CLE|Baltimore Ravens ML (Baltimore Ravens @ Cleveland Browns) + 2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots) + 2026_06_PIT_TB|Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers)",
    "kind": "parlay",
    "sport": "nfl",
@@ -41835,219 +41715,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 6
-  },
-  {
-   "id": "parlay:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams) + 2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles) + 2026_06_PIT_TB|Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers) + 2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos) + 2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-15T08:31:27+00:00",
-   "win_prob": 0.2492,
-   "odds": 301,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_ARI_LA",
-     "odds": -850,
-     "stake": 100,
-     "win_prob": 0.8804,
-     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
-     "raw_prob": 0.8752,
-     "market_prob": 0.8804,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "LA",
-     "kickoff": "2026-10-18T20:05:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Los Angeles Rams ML",
-     "game": "Arizona Cardinals @ Los Angeles Rams",
-     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_TEN_IND",
-     "odds": -330,
-     "stake": 100,
-     "win_prob": 0.7503,
-     "label": "Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-     "raw_prob": 0.7508,
-     "market_prob": 0.7503,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "IND",
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Indianapolis Colts ML",
-     "game": "Tennessee Titans @ Indianapolis Colts",
-     "id": "2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_PIT_TB",
-     "odds": -275,
-     "stake": 100,
-     "win_prob": 0.7042,
-     "label": "Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers)",
-     "type": "player_stat",
-     "player": "Jalon Daniels",
-     "stat": "passing_tds",
-     "min": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalon Daniels 1+ Passing TDs",
-     "game": "Pittsburgh Steelers @ Tampa Bay Buccaneers",
-     "id": "2026_06_PIT_TB|Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.6859,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_SEA_DEN",
-     "odds": -230,
-     "stake": 100,
-     "win_prob": 0.6721,
-     "label": "Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "type": "player_stat",
-     "player": "Bo Nix",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-16T00:15:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Bo Nix Under 1.5 Passing TDs",
-     "game": "Seattle Seahawks @ Denver Broncos",
-     "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 6
-  },
-  {
-   "id": "parlay:2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams) + 2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles) + 2026_06_NYJ_NE|Geno Smith Under 1.5 Passing TDs (New York Jets @ New England Patriots) + 2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos) + 2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-15T08:31:27+00:00",
-   "win_prob": 0.2415,
-   "odds": 314,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_ARI_LA",
-     "odds": -850,
-     "stake": 100,
-     "win_prob": 0.8804,
-     "label": "Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
-     "raw_prob": 0.8752,
-     "market_prob": 0.8804,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "LA",
-     "kickoff": "2026-10-18T20:05:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Los Angeles Rams ML",
-     "game": "Arizona Cardinals @ Los Angeles Rams",
-     "id": "2026_06_ARI_LA|Los Angeles Rams ML (Arizona Cardinals @ Los Angeles Rams)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_TEN_IND",
-     "odds": -330,
-     "stake": 100,
-     "win_prob": 0.7503,
-     "label": "Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-     "raw_prob": 0.7508,
-     "market_prob": 0.7503,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "IND",
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Indianapolis Colts ML",
-     "game": "Tennessee Titans @ Indianapolis Colts",
-     "id": "2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_NYJ_NE",
-     "odds": -270,
-     "stake": 100,
-     "win_prob": 0.6869,
-     "label": "Geno Smith Under 1.5 Passing TDs (New York Jets @ New England Patriots)",
-     "type": "player_stat",
-     "player": "Geno Smith",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Geno Smith Under 1.5 Passing TDs",
-     "game": "New York Jets @ New England Patriots",
-     "id": "2026_06_NYJ_NE|Geno Smith Under 1.5 Passing TDs (New York Jets @ New England Patriots)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.6859,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_SEA_DEN",
-     "odds": -230,
-     "stake": 100,
-     "win_prob": 0.6721,
-     "label": "Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "type": "player_stat",
-     "player": "Bo Nix",
-     "stat": "passing_tds",
-     "max": 1,
-     "kickoff": "2026-10-16T00:15:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Bo Nix Under 1.5 Passing TDs",
-     "game": "Seattle Seahawks @ Denver Broncos",
-     "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
-     "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -44061,99 +43729,6 @@
    ]
   },
   {
-   "id": "parlay:2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles) + 2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots) + 401908371|Jhonata Diniz ML (Tanner Boser vs Jhonata Diniz) + 401908372|Kyle Daukaus ML (Marc-Andre Barriault vs Kyle Daukaus)",
-   "kind": "parlay",
-   "sport": "multi",
-   "season": 2026,
-   "created": "2026-10-15T08:33:30+00:00",
-   "win_prob": 0.25,
-   "odds": 300,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_NYJ_NE",
-     "odds": -335,
-     "stake": 100,
-     "win_prob": 0.7623,
-     "label": "New England Patriots ML (New York Jets @ New England Patriots)",
-     "raw_prob": 0.7491,
-     "market_prob": 0.7623,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "NE",
-     "sport": "nfl",
-     "season": 2026,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "New England Patriots ML",
-     "game": "New York Jets @ New England Patriots",
-     "id": "2026_06_NYJ_NE|New England Patriots ML (New York Jets @ New England Patriots)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.7183,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "tier": "green",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "sport": "nfl",
-     "season": 2026,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "401908371",
-     "odds": -260,
-     "stake": 100,
-     "win_prob": 0.6943,
-     "label": "Jhonata Diniz ML (Tanner Boser vs Jhonata Diniz)",
-     "market_prob": 0.6943,
-     "type": "fight",
-     "fighter": "Jhonata Diniz",
-     "sport": "ufc",
-     "season": 2026,
-     "kickoff": "2026-10-17T17:00:00-04:00",
-     "market": "MONEYLINE",
-     "pick": "Jhonata Diniz ML",
-     "game": "Tanner Boser vs Jhonata Diniz",
-     "id": "401908371|Jhonata Diniz ML (Tanner Boser vs Jhonata Diniz)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "401908372",
-     "odds": -225,
-     "stake": 100,
-     "win_prob": 0.6575,
-     "label": "Kyle Daukaus ML (Marc-Andre Barriault vs Kyle Daukaus)",
-     "market_prob": 0.6575,
-     "type": "fight",
-     "fighter": "Kyle Daukaus",
-     "sport": "ufc",
-     "season": 2026,
-     "kickoff": "2026-10-17T20:00:00-04:00",
-     "market": "MONEYLINE",
-     "pick": "Kyle Daukaus ML",
-     "game": "Marc-Andre Barriault vs Kyle Daukaus",
-     "id": "401908372|Kyle Daukaus ML (Marc-Andre Barriault vs Kyle Daukaus)",
-     "status": "pending",
-     "detail": ""
-    }
-   ]
-  },
-  {
    "id": "parlay:2026_06_TEN_IND|Indianapolis Colts ML (Tennessee Titans @ Indianapolis Colts) + 401897729|Erin Blanchfield ML (Erin Blanchfield vs Jasmine Jasudavicius) + 401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19) + 401929675|Cerminara vs Stiller goes the distance (Katlyn Cerminara vs Mackenzie Stiller)",
    "kind": "parlay",
    "sport": "multi",
@@ -44329,8 +43904,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ]
   },
@@ -44385,7 +43960,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     },
     {
      "game_id": "401908372",
@@ -44513,8 +44088,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 15",
      "id": "401908025|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 15)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Cleveland Guardians 3"
     }
    ]
   },
@@ -44569,7 +44144,7 @@
      "game": "Seattle Seahawks @ Denver Broncos",
      "id": "2026_06_SEA_DEN|Bo Nix Under 1.5 Passing TDs (Seattle Seahawks @ Denver Broncos)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     },
     {
      "game_id": "401923630",
@@ -44606,99 +44181,6 @@
      "pick": "Los Angeles Dodgers +1.5",
      "game": "Los Angeles Dodgers @ Milwaukee Brewers, Oct 19",
      "id": "401908036|Los Angeles Dodgers +1.5 (Los Angeles Dodgers @ Milwaukee Brewers, Oct 19)",
-     "status": "pending",
-     "detail": ""
-    }
-   ]
-  },
-  {
-   "id": "parlay:2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles) + 2026_06_PIT_TB|Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers) + 401908027|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17) + 401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
-   "kind": "parlay",
-   "sport": "multi",
-   "season": 2026,
-   "created": "2026-10-15T08:33:30+00:00",
-   "win_prob": 0.2496,
-   "odds": 301,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_06_PIT_TB",
-     "odds": -275,
-     "stake": 100,
-     "win_prob": 0.761,
-     "label": "Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers)",
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Jalon Daniels",
-     "stat": "passing_tds",
-     "min": 1,
-     "sport": "nfl",
-     "season": 2026,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalon Daniels 1+ Passing TDs",
-     "game": "Pittsburgh Steelers @ Tampa Bay Buccaneers",
-     "id": "2026_06_PIT_TB|Jalon Daniels 1+ Passing TDs (Pittsburgh Steelers @ Tampa Bay Buccaneers)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_06_CAR_PHI",
-     "odds": -245,
-     "stake": 100,
-     "win_prob": 0.7183,
-     "label": "Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "tier": "green",
-     "type": "player_stat",
-     "player": "Jalen Hurts",
-     "stat": "passing_tds",
-     "max": 1,
-     "sport": "nfl",
-     "season": 2026,
-     "kickoff": "2026-10-18T17:00:00+00:00",
-     "market": "PASSING TDS",
-     "pick": "Jalen Hurts Under 1.5 Passing TDs",
-     "game": "Carolina Panthers @ Philadelphia Eagles",
-     "id": "2026_06_CAR_PHI|Jalen Hurts Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "401908027",
-     "odds": -210,
-     "stake": 100,
-     "win_prob": 0.6777,
-     "label": "Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
-     "type": "run_line",
-     "team": "Tampa Bay Rays",
-     "point": 1.5,
-     "sport": "mlb",
-     "season": 2026,
-     "kickoff": "2026-10-17T20:00:00-04:00",
-     "market": "RUN LINE",
-     "pick": "Tampa Bay Rays +1.5",
-     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 17",
-     "id": "401908027|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "401908034",
-     "odds": -207,
-     "stake": 100,
-     "win_prob": 0.6738,
-     "label": "Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
-     "type": "run_line",
-     "team": "Milwaukee Brewers",
-     "point": 1.5,
-     "sport": "mlb",
-     "season": 2026,
-     "kickoff": "2026-10-16T21:00:00-04:00",
-     "market": "RUN LINE",
-     "pick": "Milwaukee Brewers +1.5",
-     "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 16",
-     "id": "401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
      "status": "pending",
      "detail": ""
     }
@@ -45865,7 +45347,7 @@
      "game": "Georgia Southern @ Old Dominion",
      "id": "401869950|Georgia Southern ML (Georgia Southern @ Old Dominion)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862802",
@@ -46596,6 +46078,332 @@
      "detail": ""
     }
    ]
+  },
+  {
+   "id": "single:2026_06_CAR_PHI|Bryce Young Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-16T03:53:27+00:00",
+   "win_prob": 0.6163,
+   "odds": -161,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_CAR_PHI",
+     "odds": -200,
+     "stake": 100,
+     "win_prob": 0.6163,
+     "label": "Bryce Young Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
+     "type": "player_stat",
+     "player": "Bryce Young",
+     "stat": "passing_tds",
+     "max": 1,
+     "kickoff": "2026-10-18T17:00:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Bryce Young Under 1.5 Passing TDs",
+     "game": "Carolina Panthers @ Philadelphia Eagles",
+     "id": "2026_06_CAR_PHI|Bryce Young Under 1.5 Passing TDs (Carolina Panthers @ Philadelphia Eagles)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_DAL_GB|MarShawn Lloyd 2+ Receptions (Dallas Cowboys @ Green Bay Packers)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-16T03:53:27+00:00",
+   "win_prob": 0.6158,
+   "odds": -160,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_DAL_GB",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.6158,
+     "label": "MarShawn Lloyd 2+ Receptions (Dallas Cowboys @ Green Bay Packers)",
+     "type": "player_stat",
+     "player": "MarShawn Lloyd",
+     "stat": "receptions",
+     "min": 2,
+     "kickoff": "2026-10-19T00:20:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "MarShawn Lloyd 2+ Receptions",
+     "game": "Dallas Cowboys @ Green Bay Packers",
+     "id": "2026_06_DAL_GB|MarShawn Lloyd 2+ Receptions (Dallas Cowboys @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:401862801|Memphis ML (Memphis @ Tulane)",
+   "kind": "single",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-16T03:53:54+00:00",
+   "win_prob": 0.7159,
+   "odds": -252,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401862801",
+     "odds": -285,
+     "stake": 100,
+     "win_prob": 0.7159,
+     "label": "Memphis ML (Memphis @ Tulane)",
+     "raw_prob": 0.6987,
+     "market_prob": 0.7159,
+     "type": "moneyline",
+     "team": "Memphis",
+     "kickoff": "2026-10-16T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Memphis ML",
+     "game": "Memphis @ Tulane",
+     "id": "401862801|Memphis ML (Memphis @ Tulane)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856829|West Virginia ML (Cincinnati @ West Virginia) + 401858262|Stanford ML (Elon @ Stanford) + 401864524|UNLV ML (UNLV @ Air Force)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-16T03:53:54+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858262",
+     "odds": -8437,
+     "stake": 100,
+     "win_prob": 0.9883,
+     "label": "Stanford ML (Elon @ Stanford)",
+     "raw_prob": 0.9882,
+     "market_prob": 0.9882,
+     "type": "moneyline",
+     "team": "Stanford",
+     "kickoff": "2026-10-17T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Stanford ML",
+     "game": "Elon @ Stanford",
+     "id": "401858262|Stanford ML (Elon @ Stanford)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856829",
+     "odds": -120,
+     "stake": 100,
+     "win_prob": 0.5247,
+     "label": "West Virginia ML (Cincinnati @ West Virginia)",
+     "raw_prob": 0.5236,
+     "market_prob": 0.5247,
+     "type": "moneyline",
+     "team": "West Virginia",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "West Virginia ML",
+     "game": "Cincinnati @ West Virginia",
+     "id": "401856829|West Virginia ML (Cincinnati @ West Virginia)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864524",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5026,
+     "label": "UNLV ML (UNLV @ Air Force)",
+     "raw_prob": 0.4753,
+     "market_prob": 0.5026,
+     "type": "moneyline",
+     "team": "UNLV",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "UNLV ML",
+     "game": "UNLV @ Air Force",
+     "id": "401864524|UNLV ML (UNLV @ Air Force)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858488|Ohio State ML (Ohio State @ Indiana) + 401862805|Rice ML (Tulsa @ Rice)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-16T03:53:54+00:00",
+   "win_prob": 0.1848,
+   "odds": 441,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858488",
+     "odds": -170,
+     "stake": 100,
+     "win_prob": 0.6218,
+     "label": "Ohio State ML (Ohio State @ Indiana)",
+     "raw_prob": 0.603,
+     "market_prob": 0.6218,
+     "type": "moneyline",
+     "team": "Ohio State",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ohio State ML",
+     "game": "Ohio State @ Indiana",
+     "id": "401858488|Ohio State ML (Ohio State @ Indiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862805",
+     "odds": 152,
+     "stake": 100,
+     "win_prob": 0.3586,
+     "label": "Rice ML (Tulsa @ Rice)",
+     "raw_prob": 0.3707,
+     "market_prob": 0.3586,
+     "type": "moneyline",
+     "team": "Rice",
+     "kickoff": "2026-10-17T16:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Rice ML",
+     "game": "Tulsa @ Rice",
+     "id": "401862805|Rice ML (Tulsa @ Rice)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858493|Purdue ML (Washington @ Purdue) + 401862805|Rice ML (Tulsa @ Rice)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-16T03:53:54+00:00",
+   "win_prob": 0.1837,
+   "odds": 444,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858493",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6178,
+     "label": "Purdue ML (Washington @ Purdue)",
+     "raw_prob": 0.5948,
+     "market_prob": 0.6178,
+     "type": "moneyline",
+     "team": "Purdue",
+     "kickoff": "2026-10-16T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Purdue ML",
+     "game": "Washington @ Purdue",
+     "id": "401858493|Purdue ML (Washington @ Purdue)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862805",
+     "odds": 152,
+     "stake": 100,
+     "win_prob": 0.3586,
+     "label": "Rice ML (Tulsa @ Rice)",
+     "raw_prob": 0.3707,
+     "market_prob": 0.3586,
+     "type": "moneyline",
+     "team": "Rice",
+     "kickoff": "2026-10-17T16:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Rice ML",
+     "game": "Tulsa @ Rice",
+     "id": "401862805|Rice ML (Tulsa @ Rice)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "single:401908026|Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-16T03:54:00+00:00",
+   "win_prob": 0.636,
+   "odds": -175,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908026",
+     "odds": -175,
+     "stake": 100,
+     "win_prob": 0.636,
+     "label": "Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "type": "run_line",
+     "team": "Cleveland Guardians",
+     "point": 1.5,
+     "kickoff": "2026-10-16T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Cleveland Guardians +1.5",
+     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
+     "id": "401908026|Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 31
+  },
+  {
+   "id": "single:401908026|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-16T03:54:00+00:00",
+   "win_prob": 0.5,
+   "odds": 100,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908026",
+     "odds": 100,
+     "stake": 100,
+     "win_prob": 0.5,
+     "label": "Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "market_prob": 0.5,
+     "type": "moneyline",
+     "team": "Cleveland Guardians",
+     "kickoff": "2026-10-16T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Guardians ML",
+     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
+     "id": "401908026|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 31
   }
  ],
  "saved": [
