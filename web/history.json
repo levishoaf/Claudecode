@@ -36939,7 +36939,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401908027",
@@ -37030,7 +37030,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401908027",
@@ -37157,7 +37157,7 @@
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 16",
      "id": "401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "game not found"
     }
    ]
   },
@@ -40002,7 +40002,7 @@
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 16",
      "id": "401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "game not found"
     },
     {
      "game_id": "401908025",
@@ -40093,7 +40093,7 @@
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 16",
      "id": "401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "game not found"
     },
     {
      "game_id": "401908028",
@@ -40186,7 +40186,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401908025",
@@ -40298,7 +40298,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ]
   },
@@ -43886,7 +43886,7 @@
      "game": "Milwaukee Brewers @ Los Angeles Dodgers, Oct 16",
      "id": "401908034|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Los Angeles Dodgers, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "game not found"
     },
     {
      "game_id": "401908025",
@@ -43998,7 +43998,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ]
   },
@@ -44889,7 +44889,7 @@
      "game": "App State @ Coastal Carolina",
      "id": "401869844|Coastal Carolina ML (App State @ Coastal Carolina)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -44957,7 +44957,7 @@
      "game": "App State @ Coastal Carolina",
      "id": "401869844|Coastal Carolina ML (App State @ Coastal Carolina)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -45025,7 +45025,7 @@
      "game": "App State @ Coastal Carolina",
      "id": "401869844|Coastal Carolina ML (App State @ Coastal Carolina)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -45093,7 +45093,7 @@
      "game": "App State @ Coastal Carolina",
      "id": "401869844|Coastal Carolina ML (App State @ Coastal Carolina)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -45211,7 +45211,7 @@
      "game": "Washington @ Purdue",
      "id": "401858493|Purdue ML (Washington @ Purdue)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858266",
@@ -45279,7 +45279,7 @@
      "game": "Washington @ Purdue",
      "id": "401858493|Purdue ML (Washington @ Purdue)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858266",
@@ -46170,7 +46170,7 @@
      "game": "Memphis @ Tulane",
      "id": "401862801|Memphis ML (Memphis @ Tulane)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 7
@@ -46320,7 +46320,7 @@
      "game": "Washington @ Purdue",
      "id": "401858493|Purdue ML (Washington @ Purdue)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862805",
@@ -46369,7 +46369,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 31
@@ -46400,7 +46400,7 @@
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Cleveland Guardians ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 31
@@ -46430,6 +46430,446 @@
      "pick": "Tampa Bay Rays ML",
      "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 16",
      "id": "401908026|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 16)",
+     "status": "pending",
+     "detail": "not final yet"
+    }
+   ],
+   "week": 31
+  },
+  {
+   "id": "single:2026_06_ARI_LA|Davis Allen 1+ Receptions (Arizona Cardinals @ Los Angeles Rams)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-17T03:53:21+00:00",
+   "win_prob": 0.6617,
+   "odds": -196,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_ARI_LA",
+     "odds": -225,
+     "stake": 100,
+     "win_prob": 0.6617,
+     "label": "Davis Allen 1+ Receptions (Arizona Cardinals @ Los Angeles Rams)",
+     "type": "player_stat",
+     "player": "Davis Allen",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-18T20:05:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Davis Allen 1+ Receptions",
+     "game": "Arizona Cardinals @ Los Angeles Rams",
+     "id": "2026_06_ARI_LA|Davis Allen 1+ Receptions (Arizona Cardinals @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_BUF_LV|Ty Johnson Under 2.5 Receptions (Buffalo Bills @ Las Vegas Raiders)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-17T03:53:21+00:00",
+   "win_prob": 0.6347,
+   "odds": -174,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_BUF_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.6347,
+     "label": "Ty Johnson Under 2.5 Receptions (Buffalo Bills @ Las Vegas Raiders)",
+     "type": "player_stat",
+     "player": "Ty Johnson",
+     "stat": "receptions",
+     "max": 2,
+     "kickoff": "2026-10-18T20:25:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Ty Johnson Under 2.5 Receptions",
+     "game": "Buffalo Bills @ Las Vegas Raiders",
+     "id": "2026_06_BUF_LV|Ty Johnson Under 2.5 Receptions (Buffalo Bills @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:2026_06_HOU_JAX|Nate Boerkircher 1+ Receptions (Houston Texans @ Jacksonville Jaguars)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-17T03:53:21+00:00",
+   "win_prob": 0.6227,
+   "odds": -165,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_06_HOU_JAX",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6227,
+     "label": "Nate Boerkircher 1+ Receptions (Houston Texans @ Jacksonville Jaguars)",
+     "type": "player_stat",
+     "player": "Nate Boerkircher",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-18T13:30:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Nate Boerkircher 1+ Receptions",
+     "game": "Houston Texans @ Jacksonville Jaguars",
+     "id": "2026_06_HOU_JAX|Nate Boerkircher 1+ Receptions (Houston Texans @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 6
+  },
+  {
+   "id": "single:401869934|Arkansas State ML (Arkansas State @ Southern Miss)",
+   "kind": "single",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.7103,
+   "odds": -245,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869934",
+     "odds": -265,
+     "stake": 100,
+     "win_prob": 0.7103,
+     "label": "Arkansas State ML (Arkansas State @ Southern Miss)",
+     "raw_prob": 0.677,
+     "market_prob": 0.7103,
+     "type": "moneyline",
+     "team": "Arkansas State",
+     "kickoff": "2026-10-17T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Arkansas State ML",
+     "game": "Arkansas State @ Southern Miss",
+     "id": "401869934|Arkansas State ML (Arkansas State @ Southern Miss)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856830|Kansas ML (Kansas @ Kansas State) + 401869966|Louisiana ML (Troy @ Louisiana)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.1838,
+   "odds": 444,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869966",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.624,
+     "label": "Louisiana ML (Troy @ Louisiana)",
+     "raw_prob": 0.5921,
+     "market_prob": 0.624,
+     "type": "moneyline",
+     "team": "Louisiana",
+     "kickoff": "2026-10-17T17:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana ML",
+     "game": "Troy @ Louisiana",
+     "id": "401869966|Louisiana ML (Troy @ Louisiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856830",
+     "odds": 160,
+     "stake": 100,
+     "win_prob": 0.3553,
+     "label": "Kansas ML (Kansas @ Kansas State)",
+     "raw_prob": 0.3829,
+     "market_prob": 0.3553,
+     "type": "moneyline",
+     "team": "Kansas",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas ML",
+     "game": "Kansas @ Kansas State",
+     "id": "401856830|Kansas ML (Kansas @ Kansas State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856830|Kansas ML (Kansas @ Kansas State) + 401858488|Ohio State ML (Ohio State @ Indiana)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.1832,
+   "odds": 446,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858488",
+     "odds": -170,
+     "stake": 100,
+     "win_prob": 0.6218,
+     "label": "Ohio State ML (Ohio State @ Indiana)",
+     "raw_prob": 0.5709,
+     "market_prob": 0.6218,
+     "type": "moneyline",
+     "team": "Ohio State",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ohio State ML",
+     "game": "Ohio State @ Indiana",
+     "id": "401858488|Ohio State ML (Ohio State @ Indiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856830",
+     "odds": 160,
+     "stake": 100,
+     "win_prob": 0.3553,
+     "label": "Kansas ML (Kansas @ Kansas State)",
+     "raw_prob": 0.3829,
+     "market_prob": 0.3553,
+     "type": "moneyline",
+     "team": "Kansas",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas ML",
+     "game": "Kansas @ Kansas State",
+     "id": "401856830|Kansas ML (Kansas @ Kansas State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858489|Rutgers ML (Rutgers @ Maryland) + 401869966|Louisiana ML (Troy @ Louisiana)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.1827,
+   "odds": 447,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401869966",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.624,
+     "label": "Louisiana ML (Troy @ Louisiana)",
+     "raw_prob": 0.5921,
+     "market_prob": 0.624,
+     "type": "moneyline",
+     "team": "Louisiana",
+     "kickoff": "2026-10-17T17:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisiana ML",
+     "game": "Troy @ Louisiana",
+     "id": "401869966|Louisiana ML (Troy @ Louisiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858489",
+     "odds": 162,
+     "stake": 100,
+     "win_prob": 0.353,
+     "label": "Rutgers ML (Rutgers @ Maryland)",
+     "raw_prob": 0.3385,
+     "market_prob": 0.353,
+     "type": "moneyline",
+     "team": "Rutgers",
+     "kickoff": "2026-10-17T12:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Rutgers ML",
+     "game": "Rutgers @ Maryland",
+     "id": "401858489|Rutgers ML (Rutgers @ Maryland)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858488|Ohio State ML (Ohio State @ Indiana) + 401858489|Rutgers ML (Rutgers @ Maryland)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.1821,
+   "odds": 449,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858488",
+     "odds": -170,
+     "stake": 100,
+     "win_prob": 0.6218,
+     "label": "Ohio State ML (Ohio State @ Indiana)",
+     "raw_prob": 0.5709,
+     "market_prob": 0.6218,
+     "type": "moneyline",
+     "team": "Ohio State",
+     "kickoff": "2026-10-17T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ohio State ML",
+     "game": "Ohio State @ Indiana",
+     "id": "401858488|Ohio State ML (Ohio State @ Indiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858489",
+     "odds": 162,
+     "stake": 100,
+     "win_prob": 0.353,
+     "label": "Rutgers ML (Rutgers @ Maryland)",
+     "raw_prob": 0.3385,
+     "market_prob": 0.353,
+     "type": "moneyline",
+     "team": "Rutgers",
+     "kickoff": "2026-10-17T12:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Rutgers ML",
+     "game": "Rutgers @ Maryland",
+     "id": "401858489|Rutgers ML (Rutgers @ Maryland)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401858266|Duke ML (North Carolina @ Duke) + 401862805|Rice ML (Tulsa @ Rice)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-17T03:53:49+00:00",
+   "win_prob": 0.1788,
+   "odds": 459,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858266",
+     "odds": -154,
+     "stake": 100,
+     "win_prob": 0.5999,
+     "label": "Duke ML (North Carolina @ Duke)",
+     "raw_prob": 0.6008,
+     "market_prob": 0.5999,
+     "type": "moneyline",
+     "team": "Duke",
+     "kickoff": "2026-10-17T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Duke ML",
+     "game": "North Carolina @ Duke",
+     "id": "401858266|Duke ML (North Carolina @ Duke)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862805",
+     "odds": 152,
+     "stake": 100,
+     "win_prob": 0.3586,
+     "label": "Rice ML (Tulsa @ Rice)",
+     "raw_prob": 0.3707,
+     "market_prob": 0.3586,
+     "type": "moneyline",
+     "team": "Rice",
+     "kickoff": "2026-10-17T16:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Rice ML",
+     "game": "Tulsa @ Rice",
+     "id": "401862805|Rice ML (Tulsa @ Rice)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "single:401908027|Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-17T03:54:09+00:00",
+   "win_prob": 0.6247,
+   "odds": -166,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908027",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6247,
+     "label": "Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
+     "type": "run_line",
+     "team": "Cleveland Guardians",
+     "point": 1.5,
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Cleveland Guardians +1.5",
+     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 17",
+     "id": "401908027|Cleveland Guardians +1.5 (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 31
+  },
+  {
+   "id": "single:401908027|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
+   "kind": "single",
+   "sport": "mlb",
+   "season": 2026,
+   "created": "2026-10-17T03:54:09+00:00",
+   "win_prob": 0.5152,
+   "odds": -106,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401908027",
+     "odds": -106,
+     "stake": 100,
+     "win_prob": 0.5152,
+     "label": "Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
+     "market_prob": 0.5152,
+     "type": "moneyline",
+     "team": "Tampa Bay Rays",
+     "kickoff": "2026-10-17T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Tampa Bay Rays ML",
+     "game": "Tampa Bay Rays @ Cleveland Guardians, Oct 17",
+     "id": "401908027|Tampa Bay Rays ML (Tampa Bay Rays @ Cleveland Guardians, Oct 17)",
      "status": "pending",
      "detail": ""
     }
