@@ -26373,7 +26373,7 @@
    "win_prob": 0.6135,
    "odds": -159,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_DAL_GB",
@@ -26392,8 +26392,8 @@
      "pick": "Christian Watson Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -26607,7 +26607,7 @@
    "win_prob": 0.5437,
    "odds": -119,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_DAL_GB",
@@ -26626,8 +26626,8 @@
      "pick": "Javonte Williams Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -26641,7 +26641,7 @@
    "win_prob": 0.5176,
    "odds": -107,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_DAL_GB",
@@ -26659,8 +26659,8 @@
      "pick": "Green Bay Packers ML",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Green Bay Packers ML (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "DAL 13 - GB 23"
     }
    ],
    "week": 6
@@ -26944,7 +26944,7 @@
    "win_prob": 0.3904,
    "odds": 156,
    "stake": 100.0,
-   "status": "pending",
+   "status": "push",
    "legs": [
     {
      "game_id": "2026_06_LAC_KC",
@@ -26963,8 +26963,8 @@
      "pick": "Tyquan Thornton Anytime TD",
      "game": "Los Angeles Chargers @ Kansas City Chiefs",
      "id": "2026_06_LAC_KC|Tyquan Thornton Anytime TD (Los Angeles Chargers @ Kansas City Chiefs)",
-     "status": "pending",
-     "detail": "waiting for snap counts"
+     "status": "push",
+     "detail": "did not play: refunded"
     }
    ],
    "week": 6
@@ -27493,7 +27493,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_WAS_SF",
@@ -27570,8 +27570,8 @@
      "pick": "Christian Watson Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -28003,7 +28003,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_BUF_LV",
@@ -28061,8 +28061,8 @@
      "pick": "Javonte Williams Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -29848,7 +29848,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_LAC_KC",
@@ -29906,8 +29906,8 @@
      "pick": "Javonte Williams Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -31247,7 +31247,7 @@
    "win_prob": 0.2488,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_TEN_IND",
@@ -31286,8 +31286,8 @@
      "pick": "Christian Watson Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Christian Watson Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 rushing tds+receiving tds"
     },
     {
      "game_id": "2026_06_PIT_TB",
@@ -33902,7 +33902,7 @@
    "win_prob": 0.2491,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_BUF_LV",
@@ -33959,8 +33959,8 @@
      "pick": "Javonte Williams Anytime TD",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Javonte Williams Anytime TD (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 6
@@ -34140,8 +34140,8 @@
      "pick": "Green Bay Packers ML",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|Green Bay Packers ML (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "DAL 13 - GB 23"
     }
    ],
    "week": 6
@@ -46120,7 +46120,7 @@
    "win_prob": 0.6158,
    "odds": -160,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_DAL_GB",
@@ -46137,8 +46137,8 @@
      "pick": "MarShawn Lloyd 2+ Receptions",
      "game": "Dallas Cowboys @ Green Bay Packers",
      "id": "2026_06_DAL_GB|MarShawn Lloyd 2+ Receptions (Dallas Cowboys @ Green Bay Packers)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "0 receptions"
     }
    ],
    "week": 6
@@ -52862,6 +52862,396 @@
      "detail": ""
     }
    ]
+  },
+  {
+   "id": "parlay:401856730|Oklahoma ML (Oklahoma @ Mississippi State) + 401856836|Oklahoma State ML (Colorado @ Oklahoma State) + 401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2497,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856836",
+     "odds": -496,
+     "stake": 100,
+     "win_prob": 0.8323,
+     "label": "Oklahoma State ML (Colorado @ Oklahoma State)",
+     "raw_prob": 0.8224,
+     "market_prob": 0.8224,
+     "type": "moneyline",
+     "team": "Oklahoma State",
+     "kickoff": "2026-10-24T00:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oklahoma State ML",
+     "game": "Colorado @ Oklahoma State",
+     "id": "401856836|Oklahoma State ML (Colorado @ Oklahoma State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864526",
+     "odds": -165,
+     "stake": 100,
+     "win_prob": 0.6231,
+     "label": "Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "raw_prob": 0.643,
+     "market_prob": 0.643,
+     "type": "moneyline",
+     "team": "Hawai'i",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Hawai'i ML",
+     "game": "Hawai'i @ Northern Illinois",
+     "id": "401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856730",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5317,
+     "label": "Oklahoma ML (Oklahoma @ Mississippi State)",
+     "raw_prob": 0.597,
+     "market_prob": 0.597,
+     "type": "moneyline",
+     "team": "Oklahoma",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oklahoma ML",
+     "game": "Oklahoma @ Mississippi State",
+     "id": "401856730|Oklahoma ML (Oklahoma @ Mississippi State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401860907|Boise State ML (Boise State @ Washington State) + 401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2496,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860907",
+     "odds": -427,
+     "stake": 100,
+     "win_prob": 0.8102,
+     "label": "Boise State ML (Boise State @ Washington State)",
+     "raw_prob": 0.8061,
+     "market_prob": 0.8061,
+     "type": "moneyline",
+     "team": "Boise State",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Boise State ML",
+     "game": "Boise State @ Washington State",
+     "id": "401860907|Boise State ML (Boise State @ Washington State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864526",
+     "odds": -165,
+     "stake": 100,
+     "win_prob": 0.6231,
+     "label": "Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "raw_prob": 0.643,
+     "market_prob": 0.643,
+     "type": "moneyline",
+     "team": "Hawai'i",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Hawai'i ML",
+     "game": "Hawai'i @ Northern Illinois",
+     "id": "401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -120,
+     "stake": 100,
+     "win_prob": 0.5462,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.6084,
+     "market_prob": 0.6084,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T00:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401860906|Texas State ML (Utah State @ Texas State) + 401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2493,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860906",
+     "odds": -426,
+     "stake": 100,
+     "win_prob": 0.8097,
+     "label": "Texas State ML (Utah State @ Texas State)",
+     "raw_prob": 0.8058,
+     "market_prob": 0.8058,
+     "type": "moneyline",
+     "team": "Texas State",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas State ML",
+     "game": "Utah State @ Texas State",
+     "id": "401860906|Texas State ML (Utah State @ Texas State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401864526",
+     "odds": -165,
+     "stake": 100,
+     "win_prob": 0.6231,
+     "label": "Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "raw_prob": 0.643,
+     "market_prob": 0.643,
+     "type": "moneyline",
+     "team": "Hawai'i",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Hawai'i ML",
+     "game": "Hawai'i @ Northern Illinois",
+     "id": "401864526|Hawai'i ML (Hawai'i @ Northern Illinois)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -120,
+     "stake": 100,
+     "win_prob": 0.5462,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.6084,
+     "market_prob": 0.6084,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T00:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856730|Oklahoma ML (Oklahoma @ Mississippi State) + 401858500|USC ML (USC @ Wisconsin)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2485,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856730",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5317,
+     "label": "Oklahoma ML (Oklahoma @ Mississippi State)",
+     "raw_prob": 0.597,
+     "market_prob": 0.597,
+     "type": "moneyline",
+     "team": "Oklahoma",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oklahoma ML",
+     "game": "Oklahoma @ Mississippi State",
+     "id": "401856730|Oklahoma ML (Oklahoma @ Mississippi State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858500",
+     "odds": -107,
+     "stake": 100,
+     "win_prob": 0.5173,
+     "label": "USC ML (USC @ Wisconsin)",
+     "raw_prob": 0.5827,
+     "market_prob": 0.5827,
+     "type": "moneyline",
+     "team": "USC",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "USC ML",
+     "game": "USC @ Wisconsin",
+     "id": "401858500|USC ML (USC @ Wisconsin)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401858499|UCLA ML (Michigan State @ UCLA) + 401866448|Buffalo ML (Bowling Green @ Buffalo) + 401871070|New Mexico State ML (New Mexico State @ Sam Houston)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2478,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858499",
+     "odds": -657,
+     "stake": 100,
+     "win_prob": 0.8678,
+     "label": "UCLA ML (Michigan State @ UCLA)",
+     "raw_prob": 0.8513,
+     "market_prob": 0.8513,
+     "type": "moneyline",
+     "team": "UCLA",
+     "kickoff": "2026-10-24T00:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "UCLA ML",
+     "game": "Michigan State @ UCLA",
+     "id": "401858499|UCLA ML (Michigan State @ UCLA)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -167,
+     "stake": 100,
+     "win_prob": 0.6254,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.645,
+     "market_prob": 0.645,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871070",
+     "odds": -102,
+     "stake": 100,
+     "win_prob": 0.506,
+     "label": "New Mexico State ML (New Mexico State @ Sam Houston)",
+     "raw_prob": 0.5705,
+     "market_prob": 0.5705,
+     "type": "moneyline",
+     "team": "New Mexico State",
+     "kickoff": "2026-10-21T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "New Mexico State ML",
+     "game": "New Mexico State @ Sam Houston",
+     "id": "401871070|New Mexico State ML (New Mexico State @ Sam Houston)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856732|Texas ML (Ole Miss @ Texas) + 401858270|SMU ML (California @ SMU) + 401866450|Toledo ML (Western Michigan @ Toledo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-19T12:55:29+00:00",
+   "win_prob": 0.2396,
+   "odds": 317,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858270",
+     "odds": -874,
+     "stake": 100,
+     "win_prob": 0.8974,
+     "label": "SMU ML (California @ SMU)",
+     "raw_prob": 0.9005,
+     "market_prob": 0.9005,
+     "type": "moneyline",
+     "team": "SMU",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "SMU ML",
+     "game": "California @ SMU",
+     "id": "401858270|SMU ML (California @ SMU)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866450",
+     "odds": -130,
+     "stake": 100,
+     "win_prob": 0.5652,
+     "label": "Toledo ML (Western Michigan @ Toledo)",
+     "raw_prob": 0.6185,
+     "market_prob": 0.6185,
+     "type": "moneyline",
+     "team": "Toledo",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Toledo ML",
+     "game": "Western Michigan @ Toledo",
+     "id": "401866450|Toledo ML (Western Michigan @ Toledo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856732",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5327,
+     "label": "Texas ML (Ole Miss @ Texas)",
+     "raw_prob": 0.598,
+     "market_prob": 0.598,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Ole Miss @ Texas",
+     "id": "401856732|Texas ML (Ole Miss @ Texas)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
   }
  ],
  "saved": [
