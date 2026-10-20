@@ -113,5 +113,13 @@ class GradeTest(unittest.TestCase):
         self.assertGreater(w["test"]["all_games"]["games"], 1000)
 
 
+class MinimumTest(unittest.TestCase):
+    def test_nba_singles_start_at_60_percent(self):
+        from nfl_edge.picks import SINGLE_MIN_PROB, single_min
+
+        self.assertEqual(single_min("nba"), 0.60)
+        self.assertEqual(single_min("nfl"), SINGLE_MIN_PROB)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -200,7 +200,7 @@ class Core:
         if not pool and kind != "All bets":
             return empty_type_note(kind, sport, checked)
         singles = botcore.pick_singles(pool, count, rank_by="ev" if checked else "prob",
-                                       mix=kind == "All bets")
+                                       mix=kind == "All bets", sport=sport)
         self._record(sport, week, singles, [])
         return botcore.singles_text(singles, sport, wager) + (f"\n_{note}_" if note else "")
 

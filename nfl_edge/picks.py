@@ -172,6 +172,14 @@ def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
 # Graded so far, singles shown at 70%+ won 68-79% of the time and those under 60% about
 # half; picking a bet type still lists every line of that type.
 SINGLE_MIN_PROB = 0.70
+# The NBA's at 60%: a night of NBA moneylines rarely has any at 70% (the user asked for
+# lower so NBA bets show). Not yet tested on graded NBA picks.
+LEAGUE_MIN_PROB = {"nba": 0.60}
+
+
+def single_min(sport: str | None) -> float:
+    """The lowest chance a league's default singles ("All bets") may have."""
+    return LEAGUE_MIN_PROB.get(sport or "", SINGLE_MIN_PROB)
 
 # Parlays have at most 3 legs. Graded so far, 2-3 leg parlays won about as often as
 # their chance said (33% vs 25-29%) and 4-6 leg ones far less (4-17% vs 25-29%); and

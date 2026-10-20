@@ -41,7 +41,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, clock, format_slip  # noqa: E402
 from nfl_edge.grade import print_report  # noqa: E402
 from nfl_edge.odds import american_to_decimal, decimal_to_american  # noqa: E402
-from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SINGLE_MIN_PROB, SURE_TYPES, league_types,  # noqa: E402
+from nfl_edge.picks import (BET_TYPES, CONFIRM_NOTE, SINGLE_MIN_PROB, single_min, SURE_TYPES, league_types,  # noqa: E402
                             best_parlays, every_line_of, mixed_parlays, of_type, payout_parlays,
                             rank_singles, type_max_prob)
 
@@ -358,7 +358,7 @@ def build(args):
 
         if insights.annotate(bets, "nfl", season_for(date.today())) is not None:
             legs_pool, board.NOTES["parlay_pool"] = insights.parlay_pool(bets)
-    singles = rank_singles(bets, args.singles, SINGLE_MIN_PROB if kind == "All bets" else 0.0,
+    singles = rank_singles(bets, args.singles, single_min(args.sport) if kind == "All bets" else 0.0,
                            rank_by=rank, per_game=args.per_game,
                            every_line=kind != "All bets")
     lo_legs = getattr(args, "min_legs", None) or args.legs

@@ -30,7 +30,7 @@ from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS,
-                            SINGLE_MIN_PROB, worth_it, worth_offer, worth_parlay,
+                            SINGLE_MIN_PROB, single_min, worth_it, worth_offer, worth_parlay,
                             league_types, multi_lays,
                             empty_type_note,
                             fanduel_estimate, money_maker_parlays)
@@ -695,7 +695,7 @@ class App:
     def singles_tab(self, parent, singles, previous) -> None:
         if not singles:
             tk.Label(parent, text=self.empty_text(
-                f"No bets at {SINGLE_MIN_PROB:.0%} or better here. Pick a bet type to see every "
+                f"No bets at {single_min(self.sport.get()):.0%} or better here. Pick a bet type to see every "
                 "bet of that type."), bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return

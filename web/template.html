@@ -648,11 +648,11 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     let html = ["singles", "parlays", "money"].includes(state.tab) ? notesHtml(wk) : "";
     const fdParl = (list) => (list.some((p) => fdDecimal(p)) ? "Odds" : "Worst odds");
     const ups = (list) => { const n = list.filter((x) => x.worth && x.worth[0]).length; return `<p class="lead">👍 ${n} of ${list.length} worth betting at FanDuel's price. Thumbs down means not worth it, or not sure (no FanDuel price to check, a doubtful price, an uncertain player or Weak signals). Tap a bet to see why.</p>`; };
-    const singlesLead = (state.betType === "All bets" ? `<p class="lead">Bets at ${pct(DATA.singleMin || 0.7)} or better, likeliest first. Pick a bet type to see every bet of that type.</p>` : "") + ups(wk.singles);
+    const singlesLead = (state.betType === "All bets" ? `<p class="lead">Bets at ${pct(wk.singleMin || DATA.singleMin || 0.7)} or better, likeliest first. Pick a bet type to see every bet of that type.</p>` : "") + ups(wk.singles);
     const parlayLead = DATA.singlesNote ? `<p class="lead" style="color:var(--fg)">${esc(DATA.singlesNote)}</p>` : "";
     if (state.tab === "singles") html += wk.singles.length
       ? singlesLead + `<div class="list">${listHead(wk.singles.some((b) => b.fd) ? "Odds" : "Worst odds")}${wk.singles.map(singleRow).join("")}</div>`
-      : `<p class="empty">${esc(emptyNote(`No bets at ${pct(DATA.singleMin || 0.7)} or better here. Pick a bet type to see every bet of that type.`))}</p>`;
+      : `<p class="empty">${esc(emptyNote(`No bets at ${pct(wk.singleMin || DATA.singleMin || 0.7)} or better here. Pick a bet type to see every bet of that type.`))}</p>`;
     if (state.tab === "parlays") html += wk.parlays.length
       ? parlayLead + ups(wk.parlays) + `<p class="lead">Each parlay pays at least $40 on a $10 wager, likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</p><div class="list">${listHead(fdParl(wk.parlays))}${wk.parlays.map((p, i) => parlayRow(p, i, "P")).join("")}</div>`
       : `<p class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</p>`;

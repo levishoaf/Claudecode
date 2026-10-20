@@ -22,7 +22,7 @@ from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E4
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
 from nfl_edge.picks import worth_it, worth_offer, worth_parlay  # noqa: E402
-from nfl_edge.picks import (BET_TYPES, SINGLE_MIN_PROB, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
+from nfl_edge.picks import (BET_TYPES, SINGLE_MIN_PROB, single_min, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
                             league_types, multi_lays, MULTI_LEGS,
                             MONEY_MAKER_LEGS, fanduel_estimate,
                             money_maker_parlays,
@@ -181,7 +181,7 @@ def run(sport, week, label, ledger, this_week=False):
     else:
         bets = with_odds(annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
                                   else nfl_board(None, LO, HI, week=week), sport), sport, week)
-    singles = rank_singles(bets, 30, SINGLE_MIN_PROB, rank_by="prob", per_game=3)
+    singles = rank_singles(bets, 30, single_min(sport), rank_by="prob", per_game=3)
 
     def legs_pool(some):  # Strong legs when there are enough, never Weak ones
         if any(getattr(b, "tier", None) for b in some):
@@ -210,7 +210,7 @@ def run(sport, week, label, ledger, this_week=False):
     out = {"label": label, "week": week, **picks(singles, parlays, bets),
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
            "late": board.NOTES.get("late", "") if sport == "nfl" else "",
-           "poolNote": pool_note,
+           "poolNote": pool_note, "singleMin": single_min(sport),
            "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model",
                                      "nba": "nba_model"}.get(sport, ""), ""),
            "starters": board.NOTES.get("mlb_starters", "") if sport == "mlb" else ""}

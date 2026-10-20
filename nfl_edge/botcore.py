@@ -20,7 +20,7 @@ from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
 from .parlays import Parlay
-from .picks import (SINGLE_MIN_PROB, mixed_parlays, payout_parlays, rank_singles, worth_it,
+from .picks import (SINGLE_MIN_PROB, single_min, mixed_parlays, payout_parlays, rank_singles, worth_it,
                     worth_parlay)
 
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
@@ -115,7 +115,7 @@ def singles_text(singles, sport: str, wager: float) -> str:
     """One bold line per bet (tier dot, bet, chance, odds, payout), then its game, time and
     anything to watch."""
     if not singles:
-        return (f"No bets at {SINGLE_MIN_PROB:.0%} or better here. Pick a `bet_type` to see "
+        return (f"No bets at {single_min(sport):.0%} or better here. Pick a `bet_type` to see "
                 "every bet of that type, or try a wider chance range.")
     on_fd = any(getattr(b, "on_fanduel", False) for b in singles)
     lines = [f"**{SPORT_NAME[sport]} · {week_of(singles, sport)} · {len(singles)} likeliest "
@@ -488,9 +488,10 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
     return out
 
 
-def pick_singles(bets, count: int, rank_by: str = "prob", mix: bool = True):
-    """The top singles; with `mix`, half props and half game bets where possible."""
-    return rank_singles(bets, count, SINGLE_MIN_PROB if mix else 0.0, rank_by=rank_by,
+def pick_singles(bets, count: int, rank_by: str = "prob", mix: bool = True,
+                 sport: str | None = None):
+    """The top singles; with `mix`, only those at the league's minimum chance or better."""
+    return rank_singles(bets, count, single_min(sport) if mix else 0.0, rank_by=rank_by,
                         per_game=3, every_line=not mix)
 
 

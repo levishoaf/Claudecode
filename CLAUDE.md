@@ -201,7 +201,8 @@ and its details (tier and why, track record, head-to-head, warnings, FanDuel pri
 on a click (`<details>` on the page, `App.list_row` in the app); notes are a short dotted
 list and the key sits in a closed "What the numbers mean" panel. The bot writes one bold
 line per bet plus a line of game, time and warnings.
-The default singles ("All bets") are only bets at 70% or better (`picks.SINGLE_MIN_PROB`,
+The default singles ("All bets") are only bets at 70% or better (`picks.SINGLE_MIN_PROB`; NBA 60%,
+`picks.LEAGUE_MIN_PROB`, since a night of NBA moneylines rarely has any at 70%;
 likeliest first, no forced props mix); picking a bet type lists every line of it. Graded
 singles shown at 70%+ won 68-79%, under 60% about half; parlays won far less than singles,
 so the parlay tabs say so from the record (`tracker.singles_vs_parlays`). UFC chances learn
