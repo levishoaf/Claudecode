@@ -320,7 +320,8 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
             traceback.print_exc()
     if nba_days:
         try:
-            result["nba"].append(run("nba", board.MLB_ALL_DAYS, "Next 7 days", ledger))
+            # first, so the page opens on it: one night has only a few NBA bets
+            result["nba"].insert(0, run("nba", board.MLB_ALL_DAYS, "Next 7 days", ledger))
         except Exception:
             traceback.print_exc()
 

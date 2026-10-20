@@ -298,6 +298,9 @@ class App:
                     name = f"{d:%a %b} {d.day}"
                     values[name + ("" if lines else "  ·  no line yet")] = int(f"{d:%Y%m%d}")
                 values["Next 7 days"] = board.MLB_ALL_DAYS
+                if self.sport.get() == "nba":  # a night has only a few NBA bets: the week first
+                    values = {"Next 7 days": board.MLB_ALL_DAYS,
+                              **{k: v for k, v in values.items() if k != "Next 7 days"}}
             elif self.sport.get() == "ncaaf":
                 for i, w in enumerate(board.cfb_weeks()):
                     values[f"Week {w}" + ("  ·  this week" if i == 0 else "")] = w
