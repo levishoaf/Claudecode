@@ -26173,7 +26173,7 @@
    "win_prob": 0.8033,
    "odds": -409,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_WAS_SF",
@@ -26191,8 +26191,8 @@
      "pick": "San Francisco 49ers ML",
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "WAS 17 - SF 23"
     }
    ],
    "week": 6
@@ -26460,7 +26460,7 @@
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|Christian McCaffrey Anytime TD (Washington Commanders @ San Francisco 49ers)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -26862,7 +26862,7 @@
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|George Kittle Anytime TD (Washington Commanders @ San Francisco 49ers)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -27258,7 +27258,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_LAC_KC",
@@ -27295,8 +27295,8 @@
      "pick": "San Francisco 49ers ML",
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "WAS 17 - SF 23"
     },
     {
      "game_id": "2026_06_TEN_IND",
@@ -28441,7 +28441,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_WAS_SF",
@@ -28459,8 +28459,8 @@
      "pick": "San Francisco 49ers ML",
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "WAS 17 - SF 23"
     },
     {
      "game_id": "2026_06_CHI_ATL",
@@ -34065,7 +34065,7 @@
    "win_prob": 0.2663,
    "odds": 275,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_06_WAS_SF",
@@ -34083,8 +34083,8 @@
      "pick": "San Francisco 49ers ML",
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "WAS 17 - SF 23"
     },
     {
      "game_id": "2026_06_NYJ_NE",
@@ -34627,7 +34627,7 @@
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|Christian McCaffrey Anytime TD (Washington Commanders @ San Francisco 49ers)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     },
     {
      "game_id": "2026_06_PIT_TB",
@@ -40145,8 +40145,8 @@
      "pick": "San Francisco 49ers ML",
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|San Francisco 49ers ML (Washington Commanders @ San Francisco 49ers)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "WAS 17 - SF 23"
     },
     {
      "game_id": "2026_06_BUF_LV",
@@ -41095,7 +41095,7 @@
      "game": "Washington Commanders @ San Francisco 49ers",
      "id": "2026_06_WAS_SF|Brock Purdy Under 2.5 Passing TDs (Washington Commanders @ San Francisco 49ers)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 6
@@ -50099,7 +50099,7 @@
    "win_prob": 0.2486,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -50136,8 +50136,8 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     },
     {
      "game_id": "401908029",
@@ -50169,7 +50169,7 @@
    "win_prob": 0.2466,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_06_BUF_LV",
@@ -50226,8 +50226,8 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     }
    ]
   },
@@ -52603,7 +52603,7 @@
    "win_prob": 0.6309,
    "odds": -171,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401908028",
@@ -52619,8 +52619,8 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     }
    ],
    "week": 31
@@ -52634,7 +52634,7 @@
    "win_prob": 0.5638,
    "odds": -129,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908028",
@@ -52650,8 +52650,8 @@
      "pick": "Tampa Bay Rays ML",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Tampa Bay Rays ML (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     }
    ],
    "week": 31
@@ -52665,7 +52665,7 @@
    "win_prob": 0.2478,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -52720,8 +52720,8 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     }
    ]
   },
@@ -52734,7 +52734,7 @@
    "win_prob": 0.2477,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -52789,8 +52789,8 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 19",
      "id": "401908028|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 19)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Cleveland Guardians 3 - Tampa Bay Rays 7"
     }
    ]
   },
@@ -57493,6 +57493,475 @@
      "pick": "Cleveland Guardians +1.5",
      "game": "Cleveland Guardians @ Tampa Bay Rays, Oct 20",
      "id": "401908029|Cleveland Guardians +1.5 (Cleveland Guardians @ Tampa Bay Rays, Oct 20)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-20T03:53:50+00:00",
+   "win_prob": 0.2493,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -113,
+     "stake": 100,
+     "win_prob": 0.5296,
+     "label": "Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "raw_prob": 0.5933,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian Watson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian Watson Anytime TD",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_NE_CHI",
+     "odds": 108,
+     "stake": 100,
+     "win_prob": 0.4814,
+     "label": "D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
+     "raw_prob": 0.5556,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "D'Andre Swift",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-22T20:15:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "D'Andre Swift Anytime TD",
+     "game": "New England Patriots @ Chicago Bears",
+     "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_CIN_BAL|Derrick Henry Anytime TD (Cincinnati Bengals @ Baltimore Ravens) + 2026_07_IND_MIN|Minnesota Vikings ML (Indianapolis Colts @ Minnesota Vikings) + 2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-20T03:53:50+00:00",
+   "win_prob": 0.2486,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_IND_MIN",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6892,
+     "label": "Minnesota Vikings ML (Indianapolis Colts @ Minnesota Vikings)",
+     "raw_prob": 0.7185,
+     "market_prob": 0.6892,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "MIN",
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota Vikings ML",
+     "game": "Indianapolis Colts @ Minnesota Vikings",
+     "id": "2026_07_IND_MIN|Minnesota Vikings ML (Indianapolis Colts @ Minnesota Vikings)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_CIN_BAL",
+     "odds": -171,
+     "stake": 100,
+     "win_prob": 0.6315,
+     "label": "Derrick Henry Anytime TD (Cincinnati Bengals @ Baltimore Ravens)",
+     "raw_prob": 0.6756,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Cincinnati Bengals @ Baltimore Ravens",
+     "id": "2026_07_CIN_BAL|Derrick Henry Anytime TD (Cincinnati Bengals @ Baltimore Ravens)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_TB_CAR",
+     "odds": -138,
+     "stake": 100,
+     "win_prob": 0.583,
+     "label": "Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "raw_prob": 0.6319,
+     "market_prob": 0.583,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CAR",
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Carolina Panthers ML",
+     "game": "Tampa Bay Buccaneers @ Carolina Panthers",
+     "id": "2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_IND_MIN|Jonathan Taylor Anytime TD (Indianapolis Colts @ Minnesota Vikings) + 2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-20T03:53:50+00:00",
+   "win_prob": 0.2482,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -132,
+     "stake": 100,
+     "win_prob": 0.5542,
+     "label": "Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "raw_prob": 0.6258,
+     "market_prob": 0.5542,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_IND_MIN",
+     "odds": 119,
+     "stake": 100,
+     "win_prob": 0.4567,
+     "label": "Jonathan Taylor Anytime TD (Indianapolis Colts @ Minnesota Vikings)",
+     "raw_prob": 0.5421,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jonathan Taylor",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jonathan Taylor Anytime TD",
+     "game": "Indianapolis Colts @ Minnesota Vikings",
+     "id": "2026_07_IND_MIN|Jonathan Taylor Anytime TD (Indianapolis Colts @ Minnesota Vikings)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 2026_07_GB_DET|Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-20T03:53:50+00:00",
+   "win_prob": 0.248,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6666,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6704,
+     "market_prob": 0.6797,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -186,
+     "stake": 100,
+     "win_prob": 0.6502,
+     "label": "Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "raw_prob": 0.6976,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jahmyr Gibbs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jahmyr Gibbs Anytime TD",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_TB_CAR",
+     "odds": -138,
+     "stake": 100,
+     "win_prob": 0.583,
+     "label": "Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "raw_prob": 0.6319,
+     "market_prob": 0.583,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CAR",
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Carolina Panthers ML",
+     "game": "Tampa Bay Buccaneers @ Carolina Panthers",
+     "id": "2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_CIN_BAL|Baltimore Ravens ML (Cincinnati Bengals @ Baltimore Ravens) + 2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 401908043|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-20T03:54:16+00:00",
+   "win_prob": 0.2498,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6666,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6704,
+     "market_prob": 0.6797,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_CIN_BAL",
+     "odds": -186,
+     "stake": 100,
+     "win_prob": 0.6317,
+     "label": "Baltimore Ravens ML (Cincinnati Bengals @ Baltimore Ravens)",
+     "raw_prob": 0.5746,
+     "market_prob": 0.6317,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BAL",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Baltimore Ravens ML",
+     "game": "Cincinnati Bengals @ Baltimore Ravens",
+     "id": "2026_07_CIN_BAL|Baltimore Ravens ML (Cincinnati Bengals @ Baltimore Ravens)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908043",
+     "odds": -146,
+     "stake": 100,
+     "win_prob": 0.5932,
+     "label": "Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 24",
+     "id": "401908043|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_MIA_NYJ|New York Jets ML (Miami Dolphins @ New York Jets) + 401908043|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24) + 401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-20T03:54:16+00:00",
+   "win_prob": 0.2474,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_MIA_NYJ",
+     "odds": -225,
+     "stake": 100,
+     "win_prob": 0.6787,
+     "label": "New York Jets ML (Miami Dolphins @ New York Jets)",
+     "raw_prob": 0.6782,
+     "market_prob": 0.6787,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "NYJ",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New York Jets ML",
+     "game": "Miami Dolphins @ New York Jets",
+     "id": "2026_07_MIA_NYJ|New York Jets ML (Miami Dolphins @ New York Jets)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401930916",
+     "odds": -159,
+     "stake": 100,
+     "win_prob": 0.6145,
+     "label": "Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+     "raw_prob": 0.5977,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T10:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Steele vs Gugnon doesn't go the distance",
+     "game": "Kody Steele vs Noah Gugnon",
+     "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908043",
+     "odds": -146,
+     "stake": 100,
+     "win_prob": 0.5932,
+     "label": "Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 24",
+     "id": "401908043|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov) + 401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-20T03:54:16+00:00",
+   "win_prob": 0.2474,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6666,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6704,
+     "market_prob": 0.6797,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401930916",
+     "odds": -159,
+     "stake": 100,
+     "win_prob": 0.6145,
+     "label": "Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+     "raw_prob": 0.5977,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T10:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Steele vs Gugnon doesn't go the distance",
+     "game": "Kody Steele vs Noah Gugnon",
+     "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401928047",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.6038,
+     "label": "Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
+     "raw_prob": 0.5884,
+     "type": "distance",
+     "yes": true,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T10:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Thicknesse vs Chopurov goes the distance",
+     "game": "Colby Thicknesse vs Asaf Chopurov",
+     "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
      "status": "pending",
      "detail": ""
     }
