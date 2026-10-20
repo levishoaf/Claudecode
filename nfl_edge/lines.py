@@ -29,22 +29,26 @@ from .odds import DEVIG_METHODS, expected_value, implied_probability
 
 API = "https://api.the-odds-api.com/v4"
 SPORT_KEYS = {"nfl": "americanfootball_nfl", "ncaaf": "americanfootball_ncaaf",
-              "mlb": "baseball_mlb", "ufc": "mma_mixed_martial_arts"}
+              "mlb": "baseball_mlb", "ufc": "mma_mixed_martial_arts",
+              "nba": "basketball_nba"}
 MAIN_MARKETS = {"nfl": ["h2h", "spreads", "totals"], "ncaaf": ["h2h", "spreads", "totals"],
-                "mlb": ["h2h", "spreads", "totals"], "ufc": ["h2h"]}
+                "mlb": ["h2h", "spreads", "totals"], "ufc": ["h2h"],
+                "nba": ["h2h", "spreads", "totals"]}
 PROP_MARKETS = {
     "nfl": ["player_pass_yds", "player_pass_tds", "player_rush_yds", "player_reception_yds",
             "player_receptions", "player_anytime_td"],
     "ncaaf": ["player_pass_yds", "player_rush_yds", "player_reception_yds",
               "player_anytime_td"],
     "mlb": ["batter_hits", "batter_total_bases", "batter_home_runs", "pitcher_strikeouts"],
+    "nba": ["player_points", "player_rebounds", "player_assists", "player_threes"],
 }
 PROP_LABELS = {
     "player_pass_yds": "Passing Yds", "player_pass_tds": "Passing TDs",
     "player_rush_yds": "Rushing Yds", "player_reception_yds": "Receiving Yds",
     "player_receptions": "Receptions", "player_anytime_td": "Anytime TD",
     "batter_hits": "Hits", "batter_total_bases": "Total Bases", "batter_home_runs": "Home Runs",
-    "pitcher_strikeouts": "Strikeouts",
+    "pitcher_strikeouts": "Strikeouts", "player_points": "Points",
+    "player_rebounds": "Rebounds", "player_assists": "Assists", "player_threes": "Threes",
 }
 TARGET = "fanduel"
 # Where the best price may be: legal, regulated US sportsbooks. Offshore and European
@@ -60,8 +64,8 @@ MAIN_MINUTES = float(os.environ.get("ODDS_MAIN_MINUTES", "30"))
 PROP_MINUTES = float(os.environ.get("ODDS_PROP_MINUTES", "240"))
 PROP_SOON_MINUTES = float(os.environ.get("ODDS_PROP_SOON_MINUTES", "45"))  # within 3 hours
 SOON = timedelta(hours=3)
-PROP_GAMES = {"nfl": 16, "ncaaf": 12, "mlb": 15}  # most games whose props are pulled
-PROP_DAYS = {"nfl": 7, "ncaaf": 7, "mlb": 2}  # how far ahead props are pulled
+PROP_GAMES = {"nfl": 16, "ncaaf": 12, "mlb": 15, "nba": 12}  # most games whose props are pulled
+PROP_DAYS = {"nfl": 7, "ncaaf": 7, "mlb": 2, "nba": 2}  # how far ahead props are pulled
 MIN_CREDITS = int(os.environ.get("ODDS_MIN_CREDITS", "50"))  # keep this many in reserve
 
 
@@ -278,10 +282,11 @@ def _sane(prices: list[int]) -> bool:
     return 0.97 <= total <= 1.25
 
 
-# Yardage props: other books' lines a few yards off FanDuel's are moved to FanDuel's
+# Yardage (and NBA points) props: other books' lines a few yards off FanDuel's are moved to FanDuel's
 # number assuming a normal spread of outcomes with this standard deviation (yards).
 # Counts (receptions, TDs, strikeouts, hits) only compare at the same number.
-SHIFT_SD = {"player_pass_yds": 60.0, "player_rush_yds": 26.0, "player_reception_yds": 26.0}
+SHIFT_SD = {"player_pass_yds": 60.0, "player_rush_yds": 26.0, "player_reception_yds": 26.0,
+            "player_points": 6.5}  # NBA points: many enough to move like yards
 SHIFT_MAX = 0.25  # at most a quarter of a standard deviation away
 SHIFTED_WEIGHT = 0.6  # a moved line counts for less than the same line
 

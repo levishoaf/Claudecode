@@ -1,7 +1,7 @@
 # Project notes for Claude
 
 `nfl_edge` finds value bets on FanDuel for the NFL (`--sport nfl`) and
-college football (`--sport ncaaf`), plus UFC fights (`--sport ufc`) and MLB (`--sport mlb`). See README.md for usage. Saved paper
+college football (`--sport ncaaf`), plus UFC fights (`--sport ufc`), MLB (`--sport mlb`) and the NBA (`--sport nba`). See README.md for usage. Saved paper
 bets live in `bets/` and are graded with `python -m nfl_edge.grade <file>`.
 
 ## The user's standing betting preference
@@ -160,9 +160,18 @@ so only this year's cards are downloaded; refit both before releases so the snap
 recent. A day or card ESPN can't send is skipped, never fatal. The
 Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); series repeat
 matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
+**NBA** (`--sport nba`, `nfl_edge/nba.py`, `board.nba_board`): each game's moneyline on the
+default board; Spread and Total points (DraftKings' line from ESPN's scoreboard, marked Confirm
+line) only when picked. Seasons are named by their first year (2026 = 2026-27). A posted line's
+chance (cut taken out) is used as is; the backup model (team Elo, home court, back-to-backs) only
+fills in games with no line ("No line yet"), tested on last season's closing lines.
+`python -m nfl_edge.nba --write` refits `nba_weights.json` (bundled; carries each team's rating at
+the newest season's start) each off-season. NBA props (points, rebounds, assists, threes) come
+only from the odds API, in the Value tab; players listed Out or Day-To-Day on ESPN's NBA injury
+report are left out (`nba.injuries`). The Games menu lists days like MLB.
 The **Parlays** tab uses only the picked league. The **Multi-Lays** tab (`picks.multi_lays`,
 `bets.league_pools`, bot `/multilays`, place with `bet:X1`) holds parlays mixing leagues:
-2-3 legs from at least two of NFL, college, UFC and MLB (each league's default board:
+2-3 legs from at least two of NFL, college, UFC, MLB and NBA (each league's default board:
 this week, the next card, the next 7 days), different games, paying at least the Pays $
 target on $10, likeliest first; it's the same whichever league is picked. The app builds
 it in the background when the tab is opened (about 20 seconds) and keeps it 5 minutes.
@@ -201,8 +210,7 @@ with no market price are labeled No line yet. Every bet, parlay and Value line g
 thumbs up or down (`picks.worth_it`, `worth_parlay`, `worth_offer`): up only with FanDuel's
 real price, 3+ books behind the true chance, no rough or far-off price, no uncertain
 player, no Weak signals, and value of +1% or more; anything unsure is a thumbs down (the
-user's rule), with the reason in the bet's details. NBA is a visual preview only (`nba_placeholder`; no
-NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
+user's rule), with the reason in the bet's details. Bet History is dropdowns (report card, what the model learned,
 each league by team, each team by week) with a search box and League/Result/Kind/Week/Bet type
 filters (`tracker.leg_type_name`) that switch to one flat list of matches. The record
 (tally, win bars, report card, closing line, bot history) counts only bets on lines FanDuel

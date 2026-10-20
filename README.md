@@ -181,9 +181,9 @@ fine).
 
 | Command | What it does |
 |---|---|
-| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL, College football, UFC, MLB), `count`, `week`, `bet_type`. |
+| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
 | `/parlays` | Top parlays from one league as bet slips (P1, P2, …). Options: `sport`, `count`, `min_legs`, `max_legs`, `week`, `pays`, `bet_type`. |
-| `/multilays` | Multi-Lays (X1, X2, …): parlays mixing leagues (NFL, college, UFC, MLB). |
+| `/multilays` | Multi-Lays (X1, X2, …): parlays mixing leagues (NFL, college, UFC, MLB, NBA). |
 | `/moneymaker` | Money makers (M1, M2, …): the likeliest parlays that pay back at least double the wager. |
 | `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, and whether FanDuel's price is worth it. |
 | `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1`, `bet:M1` or `bet:X1` places that parlay from the last list in the channel). |

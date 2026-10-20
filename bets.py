@@ -114,12 +114,17 @@ def leg_record(b, sport: str) -> dict | None:
 
 
 def season_of(sport: str, day: date | None = None) -> int:
-    """The season a league's bets are filed under (UFC and MLB: the calendar year)."""
+    """The season a league's bets are filed under (UFC and MLB: the calendar year; NBA:
+    the year the season started)."""
     day = day or date.today()
+    if sport == "nba":
+        from nfl_edge.nba import season_of as nba_season
+
+        return nba_season(day)
     return day.year if sport in ("ufc", "mlb") else season_for(day)
 
 
-LEAGUES = ("nfl", "ncaaf", "ufc", "mlb")
+LEAGUES = ("nfl", "ncaaf", "ufc", "mlb", "nba")
 
 
 def league_pools(pays: float | None = None) -> dict[str, list]:
@@ -128,7 +133,7 @@ def league_pools(pays: float | None = None) -> dict[str, list]:
     out = {}
     for sport in LEAGUES:
         args = argparse.Namespace(
-            sport=sport, date="week", week=board.MLB_ALL_DAYS if sport == "mlb" else None,
+            sport=sport, date="week", week=board.MLB_ALL_DAYS if sport in ("mlb", "nba") else None,
             singles=30, parlays=0, legs=3, min_legs=2, max_legs=3, stake=10.0,
             min_prob=MIN_PROB, max_prob=MAX_PROB, per_game=3, allow_overlap=False,
             games_file=None, bet_type="All bets", pays=pays)
@@ -236,7 +241,8 @@ from nfl_edge.lines import BOOK_NAMES, book_name  # noqa: E402,F401
 def real_offers(sport: str, week: int | None = None) -> list:
     """Every FanDuel line in the league priced against every sportsbook (nfl_edge/lines.py),
     [] without a key or when the odds can't be had right now (never stops the board).
-    NFL props of players listed Out, Doubtful or Questionable are left out."""
+    NFL props of players listed Out, Doubtful or Questionable (NBA: Out or Day-To-Day)
+    are left out."""
     from nfl_edge import lines, realodds
 
     feed = realodds.feed()
@@ -256,6 +262,12 @@ def real_offers(sport: str, week: int | None = None) -> list:
             offers = [o for o in offers if not o.subject or name_key(o.subject) not in out]
         except Exception:
             pass
+    if sport == "nba" and offers:  # no props on players listed Out or Day-To-Day
+        from nfl_edge.context import name_key
+        from nfl_edge.nba import injuries
+
+        out = {name_key(n) for n in injuries()}
+        offers = [o for o in offers if not o.subject or name_key(o.subject) not in out]
     pulled = feed.pulled.get(f"main-{sport}")
     when = datetime.fromtimestamp(pulled, EASTERN) if pulled else None
     ODDS_NOTE["note"] = (
@@ -295,12 +307,18 @@ def build(args):
         bets = board.mlb_board(lo, hi, day=when, all_days=everyday,
                                every_line=getattr(args, "bet_type", "") == "Total runs")
         rank = "prob"
+    elif args.sport == "nba":  # `week` is a day here too: YYYYMMDD
+        everyday = week == board.MLB_ALL_DAYS
+        when = date(week // 10000, week // 100 % 100, week % 100) if week and not everyday else day
+        bets = board.nba_board(lo, hi, day=when, all_days=everyday,
+                               every_line=getattr(args, "bet_type", "") in ("Spread", "Total points"))
+        rank = "prob"
     else:
         # Only bets that are sure to be on FanDuel (moneylines, anytime TDs).
         bets, rank = nfl_board(day, lo, hi, games_source=args.games_file, week=week), "prob"
     kind = getattr(args, "bet_type", None) or "All bets"
     board.NOTES.pop("confirm_line", None)
-    if args.sport in ("ufc", "mlb") and kind not in league_types(args.sport):
+    if args.sport in ("ufc", "mlb", "nba") and kind not in league_types(args.sport):
         kind = "All bets"
     if args.sport == "mlb" and kind == "All bets":  # totals only when picked: lines differ
         bets = [b for b in bets if b.market != "totals_runs"]
@@ -383,6 +401,7 @@ def show(args, singles, parlays, previous: dict[str, float]) -> None:
 
     when = (board.NOTES.get("ufc_card", "") if args.sport == "ufc"
             else board.NOTES.get("mlb_day", "") if args.sport == "mlb"
+            else board.NOTES.get("nba_day", "") if args.sport == "nba"
             else week_label(singles, parlays))
     print(f"\n{args.sport.upper()} | {when} | "
           f"updated {clock(datetime.now(EASTERN), with_date=False)} ET | "
@@ -468,7 +487,7 @@ def main() -> int:
         except AttributeError:
             pass
     p = argparse.ArgumentParser(description="Build FanDuel single bets and parlays from free data.")
-    p.add_argument("--sport", choices=["nfl", "ncaaf", "ufc", "mlb"])
+    p.add_argument("--sport", choices=["nfl", "ncaaf", "ufc", "mlb", "nba"])
     p.add_argument("--date", help="'week' (this week's games, default), 'today' or YYYY-MM-DD (Eastern)")
     p.add_argument("--week", type=int, help="a specific week, e.g. 6 (default: this week)")
     p.add_argument("--singles", type=int, help="how many single bets")

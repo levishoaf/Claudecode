@@ -192,6 +192,12 @@ def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[s
         return {g["id"]: (g["date"].replace("Z", "+00:00"),
                           f"{g['away_name']} @ {g['home_name']}, {mlb.us_date(g):%b} "
                           f"{mlb.us_date(g).day}") for g in mlb.season(season)}
+    if sport == "nba":
+        from . import nba
+
+        return {g["id"]: (g["date"].replace("Z", "+00:00"),
+                          f"{g['away_name']} @ {g['home_name']}, {nba.us_date(g):%b} "
+                          f"{nba.us_date(g).day}") for g in nba.season(season)}
     if sport == "ncaaf":
         from . import cfb
 
@@ -221,6 +227,10 @@ def game_weeks(sport: str, season: int, games_source: str | None = None) -> dict
         from .mlb import game_weeks as mlb_weeks
 
         return mlb_weeks(season)
+    if sport == "nba":
+        from .nba import game_weeks as nba_weeks
+
+        return nba_weeks(season)
     if sport == "ncaaf":
         from . import cfb
 
@@ -320,6 +330,10 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
                     from .mlb import games_by_id
 
                     games[key] = games_by_id(season)
+                elif sport == "nba":
+                    from .nba import games_by_id as nba_games
+
+                    games[key] = nba_games(season)
                 else:
                     games[key] = (college_games(season, games_source)
                                   if sport == "ncaaf"

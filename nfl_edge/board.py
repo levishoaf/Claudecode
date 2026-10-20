@@ -588,6 +588,73 @@ def mlb_board(lo: float, hi: float, day: date | None = None, now: datetime | Non
     return [b for b in out if lo <= b.fair_prob <= hi]
 
 
+# ---------------------------------------------------------------- NBA
+
+def nba_days(now: datetime | None = None) -> list[tuple[date, bool]]:
+    """[(day, lines posted?)] for the next days with NBA games."""
+    from . import nba
+
+    return [(d, any(g.get("lines") for g in nba.day(d) if g["state"] == "pre"))
+            for d in nba.upcoming_days(now)]
+
+
+def nba_board(lo: float, hi: float, day: date | None = None, now: datetime | None = None,
+              every_line: bool = False, all_days: bool = False) -> list[Bet]:
+    """One day's games (default: the next day with games): each team's moneyline (FanDuel
+    always offers it) and, with `every_line`, each side of DraftKings' spread and total
+    (marked to confirm on FanDuel, whose line can sit half a point away)."""
+    from . import nba
+
+    now = now or datetime.now(timezone.utc)
+    days = nba.upcoming_days(now) if all_days or day is None else [day]
+    if not all_days:
+        days = days[:1]
+    if not days:
+        NOTES["nba_day"] = "No NBA games scheduled"
+        return []
+    NOTES["nba_day"] = ("Next 7 days" if all_days else f"{days[0]:%A, %b} {days[0].day}")
+    games = sorted((g for d in days for g in nba.day(d)
+                    if g["state"] == "pre" and g["home"] in nba.TEAMS and g["away"] in nba.TEAMS),
+                   key=lambda g: g["date"])
+    if not games:
+        return []
+    ratings = nba.current_ratings()
+    out = []
+    for g in games:
+        kick = datetime.fromisoformat(g["date"].replace("Z", "+00:00")).astimezone(EASTERN)
+        c = nba.chances(g, ratings)
+        ratings.played(g)  # a game later in the week: rest counts this one
+        on = nba.us_date(g)
+        game = f"{g['away_name']} @ {g['home_name']}, {on:%b} {on.day}"
+        week = nba.season_week(on)
+        mine = [make_bet(game, kick, "h2h", team, None, p, g["id"], c["source"], week=week)
+                for team, p in ((g["home_name"], c["home"]), (g["away_name"], 1 - c["home"]))]
+        if every_line:
+            line = c["spread"]
+            for team, point, p in ((g["home_name"], line, c["home_cover"]),
+                                   (g["away_name"], -line, 1 - c["home_cover"])):
+                mine.append(make_bet(game, kick, "spreads", team, point, p, g["id"], c["source"],
+                                     week=week))
+            if c["over"] is not None:
+                for side, p in (("Over", c["over"]), ("Under", 1 - c["over"])):
+                    mine.append(make_bet(game, kick, "totals", side, float(c["total"]), p,
+                                         g["id"], c["source"], week=week))
+        for b in mine:
+            if b.market != "h2h":
+                b.confirm_line = True  # FanDuel's line can sit half a point away
+            if c["source"] != "NBA DraftKings line":
+                b.note = NO_LINE  # the model alone: weaker than a posted line
+        out += mine
+    test = (nba.weights().get("test") or {})
+    NOTES["nba_model"] = (
+        "NBA chances are DraftKings' lines with the sportsbook's cut taken out. Games with "
+        "no line yet use our model (team ratings, home court, back-to-backs): on "
+        f"{test['games']:,} games last season ({test['season']}) its favorite won "
+        f"{test['model']['likelier_won']:.0%}, the line's {test['market']['likelier_won']:.0%}."
+        if test.get("model") else "")
+    return [b for b in out if lo <= b.fair_prob <= hi]
+
+
 # ---------------------------------------------------------------- injury report
 
 SEVERITY = ["Out", "Doubtful", "Questionable", "Did not practice", "Limited"]

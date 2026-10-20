@@ -55,7 +55,7 @@ UPDATE_HOURS = 6  # how often the downloaded bot looks for a newer release
 PERMISSIONS = 84992
 STARTUP_NAME = "Bet Builder Discord Bot.cmd"
 
-SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB"}
+SPORTS = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB", "nba": "NBA"}
 
 
 def clean_token(text: str) -> str:
@@ -181,7 +181,8 @@ class Core:
         """(bets of the type, note, checked). Types that aren't sure to be on FanDuel
         get every model line, marked to confirm on FanDuel."""
         pool, note, checked = self._pool(sport, week, lo, hi)
-        if sport == "mlb" and kind == "Total runs":  # DraftKings' total: confirm on FanDuel
+        if (sport, kind) in (("mlb", "Total runs"), ("nba", "Spread"), ("nba", "Total points")):
+            # DraftKings' line: confirm on FanDuel
             out = of_type(self.boards.get(sport, week, lo / 100, hi / 100, sure_only=False), kind)
             return out, (CONFIRM_NOTE.format(kind=kind) if any(b.confirm_line for b in out)
                          else note), checked
@@ -261,7 +262,7 @@ class Core:
         out = botcore.parlays_text(found, "multi", wager)
         out[0] = (out[0].replace("bet:P1", "bet:X1")
                   + f"\nParlays with legs from at least two leagues (NFL, College Football, "
-                  f"UFC, MLB), each paying at least ${pays:g} back on $10, likeliest first.")
+                  f"UFC, MLB, NBA), each paying at least ${pays:g} back on $10, likeliest first.")
         for i, p in enumerate(found, 1):
             leagues = " + ".join(sorted({botcore.SPORT_NAME[b.league] for b in p.legs}))
             out[i] = out[i].replace(f"**P{i}**", f"**X{i}** ({leagues})", 1)
@@ -389,7 +390,7 @@ def run_bot(token: str | None, connect: bool = True):
         await work(interaction, core.money, interaction.channel_id, sport, week, WAGER, bet_type)
 
     @tree.command(name="multilays",
-                  description="Parlays mixing leagues: NFL, college football, UFC and MLB legs")
+                  description="Parlays mixing leagues: NFL, college, UFC, MLB and NBA legs")
     async def multilays_cmd(interaction: discord.Interaction):
         await work(interaction, core.multi, interaction.channel_id, WAGER)
 
@@ -520,6 +521,9 @@ def selftest() -> int:
         out["mlb"] = core.bets("mlb", 10, 1, 99, None, 10.0)
         out["mlb totals"] = core.bets("mlb", 5, 1, 99, None, 10.0, "Total runs")
         out["mlb parlays"] = core.parlays(5, "mlb", 2, 2, 4, 1, 99, None, 10.0, 40.0)
+        out["nba"] = core.bets("nba", 10, 1, 99, None, 10.0)
+        out["nba spreads"] = core.bets("nba", 5, 1, 99, None, 10.0, "Spread")
+        out["nba parlays"] = core.parlays(5, "nba", 2, 2, 3, 1, 99, None, 10.0, 40.0)
         out["multilays"] = core.multi(6, 10.0)
         out["place multi-lay"] = core.place(6, "nfl", "X1", None, 10, 4, "Tester 4")
     ok = True
@@ -536,13 +540,16 @@ def selftest() -> int:
     if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
         print("no learned calibration or signal weights (calibration.json, signal_weights.json)")
         ok = False
-    from nfl_edge import mlb, ufc
+    from nfl_edge import mlb, nba, ufc
 
     if not ufc.weights().get("win"):
         print("no UFC model weights (ufc_weights.json)")
         ok = False
     if not mlb.weights().get("weights"):
         print("no MLB model weights (mlb_weights.json)")
+        ok = False
+    if not nba.weights().get("weights"):
+        print("no NBA model weights (nba_weights.json)")
         ok = False
     # Build every slash command as Discord would see them (without connecting): a
     # command Discord can't read would stop the bot as it starts.

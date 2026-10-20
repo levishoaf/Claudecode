@@ -142,7 +142,7 @@ def annotate(bets, sport):
 
 def season_of(sport):
     today = datetime.now().date()
-    return today.year if sport in ("ufc", "mlb") else season_for(today)
+    return launcher.season_of(sport, today)
 
 
 OFFERS: dict = {}  # (league, week) -> real odds (nfl_edge/lines.py), pulled once per export
@@ -172,6 +172,12 @@ def run(sport, week, label, ledger, this_week=False):
         full_mlb = with_odds(board.mlb_board(LO, HI, day=when, all_days=everyday,
                                              every_line=True), sport)
         bets = [b for b in full_mlb if b.market != "totals_runs"]
+    elif sport == "nba":  # the same days as MLB; spreads and totals only when picked
+        everyday = week == board.MLB_ALL_DAYS
+        when = None if everyday else datetime.strptime(str(week), "%Y%m%d").date()
+        full_nba = with_odds(board.nba_board(LO, HI, day=when, all_days=everyday,
+                                             every_line=True), sport)
+        bets = [b for b in full_nba if b.market == "h2h"]
     else:
         bets = with_odds(annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
                                   else nfl_board(None, LO, HI, week=week), sport), sport, week)
@@ -205,21 +211,26 @@ def run(sport, week, label, ledger, this_week=False):
            "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
            "late": board.NOTES.get("late", "") if sport == "nfl" else "",
            "poolNote": pool_note,
-           "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model"}.get(sport, ""), ""),
+           "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model",
+                                     "nba": "nba_model"}.get(sport, ""), ""),
            "starters": board.NOTES.get("mlb_starters", "") if sport == "mlb" else ""}
     # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
     full = with_odds(annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
                               if sport == "nfl" else [], sport), sport, week)
     if sport == "mlb":  # totals only when picked: the line may differ on FanDuel
         full = full_mlb
-    for kind in (league_types(sport) if sport in ("ufc", "mlb") else BET_TYPES):  # top 30 each
+    if sport == "nba":
+        full = full_nba
+    for kind in (league_types(sport) if sport in ("ufc", "mlb", "nba") else BET_TYPES):  # top 30 each
         cap = type_max_prob(kind)
         if cap is not None and sport == "nfl":  # likeliest lines within the odds limit
             some = every_line_of(with_odds(annotate(nfl_board(None, LO, min(HI, cap), week=week,
                                                               always_offered=False), sport),
                                            sport, week), kind)
         else:
-            some = (of_type(full, kind) if sport == "mlb" and kind == "Total runs"
+            some = (of_type(full, kind) if (sport, kind) in (("mlb", "Total runs"),
+                                                             ("nba", "Spread"),
+                                                             ("nba", "Total points"))
                     else of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind))
         if kind != "All bets" and some:
             regular = payout_parlays(legs_pool(some)[0], PARLAY_PAYS, 10)
@@ -261,9 +272,9 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
     ledger["placed"] = []  # the page keeps its own placed bets
     result = {"updated": clock(datetime.now(EASTERN), with_date=True) + " ET",
               "moneyLegs": MONEY_MAKER_LEGS,
-              "nfl": [], "ncaaf": [], "ufc": [], "mlb": [], "betTypes": list(BET_TYPES),
+              "nfl": [], "ncaaf": [], "ufc": [], "mlb": [], "nba": [], "betTypes": list(BET_TYPES),
               "ufcTypes": list(UFC_TYPES), "sureTypes": list(SURE_TYPES),
-              "leagueTypes": {s: list(league_types(s)) for s in ("nfl", "ncaaf", "ufc", "mlb")}}
+              "leagueTypes": {s: list(league_types(s)) for s in launcher.LEAGUES}}
     weeks = board.nfl_weeks()
     current = weeks[0][0] if weeks else None
     for w, posted in weeks:
@@ -300,9 +311,22 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
         except Exception:
             traceback.print_exc()
 
+    nba_days = board.nba_days()
+    for i, (d, lines) in enumerate(nba_days):
+        try:
+            result["nba"].append(run("nba", int(f"{d:%Y%m%d}"), f"{d:%a %b} {d.day}"
+                                     + ("" if lines else " · no line yet"), ledger, i == 0))
+        except Exception:
+            traceback.print_exc()
+    if nba_days:
+        try:
+            result["nba"].append(run("nba", board.MLB_ALL_DAYS, "Next 7 days", ledger))
+        except Exception:
+            traceback.print_exc()
+
     from nfl_edge import realodds
 
-    result["value"] = {s: realodds.value_list(offers_for(s)) for s in ("nfl", "ncaaf", "ufc", "mlb")}
+    result["value"] = {s: realodds.value_list(offers_for(s)) for s in launcher.LEAGUES}
     result["oddsNote"] = launcher.ODDS_NOTE.get("note", "") if any(result["value"].values()) else ""
     for offers in result["value"].values():
         for o in offers:
@@ -394,7 +418,7 @@ def main():
     page = (ROOT / "web" / "template.html").read_text().replace("__DATA__", payload)
     Path(a.out).write_text(page)
     print({s: [(x["label"], len(x["singles"]), len(x["parlays"])) for x in result[s]]
-           for s in ("nfl", "ncaaf", "ufc", "mlb")}, "history:", len(result["history"]))
+           for s in launcher.LEAGUES}, "history:", len(result["history"]))
 
 
 if __name__ == "__main__":

@@ -54,7 +54,7 @@ SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("mlb",
           ("nba", "NBA"))
 LEAGUE_NAMES = {"nfl": "NFL", "ncaaf": "College football", "ufc": "UFC", "mlb": "MLB",
                 "nba": "NBA", "multi": "Multi-league"}
-LEAGUE_SHORT = {"nfl": "NFL", "ncaaf": "CFB", "ufc": "UFC", "mlb": "MLB"}
+LEAGUE_SHORT = {"nfl": "NFL", "ncaaf": "CFB", "ufc": "UFC", "mlb": "MLB", "nba": "NBA"}
 RESULT_STYLE = {"won": ("HIT", GREEN), "lost": ("MISS", RED), "push": ("PUSH", "#8a96a8"),
                 "pending": ("PENDING", NEW_BADGE)}
 STATUS_COLORS = {"Out": "#d64545", "Doubtful": "#e8590c", "Questionable": "#e0a100",
@@ -270,12 +270,6 @@ class App:
                 self.type_box.configure(values=types)
                 if self.bet_type.get() not in types:
                     self.bet_type.set("All bets")
-            if key == "nba":  # the NBA is a preview: no bets are built for it yet
-                self.cancel_update()
-                self.games_box.configure(values=["NBA  ·  coming soon"])
-                self.when.set("NBA  ·  coming soon")
-                self.render_nba()
-                return
             self.load_weeks()
             self.build()
 
@@ -289,22 +283,6 @@ class App:
         draw_backdrop(c, w, h)
         c.tag_lower("field")
 
-    def render_nba(self) -> None:
-        self.render(SimpleNamespace(sport="nba", money_makers=[], bet_type="All bets"),
-                    [], [], {})
-
-    def nba_placeholder(self, parent) -> None:
-        box = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
-        box.pack(fill="x", padx=6, pady=10)
-        tk.Label(box, text="NBA bets are coming", bg=CARD, fg=TEXT,
-                 font=self.f["h2"]).pack(anchor="w", padx=16, pady=(14, 4))
-        tk.Label(box, text=("This is a preview of the NBA layout. NBA moneylines, spreads, "
-                            "totals and player props will show here, with the same chances, "
-                            "track records and Bet History as football, once NBA data is "
-                            "added. Football picks are on the NFL and College tabs."),
-                 bg=CARD, fg=MUTED, font=self.f["small"], wraplength=760,
-                 justify="left").pack(anchor="w", padx=16, pady=(0, 14))
-
     def load_weeks(self) -> None:
         """Fill the Games list with this week and every later week known right now."""
         values: dict[str, int | None] = {}
@@ -314,8 +292,9 @@ class App:
                     short = name.split(":", 1)[-1].strip()
                     start = start.astimezone(board.EASTERN)  # (%-d isn't on Windows)
                     values[f"{short}  ·  {start:%b} {start.day}"] = eid
-            elif self.sport.get() == "mlb":
-                for i, (d, lines) in enumerate(board.mlb_days()):
+            elif self.sport.get() in ("mlb", "nba"):
+                days = board.mlb_days() if self.sport.get() == "mlb" else board.nba_days()
+                for i, (d, lines) in enumerate(days):
                     name = f"{d:%a %b} {d.day}"
                     values[name + ("" if lines else "  ·  no line yet")] = int(f"{d:%Y%m%d}")
                 values["Next 7 days"] = board.MLB_ALL_DAYS
@@ -328,7 +307,7 @@ class App:
                     values[f"Week {w}  ·  {tag}"] = w
         except data.DataError:
             pass
-        if self.sport.get() != "mlb":  # MLB lists each day already
+        if self.sport.get() not in ("mlb", "nba"):  # MLB and NBA list each day already
             values["Today's fights" if self.sport.get() == "ufc" else "Today's games"] = None
         self.week_values = values
         self.games_box.configure(values=list(values))
@@ -389,17 +368,16 @@ class App:
         head.pack(fill="x", padx=16, pady=(12, 2))
         sport = {"nfl": "NFL", "ncaaf": "College Football", "ufc": "UFC", "mlb": "MLB",
                  "nba": "NBA"}[args.sport]
-        when = ("2026-27 season" if args.sport == "nba"
-                else board.NOTES.get("ufc_card", "") if args.sport == "ufc"
+        when = (board.NOTES.get("ufc_card", "") if args.sport == "ufc"
                 else board.NOTES.get("mlb_day", "") if args.sport == "mlb"
+                else board.NOTES.get("nba_day", "") if args.sport == "nba"
                 else bets.week_label(singles, parlays))
         tk.Label(head, text=f"{sport}  ·  {when}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
         checked = getattr(args, "fanduel_key", None)
         order = "best value first" if checked else "likeliest first"
         kind = getattr(args, "bet_type", "All bets")
-        tk.Label(head, text="" if args.sport == "nba" else
-                 f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
+        tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None)) or any(
@@ -409,9 +387,9 @@ class App:
         notes.pack(fill="x", padx=16, pady=(6, 0))
         if self.fd_mode and board.NOTES.get("fanduel"):
             self.note(notes, board.NOTES["fanduel"] + "  ·  ranked by expected value", GREEN)
-        if board.NOTES.get("odds") and args.sport != "nba":
+        if board.NOTES.get("odds"):
             self.note(notes, board.NOTES["odds"], GREEN)
-        if board.NOTES.get("confirm_line") and args.sport != "nba":
+        if board.NOTES.get("confirm_line"):
             self.note(notes, board.NOTES["confirm_line"], AMBER)
         if args.sport == "ufc" and board.NOTES.get("ufc_model") and not board.NOTES.get("odds"):
             self.note(notes, board.NOTES["ufc_model"])
@@ -419,6 +397,8 @@ class App:
             for prefix, key in (("", "mlb_model"), ("Starters: ", "mlb_starters")):
                 if board.NOTES.get(key) and not (key == "mlb_model" and board.NOTES.get("odds")):
                     self.note(notes, prefix + board.NOTES[key])
+        if args.sport == "nba" and board.NOTES.get("nba_model") and not board.NOTES.get("odds"):
+            self.note(notes, board.NOTES["nba_model"])
         if args.sport == "nfl" and board.NOTES.get("late"):
             self.note(notes, board.NOTES["late"], AMBER)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
@@ -436,8 +416,7 @@ class App:
                           ("money", f"Money Maker ({len(money)})"),
                           ("value", "Value" + (f" ({len(getattr(args, 'value_offers', []))})"
                                                if getattr(args, "value_offers", None) else "")),
-                          ("injuries", "Injuries" if args.sport == "nba"
-                           else f"Injuries ({len(self.injuries[1])})"),
+                          ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"History ({len(self.history_items())})")):
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
@@ -458,8 +437,7 @@ class App:
         self.tab_host.pack(fill="both", padx=10, pady=(6, 0))
         self.panes: dict[str, tk.Frame] = {}
         self.pane(self.tab).pack(fill="both")
-        if args.sport != "nba":
-            self.legend(self.body, args.sport)  # "What the numbers mean", closed until clicked
+        self.legend(self.body, args.sport)  # "What the numbers mean", closed until clicked
 
     def pane(self, key: str) -> tk.Frame:
         """The tab's content for the bets shown now, drawn the first time it's opened."""
@@ -469,10 +447,8 @@ class App:
         grid = self.panes[key] = tk.Frame(self.tab_host, bg=BG)
         if key == "multi":  # every league's bets: the same whichever league is picked
             self.multi_tab(grid)
-        elif key == "value" and args.sport != "nba":
+        elif key == "value":
             self.value_tab(grid, getattr(args, "value_offers", None))
-        elif args.sport == "nba" and key != "history":
-            self.nba_placeholder(grid)
         elif key == "singles":
             self.singles_tab(grid, singles, previous)
         elif key == "parlays":
@@ -551,7 +527,7 @@ class App:
                         font=self.f["small"])
         link.pack(anchor="w")
         box = tk.Frame(holder, bg=BG)
-        rows = self.UFC_LEGEND if sport in ("ufc", "mlb") else self.LEGEND
+        rows = self.UFC_LEGEND if sport in ("ufc", "mlb", "nba") else self.LEGEND
         for row in rows:
             for sample, color, meaning in row:
                 item = tk.Frame(box, bg=BG)
@@ -1096,8 +1072,7 @@ class App:
     # -------------------------------------------------------------- tracking
     def track(self, args, singles, parlays) -> dict:
         """Log the shown picks for the coming week and grade finished games (worker thread)."""
-        season = (date.today().year if args.sport in ("ufc", "mlb")
-                  else bets.season_for(date.today()))
+        season = bets.season_of(args.sport)
         # Only this week's picks (or today's games) count as picks the builder made.
         this_week = args.week is None or args.week == next(iter(self.week_values.values()), None)
         with self.ledger_lock:
@@ -1321,8 +1296,7 @@ class App:
 
             def league(body, sport=sport, group=group):
                 if not group:
-                    tk.Label(body, text=("No NBA bets yet: they'll show here once NBA bets "
-                                         "are built." if sport == "nba" else "No bets yet."),
+                    tk.Label(body, text="No bets yet.",
                              bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=24,
                                                                        pady=4)
                     return
@@ -1576,9 +1550,6 @@ class App:
         """Build bets for the chosen sport, week and bet type (in the background). With
         `quick` (picking a bet type or week), a result from the last few minutes is
         shown straight away instead."""
-        if self.sport.get() == "nba":  # a preview for now: nothing to build
-            self.render_nba()
-            return
         try:
             args = self.args()
         except ValueError:
@@ -1615,7 +1586,11 @@ class App:
                             if args.sport == "ufc" else
                             "MLB: the probable starters are listed above the bets; a late "
                             "pitching change moves the line, and bets refresh with it."
-                            if args.sport == "mlb"
+                            if args.sport == "mlb" else
+                            "NBA: props on players listed Out or Day-To-Day on ESPN's injury "
+                            "report are left out; a star sitting moves the line, and bets "
+                            "refresh with it."
+                            if args.sport == "nba"
                             else "College injury reports aren't in the free data.")
                 if args.sport == "nfl" and args.date != "today":
                     injuries = board.injury_report(args.week)
@@ -1661,8 +1636,6 @@ class App:
         """Show the countdown to the next automatic update."""
         if self.updating:
             self.countdown.set(self.updating)
-        elif self.sport.get() == "nba":
-            self.countdown.set("NBA preview")
         elif self.next_at is not None:
             left = max(int(self.next_at - time.monotonic() + 0.999), 0)
             self.countdown.set(f"⟳  Next update in {left // 60}:{left % 60:02d}")
@@ -1699,8 +1672,7 @@ class App:
             if self.last_args and (self.last_args.sport, self.last_args.week) != (args.sport, args.week):
                 self.previous = {}  # a different week or sport: nothing is "new" or "moved"
             self.last_args = args
-            if self.sport.get() != "nba":  # switched to the NBA preview meanwhile
-                self.render(args, self.singles, self.parlays, self.previous)
+            self.render(args, self.singles, self.parlays, self.previous)
             self.previous = {bets.label(b): b.fair_prob for b in self.singles}
         self.schedule()
         if self.selftest:
@@ -1719,6 +1691,10 @@ class App:
 
             if not mlb.weights().get("weights"):  # and the MLB one
                 print("selftest FAILED: no MLB model weights")
+            from nfl_edge import nba
+
+            if not nba.weights().get("weights"):  # and the NBA one
+                print("selftest FAILED: no NBA model weights")
             if not learn.saved().get("groups") or not signals.saved():  # must ship in the build
                 print("selftest FAILED: no learned calibration or signal weights")
                 os._exit(1)

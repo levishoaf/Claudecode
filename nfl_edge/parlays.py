@@ -31,6 +31,8 @@ def league_of(b) -> str:
         return "ncaaf"
     if "UFC" in source:
         return "ufc"
+    if "NBA" in source:
+        return "nba"
     if "MLB" in source or "DraftKings" in source:
         return "mlb"
     return "nfl"

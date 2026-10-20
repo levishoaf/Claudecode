@@ -143,6 +143,10 @@ def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, s
         from .mlb import games_by_id
 
         games = games_by_id(bet["season"])
+    elif bet.get("sport") == "nba":
+        from .nba import games_by_id
+
+        games = games_by_id(bet["season"])
     elif bet.get("sport") == "ncaaf":
         games = college_games(bet["season"], games_source)
     else:

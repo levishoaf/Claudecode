@@ -145,8 +145,6 @@ main { display: grid; gap: 14px; padding-block: 18px; }
 .rows3 div { display: grid; grid-template-columns: minmax(110px, 1.1fr) minmax(0, 1.4fr) minmax(0, 1.3fr); gap: 10px; color: var(--muted); }
 .rows3 b { color: var(--fg); font-weight: 600; }
 @media (max-width: 480px) { .rows3 div { grid-template-columns: 1fr 1fr; } .rows3 div span:last-child { grid-column: 1 / -1; } }
-.soon h2 { margin: 0 0 6px; font-size: 18px; }
-.soon p { margin: 0; color: var(--muted); max-width: 68ch; }
 </style>
 
 <header class="hd">
@@ -199,7 +197,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     injSearch: "",
     open: new Set()  // rows and dropdowns that are open, kept across redraws
   };
-  if (state.sport !== "nba" && (!DATA[state.sport] || !DATA[state.sport].length)) state.sport = "nfl";
+  if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
   if (!TABS.includes(state.tab)) state.tab = "singles";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -215,7 +213,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   const TIER_CLS = { green: "c-good", yellow: "c-warn", red: "c-bad" };
   const TIER_VAR = { green: "var(--good)", yellow: "var(--warn)", red: "var(--bad)" };
   const TIER_WORD = { green: "Strong", yellow: "Mixed", red: "Weak" };
-  const LEAGUE_SHORT = { nfl: "NFL", ncaaf: "CFB", ufc: "UFC", mlb: "MLB" };
+  const LEAGUE_SHORT = { nfl: "NFL", ncaaf: "CFB", ufc: "UFC", mlb: "MLB", nba: "NBA" };
 
   function weekList() { return DATA[state.sport] || []; }
   function weekData() {
@@ -243,6 +241,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     if (k === "All bets") return fallback;
     if (state.sport === "ncaaf" && k !== "Moneyline") return "College bets are moneylines only.";
     if (state.sport === "ufc") return `No ${k.toLowerCase()} bets on this card.`;
+    if (state.sport === "nba") return ["Spread", "Total points"].includes(k) ? `No ${k.toLowerCase()} bets for this day: DraftKings hasn't posted lines yet.` : `No ${k.toLowerCase()} bets for this day.`;
     if (state.sport === "mlb") return k === "Total runs" ? "No total runs bets for this day: DraftKings hasn't posted totals yet." : `No ${k.toLowerCase()} bets for this day.`;
     return `No ${k.toLowerCase()} bets for this week.`;
   }
@@ -383,6 +382,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   function injuriesView(wk) {
     const inj = wk.injuries;
     if (!inj && state.sport === "mlb") return `<p class="empty">MLB: the probable starters are listed above the bets. A late pitching change moves the line, and the bets refresh with it.</p>`;
+    if (!inj && state.sport === "nba") return `<p class="empty">NBA: player props on anyone listed Out or Day-To-Day on ESPN's injury report are left out. A star sitting moves the line, and the bets refresh with it.</p>`;
     if (!inj && state.sport === "ufc") return `<p class="empty">UFC: a fighter who pulls out drops off the card when ESPN updates it (checked every few hours), so check the final card after Friday's weigh-ins.</p>`;
     if (!inj) return `<p class="empty">Injury reports are for NFL games. Switch to NFL to see them.</p>`;
     let players = inj.players;
@@ -481,7 +481,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     const c = count(record);
 
     let html = `<section class="rec"><div class="tally"><b class="c-good">${c.won}</b> won · <b class="c-bad">${c.lost}</b> lost${c.push ? ` · <b>${c.push}</b> pushed` : ""} · <b class="c-accent">${c.pending}</b> pending</div>
-      ${bar("nfl", "NFL")}${bar("ncaaf", "College")}${bar("ufc", "UFC")}${bar("mlb", "MLB")}</section>`;
+      ${bar("nfl", "NFL")}${bar("ncaaf", "College")}${bar("ufc", "UFC")}${bar("mlb", "MLB")}${bar("nba", "NBA")}</section>`;
     const h = state.hist;
     const weeks = [...new Set(all.map(([, e]) => weekOf(e)).filter(Boolean))].sort((a, b) => b - a);
     const kinds = [...new Set(all.flatMap(([, e]) => typesOf(e)))].sort();
@@ -521,7 +521,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     for (const [sport, name] of LEAGUES) {
       const group = all.filter(([, e]) => (e.sport || "nfl") === sport);
       if (!group.length) {
-        groups += dd(sport, name, "no bets yet", `<p class="lead">${sport === "nba" ? "No NBA bets yet: they'll show here once NBA bets are built." : "No bets yet."}</p>`);
+        groups += dd(sport, name, "no bets yet", `<p class="lead">No bets yet.</p>`);
         continue;
       }
       const special = ["Game totals", "Other", "Parlays"];
@@ -612,6 +612,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     let foot;
     if (fd) foot = "Bets with a FanDuel price show FanDuel's real price, and their chance is the true chance from every other sportsbook (each book's price with its cut taken out, sharp books counting most), so value is what $1 at FanDuel's price earns on average. Bets without a FanDuel price show break-even odds instead. Parlays priced at FanDuel multiply the legs' prices; FanDuel's slip may differ a little. Parlays have at most 3 legs: FanDuel's cut comes off every leg.";
     else if (state.sport === "mlb") foot = "MLB chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines and run lines (FanDuel always offers the run line at 1.5). Total runs uses DraftKings' total, marked Confirm line.";
+    else if (state.sport === "nba") foot = "NBA chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines, which FanDuel always offers. Spread and Total points use DraftKings' line, marked Confirm line: FanDuel's can sit half a point away.";
     else if (state.sport === "ufc") foot = "UFC odds are break-even at the model's chance, not FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. UFC bets are each fight's moneyline and whether it goes the distance (all scheduled rounds). Parlay chances assume different fights are independent.";
     else foot = "Odds are break-even, from public consensus lines and game logs, not FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. All bets shows only moneylines and anytime touchdown scorers for starters, which are always on FanDuel. Other bet types come from the model at lines FanDuel may not offer, so they're marked Confirm line. Parlay chances assume legs from different games are independent.";
     return `<details class="help" data-dd="help"${state.open.has("help") ? " open" : ""}><summary>What the numbers mean</summary><dl>${dl}</dl><p>${foot}</p></details>`;
@@ -630,9 +631,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   function render() {
     const wk = current();
     document.querySelectorAll(".leagues button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sport === state.sport)));
-    const nba = state.sport === "nba";  // a preview: no NBA bets are built yet
-    $("week").innerHTML = nba ? `<option>NBA · coming soon</option>`
-      : weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
+    $("week").innerHTML = weekList().map((w) => `<option value="${w.week}"${w.week === wk.week ? " selected" : ""}>${esc(w.label)}</option>`).join("");
     $("updated").textContent = DATA.updated;
     $("btype").innerHTML = typeOptions(weekData());
     document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
@@ -645,10 +644,6 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     n("n-injuries", wk.injuries ? wk.injuries.players.length : "");
     n("n-history", historyList().length);
 
-    if (nba && !["history", "multi"].includes(state.tab)) {
-      $("main").innerHTML = `<section class="soon"><h2>NBA bets are coming</h2><p>NBA moneylines, spreads, totals and player props will show here, with the same chances, track records and Bet History as football, once NBA data is added.</p></section>`;
-      return;
-    }
     const betTabs = ["singles", "parlays", "money", "multi"];
     let html = ["singles", "parlays", "money"].includes(state.tab) ? notesHtml(wk) : "";
     const fdParl = (list) => (list.some((p) => fdDecimal(p)) ? "Odds" : "Worst odds");
@@ -665,7 +660,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
       ? parlayLead + ups(wk.money) + `<p class="lead">The likeliest parlays that at least double your $10 if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 3]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first. No Weak legs, and no leg in more than two. Payouts marked ≈ are estimates; check the slip.</p><div class="list">${listHead(fdParl(wk.money))}${wk.money.map((p, i) => parlayRow(p, i, "M", true)).join("")}</div>`
       : `<p class="empty">No money makers here: not enough games this week.</p>`;
     if (state.tab === "multi") html += (DATA.multi || []).length
-      ? parlayLead + ups(DATA.multi) + `<p class="lead">Parlays with legs from at least two leagues (NFL, college, UFC, MLB): ${(DATA.multiLegs || [2, 3]).join("–")} legs from different games, each paying at least $40 on $10, likeliest first. They're the same whichever league is picked.</p><div class="list">${listHead(fdParl(DATA.multi))}${DATA.multi.map((p, i) => parlayRow(p, i, "X")).join("")}</div>`
+      ? parlayLead + ups(DATA.multi) + `<p class="lead">Parlays with legs from at least two leagues (NFL, college, UFC, MLB, NBA): ${(DATA.multiLegs || [2, 3]).join("–")} legs from different games, each paying at least $40 on $10, likeliest first. They're the same whichever league is picked.</p><div class="list">${listHead(fdParl(DATA.multi))}${DATA.multi.map((p, i) => parlayRow(p, i, "X")).join("")}</div>`
       : `<p class="empty">No Multi-Lays right now: fewer than two leagues have games.</p>`;
     if (state.tab === "value") html += valueView();
     if (state.tab === "injuries") html += injuriesView(wk);
