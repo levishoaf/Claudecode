@@ -23,17 +23,13 @@ from pathlib import Path
 from tkinter import ttk
 
 import bets  # sets up paths for the standalone build
-from nfl_edge import board, data, hitrate, tracker, updater
+from nfl_edge import board, data, edges, hitrate, tracker, updater
 from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_time
 from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
-from nfl_edge.parlays import Parlay
-from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS,
-                            SINGLE_MIN_PROB, single_min, worth_it, worth_offer, worth_parlay,
-                            league_types, multi_lays,
-                            empty_type_note,
-                            fanduel_estimate, money_maker_parlays)
+from nfl_edge.picks import (FOOTBALL_TYPES, MONEY_MAKER_LEGS, worth_offer, worth_parlay,
+                            league_types, empty_type_note, fanduel_estimate)
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -377,14 +373,12 @@ class App:
                 else bets.week_label(singles, parlays))
         tk.Label(head, text=f"{sport}  ·  {when}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        checked = getattr(args, "fanduel_key", None)
-        order = "best value first" if checked else "likeliest first"
+        order = "edges only, best first"
         kind = getattr(args, "bet_type", "All bets")
         tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "",
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
-        self.fd_mode = bool(getattr(args, "fanduel_key", None)) or any(
-            getattr(b, "on_fanduel", False) for b in singles)  # real odds: FanDuel's prices
+        self.fd_mode = True  # edges are always at FanDuel's real prices
         # The week's notes, as one short list (a dot: green when good news, amber to watch).
         notes = tk.Frame(self.body, bg=BG)
         notes.pack(fill="x", padx=16, pady=(6, 0))
@@ -408,17 +402,14 @@ class App:
             ready = "included for all" in board.NOTES["injuries"]
             self.note(notes, board.NOTES["injuries"], None if ready else AMBER)
 
-        money = getattr(args, "money_makers", [])
+        if self.tab not in ("singles", "multi", "injuries", "history"):
+            self.tab = "singles"
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
         self.tab_labels, self.tab_lines = {}, {}
-        for key, text in (("singles", f"Singles ({len(singles)})"),
-                          ("parlays", f"Parlays ({len(parlays)})"),
-                          ("multi", "Multi-Lays" + (f" ({len(self.multi_now())})"
-                                                    if self.multi_now() is not None else "")),
-                          ("money", f"Money Maker ({len(money)})"),
-                          ("value", "Value" + (f" ({len(getattr(args, 'value_offers', []))})"
-                                               if getattr(args, "value_offers", None) else "")),
+        for key, text in (("singles", f"Edges ({len(singles)})"),
+                          ("multi", "Edge parlays" + (f" ({len(self.multi_now())})"
+                                                      if self.multi_now() is not None else "")),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"History ({len(self.history_items())})")):
             on = key == self.tab
@@ -480,20 +471,13 @@ class App:
         return grid
 
     LEGEND = [  # (sample, its color, what it means); None color = plain text
-        [("68%", "chance", "the model's chance this bet wins"),
-         ("(4/5)", GREEN, "times this exact bet won this season")],
-        [("3-1 vs Browns", GREEN, "vs this week's opponent since 2024"),
-         ("● Strong  ● Mixed  ● Weak", None, "confidence tier"),
-         ("⚠", AMBER, "a warning")],
-        [("Worst odds", BLUE, "lowest price worth taking"),
-         ("Pays on $10", None, "what $10 returns, stake included"),
-         ("Confirm line", MOVED_BADGE, "check FanDuel has this line")],
+        [("55%", "chance", "how often it wins: every other sportsbook's price, cut taken out")],
+        [("-114", None, "FanDuel's odds"),
+         ("Edge +4.0%", GREEN, "how much more FanDuel pays than the chance is worth")],
+        [("$18.77", None, "what $10 returns if it wins, stake included"),
+         ("● Strong  ● Mixed  ● Weak", None, "NFL signal tier")],
     ]
-    UFC_LEGEND = [  # UFC bets have no track records, tiers or model-made lines
-        [("68%", "chance", "the model's chance this bet wins"),
-         ("Worst odds", BLUE, "lowest price worth taking"),
-         ("Pays on $10", None, "what $10 returns, stake included")],
-    ]
+    UFC_LEGEND = LEGEND
 
     def thumbs_note(self, parent, ups: list[bool]) -> None:
         """How many of the list are worth betting (thumbs up)."""
@@ -680,7 +664,7 @@ class App:
         end_lbl = tk.Label(row, text=end, bg=CARD, fg=MUTED, font=self.f["body"])
         if last is None and fd and ev is not None:
             end_lbl.grid(row=0, column=4, sticky="se", padx=8, pady=(6, 0))
-            tk.Label(row, text=f"EV {ev:+.1%}", bg=CARD, fg=GREEN if ev > 0 else RED,
+            tk.Label(row, text=f"Edge {ev:+.1%}", bg=CARD, fg=GREEN if ev > 0 else RED,
                      font=self.f["tiny"]).grid(row=1, column=4, sticky="ne", padx=8, pady=(0, 6))
         else:
             end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
@@ -695,14 +679,54 @@ class App:
             return default
         return empty_type_note(kind, self.sport.get(), False)
 
+    def edge_lead(self, parent) -> None:
+        """The edge rule and how the edges have done so far."""
+        tk.Label(parent, text=(
+            f"An edge is a FanDuel line that wins at least {edges.EDGE_MIN_PROB:.0%} of the "
+            f"time and pays at least {edges.EDGE_MIN_EV:+.0%} more than that chance is worth "
+            "(the true chance from every other sportsbook's price with its cut taken out). "
+            "Thin edges are left out. Best edge first; click a bet to see why."),
+            bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+            justify="left").pack(anchor="w", padx=6, pady=(6, 0))
+        r = tracker.edge_record(self.ledger.get("generated", []) if self.ledger else [])
+        if r["won"] + r["lost"]:
+            n = r["won"] + r["lost"]
+            text = (f"Edge record: {r['won']}-{r['lost']} ({r['won'] / n:.0%}, expected "
+                    f"{r['expected']:.0%})  ·  {'+' if r['profit'] >= 0 else '-'}"
+                    f"${abs(r['profit']):,.2f} on $10 each at FanDuel's odds"
+                    + (f"  ·  {r['pending']} pending" if r["pending"] else ""))
+            color = GREEN if r["profit"] >= 0 else RED
+        else:
+            text = "Edge record: no edges settled yet" + (
+                f" ({r['pending']} pending)." if r["pending"] else ".")
+            color = MUTED
+        tk.Label(parent, text=text, bg=BG, fg=color, font=self.f["small"], wraplength=820,
+                 justify="left").pack(anchor="w", padx=6, pady=(4, 0))
+
+    def edge_lines(self, b) -> list:
+        """Why a bet is an edge, for its details."""
+        out = [(f"Wins {b.fair_prob:.0%} of the time (from {getattr(b, 'books_count', 0)} "
+                f"books{', incl. Pinnacle' if getattr(b, 'sharp', False) else ''}). FanDuel "
+                f"pays {_fmt_american(b.fd_price)}, {b.ev:+.1%} more than that chance is worth: "
+                f"about +${edges.profit_per(b, self.wager()):,.2f} profit per "
+                f"${self.wager():g} on average.", GREEN),
+               (f"Still an edge down to {_fmt_american(edges.worst_odds(b.fair_prob))} at "
+                "FanDuel. Below that, skip it.", TEXT)]
+        best = getattr(b, "best_price", None)
+        if best is not None and best > b.fd_price:
+            out.append((f"Better price: {_fmt_american(best)} at "
+                        f"{bets.book_name(getattr(b, 'best_book', ''))}", BLUE))
+        return out
+
     def singles_tab(self, parent, singles, previous) -> None:
+        self.edge_lead(parent)
         if not singles:
-            tk.Label(parent, text=self.empty_text(
-                f"No bets at {single_min(self.sport.get()):.0%} or better here. Pick a bet type to see every "
-                "bet of that type."), bg=BG,
-                     fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            kind = self.bet_type.get()
+            tk.Label(parent, text=edges.none_note() if kind == "All bets"
+                     else f"No {kind.lower()} edges here right now.", bg=BG,
+                     fg=TEXT, font=self.f["body"], wraplength=820,
+                     justify="left").pack(anchor="w", padx=6, pady=8)
             return
-        self.thumbs_note(parent, [worth_it(b)[0] for b in singles])
         table = self.list_table(parent, "#")
         for i, b in enumerate(singles, 1):
             title = _slip_selection(b) + {"Questionable": "  (Q)", board.NO_LINE: "  · no line yet",
@@ -719,8 +743,8 @@ class App:
                           f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, bets.label(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
-                          extra=(self.record_line(b) or []) + self.odds_lines(b) or None,
-                          dot=self.TIER_COLORS.get(tier), worth=worth_it(b))
+                          extra=self.edge_lines(b) + (self.record_line(b) or []),
+                          dot=self.TIER_COLORS.get(tier))
 
     def ask_odds_key(self) -> None:
         """Save an Odds API key (the-odds-api.com) so bets show real sportsbook prices."""
@@ -796,21 +820,21 @@ class App:
     def multi_tab(self, parent) -> None:
         """Parlays mixing leagues; built in the background the first time it's opened."""
         tk.Label(parent, text=(
-            f"Parlays with legs from at least two leagues (NFL, College Football, UFC, MLB): "
-            f"{MULTI_LEGS[0]}-{MULTI_LEGS[1]} legs from different games, each paying at least "
-            f"${self.multi_target() * 10:g} back on $10 (Pays $), likeliest first. Each leg is "
-            "the likeliest bets of its league's default board (this week, the next UFC card, "
-            "the next 7 days of MLB). The Parlays tab stays with the league you picked."),
+            f"Parlays built only from edges: {edges.PARLAY_LEGS[0]}-{edges.PARLAY_LEGS[1]} legs "
+            "from different games, any league, likeliest first. Every leg's edge adds up, but "
+            "a parlay wins less often than its legs. They're the same whichever league is "
+            "picked."),
             bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
             justify="left").pack(anchor="w", padx=6, pady=(6, 4))
         found = self.multi_now()
         if found is None:
-            tk.Label(parent, text="Building Multi-Lays from every league (about 20 seconds)...",
+            tk.Label(parent, text="Finding edges in every league (about 20 seconds)...",
                      bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             self.start_multi()
             return
         if not found:
-            tk.Label(parent, text="No Multi-Lays right now: fewer than two leagues have games.",
+            tk.Label(parent, text="No edge parlays right now: they need edges in at least "
+                                  "two different games.",
                      bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         self.parlays_tab(parent, found, 10, multi=True)
@@ -823,11 +847,11 @@ class App:
 
         def work():
             try:
-                found = multi_lays(bets.league_pools(), target, 10)
+                found = edges.edge_parlays(bets.edge_pool(), 10)
                 with self.ledger_lock:  # graded in Bet History like every other pick
                     ledger = tracker.load(self.ledger_path)
                     tracker.record_generated(ledger, bets.tracker_entries(
-                        [], found, "multi", date.today().year))
+                        [], found, "multi", date.today().year), edge=True)
                     tracker.save(ledger, self.ledger_path)
                 self.results.put(("multi", found, target))
             except Exception:
@@ -1082,7 +1106,7 @@ class App:
             ledger = tracker.load(self.ledger_path)
             if this_week:
                 tracker.record_generated(ledger, bets.tracker_entries(
-                    singles, parlays, args.sport, season))
+                    singles, parlays, args.sport, season), edge=True)
             if not self.selftest:  # bets saved with Save / Save slip join the history
                 try:
                     tracker.import_saved(ledger, sorted((bets.ROOT / "bets").glob("*.json")))
@@ -1576,12 +1600,8 @@ class App:
                 from nfl_edge import learn
 
                 learn.remember(tracker.all_entries(self.ledger))  # learn from graded picks
-                pool, singles, parlays = bets.build(args)
-                # Money makers never lean on a Weak (red) leg.
-                args.money_makers = money_maker_parlays(
-                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10,
-                    strong=hitrate.strong_leg_check(bets.season_for(date.today()))
-                    if args.sport == "nfl" else None)
+                pool, singles, parlays = bets.build(args)  # the league's edges
+                args.money_makers = []
                 args.hit_rates = self.hit_rates(
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "UFC: a fighter who pulls out drops off the card when "

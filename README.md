@@ -22,10 +22,14 @@ When FanDuel lags behind a sharp move or shades a side, that gap is your edge.
 
 ![Bet builder window](docs/bet-builder-preview.png)
 
-The window opens with this week's **top 30 single bets** and **10 parlays of
-3 to 5 legs**, each on its own tab: **Single bets**, **Parlays**, **Money Maker**,
-**Injuries** and **Bet History**. The lists are for looking only: every bet
-the builder makes is graded in Bet History after the games.
+The window (and the web page and Discord bot) shows **edges only**: FanDuel lines
+that win at least 50% of the time and pay at least 3% more than that chance is worth,
+the true chance coming from every other sportsbook's price with its cut taken out
+(`nfl_edge/edges.py`; it needs an Odds API key). Thin edges are left out, so most days
+few bets qualify and some days none. Tabs: **Edges**, **Edge parlays** (2-3 edges from
+different games, any league), **Injuries** and **Bet History**, which keeps an **edge
+record**: wins, losses and profit at FanDuel's odds. Every edge shown is graded there
+after the games.
 
 **Choosing a week:** the **Games** list shows this week and every later week
 on the schedule, labeled with what's known right now:
@@ -135,10 +139,6 @@ with no account or key:
   They each pay at least $40 back on a $10 wager (`--pays 40`; the
   app's "Pays $" box, the bot's `/parlays pays:`), likeliest first. That is
   usually a 3-leg parlay with about a 24% chance to win.
-- **Money Maker** (a tab in the app and on the web page, `/moneymaker` in
-  Discord): riskier parlays that hang on one leg. Two or three strong legs
-  (60%+) plus one coin-flip "make or break" leg (35-55%) that the regular
-  parlays never use. About 1 in 5 win, paying about $50 on $10.
 - **Odds shown are break-even prices,** the worst price still worth taking,
   because FanDuel's own prices aren't public. At the end, a **price
   checker** lets you type a pick number and FanDuel's odds (`3 -150` or
@@ -181,12 +181,10 @@ fine).
 
 | Command | What it does |
 |---|---|
-| `/bets` | Top single bets, likeliest first: win %, worst odds worth taking, payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
-| `/parlays` | Top parlays from one league as bet slips (P1, P2, …). Options: `sport`, `count`, `min_legs`, `max_legs`, `week`, `pays`, `bet_type`. |
-| `/multilays` | Multi-Lays (X1, X2, …): parlays mixing leagues (NFL, college, UFC, MLB, NBA). |
-| `/moneymaker` | Money makers (M1, M2, …): the likeliest parlays that pay back at least double the wager. |
+| `/bets` | Edges only, best first: FanDuel lines that win 50%+ of the time and pay 3%+ more than they're worth, with win %, FanDuel's odds, the edge, its average profit and the payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
+| `/parlays` | Parlays built only from edges (P1, P2, …): 2-3 legs from different games, any league, likeliest first. Options: `count`, `min_legs`, `max_legs`. |
 | `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, and whether FanDuel's price is worth it. |
-| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1`, `bet:M1` or `bet:X1` places that parlay from the last list in the channel). |
+| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places that parlay from the last `/parlays` in the channel). |
 | `/remove bet:Ravens` | Removes one of your logged bets. |
 | `/history` | The server's bet history by league and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. |
 | `/injuries team:Bills` | This week's NFL injury report. |

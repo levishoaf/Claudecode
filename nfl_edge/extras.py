@@ -41,6 +41,13 @@ PLAYER_MARKETS = {
     "player_receptions": ("receptions", "Receptions", "count"),
     "player_anytime_td": ("rushing_tds+receiving_tds", "Anytime TD", "poisson"),
 }
+# NBA props (priced only from real odds): stat as nba.box_stats names it, label.
+NBA_PLAYER_MARKETS = {
+    "player_points": ("points", "Points", "count"),
+    "player_rebounds": ("rebounds", "Rebounds", "count"),
+    "player_assists": ("assists", "Assists", "count"),
+    "player_threes": ("threes", "Threes", "count"),
+}
 ALT = "_alternate"
 DEFAULT_NFL_MARKETS = GAME_MARKETS + list(PLAYER_MARKETS) + [
     m + ALT for m in PLAYER_MARKETS if m != "player_anytime_td"]
@@ -53,8 +60,14 @@ def base_market(key: str) -> str:
     return key[:-len(ALT)] if key.endswith(ALT) else key
 
 
+def prop_info(market: str) -> tuple:
+    """(stat, label, distribution) for any league's player prop market."""
+    key = base_market(market)
+    return PLAYER_MARKETS.get(key) or NBA_PLAYER_MARKETS[key]
+
+
 def stat_label(market: str) -> str:
-    return PLAYER_MARKETS[base_market(market)][1]
+    return prop_info(market)[1]
 
 
 # ---------------------------------------------------------------- game lines

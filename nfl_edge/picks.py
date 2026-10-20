@@ -56,6 +56,10 @@ BET_TYPES = {
     "Rushing yards": ("player_rush_yds",),
     "Receiving yards": ("player_reception_yds",),
     "Receptions": ("player_receptions",),
+    "Points": ("player_points",),
+    "Rebounds": ("player_rebounds",),
+    "Assists": ("player_assists",),
+    "Threes": ("player_threes",),
     "Fight distance": ("fight_distance",),
     "Run line": ("run_line",),
     "Total runs": ("totals_runs",),
@@ -63,8 +67,10 @@ BET_TYPES = {
 # The bet types each league has (the Bet type menu).
 UFC_TYPES = ("All bets", "Moneyline", "Fight distance")
 MLB_TYPES = ("All bets", "Moneyline", "Run line", "Total runs")
-NBA_TYPES = ("All bets", "Moneyline", "Spread", "Total points")
-FOOTBALL_TYPES = tuple(t for t in BET_TYPES if t not in ("Fight distance", "Run line", "Total runs"))
+NBA_TYPES = ("All bets", "Moneyline", "Spread", "Total points", "Points", "Rebounds",
+             "Assists", "Threes")
+FOOTBALL_TYPES = tuple(t for t in BET_TYPES if t not in (
+    "Fight distance", "Run line", "Total runs", "Points", "Rebounds", "Assists", "Threes"))
 
 
 def league_types(sport: str) -> tuple:
@@ -418,7 +424,8 @@ def multi_lays(pools: dict[str, list[Bet]], target: float, count: int, *,
 # worth. Anything unsure gets a thumbs down (the user's rule): no FanDuel price to check, a
 # rough or doubtful price, too few books, an uncertain player, Weak signals, or value too
 # small to trust.
-WORTH_MIN_EV = 0.01  # at least +1% expected value at FanDuel's price
+WORTH_MIN_EV = 0.03  # at least +3% expected value at FanDuel's price (edges.EDGE_MIN_EV)
+WORTH_MIN_PROB = 0.50  # and wins more often than it loses (edges.EDGE_MIN_PROB)
 WORTH_MIN_BOOKS = 3  # sportsbooks behind the true chance
 
 
@@ -446,7 +453,10 @@ def worth_it(b) -> tuple[bool, str]:
     if doubt:
         return False, f"Unsure: {doubt}"
     if b.ev < WORTH_MIN_EV:
-        return False, f"FanDuel pays less than its true chance is worth (value {b.ev:+.1%})"
+        return False, (f"No edge: value {b.ev:+.1%} at FanDuel's price, under "
+                       f"{WORTH_MIN_EV:+.0%}")
+    if b.fair_prob < WORTH_MIN_PROB:
+        return False, f"Less likely to win than lose ({b.fair_prob:.0%})"
     return True, f"FanDuel pays more than its true chance is worth (value {b.ev:+.1%})"
 
 
@@ -458,7 +468,8 @@ def worth_parlay(p: Parlay) -> tuple[bool, str]:
         if doubt:
             return False, f"Unsure: {_describe_leg(b)}: {doubt}"
     if p.ev < WORTH_MIN_EV:
-        return False, f"FanDuel pays less than its true chance is worth (value {p.ev:+.1%})"
+        return False, (f"No edge: value {p.ev:+.1%} at FanDuel's prices, under "
+                       f"{WORTH_MIN_EV:+.0%}")
     return True, f"FanDuel pays more than its true chance is worth (value {p.ev:+.1%})"
 
 
@@ -471,7 +482,10 @@ def worth_offer(o: dict) -> tuple[bool, str]:
     if o.get("books", 0) < WORTH_MIN_BOOKS:
         return False, "Unsure: too few sportsbooks price it"
     if o["ev"] < WORTH_MIN_EV:
-        return False, f"FanDuel pays less than its true chance is worth (value {o['ev']:+.1%})"
+        return False, (f"No edge: value {o['ev']:+.1%} at FanDuel's price, under "
+                       f"{WORTH_MIN_EV:+.0%}")
+    if o.get("chance", 0) < WORTH_MIN_PROB:
+        return False, f"Less likely to win than lose ({o['chance']:.0%})"
     return True, f"FanDuel pays more than its true chance is worth (value {o['ev']:+.1%})"
 
 

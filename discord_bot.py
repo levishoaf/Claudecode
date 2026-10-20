@@ -4,7 +4,7 @@
     python3 discord_bot.py              # asks for the bot token the first time
     python3 discord_bot.py --selftest   # checks everything except the Discord connection
 
-Slash commands: /bets, /parlays, /multilays, /moneymaker, /chance, /place,
+Slash commands: /bets (edges), /parlays (edge parlays), /chance, /place,
 /remove, /history, /injuries and /results-here. The whole server shares one bet history,
 saved in "discord bets.json" next to this program. Placed bets and the
 picks the bot showed are graded after the games, and results are posted in
@@ -28,6 +28,7 @@ import os
 import re
 import sys
 import tempfile
+import time
 import webbrowser
 from pathlib import Path
 
@@ -167,11 +168,13 @@ class Core:
         self.last_parlays: dict[int, tuple[str, list]] = {}  # channel -> (sport, parlays)
         self.last_money: dict[int, tuple[str, list]] = {}  # channel -> (sport, money makers)
         self.last_multi: dict[int, tuple[str, list]] = {}  # channel -> ("multi", Multi-Lays)
+        self.edge_cache: dict[tuple, tuple[float, list]] = {}  # (sport, week) -> (time, edges)
 
     def _record(self, sport, week, singles, parlays) -> None:
         if week is None:  # only this week's picks count as picks the builder made
             self.ledger.record_shown(launcher.tracker_entries(singles, parlays, sport,
-                                                              botcore.season_of(sport)))
+                                                              botcore.season_of(sport)),
+                                     edge=True)
 
     def _pool(self, sport, week, lo, hi):
         """(bets, note, checked): the bets sure to be on FanDuel (moneylines, anytime TDs)."""
@@ -195,78 +198,47 @@ class Core:
             note = CONFIRM_NOTE.format(kind=kind)
         return out, note, checked
 
+    EDGE_SECONDS = 300  # edges are found again at most this often
+
+    def _edges(self, sport, week):
+        """The league's edges (cached a few minutes)."""
+        from nfl_edge import edges
+
+        key = (sport, week)
+        hit = self.edge_cache.get(key)
+        if hit and time.monotonic() - hit[0] < self.EDGE_SECONDS:
+            return hit[1]
+        found = edges.league_edges(sport, week=week)
+        self.edge_cache[key] = (time.monotonic(), found)
+        return found
+
     def bets(self, sport, count, lo, hi, week, wager, kind="All bets") -> str:
-        pool, note, checked = self._typed(sport, week, lo, hi, kind)
-        if not pool and kind != "All bets":
-            return empty_type_note(kind, sport, checked)
-        singles = botcore.pick_singles(pool, count, rank_by="ev" if checked else "prob",
-                                       mix=kind == "All bets", sport=sport)
-        self._record(sport, week, singles, [])
-        return botcore.singles_text(singles, sport, wager) + (f"\n_{note}_" if note else "")
+        """The league's edges, best first (only clear edges: nfl_edge/edges.py)."""
+        found = self._edges(sport, week)
+        if kind != "All bets":
+            found = of_type(found, kind)
+            if not found:
+                return f"No {kind.lower()} edges right now."
+        found = found[:count]
+        self._record(sport, week, found, [])
+        return botcore.edges_text(found, sport, wager)
 
     def parlays(self, channel, sport, count, min_legs, max_legs, lo, hi, week, wager,
                 pays=None, kind="All bets") -> list[str]:
-        pool, note, checked = self._typed(sport, week, lo, hi, kind)
-        if not pool and kind != "All bets":
-            return [empty_type_note(kind, sport, checked)]
-        if any(getattr(b, "tier", None) for b in pool):  # Strong legs first, never Weak
-            from nfl_edge import insights
+        """Parlays built only from edges, any league, likeliest first."""
+        from nfl_edge import edges
 
-            pool, tier_note = insights.parlay_pool(pool)
-            note = f"{note} {tier_note}" if note else tier_note
-        parlays = botcore.pick_parlays(pool, count, min_legs, max_legs,
-                                       pays=pays / wager if pays else None)
-        self.last_parlays[channel] = (sport, parlays)
-        self._record(sport, week, [], parlays)
-        out = botcore.parlays_text(parlays, sport, wager)
-        if note:
-            out[0] += f"\n_{note}_"
-        return out
-
-    def money(self, channel, sport, week, wager, kind="All bets") -> list[str]:
-        """Money makers: the likeliest parlays that pay back at least double the wager."""
-        pool, note, checked = self._typed(sport, week, 1, 99, kind)
-        pool = [b for b in pool if getattr(b, "tier", "yellow") != "red"]  # never a Weak leg
-        from nfl_edge import hitrate
-
-        money = money_maker_parlays(pool, 5, strong=hitrate.strong_leg_check(
-            botcore.season_now()) if sport == "nfl" else None)
-        self.last_money[channel] = (sport, money)
-        self._record(sport, week, [], money)
-        if not money:
-            return ["No money makers: not enough games for that pick this week. "
-                    "Try bet_type All bets."]
-        out = botcore.parlays_text(money, sport, wager)
-        out[0] = (out[0].replace("parlays**", "money makers**").replace("bet:P1", "bet:M1")
-                  + "\nThe likeliest parlays that pay back at least double your wager if they "
-                  "win, even at FanDuel's prices. "
-                  "Parlays whose every leg has won at least 75% of the time come first.")
-        for i, p in enumerate(money, 1):
-            out[i] = (out[i].replace(f"**P{i}**", f"**M{i}**", 1)
-                      + f"\nAbout ${wager * fanduel_estimate(p):,.2f} back on "
-                      f"${wager:g} at FanDuel's prices")
-        if note and (not checked or kind not in SURE_TYPES):
-            out[0] += f"\n_{note}_"
-        return out
-
-    def multi(self, channel, wager, pays=40.0) -> list[str]:
-        """Multi-Lays: parlays mixing leagues, each paying at least `pays` on $10."""
-        from nfl_edge.picks import multi_lays
-
-        found = multi_lays(launcher.league_pools(), pays / 10, 5)
-        self.last_multi[channel] = ("multi", found)
-        self.ledger.record_shown(launcher.tracker_entries([], found, "multi",
-                                                          botcore.season_of("multi")))
-        if not found:
-            return ["No Multi-Lays right now: fewer than two leagues have games."]
-        out = botcore.parlays_text(found, "multi", wager)
-        out[0] = (out[0].replace("bet:P1", "bet:X1")
-                  + f"\nParlays with legs from at least two leagues (NFL, College Football, "
-                  f"UFC, MLB, NBA), each paying at least ${pays:g} back on $10, likeliest first.")
-        for i, p in enumerate(found, 1):
-            leagues = " + ".join(sorted({botcore.SPORT_NAME[b.league] for b in p.legs}))
-            out[i] = out[i].replace(f"**P{i}**", f"**X{i}** ({leagues})", 1)
-        return out
+        pool = []
+        for league in launcher.LEAGUES:
+            try:
+                pool += self._edges(league, None)
+            except Exception:  # one league down never blocks the others
+                continue
+        found = edges.edge_parlays(pool, count, legs=(min_legs, max_legs))
+        self.last_parlays[channel] = ("multi", found)
+        self.ledger.record_shown(launcher.tracker_entries(
+            [], found, "multi", botcore.season_of("multi")), edge=True)
+        return botcore.edge_parlays_text(found, wager)
 
     def find(self, sport, query):
         return botcore.search(self.boards.get(sport, None, *botcore.SEARCH_RANGE, every_line=True),
@@ -294,7 +266,7 @@ class Core:
                                     "X": self.last_multi}[kind].get(channel, (sport, []))
             n = int(m.group(2))
             if not 1 <= n <= len(parlays):
-                cmd = {"P": "/parlays", "M": "/moneymaker", "X": "/multilays"}[kind]
+                cmd = {"P": "/parlays", "M": "/parlays", "X": "/parlays"}[kind]
                 return f"Run `{cmd}` in this channel first, then place one with `bet:{kind}1`."
             entries = launcher.tracker_entries([], [parlays[n - 1]], shown_sport,
                                                botcore.season_of(shown_sport))
@@ -355,7 +327,7 @@ def run_bot(token: str | None, connect: bool = True):
             text = f"Something went wrong: {e}"
         await send(interaction, text)
 
-    @tree.command(name="bets", description="Top single bets, likeliest first")
+    @tree.command(name="bets", description="Edges: FanDuel bets that win 50%+ and pay 3%+ more than they're worth")
     @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many bets (1-30)",
                            week="NFL or college week (default: this week)",
@@ -365,7 +337,7 @@ def run_bot(token: str | None, connect: bool = True):
                        week: int | None = None, bet_type: str = "All bets"):
         await work(interaction, core.bets, sport, count, 1, 99, week, WAGER, bet_type)
 
-    @tree.command(name="parlays", description="Top parlays as bet slips")
+    @tree.command(name="parlays", description="Parlays built only from edges, any league")
     @app_commands.choices(sport=sport_choices, bet_type=type_choices)
     @app_commands.describe(count="How many parlays (1-10)", min_legs="Fewest legs",
                            max_legs="Most legs", week="Week (default: this week)",
@@ -379,20 +351,6 @@ def run_bot(token: str | None, connect: bool = True):
                           bet_type: str = "All bets"):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
                    min_legs, max(min_legs, max_legs), 1, 99, week, WAGER, pays or None, bet_type)
-
-    @tree.command(name="moneymaker",
-                  description="The likeliest parlays that pay back at least double the wager")
-    @app_commands.choices(sport=sport_choices, bet_type=type_choices)
-    @app_commands.describe(week="Week (default: this week)",
-                           bet_type="Only one type of bet (default: all)")
-    async def moneymaker_cmd(interaction: discord.Interaction, sport: str = "nfl",
-                             week: int | None = None, bet_type: str = "All bets"):
-        await work(interaction, core.money, interaction.channel_id, sport, week, WAGER, bet_type)
-
-    @tree.command(name="multilays",
-                  description="Parlays mixing leagues: NFL, college, UFC, MLB and NBA legs")
-    async def multilays_cmd(interaction: discord.Interaction):
-        await work(interaction, core.multi, interaction.channel_id, WAGER)
 
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
@@ -500,16 +458,12 @@ def selftest() -> int:
                "td_bets": core.bets("nfl", 5, 1, 99, None, 10.0, "Anytime TD"),
                "rushing": core.bets("nfl", 5, 1, 99, None, 10.0, "Rushing yards"),
                "receiving": core.bets("nfl", 5, 1, 99, None, 10.0, "Receiving yards"),
-               "spread parlays": core.parlays(1, "nfl", 2, 2, 6, 1, 99, None, 10.0, 40.0,
-                                              "Spread"),
-               "parlays": core.parlays(1, "nfl", 3, 2, 6, 1, 99, None, 10.0, pays=40.0),
-               "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0),
-               "moneymaker": core.money(1, "nfl", None, 10.0)}
+               "parlays": core.parlays(1, "nfl", 3, 2, 3, 1, 99, None, 10.0, pays=40.0),
+               "chance": core.chance("nfl", "ravens +11.5", "-350", 10.0)}
         top = core.boards.get("nfl", None, 0.6, 0.8)
         query = botcore._describe(botcore.pick_singles(top, 1)[0])
         out["place"] = core.place(1, "nfl", query, "-300", 20, 1, "Tester")
         out["place parlay"] = core.place(1, "nfl", "P1", None, 10, 2, "Tester 2")
-        out["place money maker"] = core.place(1, "nfl", "M1", None, 10, 3, "Tester 3")
         out["history"] = core.history(None, None, True)
         out["remove"] = core.remove(1, query.split()[0])
         out["results"] = core.check_results() or "(nothing settled)"
@@ -517,15 +471,10 @@ def selftest() -> int:
         out["college"] = core.bets("ncaaf", 5, 1, 99, None, 10.0)
         out["ufc"] = core.bets("ufc", 10, 1, 99, None, 10.0)
         out["ufc distance"] = core.bets("ufc", 5, 1, 99, None, 10.0, "Fight distance")
-        out["ufc moneymaker"] = core.money(4, "ufc", None, 10.0)
         out["mlb"] = core.bets("mlb", 10, 1, 99, None, 10.0)
         out["mlb totals"] = core.bets("mlb", 5, 1, 99, None, 10.0, "Total runs")
-        out["mlb parlays"] = core.parlays(5, "mlb", 2, 2, 4, 1, 99, None, 10.0, 40.0)
         out["nba"] = core.bets("nba", 10, 1, 99, None, 10.0)
         out["nba spreads"] = core.bets("nba", 5, 1, 99, None, 10.0, "Spread")
-        out["nba parlays"] = core.parlays(5, "nba", 2, 2, 3, 1, 99, None, 10.0, 40.0)
-        out["multilays"] = core.multi(6, 10.0)
-        out["place multi-lay"] = core.place(6, "nfl", "X1", None, 10, 4, "Tester 4")
     ok = True
     for name, text in out.items():
         parts = [c for p in (text if isinstance(text, list) else [text]) for c in botcore.chunks(p)]
@@ -556,7 +505,7 @@ def selftest() -> int:
     try:
         names = sorted(c.name for c in run_bot(None, connect=False).get_commands())
         print("--- slash commands:", ", ".join(names))
-        ok &= len(names) >= 10
+        ok &= len(names) >= 8
     except Exception as e:
         print(f"slash commands FAILED to build: {e!r}")
         ok = False

@@ -147,10 +147,14 @@ def apply(bets: list[Bet], sport: str, offers: list, props: bool = True) -> list
         if offer is not None:
             _reprice(b, offer)
             used.add(id(offer))
-    if sport != "nfl" or not props:
+    if sport not in ("nfl", "nba") or not props:
         return bets
-    # FanDuel's own prop lines for each matched game replace the model's lines there.
-    from .extras import PLAYER_MARKETS
+    # FanDuel's own prop lines for each matched game replace the model's lines there
+    # (the NBA has no model props: FanDuel's are the only ones).
+    from .extras import NBA_PLAYER_MARKETS, PLAYER_MARKETS
+
+    if sport == "nba":
+        PLAYER_MARKETS = NBA_PLAYER_MARKETS  # noqa: N806
 
     out = []
     replaced = set()  # (our game, market) pairs FanDuel has props for

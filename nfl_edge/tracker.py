@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
+from math import prod
 from pathlib import Path
 
 from . import data
@@ -77,14 +78,32 @@ def soon(legs: list[dict], now: datetime | None = None) -> bool:
     return all(now - timedelta(days=1) < t < now + timedelta(days=TRACK_DAYS) for t in times)
 
 
-def record_generated(ledger: dict, entries: list[dict], now: datetime | None = None) -> int:
-    """Add picks not seen before (first appearance wins). Returns how many were added."""
-    known = {e["id"] for e in ledger["generated"]}
+def fanduel_odds(legs: list[dict]) -> int | None:
+    """The bet's odds at FanDuel's prices (the legs' prices multiplied), if every leg has one."""
+    try:
+        return decimal_to_american(prod(american_to_decimal(leg["odds"]) for leg in legs))
+    except (KeyError, TypeError, ZeroDivisionError):
+        return None
+
+
+def record_generated(ledger: dict, entries: list[dict], now: datetime | None = None,
+                     edge: bool = False) -> int:
+    """Add picks not seen before (first appearance wins). Returns how many were added.
+    With `edge`, they're edges: marked so, at FanDuel's odds (and a pick seen before
+    that is now an edge gets marked too)."""
+    known = {e["id"]: e for e in ledger["generated"]}
     added = 0
     for e in entries:
+        if edge:
+            odds = fanduel_odds(e["legs"])
+            if e["id"] in known and not known[e["id"]].get("edge") and \
+                    known[e["id"]]["status"] == "pending" and odds is not None:
+                known[e["id"]].update(edge=True, odds=odds)
+            if odds is not None:
+                e.update(edge=True, odds=odds)
         if e["id"] not in known and soon(e["legs"], now):
             ledger["generated"].append(e)
-            known.add(e["id"])
+            known[e["id"]] = e
             added += 1
     return added
 
@@ -338,7 +357,11 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
                     games[key] = (college_games(season, games_source)
                                   if sport == "ncaaf"
                                   else {g["game_id"]: g for g in data.games(games_source)})
-            if leg["type"] in ("passing_tds", "player_stat") and season not in stats:
+            if leg["type"] in ("passing_tds", "player_stat") and sport == "nba":
+                from .nba import box_stats
+
+                stats[("nba", leg["game_id"])] = box_stats(leg["game_id"])
+            elif leg["type"] in ("passing_tds", "player_stat") and season not in stats:
                 try:
                     stats[season] = data.read_csv(STATS_URL.format(season=season),
                                                   max_age=1800)
@@ -346,7 +369,9 @@ def regrade(ledger: dict, games_source: str | None = None) -> int:
                     stats[season] = []
         except data.DataError:
             continue
-        status, detail = grade_leg(leg, games[key], stats.get(season, []))
+        rows = (stats.get(("nba", leg["game_id"]), []) if sport == "nba"
+                else stats.get(season, []))
+        status, detail = grade_leg(leg, games[key], rows)
         leg["detail"] = detail
         if status != "pending":
             leg["status"] = status
@@ -409,7 +434,9 @@ LEG_TYPES = {"moneyline": "Moneyline", "spread": "Spread", "total": "Total point
              "run_line": "Run line"}
 STAT_TYPES = {"receiving_yards": "Receiving yards", "receptions": "Receptions",
               "rushing_yards": "Rushing yards", "passing_yards": "Passing yards",
-              "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD"}
+              "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD",
+              "points": "Points", "rebounds": "Rebounds", "assists": "Assists",
+              "threes": "Threes"}
 
 
 def leg_type_name(leg: dict) -> str:
@@ -431,8 +458,24 @@ ALWAYS_OFFERED = {"Moneyline", "Anytime TD", "Fight distance", "Run line"}  # ML
 def model_line(e: dict) -> bool:
     """True if the bet has a leg on a line the model made up (a spread, total, team
     total or "X+" prop): FanDuel may not have offered that exact line, so it isn't
-    counted in the record. Moneylines and anytime TDs always exist as shown."""
+    counted in the record. Moneylines and anytime TDs always exist as shown, and so does
+    any leg priced at FanDuel's own line (`fd_line`, every edge)."""
+    if e.get("legs") and all(leg.get("fd_line") for leg in e["legs"]):
+        return False
     return not entry_types(e) <= ALWAYS_OFFERED
+
+
+def edge_record(entries: list[dict], wager: float = 10.0) -> dict:
+    """How the edges have done: {'won', 'lost', 'push', 'pending', 'profit' on `wager`
+    each at FanDuel's odds, 'expected' win rate}."""
+    edges = [e for e in entries if e.get("edge")]
+    done = [e for e in edges if e["status"] in ("won", "lost")]
+    return {"won": sum(e["status"] == "won" for e in done),
+            "lost": sum(e["status"] == "lost" for e in done),
+            "push": sum(e["status"] == "push" for e in edges),
+            "pending": sum(e["status"] == "pending" for e in edges),
+            "profit": round(sum(profit(dict(e, stake=wager)) for e in done), 2),
+            "expected": round(sum(e["win_prob"] for e in done) / len(done), 4) if done else None}
 
 
 def singles_vs_parlays(entries: list[dict]) -> str | None:

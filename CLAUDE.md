@@ -47,6 +47,27 @@ Every bet the user asks for, singles and parlays alike, must aim for the
   Questionable, or who missed practice before game statuses post, from
   every single and parlay leg.
 
+## Edges only (the user's rule, October 2026; overrides older notes below)
+
+The app, web page and bot show **only edges** (`nfl_edge/edges.py`): FanDuel lines at
+FanDuel's real price whose true chance (every other book's price with its cut taken out,
+`nfl_edge/lines.py`) is at least 50% (`picks.WORTH_MIN_PROB`) and whose value is at least
++3% (`picks.WORTH_MIN_EV`), with nothing doubtful (`picks._doubt`). Thin edges are never
+shown; when there are none the board says so plainly (`edges.none_note`). Ranked by value,
+ties to the likelier bet. Each edge shows win %, FanDuel's odds, the edge and its average
+profit on $10, the payout, and the worst odds that keep the edge (`edges.worst_odds`). The
+market chance is never moved by our models (signals skip priced bets; `league_edges`
+restores it). Edge parlays (`edges.edge_parlays`, `EdgeParlay`: raw product, no learned
+correction) use only edges, 2-3 legs from different games, any league, likeliest first.
+Tabs: Edges, Edge parlays, Injuries, History; the Money Maker, Multi-Lays, Value and
+likeliest-first singles are gone (`bets.build(args)` with `edges=False` still builds the old
+board for tests). Edges are logged with `edge: True` at FanDuel's odds and every leg
+`fd_line` (so they count in the record); `tracker.edge_record` is the edge record shown on
+the Edges tab and in History. NBA props come from real odds and are graded from ESPN box
+scores (`nba.box_stats`; a player not in the box score is a push). Credits: each day may
+spend its share of the plan's credits (`Feed.budget`, `allowance`), leagues with a game in
+36 hours get fresh game lines first, others at most daily (`IDLE_HOURS`).
+
 ## Web version
 
 The bet builder also runs as a private web page:

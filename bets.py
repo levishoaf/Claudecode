@@ -83,6 +83,8 @@ def leg_record(b, sport: str) -> dict | None:
         leg["market_prob"] = round(b.market_prob, 4)
     if getattr(b, "main_line", None) is not None:  # the team's main spread when picked
         leg["main_line"] = b.main_line
+    if getattr(b, "on_fanduel", False):  # FanDuel's own line at its real price
+        leg["fd_line"] = True
     if getattr(b, "tier", None):  # graded later by tier in the report card
         leg["tier"] = b.tier
     if sport == "ufc" and b.market == "h2h":
@@ -102,7 +104,7 @@ def leg_record(b, sport: str) -> dict | None:
         leg.update(type="team_total", team=team_code(team), side=side, line=b.point)
     elif b.market.startswith("player_"):
         player, side = b.pick.rsplit(" ", 1)
-        stat = extras.PLAYER_MARKETS[extras.base_market(b.market)][0]
+        stat = extras.prop_info(b.market)[0]
         leg.update(type="player_stat", player=player, stat=stat)
         if side in ("Over", "Yes"):
             leg["min"] = int(b.point) + 1
@@ -281,11 +283,48 @@ def real_offers(sport: str, week: int | None = None) -> list:
 MIN_PROB, MAX_PROB = 1.0, 99.0
 
 
+def build_edges(args):
+    """(edges, the top args.singles of them, []) for the chosen league and games: only
+    FanDuel lines with a clear edge (nfl_edge/edges.py), best first, of the chosen type."""
+    from nfl_edge import edges
+
+    week, day, sport = getattr(args, "week", None), None, args.sport
+    if sport in ("mlb", "nba"):  # `week` is a day (YYYYMMDD) or the next 7 days
+        if week and week != board.MLB_ALL_DAYS:
+            day = date(week // 10000, week // 100 % 100, week % 100)
+        week = None
+    found = edges.league_edges(sport, week=week, day=day)
+    kind = getattr(args, "bet_type", None) or "All bets"
+    if kind in BET_TYPES:
+        found = of_type(found, kind)
+    board.NOTES["odds"] = ODDS_NOTE.get("note", "")
+    board.NOTES.pop("confirm_line", None)
+    args.value_offers = None
+    return found, found[:args.singles], []
+
+
+def edge_pool() -> list:
+    """Every league's current edges (its default games), for edge parlays; a league that
+    can't load right now is left out."""
+    from nfl_edge import edges
+
+    out = []
+    for sport in LEAGUES:
+        try:
+            out += edges.league_edges(sport)
+        except Exception:  # one league down never blocks the others
+            continue
+    return out
+
+
 def build(args):
-    """Candidate bets, picked singles and parlays for the chosen sport and day.
+    """Candidate bets, picked singles and parlays for the chosen sport and day: the
+    league's edges (build_edges), unless args.edges is False.
 
     With args.fanduel_key, only bets FanDuel lists, at FanDuel's prices, ranked by
     expected value; otherwise the free board with break-even odds."""
+    if getattr(args, "edges", True) and not getattr(args, "fanduel_key", None):
+        return build_edges(args)
     lo, hi = args.min_prob / 100, args.max_prob / 100
     day = None if args.date in ("week", "all") else (
         date.today() if args.date == "today" else date.fromisoformat(args.date))

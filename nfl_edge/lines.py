@@ -64,6 +64,8 @@ MAIN_MINUTES = float(os.environ.get("ODDS_MAIN_MINUTES", "30"))
 PROP_MINUTES = float(os.environ.get("ODDS_PROP_MINUTES", "240"))
 PROP_SOON_MINUTES = float(os.environ.get("ODDS_PROP_SOON_MINUTES", "45"))  # within 3 hours
 SOON = timedelta(hours=3)
+SOON_MAIN = timedelta(hours=36)  # a league with a game this soon gets fresh game lines
+IDLE_HOURS = 24  # a league with nothing that soon is re-pulled once a day at most
 PROP_GAMES = {"nfl": 16, "ncaaf": 12, "mlb": 15, "nba": 12}  # most games whose props are pulled
 PROP_DAYS = {"nfl": 7, "ncaaf": 7, "mlb": 2, "nba": 2}  # how far ahead props are pulled
 MIN_CREDITS = int(os.environ.get("ODDS_MIN_CREDITS", "50"))  # keep this many in reserve
@@ -98,6 +100,8 @@ class Feed:
     credits: int | None = None
     pulled: dict = field(default_factory=dict)  # cache name -> unix time
     stretch: float = 1.0  # schedule multiplier so the plan's credits last the month
+    allowance: float | None = None  # credits the day may spend (see budget)
+    spent: dict = field(default_factory=dict)  # day (YYYY-MM-DD) -> credits spent
 
     def __post_init__(self):
         self.key = self.key or os.environ.get("ODDS_API_KEY")
@@ -110,6 +114,7 @@ class Feed:
         if state.exists():
             saved = json.loads(state.read_text())
             self.credits, self.pulled = saved.get("credits"), saved.get("pulled", {})
+            self.spent = saved.get("spent", {})
 
     @property
     def enabled(self) -> bool:
@@ -119,50 +124,78 @@ class Feed:
 
     def _save_state(self) -> None:
         (self.folder / "state.json").write_text(json.dumps(
-            {"credits": self.credits, "pulled": self.pulled}))
+            {"credits": self.credits, "pulled": self.pulled, "spent": self.spent}))
 
-    def _cached(self, name: str, minutes: float, path: str, params: dict):
+    def _today(self) -> str:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def can_spend(self, cost: int) -> bool:
+        """Whether today's share of the plan's credits covers a pull costing `cost`."""
+        if self.allowance is None:
+            return True
+        return self.spent.get(self._today(), 0) + cost <= self.allowance
+
+    def _cached(self, name: str, minutes: float, path: str, params: dict, cost: int = 1):
         """The saved answer if pulled within `minutes`, else a fresh pull (if credits
-        allow); the last good answer when a pull fails."""
+        and today's allowance allow); the last good answer when a pull fails."""
         file = self.folder / f"{name}.json"
         if not self.enabled:
             return None
         fresh = time.time() - self.pulled.get(name, 0) < minutes * self.stretch * 60
         if file.exists() and fresh:
             return json.loads(file.read_text())
-        if self.credits is not None and self.credits <= MIN_CREDITS:
+        if (self.credits is not None and self.credits <= MIN_CREDITS) or \
+                not self.can_spend(cost):
             return json.loads(file.read_text()) if file.exists() else None
         try:
             body, left = self.get(path, params)
         except OddsError:
             return json.loads(file.read_text()) if file.exists() else None
+        before = self.credits
         if left is not None:
             self.credits = left
+        used = before - left if before is not None and left is not None and before >= left \
+            else cost
+        day = self._today()
+        self.spent = {day: self.spent.get(day, 0) + used}  # only today's count is kept
         file.write_text(json.dumps(body))
         self.pulled[name] = time.time()
         self._save_state()
         return body
 
     def budget(self, now: datetime | None = None) -> None:
-        """Stretch the schedule so the credits left last until the plan renews (the
-        1st of the month): the full schedule on a big plan, a few pulls a day on the
-        free one."""
+        """Share the credits left evenly over the days until the plan renews (the 1st of
+        the month): each day may spend its share (plus whatever it spent already). On a
+        big plan that's more than the full schedule needs; on the free one the share goes
+        to the leagues and games starting soonest, since only a fresh price shows a real
+        edge (see main and props)."""
         if self.credits is None:
             return
         now = now or datetime.now(timezone.utc)
         renew = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
         days = max((renew - now).total_seconds() / 86400, 1.0)
-        per_day = max(self.credits - MIN_CREDITS, 0) / days
-        regions = len(MAIN_REGIONS.split(","))
-        planned = sum(regions * len(MAIN_MARKETS[s]) * 1440 / MAIN_MINUTES for s in SPORT_KEYS) + \
-            sum(PROP_GAMES[s] * len(PROP_MARKETS[s]) * 1440 / PROP_MINUTES for s in PROP_MARKETS)
-        self.stretch = max(1.0, planned / per_day) if per_day > 0 else float("inf")
+        today = now.strftime("%Y-%m-%d")
+        spent = self.spent.get(today, 0)
+        start = self.credits + spent  # the credits the day began with
+        self.allowance = max(start - MIN_CREDITS, 0) / max(days, 1.0)
+        self.stretch = 1.0
 
     def main(self, sport: str) -> list[dict]:
         """Every upcoming game's moneyline, spread and total at every US book (both US
         regions) and the European ones, Pinnacle among them."""
-        body = self._cached(f"main-{sport}", MAIN_MINUTES, f"/sports/{SPORT_KEYS[sport]}/odds",
-                            {"regions": MAIN_REGIONS, "markets": ",".join(MAIN_MARKETS[sport])})
+        name = f"main-{sport}"
+        file = self.folder / f"{name}.json"
+        age = time.time() - self.pulled.get(name, 0)
+        if file.exists() and age < IDLE_HOURS * 3600:  # nothing soon: a day-old pull will do
+            cached = json.loads(file.read_text())
+            now = datetime.now(timezone.utc)
+            if isinstance(cached, list) and not any(
+                    now < _start(e) < now + SOON_MAIN for e in cached):
+                return cached
+        cost = len(MAIN_REGIONS.split(",")) * len(MAIN_MARKETS[sport])
+        body = self._cached(name, MAIN_MINUTES, f"/sports/{SPORT_KEYS[sport]}/odds",
+                            {"regions": MAIN_REGIONS, "markets": ",".join(MAIN_MARKETS[sport])},
+                            cost)
         return body if isinstance(body, list) else []
 
     def props(self, sport: str, events: list[dict], now: datetime | None = None) -> list[dict]:
@@ -179,7 +212,8 @@ class Feed:
             minutes = PROP_SOON_MINUTES if _start(e) - now < SOON else PROP_MINUTES
             body = self._cached(f"props-{sport}-{e['id']}", minutes,
                                 f"/sports/{SPORT_KEYS[sport]}/events/{e['id']}/odds",
-                                {"regions": "us", "markets": ",".join(PROP_MARKETS[sport])})
+                                {"regions": "us", "markets": ",".join(PROP_MARKETS[sport])},
+                                len(PROP_MARKETS[sport]))
             if isinstance(body, dict) and body.get("bookmakers"):
                 out.append(body)
         return out

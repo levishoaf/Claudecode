@@ -151,6 +151,53 @@ def singles_text(singles, sport: str, wager: float) -> str:
     return "\n".join(lines)
 
 
+def edges_text(found, sport: str, wager: float) -> str:
+    """The league's edges, best first: one bold line each (bet, how often it wins, FanDuel's
+    odds, the edge and its average profit, the payout), then its game, time and the worst
+    odds that keep the edge."""
+    from . import edges
+
+    rule = (f"An edge wins {edges.EDGE_MIN_PROB:.0%}+ of the time and FanDuel pays "
+            f"{edges.EDGE_MIN_EV:+.0%}+ more than that chance is worth (every other book's "
+            "price, cut taken out). Thin edges are left out.")
+    if not found:
+        return f"**{SPORT_NAME[sport]} · edges**\n{edges.none_note()}"
+    lines = [f"**{SPORT_NAME[sport]} · {len(found)} edge{'s' * (len(found) != 1)}, best first**",
+             f"_{rule}_"]
+    for i, b in enumerate(found, 1):
+        pays = wager * american_to_decimal(b.fd_price)
+        more = [b.game.split(", ")[0], when(b),
+                f"still an edge down to {_fmt_american(edges.worst_odds(b.fair_prob))}"]
+        best = getattr(b, "best_price", None)
+        if best is not None and best > b.fd_price:
+            more.append(f"better {_fmt_american(best)} at {book_name(b.best_book)}")
+        lines.append(f"**{i}. {_describe(b)}** — wins **{b.fair_prob:.0%}** · FanDuel "
+                     f"{_fmt_american(b.fd_price)} · edge **{b.ev:+.1%}** (about "
+                     f"+${edges.profit_per(b, wager):,.2f} per ${wager:g}) · ${wager:g} pays "
+                     f"${pays:,.2f}\n   " + " · ".join(more))
+    return "\n".join(lines)
+
+
+def edge_parlays_text(parlays, wager: float) -> list[str]:
+    """Edge parlays as numbered slips (P1, P2...): every leg an edge, any league."""
+    from . import edges
+
+    if not parlays:
+        return ["No edge parlays right now: they need edges in at least two different games."]
+    out = [f"**{len(parlays)} edge parlay{'s' * (len(parlays) != 1)}** (place one with "
+           "`/place bet:P1`)\n_Built only from edges, 2-3 legs from different games, "
+           "likeliest first. A parlay wins less often than any of its legs._"]
+    for i, p in enumerate(parlays, 1):
+        legs = "\n".join(f"   • {_describe(b)} ({SPORT_NAME.get(getattr(b, 'league', ''), '')}, "
+                         f"{b.game.split(', ')[0]}) {_fmt_american(b.fd_price)} · wins "
+                         f"{b.fair_prob:.0%} · edge {b.ev:+.1%}" for b in p.legs)
+        out.append(f"**P{i}** — wins **{p.win_prob:.0%}** · FanDuel about "
+                   f"{_fmt_american(p.american)} · edge **{p.ev:+.1%}** (about "
+                   f"+${edges.profit_per(p, wager):,.2f} per ${wager:g}) · ${wager:g} pays "
+                   f"${wager * p.decimal:,.2f}\n{legs}")
+    return out
+
+
 SINGLES_NOTE = [None]  # "Singles have won 62% of the time and parlays 17%..." (set by the bot)
 
 TIER_ICON = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
@@ -309,8 +356,8 @@ class ServerLedger:
         SINGLES_NOTE[0] = tracker.singles_vs_parlays(tracker.all_entries(ledger))
         return ledger
 
-    def record_shown(self, entries: list[dict]) -> None:
-        self.update(lambda ledger: tracker.record_generated(ledger, entries))
+    def record_shown(self, entries: list[dict], edge: bool = False) -> None:
+        self.update(lambda ledger: tracker.record_generated(ledger, entries, edge=edge))
 
     def place(self, entry: dict, odds: int | None, stake: float, user_id: int,
               user_name: str) -> dict:

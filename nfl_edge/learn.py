@@ -124,9 +124,9 @@ def group_of_bet(b, sport: str) -> str:
     elif "totals" in m:
         g = "total"
     elif m.startswith("player_"):
-        from .extras import PLAYER_MARKETS, base_market
+        from .extras import prop_info
 
-        g = "prop:" + PLAYER_MARKETS[base_market(m)][0]
+        g = "prop:" + prop_info(m)[0]
     else:
         g = m
     return f"{sport}:{g}"

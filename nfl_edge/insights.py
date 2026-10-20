@@ -431,7 +431,11 @@ def analyze(b, ctx: Context, rates: dict | None = None) -> Insight:
         # Tiers from the weights learned on past seasons, not hand-set points: Strong or
         # Weak only when tested signals move the chance by 2 points or more.
         ins.reasons = []
-        if signals.saved().get(group) and is_prop and team and g:
+        # A bet at FanDuel's real price keeps the market's chance: the signals were tested
+        # on the model's chances, not the market's (which already prices them in), and
+        # moving a market chance would make edges that aren't there.
+        if signals.saved().get(group) and is_prop and team and g and \
+                not getattr(b, "on_fanduel", False):
             base = getattr(b, "signal_base", None) or b.fair_prob  # once per bet
             b.signal_base = base
             feats = ctx.signal_features(b, key, team, g)

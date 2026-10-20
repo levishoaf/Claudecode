@@ -20,7 +20,7 @@ ALL = [make_bet(G, KICK, "h2h", "Atlanta Falcons", None, 0.7, "g", "x"),
 def args(**kw):
     base = dict(sport="nfl", date="week", week=None, singles=30, legs=3, min_legs=3, max_legs=5,
                 parlays=0, stake=10, min_prob=1, max_prob=99, per_game=3, allow_overlap=False,
-                games_file=None)
+                games_file=None, edges=False)  # the older likeliest-first board
     return argparse.Namespace(**{**base, **kw})
 
 

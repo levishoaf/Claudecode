@@ -391,12 +391,52 @@ def injuries() -> dict[str, str]:
     return out
 
 
+BOX_KEYS = {"points": "points", "rebounds": "rebounds", "assists": "assists",
+            "threePointFieldGoalsMade-threePointFieldGoalsAttempted": "threes"}
+
+
+def box_stats(game_id: str) -> list[dict]:
+    """Each player who played in a finished game, as {game_id, player_display_name,
+    points, rebounds, assists, threes} (the grader's row shape); [] until the game is
+    final. Cached once final."""
+    path = data.cache_dir() / "nba" / "box" / f"{game_id}.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    try:
+        summary = _get(SUMMARY.format(game_id), tries=2)
+    except Exception:
+        return []
+    status = ((summary.get("header") or {}).get("competitions") or [{}])[0]
+    if not ((status.get("status") or {}).get("type") or {}).get("completed"):
+        return []
+    rows = []
+    for team in (summary.get("boxscore") or {}).get("players", []):
+        for block in team.get("statistics", []):
+            keys = block.get("keys") or []
+            for a in block.get("athletes", []):
+                stats = a.get("stats") or []
+                if a.get("didNotPlay") or not stats or stats[0] in ("", "0", "--"):
+                    continue
+                row = {"game_id": str(game_id),
+                       "player_display_name": (a.get("athlete") or {}).get("displayName", "")}
+                for k, v in zip(keys, stats):
+                    if k in BOX_KEYS:
+                        try:
+                            row[BOX_KEYS[k]] = int(str(v).split("-")[0])
+                        except ValueError:
+                            row[BOX_KEYS[k]] = 0
+                rows.append(row)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(rows))
+    return rows
+
+
 def games_by_id(year: int) -> dict[str, dict]:
     """{game id: the game shaped like an nflverse row} for grading (scores blank until final)."""
     out = {}
     for g in season(year):
         final = g["done"] and g["home_score"] is not None
-        out[g["id"]] = {"game_id": g["id"], "home_team": g["home_name"],
+        out[g["id"]] = {"game_id": g["id"], "league": "nba", "home_team": g["home_name"],
                         "away_team": g["away_name"],
                         "home_score": g["home_score"] if final else "",
                         "away_score": g["away_score"] if final else ""}

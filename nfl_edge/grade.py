@@ -107,6 +107,8 @@ def grade_leg(leg: dict, games: dict[str, dict], stats: list[dict]) -> tuple[str
         if row is None:
             if not any(s["game_id"] == leg["game_id"] for s in stats):
                 return "pending", "player stats not posted yet"
+            if g.get("league") == "nba":  # not in the box score: FanDuel refunds
+                return "push", DNP
             return _no_stats(leg)
         value = int(sum(float(row.get(c) or 0) for c in stat.split("+")))
         if stat == "passing_tds":
@@ -152,7 +154,12 @@ def grade(bet: dict, games_source: str | None = None) -> list[tuple[dict, str, s
     else:
         games = {g["game_id"]: g for g in data.games(games_source)}
     stats: list[dict] = []
-    if any(leg["type"] in ("passing_tds", "player_stat") for leg in bet["legs"]):
+    if bet.get("sport") == "nba":
+        from .nba import box_stats
+
+        stats = [r for gid in {leg["game_id"] for leg in bet["legs"]
+                               if leg["type"] == "player_stat"} for r in box_stats(gid)]
+    elif any(leg["type"] in ("passing_tds", "player_stat") for leg in bet["legs"]):
         try:
             stats = data.read_csv(STATS_URL.format(season=bet["season"]))
         except data.DataError:
