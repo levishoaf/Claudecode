@@ -182,6 +182,7 @@ fine).
 | Command | What it does |
 |---|---|
 | `/bets` | Edges only, best first: FanDuel lines that win 50%+ of the time and pay 3%+ more than they're worth, with win %, FanDuel's odds, the edge, its average profit and the payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
+| `/worthalook` | Not edges: FanDuel lines that pay 1%+ more than they're worth but miss the edge rule (a thinner edge, or a 40-50% win chance), each with what it misses. Options: `sport`, `count`, `week`, `bet_type`. |
 | `/parlays` | Parlays built only from edges (P1, P2, …): 2-3 legs from different games, any league, likeliest first. Options: `count`, `min_legs`, `max_legs`. |
 | `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, and whether FanDuel's price is worth it. |
 | `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places that parlay from the last `/parlays` in the channel). |

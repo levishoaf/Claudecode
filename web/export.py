@@ -172,9 +172,15 @@ def edge_parlay(p):
             "edge": {"profit": round(edges.profit_per(p), 2)}}
 
 
-def league_view(sport, week, label, found, injuries_week=None):
-    """One Games-menu entry: its edges, best first."""
+def lean_bet(b, sport):
+    """A "worth a look" bet: like an edge, plus what it misses of the edge rule."""
+    return dict(edge_bet(b, sport), why=edges.why_not_edge(b))
+
+
+def league_view(sport, week, label, found, injuries_week=None, leans=()):
+    """One Games-menu entry: its edges and its "worth a look" bets, each best first."""
     out = {"label": label, "week": week, "singles": [edge_bet(b, sport) for b in found],
+           "leans": [lean_bet(b, sport) for b in leans],
            "parlays": [], "money": [], "types": {}}
     if sport == "nfl":
         try:
@@ -190,11 +196,12 @@ def league_view(sport, week, label, found, injuries_week=None):
 
 
 def league_edges(sport, week=None):
+    """(edges, worth a look) for a league's games."""
     try:
-        return edges.league_edges(sport, week=week, offers=offers_for(sport, week))
+        return edges.league_board(sport, week=week, offers=offers_for(sport, week))
     except Exception:
         traceback.print_exc()
-        return []
+        return [], []
 
 
 def placed_entries(path):
@@ -223,42 +230,48 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
               "ufcTypes": list(UFC_TYPES), "sureTypes": list(SURE_TYPES),
               "leagueTypes": {s: list(league_types(s)) for s in launcher.LEAGUES}}
     found_all = []  # every league's current edges, for parlays
-    shown = []  # edges logged as picks the builder made (graded in Bet History)
+    shown = []  # (league, edges, worth a look) logged as picks the builder made
     weeks = board.nfl_weeks()
     for i, (w, posted) in enumerate(weeks[:2]):  # FanDuel prices this week and next
-        found = league_edges("nfl", w)
+        found, leans = league_edges("nfl", w)
         result["nfl"].append(league_view("nfl", w, f"Week {w}" + (" · this week" if i == 0
-                                                                  else ""), found, w))
+                                                                  else ""), found, w, leans))
         found_all += found
         if i == 0:
-            shown.append(("nfl", found))
+            shown.append(("nfl", found, leans))
     for i, w in enumerate(board.cfb_weeks()[:1]):
-        found = league_edges("ncaaf", w)
-        result["ncaaf"].append(league_view("ncaaf", w, f"Week {w} · this week", found))
+        found, leans = league_edges("ncaaf", w)
+        result["ncaaf"].append(league_view("ncaaf", w, f"Week {w} · this week", found,
+                                           leans=leans))
         found_all += found
-        shown.append(("ncaaf", found))
+        shown.append(("ncaaf", found, leans))
     for i, (eid, name, start) in enumerate(board.ufc_cards()[:2]):
         short = name.split(":", 1)[-1].strip()
-        found = league_edges("ufc", int(eid))
+        found, leans = league_edges("ufc", int(eid))
         result["ufc"].append(league_view("ufc", int(eid), f"{short} · "
                                          f"{start.astimezone(EASTERN):%b} "
-                                         f"{start.astimezone(EASTERN).day}", found))
+                                         f"{start.astimezone(EASTERN).day}", found, leans=leans))
         found_all += found
         if i == 0:
-            shown.append(("ufc", found))
+            shown.append(("ufc", found, leans))
     for sport in ("mlb", "nba"):  # the next 7 days, then each day
-        found = league_edges(sport)
+        found, leans = league_edges(sport)
         found_all += found
-        shown.append((sport, found))
-        result[sport].append(league_view(sport, board.MLB_ALL_DAYS, "Next 7 days", found))
-        days = sorted({b.commence_time.astimezone(EASTERN).date() for b in found})
+        shown.append((sport, found, leans))
+        result[sport].append(league_view(sport, board.MLB_ALL_DAYS, "Next 7 days", found,
+                                         leans=leans))
+        days = sorted({b.commence_time.astimezone(EASTERN).date() for b in found + leans})
+
+        def on(d, some):
+            return [b for b in some if b.commence_time.astimezone(EASTERN).date() == d]
         for d in days:
-            some = [b for b in found if b.commence_time.astimezone(EASTERN).date() == d]
-            result[sport].append(league_view(sport, int(f"{d:%Y%m%d}"),
-                                             f"{d:%a %b} {d.day}", some))
-    for sport, found in shown:
+            result[sport].append(league_view(sport, int(f"{d:%Y%m%d}"), f"{d:%a %b} {d.day}",
+                                             on(d, found), leans=on(d, leans)))
+    for sport, found, leans in shown:
         tracker.record_generated(ledger, launcher.tracker_entries(
             found, [], sport, season_of(sport)), edge=True)
+        tracker.record_generated(ledger, launcher.tracker_entries(
+            leans, [], sport, season_of(sport)), lean=True)
     try:  # parlays of edges only, any leagues: the same whichever league is picked
         parlays = edges.edge_parlays(found_all, 10)
         tracker.record_generated(ledger, launcher.tracker_entries(
@@ -320,6 +333,7 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
                 "prob": e["win_prob"], "odds": e["odds"], "stake": e.get("stake", 100),
                 "status": e["status"], "created": e["created"], "name": e.get("source", ""),
                 "model": tracker.model_line(e), "edge": bool(e.get("edge")),
+                "lean": bool(e.get("lean")),
                 "team": (tracker.leg_team(e["legs"][0], e["sport"], player_team) or "Other")
                 if e["kind"] == "single" else "Parlays",
                 "legs": [{"lid": leg["id"], "pick": leg.get("pick") or leg["label"],
@@ -328,6 +342,8 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
                          for leg in e["legs"]]}
     result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
     result["edgeRecord"] = tracker.edge_record(ledger["generated"])
+    result["leanRecord"] = tracker.edge_record(ledger["generated"], key="lean")
+    result["leanRule"] = {"ev": edges.LEAN_MIN_EV, "prob": edges.LEAN_MIN_PROB}
     result["saved"] = [brief(e, "saved") for e in ledger["saved"]]
 
     return result

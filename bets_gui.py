@@ -402,7 +402,7 @@ class App:
             ready = "included for all" in board.NOTES["injuries"]
             self.note(notes, board.NOTES["injuries"], None if ready else AMBER)
 
-        if self.tab not in ("singles", "multi", "injuries", "history"):
+        if self.tab not in ("singles", "multi", "leans", "injuries", "history"):
             self.tab = "singles"
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
@@ -410,6 +410,7 @@ class App:
         for key, text in (("singles", f"Edges ({len(singles)})"),
                           ("multi", "Edge parlays" + (f" ({len(self.multi_now())})"
                                                       if self.multi_now() is not None else "")),
+                          ("leans", f"Worth a look ({len(getattr(args, 'leans', []))})"),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"History ({len(self.history_items())})")):
             on = key == self.tab
@@ -445,6 +446,8 @@ class App:
             self.value_tab(grid, getattr(args, "value_offers", None))
         elif key == "singles":
             self.singles_tab(grid, singles, previous)
+        elif key == "leans":
+            self.leans_tab(grid, getattr(args, "leans", []))
         elif key == "parlays":
             self.singles_note(grid)
             if board.NOTES.get("parlay_pool"):
@@ -717,6 +720,39 @@ class App:
             out.append((f"Better price: {_fmt_american(best)} at "
                         f"{bets.book_name(getattr(b, 'best_book', ''))}", BLUE))
         return out
+
+    def leans_tab(self, parent, leans) -> None:
+        """FanDuel lines that pay more than they're worth but aren't edges."""
+        tk.Label(parent, text=(
+            f"Not edges. These FanDuel lines pay {edges.LEAN_MIN_EV:+.0%} or more over what "
+            f"they're worth, but miss the edge rule: the edge is under "
+            f"{edges.EDGE_MIN_EV:+.0%}, or the bet wins less than half the time (at least "
+            f"{edges.LEAN_MIN_PROB:.0%}). Bet them only if you accept a thinner or riskier "
+            "edge. Best value first; click one to see what it misses."),
+            bg=BG, fg=TEXT, font=self.f["small"], wraplength=820,
+            justify="left").pack(anchor="w", padx=6, pady=(6, 0))
+        r = tracker.edge_record(self.ledger.get("generated", []) if self.ledger else [],
+                                key="lean")
+        n = r["won"] + r["lost"]
+        tk.Label(parent, text=(
+            f"Worth a look record: {r['won']}-{r['lost']} ({r['won'] / n:.0%})  ·  "
+            f"{'+' if r['profit'] >= 0 else '-'}${abs(r['profit']):,.2f} on $10 each"
+            if n else "Worth a look record: none settled yet.")
+            + (f"  ·  {r['pending']} pending" if r["pending"] else ""),
+            bg=BG, fg=MUTED, font=self.f["small"]).pack(anchor="w", padx=6, pady=(4, 0))
+        if not leans:
+            tk.Label(parent, text=(f"Nothing worth a look right now: no FanDuel line here "
+                                   f"pays even {edges.LEAN_MIN_EV:+.0%} over what it's worth."),
+                     bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        table = self.list_table(parent, "#")
+        for i, b in enumerate(leans, 1):
+            lines = [(edges.why_not_edge(b), AMBER)] + self.edge_lines(b)[:1] + \
+                self.edge_lines(b)[2:]
+            self.list_row(table, str(i), _slip_selection(b),
+                          f"{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
+                          b.fair_prob, "lean:" + bets.label(b), price=b.fd_price, ev=b.ev,
+                          extra=lines)
 
     def singles_tab(self, parent, singles, previous) -> None:
         self.edge_lead(parent)
@@ -1107,6 +1143,8 @@ class App:
             if this_week:
                 tracker.record_generated(ledger, bets.tracker_entries(
                     singles, parlays, args.sport, season), edge=True)
+                tracker.record_generated(ledger, bets.tracker_entries(
+                    getattr(args, "leans", []), [], args.sport, season), lean=True)
             if not self.selftest:  # bets saved with Save / Save slip join the history
                 try:
                     tracker.import_saved(ledger, sorted((bets.ROOT / "bets").glob("*.json")))

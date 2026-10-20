@@ -58,6 +58,19 @@ class EdgeRuleTest(unittest.TestCase):
         self.assertEqual(probs, sorted(probs, reverse=True))
 
 
+class WorthALookTest(unittest.TestCase):
+    def test_value_that_misses_the_edge_rule(self):
+        thin = priced(1, 0.535, -110)  # +2.1%
+        risky = priced(2, 0.45, +140)  # +8% but loses more often
+        self.assertTrue(edges.is_lean(thin) and edges.is_lean(risky))
+        self.assertIn("edge is +2.1%", edges.why_not_edge(thin))
+        self.assertIn("wins 45%", edges.why_not_edge(risky))
+        self.assertFalse(edges.is_lean(priced(3, 0.55, -110)))  # an edge, not a lean
+        self.assertFalse(edges.is_lean(priced(4, 0.52, -110)))  # no value
+        self.assertFalse(edges.is_lean(priced(5, 0.35, +220)))  # too unlikely
+        self.assertFalse(edges.is_lean(priced(6, 0.535, -110, books_count=2)))  # doubtful
+
+
 class EdgeRecordTest(unittest.TestCase):
     def test_record_counts_edges_at_fanduel_odds(self):
         legs = [{"game_id": "g", "odds": 120, "kickoff": KICK.isoformat(), "type": "moneyline",

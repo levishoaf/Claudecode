@@ -4,7 +4,7 @@
     python3 discord_bot.py              # asks for the bot token the first time
     python3 discord_bot.py --selftest   # checks everything except the Discord connection
 
-Slash commands: /bets (edges), /parlays (edge parlays), /chance, /place,
+Slash commands: /bets (edges), /parlays (edge parlays), /worthalook, /chance, /place,
 /remove, /history, /injuries and /results-here. The whole server shares one bet history,
 saved in "discord bets.json" next to this program. Placed bets and the
 picks the bot showed are graded after the games, and results are posted in
@@ -200,17 +200,30 @@ class Core:
 
     EDGE_SECONDS = 300  # edges are found again at most this often
 
-    def _edges(self, sport, week):
-        """The league's edges (cached a few minutes)."""
+    def _board(self, sport, week):
+        """(edges, worth a look) for the league (cached a few minutes)."""
         from nfl_edge import edges
 
         key = (sport, week)
         hit = self.edge_cache.get(key)
         if hit and time.monotonic() - hit[0] < self.EDGE_SECONDS:
             return hit[1]
-        found = edges.league_edges(sport, week=week)
+        found = edges.league_board(sport, week=week)
         self.edge_cache[key] = (time.monotonic(), found)
         return found
+
+    def _edges(self, sport, week):
+        return self._board(sport, week)[0]
+
+    def leans(self, sport, count, week, wager, kind="All bets") -> str:
+        """FanDuel lines worth a look: they pay more than they're worth, but aren't edges."""
+        found = self._board(sport, week)[1]
+        if kind != "All bets":
+            found = of_type(found, kind)
+        found = found[:count]
+        self.ledger.record_shown(launcher.tracker_entries(found, [], sport,
+                                                          botcore.season_of(sport)), lean=True)
+        return botcore.leans_text(found, sport, wager)
 
     def bets(self, sport, count, lo, hi, week, wager, kind="All bets") -> str:
         """The league's edges, best first (only clear edges: nfl_edge/edges.py)."""
@@ -352,6 +365,16 @@ def run_bot(token: str | None, connect: bool = True):
         await work(interaction, core.parlays, interaction.channel_id, sport, count,
                    min_legs, max(min_legs, max_legs), 1, 99, week, WAGER, pays or None, bet_type)
 
+    @tree.command(name="worthalook",
+                  description="Not edges: FanDuel bets that pay a little more than they're worth")
+    @app_commands.choices(sport=sport_choices, bet_type=type_choices)
+    @app_commands.describe(count="How many bets (1-30)", week="NFL or college week",
+                           bet_type="Only one type of bet (default: all)")
+    async def worthalook_cmd(interaction: discord.Interaction, sport: str = "nfl",
+                             count: app_commands.Range[int, 1, 30] = 10,
+                             week: int | None = None, bet_type: str = "All bets"):
+        await work(interaction, core.leans, sport, count, week, WAGER, bet_type)
+
     @tree.command(name="chance", description="Win % for a bet, and whether FanDuel's price is worth it")
     @app_commands.choices(sport=sport_choices)
     @app_commands.describe(bet="Team or player and the line, e.g. Ravens +11.5",
@@ -474,6 +497,7 @@ def selftest() -> int:
         out["mlb"] = core.bets("mlb", 10, 1, 99, None, 10.0)
         out["mlb totals"] = core.bets("mlb", 5, 1, 99, None, 10.0, "Total runs")
         out["nba"] = core.bets("nba", 10, 1, 99, None, 10.0)
+        out["nba worth a look"] = core.leans("nba", 10, None, 10.0)
         out["nba spreads"] = core.bets("nba", 5, 1, 99, None, 10.0, "Spread")
     ok = True
     for name, text in out.items():

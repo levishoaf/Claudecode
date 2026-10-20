@@ -178,6 +178,26 @@ def edges_text(found, sport: str, wager: float) -> str:
     return "\n".join(lines)
 
 
+def leans_text(found, sport: str, wager: float) -> str:
+    """FanDuel lines worth a look: not edges, with what each misses of the edge rule."""
+    from . import edges
+
+    if not found:
+        return (f"**{SPORT_NAME[sport]} · worth a look**\nNothing right now: no FanDuel line "
+                f"pays even {edges.LEAN_MIN_EV:+.0%} over what it's worth.")
+    lines = [f"**{SPORT_NAME[sport]} · worth a look ({len(found)}) — not edges**",
+             f"_FanDuel pays {edges.LEAN_MIN_EV:+.0%}+ over what these are worth, but each "
+             f"misses the edge rule (a {edges.EDGE_MIN_EV:+.0%} edge and a "
+             f"{edges.EDGE_MIN_PROB:.0%}+ win chance). Thinner or riskier: bet with care._"]
+    for i, b in enumerate(found, 1):
+        pays = wager * american_to_decimal(b.fd_price)
+        lines.append(f"**{i}. {_describe(b)}** — wins **{b.fair_prob:.0%}** · FanDuel "
+                     f"{_fmt_american(b.fd_price)} · value {b.ev:+.1%} · ${wager:g} pays "
+                     f"${pays:,.2f}\n   {b.game.split(', ')[0]} · {when(b)} · "
+                     f"{edges.why_not_edge(b)}")
+    return "\n".join(lines)
+
+
 def edge_parlays_text(parlays, wager: float) -> list[str]:
     """Edge parlays as numbered slips (P1, P2...): every leg an edge, any league."""
     from . import edges
@@ -356,8 +376,9 @@ class ServerLedger:
         SINGLES_NOTE[0] = tracker.singles_vs_parlays(tracker.all_entries(ledger))
         return ledger
 
-    def record_shown(self, entries: list[dict], edge: bool = False) -> None:
-        self.update(lambda ledger: tracker.record_generated(ledger, entries, edge=edge))
+    def record_shown(self, entries: list[dict], edge: bool = False, lean: bool = False) -> None:
+        self.update(lambda ledger: tracker.record_generated(ledger, entries, edge=edge,
+                                                            lean=lean))
 
     def place(self, entry: dict, odds: int | None, stake: float, user_id: int,
               user_name: str) -> dict:

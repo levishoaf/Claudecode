@@ -68,17 +68,48 @@ def full_board(sport: str, week=None, day=None, lo: float = 0.01, hi: float = 0.
     raise ValueError(f"unknown league {sport!r}")
 
 
+# "Worth a look": FanDuel lines that pay more than they're worth but miss the edge rule
+# (a thinner edge, or a bet that loses more often than it wins). Shown apart, never as
+# edges, and never in edge parlays.
+LEAN_MIN_EV = 0.01  # at least +1% value at FanDuel's price
+LEAN_MIN_PROB = 0.40  # wins at least 2 times in 5
+
+
+def is_lean(b) -> bool:
+    from .picks import _doubt
+
+    return (not is_edge(b) and _doubt(b) is None and b.ev >= LEAN_MIN_EV
+            and b.fair_prob >= LEAN_MIN_PROB)
+
+
+def why_not_edge(b) -> str:
+    """What a "worth a look" bet misses of the edge rule."""
+    misses = []
+    if b.ev < EDGE_MIN_EV:
+        misses.append(f"its edge is {b.ev:+.1%} (an edge needs {EDGE_MIN_EV:+.0%})")
+    if b.fair_prob < EDGE_MIN_PROB:
+        misses.append(f"it wins {b.fair_prob:.0%} of the time (an edge needs "
+                      f"{EDGE_MIN_PROB:.0%})")
+    return "Not an edge: " + " and ".join(misses) + "."
+
+
 def league_edges(sport: str, week=None, day=None, offers: list | None = None,
                  now: datetime | None = None) -> list[Bet]:
-    """The league's edges, best first: its full board priced at FanDuel's real odds,
-    games not yet started, every edge rule met. [] without real odds."""
+    """The league's edges, best first (see league_board)."""
+    return league_board(sport, week, day, offers, now)[0]
+
+
+def league_board(sport: str, week=None, day=None, offers: list | None = None,
+                 now: datetime | None = None) -> tuple[list[Bet], list[Bet]]:
+    """(edges, worth a look), each best first: the league's full board priced at
+    FanDuel's real odds, games not yet started. ([], []) without real odds."""
     import bets as launcher
     from . import realodds
 
     if offers is None:
         offers = launcher.real_offers(sport, week if sport == "nfl" else None)
     if not offers:
-        return []
+        return [], []
     bets = realodds.apply(full_board(sport, week, day), sport, offers)
     if sport == "nfl":
         try:  # signal tiers: a Weak bet is never an edge
@@ -94,10 +125,10 @@ def league_edges(sport: str, week=None, day=None, offers: list | None = None,
             b.fair_prob = b.market_prob
             b.ev = expected_value(b.fair_prob, b.fd_price)
     now = now or datetime.now(timezone.utc)
-    out = [b for b in bets if b.commence_time > now and is_edge(b)]
-    for b in out:
+    bets = [b for b in bets if b.commence_time > now]
+    for b in bets:
         b.league = sport
-    return rank(out)
+    return rank([b for b in bets if is_edge(b)]), rank([b for b in bets if is_lean(b)])
 
 
 def _leg_key(b) -> tuple:

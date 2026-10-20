@@ -87,20 +87,24 @@ def fanduel_odds(legs: list[dict]) -> int | None:
 
 
 def record_generated(ledger: dict, entries: list[dict], now: datetime | None = None,
-                     edge: bool = False) -> int:
+                     edge: bool = False, lean: bool = False) -> int:
     """Add picks not seen before (first appearance wins). Returns how many were added.
-    With `edge`, they're edges: marked so, at FanDuel's odds (and a pick seen before
-    that is now an edge gets marked too)."""
+    With `edge` (or `lean`, a "worth a look" bet), they're marked so, at FanDuel's odds;
+    a pending pick seen before that is now an edge gets marked too."""
     known = {e["id"]: e for e in ledger["generated"]}
     added = 0
+    tag = "edge" if edge else "lean" if lean else None
     for e in entries:
-        if edge:
+        if tag:
             odds = fanduel_odds(e["legs"])
-            if e["id"] in known and not known[e["id"]].get("edge") and \
-                    known[e["id"]]["status"] == "pending" and odds is not None:
-                known[e["id"]].update(edge=True, odds=odds)
+            old = known.get(e["id"])
+            if old is not None and old["status"] == "pending" and odds is not None and \
+                    not old.get("edge") and not (tag == "lean" and old.get("lean")):
+                old.update({tag: True, "odds": odds})
+                if tag == "edge":
+                    old.pop("lean", None)
             if odds is not None:
-                e.update(edge=True, odds=odds)
+                e.update({tag: True, "odds": odds})
         if e["id"] not in known and soon(e["legs"], now):
             ledger["generated"].append(e)
             known[e["id"]] = e
@@ -465,10 +469,11 @@ def model_line(e: dict) -> bool:
     return not entry_types(e) <= ALWAYS_OFFERED
 
 
-def edge_record(entries: list[dict], wager: float = 10.0) -> dict:
-    """How the edges have done: {'won', 'lost', 'push', 'pending', 'profit' on `wager`
-    each at FanDuel's odds, 'expected' win rate}."""
-    edges = [e for e in entries if e.get("edge")]
+def edge_record(entries: list[dict], wager: float = 10.0, key: str = "edge") -> dict:
+    """How the edges (or with key "lean", the "worth a look" bets) have done: {'won',
+    'lost', 'push', 'pending', 'profit' on `wager` each at FanDuel's odds, 'expected'
+    win rate}."""
+    edges = [e for e in entries if e.get(key)]
     done = [e for e in edges if e["status"] in ("won", "lost")]
     return {"won": sum(e["status"] == "won" for e in done),
             "lost": sum(e["status"] == "lost" for e in done),

@@ -59,7 +59,11 @@ profit on $10, the payout, and the worst odds that keep the edge (`edges.worst_o
 market chance is never moved by our models (signals skip priced bets; `league_edges`
 restores it). Edge parlays (`edges.edge_parlays`, `EdgeParlay`: raw product, no learned
 correction) use only edges, 2-3 legs from different games, any league, likeliest first.
-Tabs: Edges, Edge parlays, Injuries, History; the Money Maker, Multi-Lays, Value and
+A **Worth a look** tab (`edges.is_lean`, bot `/worthalook`; the user asked for it) lists
+FanDuel lines with value of +1% or more and a 40%+ chance that miss the edge rule, each with
+what it misses (`edges.why_not_edge`), clearly labeled not edges, never in edge parlays;
+logged with `lean: True` and their own record (`edge_record(key="lean")`).
+Tabs: Edges, Edge parlays, Worth a look, Injuries, History; the Money Maker, Multi-Lays, Value and
 likeliest-first singles are gone (`bets.build(args)` with `edges=False` still builds the old
 board for tests). Edges are logged with `edge: True` at FanDuel's odds and every leg
 `fd_line` (so they count in the record); `tracker.edge_record` is the edge record shown on

@@ -170,6 +170,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     <nav class="tabs" role="tablist" aria-label="Section">
       <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Edges<span class="n" id="n-singles"></span></button>
       <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Edge parlays<span class="n" id="n-parlays"></span></button>
+      <button role="tab" id="tab-leans" data-tab="leans" aria-selected="false">Worth a look<span class="n" id="n-leans"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="n" id="n-injuries"></span></button>
       <button role="tab" id="tab-history" data-tab="history" aria-selected="false">History<span class="n" id="n-history"></span></button>
     </nav>
@@ -186,7 +187,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
-  const TABS = ["singles", "parlays", "injuries", "history"];
+  const TABS = ["singles", "parlays", "leans", "injuries", "history"];
   const state = {
     sport: store.get("bb.sport", "nfl"),
     week: {},
@@ -224,13 +225,14 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   function current() {
     const wk = weekData();
     if (state.betType === "All bets") return wk;
-    return { ...wk, singles: wk.singles.filter((b) => b.type === state.betType) };
+    return { ...wk, singles: wk.singles.filter((b) => b.type === state.betType),
+      leans: (wk.leans || []).filter((b) => b.type === state.betType) };
   }
   function typeOptions(wk) {
     const kinds = (DATA.leagueTypes || {})[state.sport] || DATA.betTypes || ["All bets"];
     return kinds.map((k) => {
-      const has = k === "All bets" || wk.singles.some((b) => b.type === k);
-      return `<option value="${esc(k)}"${k === state.betType ? " selected" : ""}${has ? "" : " disabled"}>${esc(k + (has ? "" : " (no edges)"))}</option>`;
+      const has = k === "All bets" || wk.singles.concat(wk.leans || []).some((b) => b.type === k);
+      return `<option value="${esc(k)}"${k === state.betType ? " selected" : ""}${has ? "" : " disabled"}>${esc(k + (has ? "" : " (none)"))}</option>`;
     }).join("");
   }
   function emptyNote(fallback) {
@@ -322,23 +324,24 @@ main { display: grid; gap: 14px; padding-block: 18px; }
       details || `<li>No track record for this bet yet.</li>`, b.worth);
   }
   // An edge: what it wins, how much FanDuel overpays, and what $10 returns.
-  function edgeCells(prob, ev, profit, odds, pays) {
+  function edgeCells(prob, ev, profit, odds, pays, lean) {
     return `<span class="r p num">${pct(prob)}</span>
-      <span class="r ev num c-good">${signPct(ev)}<small>+${money(profit)}</small></span>
+      <span class="r ev num ${lean ? "c-warn" : "c-good"}">${signPct(ev)}<small>+${money(profit)}</small></span>
       <span class="r o num">${esc(odds)}<small>${pays}</small></span>`;
   }
-  function edgeRow(b, i) {
-    const key = "e:" + (b.lid || b.id);
+  function edgeRow(b, i, lean) {
+    const key = (lean ? "l:" : "e:") + (b.lid || b.id);
     const open = state.open.has(key) ? " open" : "";
     const what = `<span class="t">${tierDot(b)}${esc(b.label)}</span><span class="s">${esc(b.type)} · ${esc(b.game.split(", ")[0])} · ${esc(b.when)} ET</span>`;
     const fd = b.fd;
-    let details = `<li class="c-good">Wins ${pct(b.prob)} of the time (every other sportsbook's price, cut taken out, from ${fd.books} books${fd.sharp ? " incl. Pinnacle" : ""}). FanDuel pays ${esc(fmtAm(fd.price))}, ${signPct(fd.ev)} more than that chance is worth: about +${money(b.edge.profit)} profit per $10 on average.</li>`;
-    details += `<li>Still an edge down to ${esc(fmtAm(b.edge.worst))} at FanDuel. Below that, skip it.</li>`;
+    let details = lean ? `<li class="c-warn">${esc(b.why)}</li>` : "";
+    details += `<li class="${lean ? "" : "c-good"}">Wins ${pct(b.prob)} of the time (every other sportsbook's price, cut taken out, from ${fd.books} books${fd.sharp ? " incl. Pinnacle" : ""}). FanDuel pays ${esc(fmtAm(fd.price))}, ${signPct(fd.ev)} more than that chance is worth: about +${money(b.edge.profit)} profit per $10 on average.</li>`;
+    if (!lean) details += `<li>Still an edge down to ${esc(fmtAm(b.edge.worst))} at FanDuel. Below that, skip it.</li>`;
     if (fd.best > fd.price) details += `<li class="c-accent">Better price: ${esc(fmtAm(fd.best))} at ${esc(fd.bestBook)}</li>`;
     details += tierItem(b) + histItems(b) + insightItems(b);
     return `<details class="bet" data-dd="${esc(key)}"${open}><summary class="cols e">
       <span class="idx num">${i + 1}</span><span class="what">${what}</span>
-      ${edgeCells(b.prob, fd.ev, b.edge.profit, fmtAm(fd.price), money(paysAt(b)))}
+      ${edgeCells(b.prob, fd.ev, b.edge.profit, fmtAm(fd.price), money(paysAt(b)), lean)}
     </summary><ul class="more">${details}</ul></details>`;
   }
   function edgeParlayRow(p, i) {
@@ -357,11 +360,11 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   function edgeHead() {
     return `<div class="cols e lh"><span>#</span><span>Bet</span><span class="r" title="How often it wins">Wins</span><span class="r" title="How much more FanDuel pays than the chance is worth, and the average profit on $10">Edge</span><span class="r" title="FanDuel's odds, and what $10 returns if it wins">Odds</span></div>`;
   }
-  function edgeRecordHtml() {
-    const r = DATA.edgeRecord;
-    if (!r || !(r.won + r.lost)) return `<p class="lead">Edge record: no edges settled yet${r && r.pending ? ` (${r.pending} pending)` : ""}.</p>`;
+  function edgeRecordHtml(lean) {
+    const r = lean ? DATA.leanRecord : DATA.edgeRecord, what = lean ? "Worth a look" : "Edge";
+    if (!r || !(r.won + r.lost)) return `<p class="lead">${what} record: none settled yet${r && r.pending ? ` (${r.pending} pending)` : ""}.</p>`;
     const n = r.won + r.lost;
-    return `<p class="lead" style="color:var(--fg)">Edge record: <b class="c-good">${r.won}</b> won · <b class="c-bad">${r.lost}</b> lost (${pct(r.won / n)}; expected ${pct(r.expected)}) · <b class="${r.profit >= 0 ? "c-good" : "c-bad"}">${r.profit >= 0 ? "+" : "−"}${money(Math.abs(r.profit))}</b> on $10 each at FanDuel's odds${r.pending ? ` · ${r.pending} pending` : ""}</p>`;
+    return `<p class="lead" style="color:var(--fg)">${what} record: <b class="c-good">${r.won}</b> won · <b class="c-bad">${r.lost}</b> lost (${pct(r.won / n)}; expected ${pct(r.expected)}) · <b class="${r.profit >= 0 ? "c-good" : "c-bad"}">${r.profit >= 0 ? "+" : "−"}${money(Math.abs(r.profit))}</b> on $10 each at FanDuel's odds${r.pending ? ` · ${r.pending} pending` : ""}</p>`;
   }
   const RULE = () => `An edge is a FanDuel line that wins at least ${pct((DATA.edgeRule || {}).prob || 0.5)} of the time and pays at least ${signPct((DATA.edgeRule || {}).ev || 0.03)} more than that chance is worth (the true chance from every other sportsbook's price with its cut taken out). Thin edges are left out.`;
 
@@ -513,7 +516,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
       <input id="hsearch" type="search" placeholder="Search a team, player, bet type or week" value="${esc(h.q)}" aria-label="Search bet history">
       <select id="hf-league" data-hf="league" aria-label="League">${opt("all", "All leagues", h.league)}${LEAGUES.map(([k, n]) => opt(k, n, h.league)).join("")}</select>
       <select id="hf-result" data-hf="result" aria-label="Result">${[["all", "Any result"], ["won", "Won"], ["lost", "Lost"], ["push", "Pushed"], ["pending", "Pending"]].map(([k, n]) => opt(k, n, h.result)).join("")}</select>
-      <select id="hf-kind" data-hf="kind" aria-label="Singles or parlays">${[["all", "Singles + parlays"], ["edge", "Edges only"], ["single", "Singles"], ["parlay", "Parlays"]].map(([k, n]) => opt(k, n, h.kind)).join("")}</select>
+      <select id="hf-kind" data-hf="kind" aria-label="Singles or parlays">${[["all", "Singles + parlays"], ["edge", "Edges only"], ["lean", "Worth a look"], ["single", "Singles"], ["parlay", "Parlays"]].map(([k, n]) => opt(k, n, h.kind)).join("")}</select>
       <select id="hf-week" data-hf="week" aria-label="Week">${opt("all", "Any week", h.week)}${weeks.map((w) => opt(w, "Week " + w, h.week)).join("")}</select>
       <select id="hf-type" data-hf="type" aria-label="Bet type">${opt("all", "Any bet type", h.type)}${kinds.map((k) => opt(k, k, h.type)).join("")}</select>
       ${histFiltered() ? `<button class="link" data-hclear="1">Clear</button>` : ""}
@@ -526,7 +529,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
         const sport = e.sport || "nfl";
         if (h.league !== "all" && sport !== h.league) return false;
         if (h.result !== "all" && s !== h.result) return false;
-        if (h.kind === "edge" ? !e.edge : h.kind !== "all" && (e.kind === "single" ? "single" : "parlay") !== h.kind) return false;
+        if (h.kind === "edge" ? !e.edge : h.kind === "lean" ? !e.lean : h.kind !== "all" && (e.kind === "single" ? "single" : "parlay") !== h.kind) return false;
         if (h.week !== "all" && String(weekOf(e)) !== String(h.week)) return false;
         if (h.type !== "all" && !typesOf(e).includes(h.type)) return false;
         const text = [leagueName(sport), teamOf(e), e.kind, s, "week " + weekOf(e), ...typesOf(e),
@@ -648,19 +651,26 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     const n = (id, v) => { $(id).textContent = v === "" ? "" : String(v); };
     n("n-singles", wk.singles.length);
     n("n-parlays", (DATA.edgeParlays || []).length);
+    n("n-leans", (wk.leans || []).length);
     n("n-injuries", wk.injuries ? wk.injuries.players.length : "");
     n("n-history", historyList().length);
 
-    let html = ["singles", "parlays"].includes(state.tab) ? notesHtml(wk) : "";
+    let html = ["singles", "parlays", "leans"].includes(state.tab) ? notesHtml(wk) : "";
     if (state.tab === "singles") html += `<p class="lead">${esc(RULE())} Best edge first.</p>` + edgeRecordHtml() + (wk.singles.length
-      ? `<div class="list">${edgeHead()}${wk.singles.map(edgeRow).join("")}</div>`
+      ? `<div class="list">${edgeHead()}${wk.singles.map((b, i) => edgeRow(b, i)).join("")}</div>`
       : `<p class="empty">${esc(state.betType === "All bets" ? DATA.noneNote : `No ${state.betType.toLowerCase()} edges here right now.`)}</p>`);
+    if (state.tab === "leans") {
+      const lr = DATA.leanRule || { ev: 0.01, prob: 0.4 };
+      html += `<p class="lead" style="color:var(--fg)">Not edges. These FanDuel lines pay ${signPct(lr.ev)} or more over what they're worth, but miss the edge rule: the edge is under ${signPct((DATA.edgeRule || {}).ev || 0.03)}, or the bet wins less than half the time (at least ${pct(lr.prob)}). Bet them only if you accept a thinner or riskier edge. Best value first; tap one to see what it misses.</p>` + edgeRecordHtml(true) + ((wk.leans || []).length
+        ? `<div class="list">${edgeHead()}${wk.leans.map((b, i) => edgeRow(b, i, true)).join("")}</div>`
+        : `<p class="empty">Nothing worth a look right now: no FanDuel line here pays even ${signPct(lr.ev)} over what it's worth.</p>`);
+    }
     if (state.tab === "parlays") html += (DATA.edgeParlays || []).length
       ? `<p class="lead">Parlays built only from edges: 2–3 legs from different games, any league, likeliest first. Every leg's edge adds up, but a parlay wins less often than its legs. They're the same whichever league is picked.</p><div class="list">${edgeHead()}${DATA.edgeParlays.map(edgeParlayRow).join("")}</div>`
       : `<p class="empty">No edge parlays right now: they need edges in at least two different games.</p>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
-    if (["singles", "parlays"].includes(state.tab)) html += helpHtml(wk);
+    if (["singles", "parlays", "leans"].includes(state.tab)) html += helpHtml(wk);
     $("main").innerHTML = html;
   }
 

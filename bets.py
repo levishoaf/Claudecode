@@ -293,10 +293,11 @@ def build_edges(args):
         if week and week != board.MLB_ALL_DAYS:
             day = date(week // 10000, week // 100 % 100, week % 100)
         week = None
-    found = edges.league_edges(sport, week=week, day=day)
+    found, leans = edges.league_board(sport, week=week, day=day)
     kind = getattr(args, "bet_type", None) or "All bets"
     if kind in BET_TYPES:
-        found = of_type(found, kind)
+        found, leans = of_type(found, kind), of_type(leans, kind)
+    args.leans = leans  # "worth a look": not edges
     board.NOTES["odds"] = ODDS_NOTE.get("note", "")
     board.NOTES.pop("confirm_line", None)
     args.value_offers = None
