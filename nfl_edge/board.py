@@ -508,6 +508,10 @@ def ufc_board(lo: float, hi: float, card: str | None = None, day: date | None = 
                         (f"{fight} doesn't go the distance", 1 - p_distance)):
             out.append(make_bet(game, kick, "fight_distance", pick, None, p, b["id"],
                                 "UFC model", week=week))
+    learn.adjust(out, "ufc")  # graded UFC picks have won less often than the model said
+    for b in out:
+        if b.market == "h2h" and not b.note:  # the model alone (real odds replace it)
+            b.note = NO_LINE
     return [b for b in out if lo <= b.fair_prob <= hi]
 
 

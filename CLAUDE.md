@@ -115,7 +115,7 @@ break-even less about 4.5% per leg); parlays whose every leg has won 75%+ of the
 (`hitrate.strong_leg_check`) come first, no Weak legs, no leg in more than two. Every NFL bet shows its track record (`nfl_edge/hitrate.py`): how often that exact bet
 would have won in games already played this season and last, and for moneylines the
 record against this week's opponent since two seasons back, game by game. Parlay legs
-show theirs, with the weakest leg named. A moneyline pick that lost most of its meetings with this opponent since then gets a warning only (`insights.h2h_warning`): tested on 2015-2025, the head-to-head record didn't predict beyond the market, so it never moves the chance. The top singles mix props and game bets (`prop_share=0.5`). The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
+show theirs, with the weakest leg named. A moneyline pick that lost most of its meetings with this opponent since then gets a warning only (`insights.h2h_warning`): tested on 2015-2025, the head-to-head record didn't predict beyond the market, so it never moves the chance.  The slip (add, view, save, clear, confirm, mark placed) was removed at the user's
 request: the app and web page only show bets, and every bet the builder makes is graded
 in Bet History. Bets placed on the page earlier stay there (the `placed` db collection).
 Chances are learned from results (`nfl_edge/learn.py`): `python -m nfl_edge.learn --write`
@@ -186,8 +186,18 @@ serves the boards (`web/export.build_result`), Multi-Lays, the record and `/v1/v
 (the priced lines), checking subscribers with RevenueCat; `ios/` is SwiftUI (XcodeGen
 `project.yml`), built and screenshotted on a Mac by `.github/workflows/ios.yml` (screenshots
 pushed to the `ios-screenshots` branch); demo data in `ios/BetBuilder/Demo`.
-The app and web page are a dark-mode, multi-sport look with one generic backdrop for
-every league (no football field). NBA is a visual preview only (`nba_placeholder`; no
+The app, web page and bot share one simple look (the user's choice): a quiet dark column,
+one soft blue accent; each bet is one line (tier dot, bet, game, chance, odds, $10 payout)
+and its details (tier and why, track record, head-to-head, warnings, FanDuel prices) open
+on a click (`<details>` on the page, `App.list_row` in the app); notes are a short dotted
+list and the key sits in a closed "What the numbers mean" panel. The bot writes one bold
+line per bet plus a line of game, time and warnings.
+The default singles ("All bets") are only bets at 70% or better (`picks.SINGLE_MIN_PROB`,
+likeliest first, no forced props mix); picking a bet type lists every line of it. Graded
+singles shown at 70%+ won 68-79%, under 60% about half; parlays won far less than singles,
+so the parlay tabs say so from the record (`tracker.singles_vs_parlays`). UFC chances learn
+from graded fights (`learn.adjust(..., "ufc")`, groups ufc:fight / ufc:distance) and fights
+with no market price are labeled No line yet. NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
 each league by team, each team by week) with a search box and League/Result/Kind/Week/Bet type
 filters (`tracker.leg_type_name`) that switch to one flat list of matches. The record

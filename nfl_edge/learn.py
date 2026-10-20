@@ -113,6 +113,8 @@ def logloss(points, curve=None) -> float:
 
 def group_of_bet(b, sport: str) -> str:
     m = b.market
+    if sport == "ufc":  # named as graded UFC legs are (tracker: fight, distance)
+        return f"ufc:{'fight' if m == 'h2h' else 'distance' if m == 'fight_distance' else m}"
     if m == "h2h":
         g = "moneyline"
     elif "spreads" in m:

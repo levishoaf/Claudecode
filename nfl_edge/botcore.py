@@ -20,7 +20,7 @@ from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
 from .parlays import Parlay
-from .picks import mixed_parlays, payout_parlays, rank_singles
+from .picks import SINGLE_MIN_PROB, mixed_parlays, payout_parlays, rank_singles
 
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
@@ -105,34 +105,40 @@ def week_of(bets, sport: str = "nfl") -> str:
 
 
 def singles_text(singles, sport: str, wager: float) -> str:
+    """One bold line per bet (tier dot, bet, chance, odds, payout), then its game, time and
+    anything to watch."""
     if not singles:
-        return "No bets in that chance range. Try a wider range."
-    on_fd = all(getattr(b, "on_fanduel", False) for b in singles)
-    lines = [f"**{SPORT_NAME[sport]} · {week_of(singles, sport)} · top {len(singles)} single bets**",
-             ("Every bet was found on FanDuel; odds are FanDuel's. Best value first."
-              if on_fd else
-              "Odds are break-even unless marked FanDuel: bet only if FanDuel pays that or "
-              "better. Confirm each bet on FanDuel before you place it.")]
+        return (f"No bets at {SINGLE_MIN_PROB:.0%} or better here. Pick a `bet_type` to see "
+                "every bet of that type, or try a wider chance range.")
+    on_fd = any(getattr(b, "on_fanduel", False) for b in singles)
+    lines = [f"**{SPORT_NAME[sport]} · {week_of(singles, sport)} · {len(singles)} likeliest "
+             "singles**"]
     for i, b in enumerate(singles, 1):
         if getattr(b, "on_fanduel", False):
-            price = (f"FanDuel {_fmt_american(b.fd_price)} · EV {b.ev:+.1%} · ${wager:g} pays "
-                     f"${wager * american_to_decimal(b.fd_price):,.2f}")
-            best = getattr(b, "best_price", None)
-            if best is not None and best > b.fd_price:
-                price += f" · better: {_fmt_american(best)} at {book_name(b.best_book)}"
-            if getattr(b, "check", False):
-                price += " · ⚠ far from other books, check the news"
+            odds, pays = _fmt_american(b.fd_price), wager * american_to_decimal(b.fd_price)
         else:
-            price = (f"worst odds {break_even(b.fair_prob)} · ${wager:g} pays "
-                     f"${wager / b.fair_prob:,.2f}")
+            odds, pays = break_even(b.fair_prob), wager / b.fair_prob
+        ins = getattr(b, "insight", None)
+        dot = TIER_ICON[ins.tier] + " " if ins is not None else ""
         tag = NOTE_TAG.get(b.note, "") + (" · *confirm line*" if b.confirm_line else "")
-        lines.append(f"**{i}. {_describe(b)}**{tag} — **{b.fair_prob:.0%}** · "
-                     f"{price}\n   {b.game} · {when(b)}" + tier_text(b))
-    if not on_fd:
-        lines.append("Expected value is 0 at break-even odds. Use `/chance` with FanDuel's price "
-                     "to see the real value.")
+        more = [b.game, when(b)]
+        best = getattr(b, "best_price", None)
+        if getattr(b, "on_fanduel", False) and best is not None and best > b.fd_price:
+            more.append(f"better {_fmt_american(best)} at {book_name(b.best_book)}")
+        if getattr(b, "check", False):
+            more.append("⚠ far from other books, check the news")
+        if ins is not None:
+            more += [f"⚠ {f}" for f in ins.flags[:2]]
+        lines.append(f"**{i}.** {dot}**{_describe(b)}**{tag} — **{b.fair_prob:.0%}** · {odds} · "
+                     f"${wager:g} pays ${pays:,.2f}\n   " + " · ".join(more))
+    lines.append("Odds marked with a FanDuel price are FanDuel's; the rest are break-even: bet "
+                 "only if FanDuel pays that or better." if on_fd else
+                 "Odds are break-even: bet only if FanDuel pays that or better. Use `/chance` "
+                 "with FanDuel's price to see the real value.")
     return "\n".join(lines)
 
+
+SINGLES_NOTE = [None]  # "Singles have won 62% of the time and parlays 17%..." (set by the bot)
 
 TIER_ICON = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
 
@@ -167,7 +173,8 @@ def parlays_text(parlays, sport: str, wager: float) -> list[str]:
     if not parlays:
         return ["Not enough games for those parlays."]
     out = [f"**{SPORT_NAME[sport]} · {week_of([b for p in parlays for b in p.legs], sport)} · "
-           f"top {len(parlays)} parlays** (place one with `/place bet:P1`)"]
+           f"top {len(parlays)} parlays** (place one with `/place bet:P1`)"
+           + (f"\n{SINGLES_NOTE[0]}" if SINGLES_NOTE[0] else "")]
     for i, p in enumerate(parlays, 1):
         on_fd = all(getattr(b, "on_fanduel", False) for b in p.legs)
         slip = "\n".join(format_slip(p, wager, break_even=not on_fd))
@@ -270,7 +277,9 @@ class ServerLedger:
     def __init__(self, path):
         self.path = path
         self.lock = threading.Lock()
-        learn.remember(tracker.all_entries(tracker.load(path)))  # learn from past results
+        entries = tracker.all_entries(tracker.load(path))
+        learn.remember(entries)  # learn from past results
+        SINGLES_NOTE[0] = tracker.singles_vs_parlays(entries)
 
     def load(self) -> dict:
         return tracker.load(self.path)
@@ -282,6 +291,7 @@ class ServerLedger:
             change(ledger)
             tracker.save(ledger, self.path)
         learn.remember(tracker.all_entries(ledger))  # the next boards learn from the results
+        SINGLES_NOTE[0] = tracker.singles_vs_parlays(tracker.all_entries(ledger))
         return ledger
 
     def record_shown(self, entries: list[dict]) -> None:
@@ -465,8 +475,8 @@ def chunks(text: str, size: int = MAX_MESSAGE) -> list[str]:
 
 def pick_singles(bets, count: int, rank_by: str = "prob", mix: bool = True):
     """The top singles; with `mix`, half props and half game bets where possible."""
-    return rank_singles(bets, count, rank_by=rank_by, per_game=3,
-                        prop_share=0.5 if mix else None, every_line=not mix)
+    return rank_singles(bets, count, SINGLE_MIN_PROB if mix else 0.0, rank_by=rank_by,
+                        per_game=3, every_line=not mix)
 
 
 def pick_parlays(bets, count: int, min_legs: int, max_legs: int,

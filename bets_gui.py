@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Windowed bet builder in a modern sportsbook style: the same picks as
-bets.py, on a charcoal football field. No API key needed.
+"""Windowed bet builder: the same picks as bets.py, in one quiet dark column like the web
+page. Each bet is one line (chance, odds, payout); click it for its details.
 
     python3 bets_gui.py
 """
@@ -30,6 +30,7 @@ from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS,
+                            SINGLE_MIN_PROB,
                             league_types, multi_lays,
                             empty_type_note,
                             fanduel_estimate, money_maker_parlays)
@@ -38,15 +39,15 @@ W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
 CARD_W = 272  # bet cards, three across
 
-# Field (charcoal)
-# Sportsbook-style UI, in dark mode
-NAVY, NAVY_2 = "#111a2b", "#1b2740"
-BLUE, BLUE_DARK, BLUE_SOFT = "#3d8bff", "#2a6fdb", "#22314d"
-BG, CARD, BORDER = "#151a23", "#1d2430", "#2c3545"
-SUBTLE, INPUT = "#19202b", "#0f141c"  # nested rows; text boxes
-TEXT, MUTED, WHITE = "#e6ebf2", "#94a0b2", "#ffffff"
-GREEN, AMBER, RED, TRACK = "#2fb864", "#e8ad1c", "#ef5b5b", "#2a3343"
-NEW_BADGE, MOVED_BADGE = "#3d8bff", "#f08a24"
+# The web page's palette (web/template.html): a quiet dark column, one soft blue accent.
+NAVY, NAVY_2 = "#151a21", "#1c232c"  # header band; raised controls
+BLUE, BLUE_DARK, BLUE_SOFT = "#8fb0ff", "#a9c2ff", "#1c232c"  # accent; its hover; soft fill
+BG, CARD, BORDER = "#0e1116", "#0e1116", "#262e39"  # rows sit on the page, split by lines
+SUBTLE, INPUT = "#0e1116", "#1c232c"  # list headers; text boxes
+TEXT, MUTED, WHITE = "#e8ecf1", "#8d97a4", "#ffffff"
+FAINT = "#5e6773"
+GREEN, AMBER, RED, TRACK = "#3cc57f", "#e6a93b", "#f06a63", "#262e39"
+NEW_BADGE, MOVED_BADGE = "#8fb0ff", "#e6a93b"
 # Bets you placed and picks you didn't, graded after the games.
 LEDGER = Path.home() / "Bet Builder" / "my bets.json"
 SPORTS = (("nfl", "NFL"), ("ncaaf", "College Football"), ("ufc", "UFC"), ("mlb", "MLB"),
@@ -76,28 +77,19 @@ def chance_color(p: float) -> str:
 
 
 def draw_backdrop(c: tk.Canvas, w: float = W, h: float = H) -> None:
-    """The same dark backdrop for every league: a soft top-to-bottom gradient, faint
-    diagonal pinstripes and the name down both sides (redrawn when resized)."""
-    top, bottom = (11, 14, 19), (20, 25, 35)
-    steps = 48
-    for i in range(steps):
-        t = i / (steps - 1)
-        rgb = "#%02x%02x%02x" % tuple(round(a + (b - a) * t) for a, b in zip(top, bottom))
-        c.create_rectangle(0, h * i / steps, w, h * (i + 1) / steps + 1, fill=rgb, outline="",
-                           tags="field")
-    for x in range(-int(h), int(w), 34):
-        c.create_line(x, h, x + h, 0, fill="#161c27", tags="field")
-    for side, x in ((90, (w - PANEL_W) / 4), (-90, w - (w - PANEL_W) / 4)):
-        c.create_text(x, h / 2, text="BET  BUILDER", angle=side, fill="#263042",
-                      font=("Helvetica", 30, "bold"), tags="field")
+    """The plain page behind everything, with the header band across the top (redrawn
+    when resized)."""
+    c.create_rectangle(0, 0, w, h, fill=BG, outline="", tags="field")
+    c.create_rectangle(0, 0, w, 150, fill=NAVY, outline="", tags="field")
+    c.create_line(0, 150, w, 150, fill=BORDER, tags="field")
 
 
 class FlatButton(tk.Label):
     """A flat, modern button with a hover color."""
 
     def __init__(self, parent, text, command, kind="primary", font=None, **kw):
-        colors = {"primary": (BLUE, WHITE, BLUE_DARK), "secondary": (CARD, BLUE, BLUE_SOFT),
-                  "ghost": (NAVY_2, WHITE, "#1d3a66")}[kind]
+        colors = {"primary": (BLUE, BG, BLUE_DARK), "secondary": (NAVY_2, TEXT, BORDER),
+                  "ghost": (NAVY, MUTED, NAVY_2)}[kind]
         self.bg, self.fg, self.hover = colors
         super().__init__(parent, text=text, bg=self.bg, fg=self.fg, cursor="hand2",
                          font=font, padx=13, pady=7, **kw)
@@ -107,8 +99,8 @@ class FlatButton(tk.Label):
         self.bind("<Button-1>", lambda e: self.command())
 
     def set_kind(self, kind: str) -> None:
-        self.bg, self.fg, self.hover = {"primary": (BLUE, WHITE, BLUE_DARK),
-                                        "ghost": (NAVY_2, "#b8c4d6", "#1d3a66")}[kind]
+        self.bg, self.fg, self.hover = {"primary": (TEXT, BG, WHITE),
+                                        "ghost": (NAVY, MUTED, NAVY_2)}[kind]
         self.configure(bg=self.bg, fg=self.fg)
 
 
@@ -146,8 +138,8 @@ class App:
         c = tk.Canvas(root, width=W, height=H, highlightthickness=0, bg=BG)
         c.pack(fill="both", expand=True)
         draw_backdrop(c)
-        self.mark = c.create_text(W - 12, H - 8, anchor="se", text="Levi Shoaf",
-                                  fill="#8a8f99", font=self.f["tinyb"])  # owner watermark
+        self.mark = c.create_text(W - 12, H - 8, anchor="se", text="",
+                                  fill=FAINT, font=self.f["tinyb"])  # the owner's name is in the header
         self.canvas = c
         self.header(c)
         self.output(c)
@@ -174,8 +166,11 @@ class App:
         for opt, value in (("background", INPUT), ("foreground", TEXT),
                            ("selectBackground", BLUE), ("selectForeground", WHITE)):
             self.root.option_add(f"*TCombobox*Listbox.{opt}", value)  # the open list
-        s.configure("Vertical.TScrollbar", troughcolor=BG, background="#3a4558",
-                    bordercolor=BG, arrowcolor=MUTED, lightcolor="#3a4558", darkcolor="#3a4558")
+        s.configure("Vertical.TScrollbar", troughcolor=BG, background=NAVY_2,
+                    bordercolor=BG, arrowcolor=MUTED, lightcolor=NAVY_2, darkcolor=NAVY_2,
+                    gripcount=0, relief="flat")
+        s.map("Vertical.TScrollbar", background=[("active", BORDER), ("!active", NAVY_2)],
+              troughcolor=[("!disabled", BG), ("disabled", BG)])
 
     def header(self, c: tk.Canvas) -> None:
         top = tk.Frame(c, bg=NAVY)
@@ -183,8 +178,8 @@ class App:
         row1.pack(fill="x", padx=18, pady=(12, 4))
         tk.Label(row1, text="Bet Builder", bg=NAVY, fg=WHITE, font=self.f["title"]).pack(side="left")
         self.countdown = tk.StringVar(value="")
-        tk.Label(row1, text="   Multi-sport  ·  free data  ·  break-even odds", bg=NAVY, fg="#9fb0c8",
-                 font=self.f["small"]).pack(side="left")
+        tk.Label(row1, text="   Levi Shoaf", bg=NAVY, fg=FAINT,
+                 font=self.f["small"]).pack(side="left", pady=(5, 0))
 
         self.sport = tk.StringVar(value="nfl")
         seg = tk.Frame(row1, bg=NAVY_2)
@@ -206,7 +201,7 @@ class App:
         def field(label, var, width, values=None):
             box = tk.Frame(row2, bg=NAVY)
             box.pack(side="left", padx=(0, 5))
-            tk.Label(box, text=label.upper(), bg=NAVY, fg="#9fb0c8",
+            tk.Label(box, text=label.upper(), bg=NAVY, fg=MUTED,
                      font=self.f["label"]).pack(anchor="w")
             if values:
                 w = ttk.Combobox(box, textvariable=var, values=values, width=width,
@@ -365,7 +360,7 @@ class App:
         FlatButton(chk, "Real odds", self.ask_odds_key, "secondary",
                    self.f["bold"]).pack(side="right", padx=(0, 8))
         # Update messages show here.
-        self.verdict = tk.Label(chk, text="", bg=NAVY, fg="#9fb0c8",
+        self.verdict = tk.Label(chk, text="", bg=NAVY, fg=MUTED,
                                 anchor="w", justify="left", font=self.f["small"],
                                 wraplength=int(PANEL_W) - 260)
         self.verdict.pack(side="left", fill="x", expand=True, padx=6)
@@ -409,36 +404,27 @@ class App:
                  bg=BG, fg=MUTED, font=self.f["small"]).pack(side="left", pady=(3, 0))
         self.fd_mode = bool(getattr(args, "fanduel_key", None)) or any(
             getattr(b, "on_fanduel", False) for b in singles)  # real odds: FanDuel's prices
+        # The week's notes, as one short list (a dot: green when good news, amber to watch).
+        notes = tk.Frame(self.body, bg=BG)
+        notes.pack(fill="x", padx=16, pady=(6, 0))
         if self.fd_mode and board.NOTES.get("fanduel"):
-            tk.Label(self.body, text="✓ " + board.NOTES["fanduel"] + "  ·  ranked by expected value",
-                     bg=BG, fg=BLUE,
-                     font=self.f["small"]).pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["fanduel"] + "  ·  ranked by expected value", GREEN)
         if board.NOTES.get("odds") and args.sport != "nba":
-            tk.Label(self.body, text="✓ " + board.NOTES["odds"], bg=BG, fg=GREEN,
-                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["odds"], GREEN)
         if board.NOTES.get("confirm_line") and args.sport != "nba":
-            tk.Label(self.body, text="⚠ " + board.NOTES["confirm_line"], bg=BG, fg=MOVED_BADGE,
-                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["confirm_line"], AMBER)
         if args.sport == "ufc" and board.NOTES.get("ufc_model") and not board.NOTES.get("odds"):
-            tk.Label(self.body, text="ⓘ " + board.NOTES["ufc_model"], bg=BG, fg=MUTED,
-                     font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["ufc_model"])
         if args.sport == "mlb":
-            for icon, key in (("ⓘ ", "mlb_model"), ("⚾ Starters: ", "mlb_starters")):
+            for prefix, key in (("", "mlb_model"), ("Starters: ", "mlb_starters")):
                 if board.NOTES.get(key) and not (key == "mlb_model" and board.NOTES.get("odds")):
-                    tk.Label(self.body, text=icon + board.NOTES[key], bg=BG, fg=MUTED,
-                             font=self.f["small"], wraplength=820,
-                             justify="left").pack(anchor="w", padx=16)
+                    self.note(notes, prefix + board.NOTES[key])
         if args.sport == "nfl" and board.NOTES.get("late"):
-            tk.Label(self.body, text="⏱ " + board.NOTES["late"], bg=BG, fg=BLUE,
-                     font=self.f["small"]).pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["late"], AMBER)
         if args.sport == "nfl" and board.NOTES.get("injuries"):
             ready = "included for all" in board.NOTES["injuries"]
-            tk.Label(self.body, text=("✓ " if ready else "⚠ ") + board.NOTES["injuries"],
-                     bg=BG, fg=GREEN if ready else MOVED_BADGE,
-                     font=self.f["small"]).pack(anchor="w", padx=16)
+            self.note(notes, board.NOTES["injuries"], None if ready else AMBER)
 
-        if args.sport != "nba":
-            self.legend(self.body, args.sport)
         money = getattr(args, "money_makers", [])
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
@@ -456,11 +442,11 @@ class App:
             on = key == self.tab
             tab = tk.Frame(tabs, bg=BG)
             tab.pack(side="left", padx=(0, 14))
-            lbl = tk.Label(tab, text=text, bg=BG, fg=BLUE if on else MUTED, cursor="hand2",
+            lbl = tk.Label(tab, text=text, bg=BG, fg=TEXT if on else MUTED, cursor="hand2",
                            font=self.f["bold"])
             lbl.pack()
             self.tab_labels[key] = lbl
-            line = tk.Frame(tab, bg=BLUE if on else BG, height=3)
+            line = tk.Frame(tab, bg=BLUE if on else BG, height=2)
             line.pack(fill="x", pady=(4, 0))
             self.tab_lines[key] = line
             for w in (tab, lbl):
@@ -473,11 +459,7 @@ class App:
         self.panes: dict[str, tk.Frame] = {}
         self.pane(self.tab).pack(fill="both")
         if args.sport != "nba":
-            tk.Label(self.body, text=(
-                "Every bet here was found on FanDuel; odds are FanDuel's from the last check. "
-                "EV is the expected profit per $1." if self.fd_mode else
-                "Odds shown are break-even: bet only if FanDuel pays that or better."),
-                bg=BG, fg=MUTED, font=self.f["tiny"]).pack(anchor="w", padx=16, pady=10)
+            self.legend(self.body, args.sport)  # "What the numbers mean", closed until clicked
 
     def pane(self, key: str) -> tk.Frame:
         """The tab's content for the bets shown now, drawn the first time it's opened."""
@@ -494,6 +476,7 @@ class App:
         elif key == "singles":
             self.singles_tab(grid, singles, previous)
         elif key == "parlays":
+            self.singles_note(grid)
             if board.NOTES.get("parlay_pool"):
                 tk.Label(grid, text="● " + board.NOTES["parlay_pool"], bg=BG,
                          fg=GREEN if "only Strong" in board.NOTES["parlay_pool"] else AMBER,
@@ -501,6 +484,7 @@ class App:
                          justify="left").pack(anchor="w", padx=6, pady=(6, 0))
             self.parlays_tab(grid, parlays, args.stake)
         elif key == "money":
+            self.singles_note(grid)
             tk.Label(grid, text=(f"The likeliest parlays that pay back at least double your "
                                  f"wager if they win, even at FanDuel's prices: "
                                  f"{MONEY_MAKER_LEGS[0]}-{MONEY_MAKER_LEGS[1]} legs from different "
@@ -532,30 +516,67 @@ class App:
          ("Pays on $10", None, "what $10 returns, stake included")],
     ]
 
+    def singles_note(self, parent) -> bool:
+        """Above the parlays: how much more often singles have won (from Bet History)."""
+        with self.ledger_lock:
+            text = tracker.singles_vs_parlays(tracker.all_entries(self.ledger))
+        if text:
+            tk.Label(parent, text=text, bg=BG, fg=TEXT, font=self.f["small"], wraplength=820,
+                     justify="left").pack(anchor="w", padx=6, pady=(6, 0))
+        return bool(text)
+
+    def note(self, parent, text: str, color: str | None = None) -> None:
+        """One line of the week's notes: a small dot, then the text."""
+        line = tk.Frame(parent, bg=BG)
+        line.pack(fill="x", anchor="w")
+        tk.Label(line, text="●", bg=BG, fg=color or FAINT, font=self.f["tiny"]).pack(
+            side="left", anchor="n", pady=(2, 0))
+        tk.Label(line, text=text, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+                 justify="left", anchor="w").pack(side="left", padx=(6, 0), fill="x")
+
     def legend(self, parent, sport: str = "nfl") -> None:
-        """What the numbers and symbols on each bet mean, in a few short rows."""
-        box = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightthickness=1)
-        box.pack(fill="x", padx=16, pady=(8, 0))
+        """What the numbers and symbols on each bet mean: one link that opens the key."""
+        holder = tk.Frame(parent, bg=BG)
+        holder.pack(fill="x", padx=16, pady=(10, 12))
+        link = tk.Label(holder, text="▸ What the numbers mean", bg=BG, fg=BLUE, cursor="hand2",
+                        font=self.f["small"])
+        link.pack(anchor="w")
+        box = tk.Frame(holder, bg=BG)
         rows = self.UFC_LEGEND if sport in ("ufc", "mlb") else self.LEGEND
         for row in rows:
-            line = tk.Frame(box, bg=CARD)
-            line.pack(fill="x", padx=10, pady=(5, 0 if row is not rows[-1] else 6))
             for sample, color, meaning in row:
-                item = tk.Frame(line, bg=CARD)
-                item.pack(side="left", padx=(0, 16))
+                item = tk.Frame(box, bg=BG)
+                item.pack(anchor="w", pady=1)
                 if color == "chance":  # chances are colored by how likely they are
                     for text, c in (("72%", GREEN), ("58%", AMBER), ("40%", RED)):
-                        tk.Label(item, text=text, bg=CARD, fg=c,
+                        tk.Label(item, text=text, bg=BG, fg=c,
                                  font=self.f["tinyb"]).pack(side="left", padx=(0, 3))
                 elif sample.startswith("●"):
                     for word, c in (("● Strong", GREEN), ("● Mixed", AMBER), ("● Weak", RED)):
-                        tk.Label(item, text=word, bg=CARD, fg=c,
+                        tk.Label(item, text=word, bg=BG, fg=c,
                                  font=self.f["tinyb"]).pack(side="left", padx=(0, 3))
                 else:
-                    tk.Label(item, text=sample, bg=CARD, fg=color or TEXT,
+                    tk.Label(item, text=sample, bg=BG, fg=color or TEXT,
                              font=self.f["tinyb"]).pack(side="left")
-                tk.Label(item, text=" " + meaning, bg=CARD, fg=MUTED,
+                tk.Label(item, text="  " + meaning, bg=BG, fg=MUTED,
                          font=self.f["tiny"]).pack(side="left")
+        tk.Label(box, text=(
+            "Bets with a FanDuel price show FanDuel's real price, and their chance is the true "
+            "chance from every other sportsbook (cut taken out). Other odds are break-even: bet "
+            "only if FanDuel pays that or better. Click a bet to see its details."
+            if getattr(self, "fd_mode", False) else
+            "Odds shown are break-even: bet only if FanDuel pays that or better. Click a bet to "
+            "see its details."), bg=BG, fg=MUTED, font=self.f["tiny"], wraplength=820,
+            justify="left").pack(anchor="w", pady=(6, 0))
+
+        def toggle(_=None):
+            if box.winfo_ismapped():
+                box.pack_forget()
+                link.configure(text="▸ What the numbers mean")
+            else:
+                box.pack(anchor="w", pady=(6, 0))
+                link.configure(text="▾ What the numbers mean")
+        link.bind("<Button-1>", toggle)
 
     def show_tab(self, key: str) -> None:
         """Switch tabs: hide the current one and show the other (drawn once, then kept)."""
@@ -566,7 +587,7 @@ class App:
             self.render(*self.render_args)
             return
         for k, lbl in self.tab_labels.items():
-            lbl.configure(fg=BLUE if k == key else MUTED)
+            lbl.configure(fg=TEXT if k == key else MUTED)
             self.tab_lines[k].configure(bg=BLUE if k == key else BG)
         if old in self.panes:
             self.panes[old].pack_forget()
@@ -585,8 +606,7 @@ class App:
     # -------------------------------------------------------------- list view
     def list_table(self, parent, first: str, last: str | None = "pays") -> tk.Frame:
         """A white list with a header row: #, Bet, Chance, Worst odds, Pays."""
-        table = tk.Frame(parent, bg=CARD, highlightbackground=BORDER, highlightcolor=BORDER,
-                         highlightthickness=1)
+        table = tk.Frame(parent, bg=CARD)
         table.pack(fill="x", padx=6, pady=(6, 0))
         tk.Frame(table, bg=CARD, width=int(PANEL_W) - 70, height=0).pack()  # full panel width
         head = tk.Frame(table, bg=SUBTLE)
@@ -596,7 +616,7 @@ class App:
         last_text = f"PAYS ON ${self.wager():g}" if last == "pays" else (last or "").upper()
         for col, text, anchor in ((0, first, "w"), (1, "BET", "w"), (2, "CHANCE", "e"),
                                   (3, "ODDS" if fd else "WORST ODDS", "e"), (4, last_text, "e")):
-            tk.Label(head, text=text, bg=SUBTLE, fg=MUTED, font=self.f["label"]).grid(
+            tk.Label(head, text=text, bg=SUBTLE, fg=FAINT, font=self.f["label"]).grid(
                 row=0, column=col, sticky=anchor, padx=6, pady=5)
         return table
 
@@ -614,45 +634,60 @@ class App:
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
                  last: str | None = None, price: int | None = None,
-                 ev: float | None = None, extra=None) -> tk.Frame:
-        """One bet: number, name with game below (and an optional colored line, e.g. its
-        track record), chance, worst odds, payout."""
+                 ev: float | None = None, extra=None, dot: str | None = None) -> tk.Frame:
+        """One bet on one line: number, name (with its tier's dot) and game, chance, odds and
+        payout. Its details (track record, tier, FanDuel prices...) open when it's clicked."""
         tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
         row = tk.Frame(table, bg=CARD)
         row.pack(fill="x")
         self.grid_cols(row)
-        num_lbl = tk.Label(row, text=num, bg=CARD, fg=MUTED, font=self.f["bold"])
-        num_lbl.grid(row=0, column=0, rowspan=3, sticky="w", padx=8)
-        tk.Label(row, text=title, bg=CARD, fg=TEXT, font=self.f["bold"], anchor="w",
-                 justify="left", wraplength=470).grid(row=0, column=1, sticky="w", padx=6,
-                                                       pady=(6, 0))
+        num_lbl = tk.Label(row, text=num, bg=CARD, fg=FAINT, font=self.f["small"])
+        num_lbl.grid(row=0, column=0, rowspan=2, sticky="w", padx=8)
+        name = tk.Frame(row, bg=CARD)
+        name.grid(row=0, column=1, sticky="w", padx=6, pady=(8, 0))
+        if dot:
+            tk.Label(name, text="●", bg=CARD, fg=dot, font=self.f["tiny"]).pack(side="left",
+                                                                               padx=(0, 4))
+        title_lbl = tk.Label(name, text=title, bg=CARD, fg=TEXT, font=self.f["bold"],
+                             anchor="w", justify="left", wraplength=470)
+        title_lbl.pack(side="left")
         tk.Label(row, text=sub, bg=CARD, fg=MUTED, font=self.f["tiny"], anchor="w",
                  justify="left", wraplength=470).grid(row=1, column=1, sticky="w", padx=6,
-                                                       pady=(0, 0 if extra else 6))
+                                                       pady=(0, 8))
         if extra:
             lines = [extra] if isinstance(extra, tuple) else extra  # (text, color) pairs
             box = tk.Frame(row, bg=CARD)
-            box.grid(row=2, column=1, sticky="w", padx=6, pady=(1, 6))
             for text, color in lines:
-                tk.Label(box, text=text, bg=CARD, fg=color, font=self.f["tinyb"], anchor="w",
-                         justify="left", wraplength=470).pack(anchor="w")
+                tk.Label(box, text=text, bg=CARD, fg=color, font=self.f["small"], anchor="w",
+                         justify="left", wraplength=560).pack(anchor="w")
+
+            def toggle(_=None):  # details open and close on a click
+                if box.winfo_ismapped():
+                    box.grid_remove()
+                else:
+                    box.grid(row=2, column=1, columnspan=4, sticky="w", padx=6, pady=(0, 10))
+            for w in [row, name, title_lbl] + [c for c in row.winfo_children() if c is not box]:
+                w.bind("<Button-1>", toggle, add="+")
+                w.configure(cursor="hand2")
+            title_lbl.bind("<Enter>", lambda e: title_lbl.configure(fg=BLUE))
+            title_lbl.bind("<Leave>", lambda e: title_lbl.configure(fg=TEXT))
         tk.Label(row, text=f"{prob:.0%}", bg=CARD, fg=chance_color(prob),
-                 font=self.f["pick"]).grid(row=0, column=2, rowspan=3, sticky="e", padx=6)
+                 font=self.f["pick"]).grid(row=0, column=2, rowspan=2, sticky="e", padx=6)
         fd = getattr(self, "fd_mode", False) and price is not None
         odds_text = _fmt_american(price) if fd else _fmt_american(decimal_to_american(1 / prob))
-        tk.Label(row, text=odds_text, bg=CARD, fg=BLUE,
-                 font=self.f["bold"]).grid(row=0, column=3, rowspan=3, sticky="e", padx=6)
+        tk.Label(row, text=odds_text, bg=CARD, fg=TEXT,
+                 font=self.f["bold"]).grid(row=0, column=3, rowspan=2, sticky="e", padx=6)
         if last is not None:
             end = last
         else:  # total payout: at FanDuel's price when known, else at the break-even odds
             end = f"${self.wager() * (american_to_decimal(price) if fd else 1 / prob):,.2f}"
-        end_lbl = tk.Label(row, text=end, bg=CARD, fg=TEXT, font=self.f["bold"])
+        end_lbl = tk.Label(row, text=end, bg=CARD, fg=MUTED, font=self.f["body"])
         if last is None and fd and ev is not None:
             end_lbl.grid(row=0, column=4, sticky="se", padx=8, pady=(6, 0))
             tk.Label(row, text=f"EV {ev:+.1%}", bg=CARD, fg=GREEN if ev > 0 else RED,
                      font=self.f["tiny"]).grid(row=1, column=4, sticky="ne", padx=8, pady=(0, 6))
         else:
-            end_lbl.grid(row=0, column=4, rowspan=3, sticky="e", padx=8)
+            end_lbl.grid(row=0, column=4, rowspan=2, sticky="e", padx=8)
         if key is not None:
             self.row_widgets[key] = (row, num_lbl, num)
         return row
@@ -666,7 +701,9 @@ class App:
 
     def singles_tab(self, parent, singles, previous) -> None:
         if not singles:
-            tk.Label(parent, text=self.empty_text("None found. Try another week."), bg=BG,
+            tk.Label(parent, text=self.empty_text(
+                f"No bets at {SINGLE_MIN_PROB:.0%} or better here. Pick a bet type to see every "
+                "bet of that type."), bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         table = self.list_table(parent, "#")
@@ -680,11 +717,13 @@ class App:
                 title += f"  · was {old:.0%}"
             on_fd = getattr(b, "on_fanduel", False)
             tag = "CONFIRM LINE  ·  " if b.confirm_line else ""
+            tier = getattr(getattr(b, "insight", None), "tier", None)
             self.list_row(table, str(i), title,
                           f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
                           b.fair_prob, bets.label(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
-                          extra=(self.record_line(b) or []) + self.odds_lines(b) or None)
+                          extra=(self.record_line(b) or []) + self.odds_lines(b) or None,
+                          dot=self.TIER_COLORS.get(tier))
 
     def ask_odds_key(self) -> None:
         """Save an Odds API key (the-odds-api.com) so bets show real sportsbook prices."""
@@ -1018,7 +1057,7 @@ class App:
             tk.Label(head, text=first["team_name"], bg=NAVY, fg=WHITE,
                      font=self.f["bold"]).pack(side="left", padx=(12, 6), pady=6)
             tk.Label(head, text=f"{first['opponent']}  ·  {_clock(first['kickoff'])}", bg=NAVY,
-                     fg="#9fb0c8", font=self.f["tiny"]).pack(side="left")
+                     fg=MUTED, font=self.f["tiny"]).pack(side="left")
             for n, p in enumerate(group):
                 if n:
                     tk.Frame(card, bg=BORDER, height=1).pack(fill="x", padx=12)

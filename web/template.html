@@ -643,17 +643,19 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     const betTabs = ["singles", "parlays", "money", "multi"];
     let html = ["singles", "parlays", "money"].includes(state.tab) ? notesHtml(wk) : "";
     const fdParl = (list) => (list.some((p) => fdDecimal(p)) ? "Odds" : "Worst odds");
+    const singlesLead = state.betType === "All bets" ? `<p class="lead">Bets at ${pct(DATA.singleMin || 0.7)} or better, likeliest first. Pick a bet type to see every bet of that type.</p>` : "";
+    const parlayLead = DATA.singlesNote ? `<p class="lead" style="color:var(--fg)">${esc(DATA.singlesNote)}</p>` : "";
     if (state.tab === "singles") html += wk.singles.length
-      ? `<div class="list">${listHead(wk.singles.some((b) => b.fd) ? "Odds" : "Worst odds")}${wk.singles.map(singleRow).join("")}</div>`
-      : `<p class="empty">${esc(emptyNote("No bets for this week yet."))}</p>`;
+      ? singlesLead + `<div class="list">${listHead(wk.singles.some((b) => b.fd) ? "Odds" : "Worst odds")}${wk.singles.map(singleRow).join("")}</div>`
+      : `<p class="empty">${esc(emptyNote(`No bets at ${pct(DATA.singleMin || 0.7)} or better here. Pick a bet type to see every bet of that type.`))}</p>`;
     if (state.tab === "parlays") html += wk.parlays.length
-      ? `<p class="lead">Each parlay pays at least $40 on a $10 wager, likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</p><div class="list">${listHead(fdParl(wk.parlays))}${wk.parlays.map((p, i) => parlayRow(p, i, "P")).join("")}</div>`
+      ? parlayLead + `<p class="lead">Each parlay pays at least $40 on a $10 wager, likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</p><div class="list">${listHead(fdParl(wk.parlays))}${wk.parlays.map((p, i) => parlayRow(p, i, "P")).join("")}</div>`
       : `<p class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</p>`;
     if (state.tab === "money") html += (wk.money || []).length
-      ? `<p class="lead">The likeliest parlays that at least double your $10 if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 3]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first. No Weak legs, and no leg in more than two. Payouts marked ≈ are estimates; check the slip.</p><div class="list">${listHead(fdParl(wk.money))}${wk.money.map((p, i) => parlayRow(p, i, "M", true)).join("")}</div>`
+      ? parlayLead + `<p class="lead">The likeliest parlays that at least double your $10 if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 3]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first. No Weak legs, and no leg in more than two. Payouts marked ≈ are estimates; check the slip.</p><div class="list">${listHead(fdParl(wk.money))}${wk.money.map((p, i) => parlayRow(p, i, "M", true)).join("")}</div>`
       : `<p class="empty">No money makers here: not enough games this week.</p>`;
     if (state.tab === "multi") html += (DATA.multi || []).length
-      ? `<p class="lead">Parlays with legs from at least two leagues (NFL, college, UFC, MLB): ${(DATA.multiLegs || [2, 3]).join("–")} legs from different games, each paying at least $40 on $10, likeliest first. They're the same whichever league is picked.</p><div class="list">${listHead(fdParl(DATA.multi))}${DATA.multi.map((p, i) => parlayRow(p, i, "X")).join("")}</div>`
+      ? parlayLead + `<p class="lead">Parlays with legs from at least two leagues (NFL, college, UFC, MLB): ${(DATA.multiLegs || [2, 3]).join("–")} legs from different games, each paying at least $40 on $10, likeliest first. They're the same whichever league is picked.</p><div class="list">${listHead(fdParl(DATA.multi))}${DATA.multi.map((p, i) => parlayRow(p, i, "X")).join("")}</div>`
       : `<p class="empty">No Multi-Lays right now: fewer than two leagues have games.</p>`;
     if (state.tab === "value") html += valueView();
     if (state.tab === "injuries") html += injuriesView(wk);

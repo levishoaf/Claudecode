@@ -21,7 +21,7 @@ from nfl_edge import board, hitrate, learn, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
-from nfl_edge.picks import (BET_TYPES, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
+from nfl_edge.picks import (BET_TYPES, SINGLE_MIN_PROB, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
                             league_types, multi_lays, MULTI_LEGS,
                             MONEY_MAKER_LEGS, fanduel_estimate,
                             money_maker_parlays,
@@ -173,8 +173,7 @@ def run(sport, week, label, ledger, this_week=False):
     else:
         bets = with_odds(annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
                                   else nfl_board(None, LO, HI, week=week), sport), sport, week)
-    singles = rank_singles(bets, 30, rank_by="prob", per_game=3,
-                           prop_share=0.5 if sport == "nfl" else None)
+    singles = rank_singles(bets, 30, SINGLE_MIN_PROB, rank_by="prob", per_game=3)
 
     def legs_pool(some):  # Strong legs when there are enough, never Weak ones
         if any(getattr(b, "tier", None) for b in some):
@@ -374,6 +373,8 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
                           "prob": leg.get("win_prob"), "type": tracker.leg_type_name(leg)}
                          for leg in e["legs"]]}
     result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
+    result["singlesNote"] = tracker.singles_vs_parlays(ledger["generated"])
+    result["singleMin"] = SINGLE_MIN_PROB
     result["saved"] = [brief(e, "saved") for e in ledger["saved"]]
 
     return result

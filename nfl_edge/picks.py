@@ -164,6 +164,11 @@ def rank_singles(bets: list[Bet], count: int, min_prob: float = 0.0, *,
     return sorted(out, key=lambda b: order[id(b)])
 
 
+# The single bets shown by default ("All bets") are only those at this chance or better.
+# Graded so far, singles shown at 70%+ won 68-79% of the time and those under 60% about
+# half; picking a bet type still lists every line of that type.
+SINGLE_MIN_PROB = 0.70
+
 # Parlays have at most 3 legs. Graded so far, 2-3 leg parlays won about as often as
 # their chance said (33% vs 25-29%) and 4-6 leg ones far less (4-17% vs 25-29%); and
 # FanDuel takes its cut on every leg, about 4.5% each, so each extra leg costs value.

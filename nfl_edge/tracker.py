@@ -421,6 +421,20 @@ def model_line(e: dict) -> bool:
     return not entry_types(e) <= ALWAYS_OFFERED
 
 
+def singles_vs_parlays(entries: list[dict]) -> str | None:
+    """'Singles have won 62% of the time and parlays 17%' from settled picks on lines
+    FanDuel offers, or None before there are enough of both."""
+    rates = {}
+    for kind in ("single", "parlay"):
+        done = [e for e in entries if (e.get("kind") == "single") == (kind == "single")
+                and e.get("status") in ("won", "lost") and not model_line(e)]
+        if len(done) < 20:
+            return None
+        rates[kind] = sum(e["status"] == "won" for e in done) / len(done)
+    return (f"Singles have won {rates['single']:.0%} of the time and parlays "
+            f"{rates['parlay']:.0%}: for more winning bets, bet singles.")
+
+
 def counted(items: list[tuple[str, dict]], model_lines: bool = False) -> list[tuple[str, dict]]:
     """Bet History entries that count in the record: everything placed, plus the
     builder's picks on lines FanDuel offers (all picks with `model_lines`)."""
