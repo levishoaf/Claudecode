@@ -20,7 +20,8 @@ from .board import EASTERN, cfb_board, nfl_board, season_for
 from .cli import _describe, _fmt_american, clock, format_slip
 from .odds import american_to_decimal, decimal_to_american
 from .parlays import Parlay
-from .picks import SINGLE_MIN_PROB, mixed_parlays, payout_parlays, rank_singles
+from .picks import (SINGLE_MIN_PROB, mixed_parlays, payout_parlays, rank_singles, worth_it,
+                    worth_parlay)
 
 MAX_MESSAGE = 1900  # Discord allows 2,000 characters per message
 CACHE_SECONDS = 300
@@ -129,8 +130,14 @@ def singles_text(singles, sport: str, wager: float) -> str:
             more.append("⚠ far from other books, check the news")
         if ins is not None:
             more += [f"⚠ {f}" for f in ins.flags[:2]]
-        lines.append(f"**{i}.** {dot}**{_describe(b)}**{tag} — **{b.fair_prob:.0%}** · {odds} · "
-                     f"${wager:g} pays ${pays:,.2f}\n   " + " · ".join(more))
+        ok, why = worth_it(b)
+        lines.append(f"**{i}.** {'👍' if ok else '👎'} {dot}**{_describe(b)}**{tag} — "
+                     f"**{b.fair_prob:.0%}** · {odds} · ${wager:g} pays ${pays:,.2f}\n   "
+                     + " · ".join(more))
+    ups = sum(worth_it(b)[0] for b in singles)
+    lines.append(f"👍 {ups} of {len(singles)} worth betting at FanDuel's price; 👎 means not worth "
+                 "it, or not sure (no FanDuel price to check, a doubtful price, an uncertain "
+                 "player or Weak signals).")
     lines.append("Odds marked with a FanDuel price are FanDuel's; the rest are break-even: bet "
                  "only if FanDuel pays that or better." if on_fd else
                  "Odds are break-even: bet only if FanDuel pays that or better. Use `/chance` "
@@ -180,7 +187,9 @@ def parlays_text(parlays, sport: str, wager: float) -> list[str]:
         slip = "\n".join(format_slip(p, wager, break_even=not on_fd))
         odds = (f"FanDuel {_fmt_american(p.american)} · EV {p.ev:+.1%}" if on_fd
                 else f"worst odds {break_even(p.win_prob)}")
-        out.append(f"**P{i}** · {len(p.legs)} legs · **{p.win_prob:.0%}** to win · {odds}"
+        ok, why = worth_parlay(p)
+        out.append(f"**P{i}** {'👍' if ok else '👎'} · {len(p.legs)} legs · "
+                   f"**{p.win_prob:.0%}** to win · {odds}\n{why}"
                    f"{legs_tier_text(p.legs)}\n```\n{slip}\n```")
     return out
 
