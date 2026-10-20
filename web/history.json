@@ -61198,6 +61198,40 @@
     }
    ],
    "week": 1
+  },
+  {
+   "id": "single:401909835|Anthony Davis 21+ Points (Milwaukee Bucks @ Washington Wizards, Oct 21)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-20T20:37:28+00:00",
+   "win_prob": 0.5542,
+   "odds": -114,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909835",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5542,
+     "label": "Anthony Davis 21+ Points (Milwaukee Bucks @ Washington Wizards, Oct 21)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Anthony Davis",
+     "stat": "points",
+     "min": 21,
+     "kickoff": "2026-10-21T19:00:00-04:00",
+     "market": "POINTS",
+     "pick": "Anthony Davis 21+ Points",
+     "game": "Milwaukee Bucks @ Washington Wizards, Oct 21",
+     "id": "401909835|Anthony Davis 21+ Points (Milwaukee Bucks @ Washington Wizards, Oct 21)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1,
+   "edge": true
   }
  ],
  "saved": [
