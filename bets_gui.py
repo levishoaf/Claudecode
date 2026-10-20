@@ -30,7 +30,7 @@ from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
 from nfl_edge.parlays import Parlay
 from nfl_edge.picks import (BET_TYPES, FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS,
-                            SINGLE_MIN_PROB,
+                            SINGLE_MIN_PROB, worth_it, worth_offer, worth_parlay,
                             league_types, multi_lays,
                             empty_type_note,
                             fanduel_estimate, money_maker_parlays)
@@ -516,6 +516,15 @@ class App:
          ("Pays on $10", None, "what $10 returns, stake included")],
     ]
 
+    def thumbs_note(self, parent, ups: list[bool]) -> None:
+        """How many of the list are worth betting (thumbs up)."""
+        tk.Label(parent, text=(
+            f"👍 {sum(ups)} of {len(ups)} worth betting at FanDuel's price. Thumbs down means not "
+            "worth it, or not sure (no FanDuel price to check, a doubtful price, an uncertain "
+            "player or Weak signals). Click a bet to see why."), bg=BG, fg=MUTED,
+            font=self.f["small"], wraplength=820, justify="left").pack(anchor="w", padx=6,
+                                                                       pady=(6, 0))
+
     def singles_note(self, parent) -> bool:
         """Above the parlays: how much more often singles have won (from Bet History)."""
         with self.ledger_lock:
@@ -634,7 +643,8 @@ class App:
 
     def list_row(self, table, num: str, title: str, sub: str, prob: float, key=None,
                  last: str | None = None, price: int | None = None,
-                 ev: float | None = None, extra=None, dot: str | None = None) -> tk.Frame:
+                 ev: float | None = None, extra=None, dot: str | None = None,
+                 worth: tuple[bool, str] | None = None) -> tk.Frame:
         """One bet on one line: number, name (with its tier's dot) and game, chance, odds and
         payout. Its details (track record, tier, FanDuel prices...) open when it's clicked."""
         tk.Frame(table, bg=BORDER, height=1).pack(fill="x")
@@ -645,6 +655,13 @@ class App:
         num_lbl.grid(row=0, column=0, rowspan=2, sticky="w", padx=8)
         name = tk.Frame(row, bg=CARD)
         name.grid(row=0, column=1, sticky="w", padx=6, pady=(8, 0))
+        if worth is not None:  # thumbs up: worth betting at FanDuel's price; down: not, or unsure
+            tk.Label(name, text="👍" if worth[0] else "👎", bg=CARD,
+                     fg=GREEN if worth[0] else FAINT, font=self.f["body"]).pack(side="left",
+                                                                               padx=(0, 6))
+            extra = [(("👍 Worth it: " if worth[0] else "👎 Not worth it: ") + worth[1],
+                      GREEN if worth[0] else MUTED)] + (
+                [extra] if isinstance(extra, tuple) else list(extra or []))
         if dot:
             tk.Label(name, text="●", bg=CARD, fg=dot, font=self.f["tiny"]).pack(side="left",
                                                                                padx=(0, 4))
@@ -706,6 +723,7 @@ class App:
                 "bet of that type."), bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
+        self.thumbs_note(parent, [worth_it(b)[0] for b in singles])
         table = self.list_table(parent, "#")
         for i, b in enumerate(singles, 1):
             title = _slip_selection(b) + {"Questionable": "  (Q)", board.NO_LINE: "  · no line yet",
@@ -723,7 +741,7 @@ class App:
                           b.fair_prob, bets.label(b),
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
                           extra=(self.record_line(b) or []) + self.odds_lines(b) or None,
-                          dot=self.TIER_COLORS.get(tier))
+                          dot=self.TIER_COLORS.get(tier), worth=worth_it(b))
 
     def ask_odds_key(self) -> None:
         """Save an Odds API key (the-odds-api.com) so bets show real sportsbook prices."""
@@ -777,7 +795,7 @@ class App:
                           f"{o['game']}  ·  {_clock(when)} ET  ·  {o['books']} books"
                           + ("  ·  incl. Pinnacle" if o["sharp"] else ""),
                           o["chance"], price=o["fanduel"], ev=o["ev"],
-                          last=f"{o['ev']:+.1%}", extra=extra or None)
+                          last=f"{o['ev']:+.1%}", extra=extra or None, worth=worth_offer(o))
 
     MULTI_SECONDS = 5 * 60  # Multi-Lays are rebuilt at most this often
 
@@ -849,6 +867,7 @@ class App:
                      bg=BG,
                      fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
+        self.thumbs_note(parent, [worth_parlay(p)[0] for p in parlays])
         table = self.list_table(parent, "", f"pays on ${stake:g}" if money else "pays")
         for i, p in enumerate(parlays, 1):
             legs = "  ·  ".join(self.leg_text(b) for b in p.legs)
@@ -865,6 +884,7 @@ class App:
                           legs, p.win_prob,
                           tuple(bets.label(b) for b in p.legs), last=pays,
                           price=p.american if on_fd else None, ev=p.ev if on_fd else None,
+                          worth=worth_parlay(p),
                           extra=[x for x in (self.legs_tier_line(p.legs),
                                              self.legs_record_line(p.legs)) if x])
 

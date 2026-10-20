@@ -398,3 +398,72 @@ def multi_lays(pools: dict[str, list[Bet]], target: float, count: int, *,
         for b in p.legs:
             uses[_leg_key(b)] = uses.get(_leg_key(b), 0) + 1
     return chosen
+
+
+# ---------------------------------------------------------------- thumbs up or down
+# A thumbs up means: worth betting at FanDuel's price. That needs FanDuel's real price, a
+# true chance the market agrees on, and FanDuel paying clearly more than that chance is
+# worth. Anything unsure gets a thumbs down (the user's rule): no FanDuel price to check, a
+# rough or doubtful price, too few books, an uncertain player, Weak signals, or value too
+# small to trust.
+WORTH_MIN_EV = 0.01  # at least +1% expected value at FanDuel's price
+WORTH_MIN_BOOKS = 3  # sportsbooks behind the true chance
+
+
+def _doubt(b) -> str | None:
+    """Why a bet's rating can't be trusted, or None."""
+    if not getattr(b, "on_fanduel", False):
+        return "no FanDuel price to check it against"
+    if getattr(b, "rough", False):
+        return "its true chance is only a rough estimate"
+    if getattr(b, "check", False):
+        return "FanDuel's price is far from every other book (check the news)"
+    if getattr(b, "books_count", 0) < WORTH_MIN_BOOKS:
+        return "too few sportsbooks price it"
+    if b.note in ("Questionable", "Did not practice"):
+        return "the player's status is uncertain"
+    tier = getattr(b, "tier", None) or getattr(getattr(b, "insight", None), "tier", None)
+    if tier == "red":
+        return "its signals are Weak"
+    return None
+
+
+def worth_it(b) -> tuple[bool, str]:
+    """(thumbs up?, why) for a single bet."""
+    doubt = _doubt(b)
+    if doubt:
+        return False, f"Unsure: {doubt}"
+    if b.ev < WORTH_MIN_EV:
+        return False, f"FanDuel pays less than its true chance is worth (value {b.ev:+.1%})"
+    return True, f"FanDuel pays more than its true chance is worth (value {b.ev:+.1%})"
+
+
+def worth_parlay(p: Parlay) -> tuple[bool, str]:
+    """(thumbs up?, why) for a parlay: every leg must be trustworthy, and the parlay paid at
+    FanDuel's prices must be worth more than it costs."""
+    for b in p.legs:
+        doubt = _doubt(b)
+        if doubt:
+            return False, f"Unsure: {_describe_leg(b)}: {doubt}"
+    if p.ev < WORTH_MIN_EV:
+        return False, f"FanDuel pays less than its true chance is worth (value {p.ev:+.1%})"
+    return True, f"FanDuel pays more than its true chance is worth (value {p.ev:+.1%})"
+
+
+def worth_offer(o: dict) -> tuple[bool, str]:
+    """(thumbs up?, why) for a line on the Value tab (lines.Offer.to_json())."""
+    if o.get("rough"):
+        return False, "Unsure: its true chance is only a rough estimate"
+    if o.get("check"):
+        return False, "Unsure: FanDuel's price is far from every other book (check the news)"
+    if o.get("books", 0) < WORTH_MIN_BOOKS:
+        return False, "Unsure: too few sportsbooks price it"
+    if o["ev"] < WORTH_MIN_EV:
+        return False, f"FanDuel pays less than its true chance is worth (value {o['ev']:+.1%})"
+    return True, f"FanDuel pays more than its true chance is worth (value {o['ev']:+.1%})"
+
+
+def _describe_leg(b) -> str:
+    from .cli import _describe
+
+    return _describe(b)

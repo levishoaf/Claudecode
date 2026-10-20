@@ -21,6 +21,7 @@ from nfl_edge import board, hitrate, learn, tracker  # noqa: E402
 from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
+from nfl_edge.picks import worth_it, worth_offer, worth_parlay  # noqa: E402
 from nfl_edge.picks import (BET_TYPES, SINGLE_MIN_PROB, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
                             league_types, multi_lays, MULTI_LEGS,
                             MONEY_MAKER_LEGS, fanduel_estimate,
@@ -108,6 +109,7 @@ def bet(b, sport):
             "confirm": b.confirm_line, "hist": track_record(b, sport),
             "week": b.week, "raw": round(b.raw_prob, 4) if getattr(b, "raw_prob", None) else None,
             "tier": tier_of(b), "league": getattr(b, "league", None),
+            "worth": list(worth_it(b)),
             "fd": {"price": b.fd_price, "ev": round(b.ev, 4), "best": getattr(b, "best_price", b.fd_price),
                    "bestBook": launcher.book_name(getattr(b, "best_book", "fanduel")),
                    "books": getattr(b, "books_count", 0), "sharp": getattr(b, "sharp", False),
@@ -188,7 +190,7 @@ def run(sport, week, label, ledger, this_week=False):
             singles, parlays, sport, season_of(sport)))
     def parlay(p):
         return {"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
-                "breakeven": be(p.win_prob)}
+                "breakeven": be(p.win_prob), "worth": list(worth_parlay(p))}
 
     def picks(singles, parlays, pool):
         strong = (hitrate.strong_leg_check(season_for(datetime.now().date()))
@@ -304,13 +306,15 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
     result["oddsNote"] = launcher.ODDS_NOTE.get("note", "") if any(result["value"].values()) else ""
     for offers in result["value"].values():
         for o in offers:
+            o["worth"] = list(worth_offer(o))
             o["bestBook"] = launcher.book_name(o["bestBook"])
     try:  # Multi-Lays: parlays mixing leagues, the same whichever league is picked
         found = multi_lays(launcher.league_pools(), PARLAY_PAYS, 10)
         tracker.record_generated(ledger, launcher.tracker_entries(
             [], found, "multi", datetime.now().year))
         result["multi"] = [{"legs": [bet(b, b.league) for b in p.legs],
-                            "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob)}
+                            "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob),
+                            "worth": list(worth_parlay(p))}
                            for p in found]
         result["multiLegs"] = list(MULTI_LEGS)
     except Exception:
