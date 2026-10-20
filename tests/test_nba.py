@@ -59,6 +59,7 @@ class ModelTest(unittest.TestCase):
             self.assertIsNone(c["over"])
             self.assertNotEqual(c["spread"], int(c["spread"]))  # a half point: no pushes
             self.assertTrue(0.3 < c["home_cover"] < 0.7)
+            self.assertFalse(c["spread_posted"])
 
 
 class BoardTest(unittest.TestCase):
@@ -84,7 +85,7 @@ class BoardTest(unittest.TestCase):
     def test_spreads_and_totals_when_picked_are_confirm_line(self):
         bets = self.board(True)
         spreads, totals = of_type(bets, "Spread"), of_type(bets, "Total points")
-        self.assertEqual(len(spreads), 4)  # both games: posted and the model's line
+        self.assertEqual(len(spreads), 2)  # only the game with a posted spread
         self.assertEqual(len(totals), 2)  # only the game with a posted total
         self.assertTrue(all(b.confirm_line for b in spreads + totals))
         self.assertEqual(sorted(b.point for b in spreads if "NY" in b.game), [-4.5, 4.5])

@@ -162,7 +162,7 @@ Games menu lists days (YYYYMMDD) plus "Next 7 days" (`board.MLB_ALL_DAYS`); seri
 matchups, so each game's name carries its date. The bot's MLB uses the next 7 days.
 **NBA** (`--sport nba`, `nfl_edge/nba.py`, `board.nba_board`): each game's moneyline on the
 default board; Spread and Total points (DraftKings' line from ESPN's scoreboard, marked Confirm
-line) only when picked. Seasons are named by their first year (2026 = 2026-27). A posted line's
+line) only when picked; games with no posted spread get none (the model's line is a coin flip). Seasons are named by their first year (2026 = 2026-27). A posted line's
 chance (cut taken out) is used as is; the backup model (team Elo, home court, back-to-backs) only
 fills in games with no line ("No line yet"), tested on last season's closing lines.
 `python -m nfl_edge.nba --write` refits `nba_weights.json` (bundled; carries each team's rating at

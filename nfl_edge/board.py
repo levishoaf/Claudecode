@@ -602,7 +602,8 @@ def nba_board(lo: float, hi: float, day: date | None = None, now: datetime | Non
               every_line: bool = False, all_days: bool = False) -> list[Bet]:
     """One day's games (default: the next day with games): each team's moneyline (FanDuel
     always offers it) and, with `every_line`, each side of DraftKings' spread and total
-    (marked to confirm on FanDuel, whose line can sit half a point away)."""
+    (marked to confirm on FanDuel, whose line can sit half a point away). Games with no
+    posted spread get none: the model's own line is about a coin flip either side."""
     from . import nba
 
     now = now or datetime.now(timezone.utc)
@@ -629,7 +630,7 @@ def nba_board(lo: float, hi: float, day: date | None = None, now: datetime | Non
         week = nba.season_week(on)
         mine = [make_bet(game, kick, "h2h", team, None, p, g["id"], c["source"], week=week)
                 for team, p in ((g["home_name"], c["home"]), (g["away_name"], 1 - c["home"]))]
-        if every_line:
+        if every_line and c["spread_posted"]:  # the model's own spread is about a coin flip
             line = c["spread"]
             for team, point, p in ((g["home_name"], line, c["home_cover"]),
                                    (g["away_name"], -line, 1 - c["home_cover"])):

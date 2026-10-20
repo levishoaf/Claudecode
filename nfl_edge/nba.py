@@ -352,10 +352,11 @@ def chances(g: dict, ratings: Ratings) -> dict:
     share = w.get("market_share", 1.0)
     home = model if market is None else sigmoid(share * logit(market) + (1 - share) * logit(model))
     out = {"home": home, "source": "NBA DraftKings line" if market is not None else "NBA model",
-           "spread": lines.get("home_rl_line"), "over": None, "total": lines.get("total")}
+           "spread": lines.get("home_rl_line"), "spread_posted": False, "over": None,
+           "total": lines.get("total")}
     cover = no_vig(lines.get("home_rl"), lines.get("away_rl"))
     if out["spread"] is not None and cover is not None:
-        out["home_cover"] = cover
+        out["home_cover"], out["spread_posted"] = cover, True
     else:  # no spread posted: the model's line, about a coin flip either side
         m = w["margin"]
         mean = m["slope"] * logit(home)
