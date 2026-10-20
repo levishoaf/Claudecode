@@ -197,7 +197,11 @@ likeliest first, no forced props mix); picking a bet type lists every line of it
 singles shown at 70%+ won 68-79%, under 60% about half; parlays won far less than singles,
 so the parlay tabs say so from the record (`tracker.singles_vs_parlays`). UFC chances learn
 from graded fights (`learn.adjust(..., "ufc")`, groups ufc:fight / ufc:distance) and fights
-with no market price are labeled No line yet. NBA is a visual preview only (`nba_placeholder`; no
+with no market price are labeled No line yet. Every bet, parlay and Value line gets a
+thumbs up or down (`picks.worth_it`, `worth_parlay`, `worth_offer`): up only with FanDuel's
+real price, 3+ books behind the true chance, no rough or far-off price, no uncertain
+player, no Weak signals, and value of +1% or more; anything unsure is a thumbs down (the
+user's rule), with the reason in the bet's details. NBA is a visual preview only (`nba_placeholder`; no
 NBA data or bets yet). Bet History is dropdowns (report card, what the model learned,
 each league by team, each team by week) with a search box and League/Result/Kind/Week/Bet type
 filters (`tracker.leg_type_name`) that switch to one flat list of matches. The record
