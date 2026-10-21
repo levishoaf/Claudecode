@@ -60938,7 +60938,7 @@
    "win_prob": 0.1914,
    "odds": 423,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909090",
@@ -60954,8 +60954,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Oklahoma City Thunder @ San Antonio Spurs, Oct 20",
      "id": "401909090|Oklahoma City Thunder ML (Oklahoma City Thunder @ San Antonio Spurs, Oct 20)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Oklahoma City Thunder 116 - San Antonio Spurs 104"
     },
     {
      "game_id": "401909089",
@@ -60986,7 +60986,7 @@
    "win_prob": 0.1857,
    "odds": 439,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909090",
@@ -61002,8 +61002,8 @@
      "pick": "San Antonio Spurs ML",
      "game": "Oklahoma City Thunder @ San Antonio Spurs, Oct 20",
      "id": "401909090|San Antonio Spurs ML (Oklahoma City Thunder @ San Antonio Spurs, Oct 20)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Oklahoma City Thunder 116 - San Antonio Spurs 104"
     },
     {
      "game_id": "401909089",
@@ -61413,7 +61413,7 @@
    "win_prob": 0.517,
    "odds": -104,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909090",
@@ -61431,8 +61431,8 @@
      "pick": "Isaiah Hartenstein 9+ Rebounds",
      "game": "Oklahoma City Thunder @ San Antonio Spurs, Oct 20",
      "id": "401909090|Isaiah Hartenstein 9+ Rebounds (Oklahoma City Thunder @ San Antonio Spurs, Oct 20)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "3 rebounds"
     }
    ],
    "week": 1,
