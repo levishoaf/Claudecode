@@ -52149,7 +52149,7 @@
      "game": "New Mexico State @ Sam Houston",
      "id": "401871070|New Mexico State ML (New Mexico State @ Sam Houston)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -53180,7 +53180,7 @@
      "game": "New Mexico State @ Sam Houston",
      "id": "401871070|New Mexico State ML (New Mexico State @ Sam Houston)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -53819,40 +53819,6 @@
    "week": 7
   },
   {
-   "id": "single:2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-   "kind": "single",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T00:53:26+00:00",
-   "win_prob": 0.5234,
-   "odds": -110,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_GB_DET",
-     "odds": -110,
-     "stake": 100,
-     "win_prob": 0.5234,
-     "label": "Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "raw_prob": 0.5868,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Christian Watson",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T16:25:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Christian Watson Anytime TD",
-     "game": "Green Bay Packers @ Detroit Lions",
-     "id": "2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
    "id": "single:2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
    "kind": "single",
    "sport": "nfl",
@@ -53948,40 +53914,6 @@
      "pick": "Kyren Williams Anytime TD",
      "game": "Los Angeles Rams @ Las Vegas Raiders",
      "id": "2026_07_LA_LV|Kyren Williams Anytime TD (Los Angeles Rams @ Las Vegas Raiders)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
-   "id": "single:2026_07_LA_LV|Brock Bowers Anytime TD (Los Angeles Rams @ Las Vegas Raiders)",
-   "kind": "single",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T00:53:26+00:00",
-   "win_prob": 0.4102,
-   "odds": 144,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_LA_LV",
-     "odds": 144,
-     "stake": 100,
-     "win_prob": 0.4102,
-     "label": "Brock Bowers Anytime TD (Los Angeles Rams @ Las Vegas Raiders)",
-     "raw_prob": 0.5106,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Brock Bowers",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T16:25:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Brock Bowers Anytime TD",
-     "game": "Los Angeles Rams @ Las Vegas Raiders",
-     "id": "2026_07_LA_LV|Brock Bowers Anytime TD (Los Angeles Rams @ Las Vegas Raiders)",
      "status": "pending",
      "detail": ""
     }
@@ -57499,60 +57431,6 @@
    ]
   },
   {
-   "id": "parlay:2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T03:53:50+00:00",
-   "win_prob": 0.2493,
-   "odds": 301,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_GB_DET",
-     "odds": -113,
-     "stake": 100,
-     "win_prob": 0.5296,
-     "label": "Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "raw_prob": 0.5933,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Christian Watson",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T16:25:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Christian Watson Anytime TD",
-     "game": "Green Bay Packers @ Detroit Lions",
-     "id": "2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_07_NE_CHI",
-     "odds": 108,
-     "stake": 100,
-     "win_prob": 0.4814,
-     "label": "D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "raw_prob": 0.5556,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "D'Andre Swift",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-22T20:15:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "D'Andre Swift Anytime TD",
-     "game": "New England Patriots @ Chicago Bears",
-     "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
    "id": "parlay:2026_07_CIN_BAL|Derrick Henry Anytime TD (Cincinnati Bengals @ Baltimore Ravens) + 2026_07_IND_MIN|Minnesota Vikings ML (Indianapolis Colts @ Minnesota Vikings) + 2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
    "kind": "parlay",
    "sport": "nfl",
@@ -58468,78 +58346,6 @@
      "pick": "Seattle Seahawks ML",
      "game": "Kansas City Chiefs @ Seattle Seahawks",
      "id": "2026_07_KC_SEA|Seattle Seahawks ML (Kansas City Chiefs @ Seattle Seahawks)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
-   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_MIA_NYJ|New York Jets ML (Miami Dolphins @ New York Jets)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T08:35:18+00:00",
-   "win_prob": 0.2487,
-   "odds": 302,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_MIA_NYJ",
-     "odds": -225,
-     "stake": 100,
-     "win_prob": 0.6787,
-     "label": "New York Jets ML (Miami Dolphins @ New York Jets)",
-     "raw_prob": 0.6782,
-     "market_prob": 0.6787,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "NYJ",
-     "kickoff": "2026-10-25T17:00:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "New York Jets ML",
-     "game": "Miami Dolphins @ New York Jets",
-     "id": "2026_07_MIA_NYJ|New York Jets ML (Miami Dolphins @ New York Jets)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_07_DEN_ARI",
-     "odds": -230,
-     "stake": 100,
-     "win_prob": 0.6666,
-     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
-     "raw_prob": 0.6704,
-     "market_prob": 0.6797,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "DEN",
-     "kickoff": "2026-10-25T20:05:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Denver Broncos ML",
-     "game": "Denver Broncos @ Arizona Cardinals",
-     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_07_GB_DET",
-     "odds": -113,
-     "stake": 100,
-     "win_prob": 0.5296,
-     "label": "Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "raw_prob": 0.5933,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Christian Watson",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T16:25:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Christian Watson Anytime TD",
-     "game": "Green Bay Packers @ Detroit Lions",
-     "id": "2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
      "status": "pending",
      "detail": ""
     }
@@ -59609,79 +59415,6 @@
      "pick": "Pittsburgh Steelers ML",
      "game": "Pittsburgh Steelers @ New Orleans Saints",
      "id": "2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
-   "id": "parlay:2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
-   "kind": "parlay",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T12:54:37+00:00",
-   "win_prob": 0.2488,
-   "odds": 302,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_LA_LV",
-     "odds": -330,
-     "stake": 100,
-     "win_prob": 0.7504,
-     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
-     "raw_prob": 0.6608,
-     "market_prob": 0.7504,
-     "tier": "yellow",
-     "type": "moneyline",
-     "team": "LA",
-     "kickoff": "2026-10-25T20:25:00+00:00",
-     "market": "MONEYLINE",
-     "pick": "Los Angeles Rams ML",
-     "game": "Los Angeles Rams @ Las Vegas Raiders",
-     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_07_SF_ATL",
-     "odds": -147,
-     "stake": 100,
-     "win_prob": 0.5952,
-     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
-     "raw_prob": 0.6407,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Christian McCaffrey",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T13:00:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Christian McCaffrey Anytime TD",
-     "game": "San Francisco 49ers @ Atlanta Falcons",
-     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
-     "status": "pending",
-     "detail": ""
-    },
-    {
-     "game_id": "2026_07_GB_DET",
-     "odds": -113,
-     "stake": 100,
-     "win_prob": 0.5303,
-     "label": "Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
-     "raw_prob": 0.5933,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Christian Watson",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-25T16:25:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Christian Watson Anytime TD",
-     "game": "Green Bay Packers @ Detroit Lions",
-     "id": "2026_07_GB_DET|Christian Watson Anytime TD (Green Bay Packers @ Detroit Lions)",
      "status": "pending",
      "detail": ""
     }
@@ -61208,7 +60941,7 @@
    "win_prob": 0.5542,
    "odds": -114,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909835",
@@ -61226,8 +60959,8 @@
      "pick": "Anthony Davis 21+ Points",
      "game": "Milwaukee Bucks @ Washington Wizards, Oct 21",
      "id": "401909835|Anthony Davis 21+ Points (Milwaukee Bucks @ Washington Wizards, Oct 21)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "34 points"
     }
    ],
    "week": 1,
@@ -61277,7 +61010,7 @@
    "win_prob": 0.4788,
    "odds": 118,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909835",
@@ -61295,8 +61028,8 @@
      "pick": "Trae Young 3+ Rebounds",
      "game": "Milwaukee Bucks @ Washington Wizards, Oct 21",
      "id": "401909835|Trae Young 3+ Rebounds (Milwaukee Bucks @ Washington Wizards, Oct 21)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "0 rebounds"
     }
    ],
    "week": 1,
@@ -61345,7 +61078,7 @@
    "win_prob": 0.5186,
    "odds": -102,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909836",
@@ -61363,8 +61096,8 @@
      "pick": "Brandon Miller Under 24.5 Points",
      "game": "Charlotte Hornets @ Brooklyn Nets, Oct 21",
      "id": "401909836|Brandon Miller Under 24.5 Points (Charlotte Hornets @ Brooklyn Nets, Oct 21)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "18 points"
     }
    ],
    "week": 1,
@@ -61379,7 +61112,7 @@
    "win_prob": 0.4543,
    "odds": 126,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909835",
@@ -61397,8 +61130,8 @@
      "pick": "Tyler Herro 5+ Rebounds",
      "game": "Milwaukee Bucks @ Washington Wizards, Oct 21",
      "id": "401909835|Tyler Herro 5+ Rebounds (Milwaukee Bucks @ Washington Wizards, Oct 21)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "2 rebounds"
     }
    ],
    "week": 1,
@@ -61447,7 +61180,7 @@
    "win_prob": 0.793,
    "odds": -360,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909837",
@@ -61464,8 +61197,8 @@
      "pick": "Toronto Raptors ML",
      "game": "Chicago Bulls @ Toronto Raptors, Oct 21",
      "id": "401909837|Toronto Raptors ML (Chicago Bulls @ Toronto Raptors, Oct 21)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 92 - Toronto Raptors 135"
     }
    ],
    "week": 1,
