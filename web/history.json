@@ -53827,7 +53827,7 @@
    "win_prob": 0.4814,
    "odds": 108,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_NE_CHI",
@@ -53846,8 +53846,8 @@
      "pick": "D'Andre Swift Anytime TD",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 7
@@ -54349,8 +54349,8 @@
      "pick": "D'Andre Swift Anytime TD",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 7
@@ -54766,8 +54766,8 @@
      "pick": "D'Andre Swift Anytime TD",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 7
@@ -58240,8 +58240,8 @@
      "pick": "D'Andre Swift Anytime TD",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "1 rushing tds+receiving tds"
     }
    ],
    "week": 7
@@ -60941,7 +60941,7 @@
    "win_prob": 0.539,
    "odds": -114,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_NE_CHI",
@@ -60960,8 +60960,8 @@
      "pick": "Colston Loveland 42+ Receiving Yds",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|Colston Loveland 42+ Receiving Yds (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": "player stats not posted yet"
+     "status": "won",
+     "detail": "69 receiving yards"
     }
    ],
    "week": 7,
