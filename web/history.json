@@ -47174,7 +47174,7 @@
      "game": "James Madison @ App State",
      "id": "401869845|James Madison ML (James Madison @ App State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -47526,7 +47526,7 @@
      "game": "East Carolina @ Memphis",
      "id": "401862807|Memphis ML (East Carolina @ Memphis)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -47590,7 +47590,7 @@
      "game": "Liberty @ Kennesaw State",
      "id": "401871056|Liberty ML (Liberty @ Kennesaw State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -48274,7 +48274,7 @@
      "game": "James Madison @ App State",
      "id": "401869845|James Madison ML (James Madison @ App State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864528",
@@ -48682,7 +48682,7 @@
      "game": "James Madison @ App State",
      "id": "401869845|James Madison ML (James Madison @ App State)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401862811",
@@ -53727,7 +53727,7 @@
    "win_prob": 0.5403,
    "odds": -118,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_NE_CHI",
@@ -53745,8 +53745,8 @@
      "pick": "Chicago Bears ML",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|Chicago Bears ML (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "NE 24 - CHI 30"
     }
    ],
    "week": 7
@@ -53847,7 +53847,7 @@
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -54057,40 +54057,6 @@
    "week": 7
   },
   {
-   "id": "single:2026_07_DAL_PHI|Dallas Goedert Anytime TD (Dallas Cowboys @ Philadelphia Eagles)",
-   "kind": "single",
-   "sport": "nfl",
-   "season": 2026,
-   "created": "2026-10-20T00:53:26+00:00",
-   "win_prob": 0.3795,
-   "odds": 163,
-   "stake": 100.0,
-   "status": "pending",
-   "legs": [
-    {
-     "game_id": "2026_07_DAL_PHI",
-     "odds": 163,
-     "stake": 100,
-     "win_prob": 0.3795,
-     "label": "Dallas Goedert Anytime TD (Dallas Cowboys @ Philadelphia Eagles)",
-     "raw_prob": 0.4753,
-     "tier": "yellow",
-     "type": "player_stat",
-     "player": "Dallas Goedert",
-     "stat": "rushing_tds+receiving_tds",
-     "min": 1,
-     "kickoff": "2026-10-26T20:15:00-04:00",
-     "market": "ANYTIME TD",
-     "pick": "Dallas Goedert Anytime TD",
-     "game": "Dallas Cowboys @ Philadelphia Eagles",
-     "id": "2026_07_DAL_PHI|Dallas Goedert Anytime TD (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
-    }
-   ],
-   "week": 7
-  },
-  {
    "id": "single:2026_07_NYG_HOU|Isaiah Likely Anytime TD (New York Giants @ Houston Texans)",
    "kind": "single",
    "sport": "nfl",
@@ -54258,8 +54224,8 @@
      "pick": "Chicago Bears ML",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|Chicago Bears ML (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "NE 24 - CHI 30"
     }
    ],
    "week": 7
@@ -54384,7 +54350,7 @@
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -54801,7 +54767,7 @@
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -58275,7 +58241,7 @@
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|D'Andre Swift Anytime TD (New England Patriots @ Chicago Bears)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -59055,8 +59021,8 @@
      "pick": "Chicago Bears ML",
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|Chicago Bears ML (New England Patriots @ Chicago Bears)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "NE 24 - CHI 30"
     }
    ],
    "week": 7
@@ -60995,7 +60961,7 @@
      "game": "New England Patriots @ Chicago Bears",
      "id": "2026_07_NE_CHI|Colston Loveland 42+ Receiving Yds (New England Patriots @ Chicago Bears)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7,
@@ -61271,6 +61237,41 @@
    ],
    "week": 1,
    "lean": true
+  },
+  {
+   "id": "single:2026_07_PIT_NO|Kendre Miller 36+ Rushing Yds (Pittsburgh Steelers @ New Orleans Saints)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-23T03:54:15+00:00",
+   "win_prob": 0.5502,
+   "odds": -114,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5502,
+     "label": "Kendre Miller 36+ Rushing Yds (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kendre Miller",
+     "stat": "rushing_yards",
+     "min": 36,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "RUSHING YDS",
+     "pick": "Kendre Miller 36+ Rushing Yds",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Kendre Miller 36+ Rushing Yds (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7,
+   "edge": true
   }
  ],
  "saved": [
