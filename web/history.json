@@ -47206,7 +47206,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -47878,7 +47878,7 @@
      "game": "Army @ Tulsa",
      "id": "401862808|Army ML (Army @ Tulsa)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -50563,7 +50563,7 @@
      "game": "Air Force @ Wyoming",
      "id": "401864525|Air Force ML (Air Force @ Wyoming)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 8
@@ -50831,7 +50831,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401864526",
@@ -51239,7 +51239,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856839",
@@ -51911,8 +51911,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Rays/Guardians @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Milwaukee Brewers ML (Rays/Guardians @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     },
     {
      "game_id": "401908043",
@@ -51980,8 +51980,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Rays/Guardians @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Milwaukee Brewers ML (Rays/Guardians @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     },
     {
      "game_id": "401908043",
@@ -52553,7 +52553,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866450",
@@ -52839,8 +52839,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Rays/Guardians @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Milwaukee Brewers ML (Rays/Guardians @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     },
     {
      "game_id": "401908043",
@@ -55075,7 +55075,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858273",
@@ -55143,7 +55143,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858273",
@@ -56515,8 +56515,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Rays/Guardians @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Milwaukee Brewers ML (Rays/Guardians @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -56585,8 +56585,8 @@
      "pick": "Milwaukee Brewers ML",
      "game": "Rays/Guardians @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Milwaukee Brewers ML (Rays/Guardians @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -58666,8 +58666,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -58807,8 +58807,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -59621,8 +59621,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     },
     {
      "game_id": "401908043",
@@ -59712,8 +59712,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -60519,7 +60519,7 @@
      "game": "Massachusetts @ UConn",
      "id": "401861965|UConn ML (Massachusetts @ UConn)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401866448",
@@ -60790,8 +60790,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     }
    ]
   },
@@ -60843,8 +60843,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 23",
      "id": "401908042|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 23)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Tampa Bay Rays 2 - Milwaukee Brewers 3"
     },
     {
      "game_id": "401908043",
