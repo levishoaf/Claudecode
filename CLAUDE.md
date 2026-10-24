@@ -63,9 +63,15 @@ A **Worth a look** tab (`edges.is_lean`, bot `/worthalook`; the user asked for i
 FanDuel lines with value of +1% or more and a 40%+ chance that miss the edge rule, each with
 what it misses (`edges.why_not_edge`), clearly labeled not edges, never in edge parlays;
 logged with `lean: True` and their own record (`edge_record(key="lean")`).
-Tabs: Edges, Edge parlays, Worth a look, Injuries, History; the Money Maker, Multi-Lays, Value and
-likeliest-first singles are gone (`bets.build(args)` with `edges=False` still builds the old
-board for tests). Edges are logged with `edge: True` at FanDuel's odds and every leg
+The **regular bets** are back (the user asked, October 24): every league's likeliest-first
+Singles, Parlays, Money Maker and Multi-Lays, as before edges, labeled "not edges". Tabs on the
+page: Edges, Worth a look, Edge parlays, Singles, Parlays, Money Maker, Multi-Lays, Injuries,
+History (each week's entry carries `edges` and `leans` beside the regular `singles`, `parlays`,
+`money`, `types`); the app shows the edge tabs and the regular ones in two rows and builds
+Multi-Lays and edge parlays in the background (`App.bg_tab`); the bot has /edges, /worthalook,
+/edgeparlays (place with `bet:E1`) beside /bets, /parlays, /moneymaker, /multilays.
+`bets.build(args)` builds the edges unless `edges=False` (the regular board; `league_pools`
+uses it). The Value tab stays gone. Edges are logged with `edge: True` at FanDuel's odds and every leg
 `fd_line` (so they count in the record); `tracker.edge_record` is the edge record shown on
 the Edges tab and in History. NBA props come from real odds and are graded from ESPN box
 scores (`nba.box_stats`; a player not in the box score is a push). Credits: each day may

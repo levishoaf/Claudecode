@@ -181,11 +181,15 @@ fine).
 
 | Command | What it does |
 |---|---|
-| `/bets` | Edges only, best first: FanDuel lines that win 50%+ of the time and pay 3%+ more than they're worth, with win %, FanDuel's odds, the edge, its average profit and the payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
+| `/edges` | Edges only, best first: FanDuel lines that win 50%+ of the time and pay 3%+ more than they're worth, with win %, FanDuel's odds, the edge, its average profit and the payout. Options: `sport` (NFL, College football, UFC, MLB, NBA), `count`, `week`, `bet_type`. |
+| `/edgeparlays` | Parlays built only from edges (E1, E2, …): 2-3 legs from different games, any league, likeliest first. |
+| `/bets` | The regular bets: top singles, likeliest first (not edges). Options: `sport`, `count`, `week`, `bet_type`. |
+| `/moneymaker` | Money makers (M1, M2, …): the likeliest parlays that pay back at least double the wager. |
+| `/multilays` | Multi-Lays (X1, X2, …): parlays mixing leagues (NFL, college, UFC, MLB, NBA). |
 | `/worthalook` | Not edges: FanDuel lines that pay 1%+ more than they're worth but miss the edge rule (a thinner edge, or a 40-50% win chance), each with what it misses. Options: `sport`, `count`, `week`, `bet_type`. |
-| `/parlays` | Parlays built only from edges (P1, P2, …): 2-3 legs from different games, any league, likeliest first. Options: `count`, `min_legs`, `max_legs`. |
+| `/parlays` | The regular parlays from one league as bet slips (P1, P2, …). Options: `sport`, `count`, `min_legs`, `max_legs`, `week`, `pays`, `bet_type`. |
 | `/chance bet:Ravens +11.5 odds:-350` | Win % for any bet, and whether FanDuel's price is worth it. |
-| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1` places that parlay from the last `/parlays` in the channel). |
+| `/place bet:Ravens +11.5 odds:-350 stake:20` | Logs a bet you placed in the server's history (`bet:P1`, `bet:M1`, `bet:X1` or `bet:E1` places that parlay from the last list in the channel). |
 | `/remove bet:Ravens` | Removes one of your logged bets. |
 | `/history` | The server's bet history by league and week: each placed bet with WON/LOST, who placed it, profit, everyone's record, and how the builder's picks did. |
 | `/injuries team:Bills` | This week's NFL injury report. |

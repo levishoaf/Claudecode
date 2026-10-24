@@ -138,7 +138,7 @@ def league_pools(pays: float | None = None) -> dict[str, list]:
             sport=sport, date="week", week=board.MLB_ALL_DAYS if sport in ("mlb", "nba") else None,
             singles=30, parlays=0, legs=3, min_legs=2, max_legs=3, stake=10.0,
             min_prob=MIN_PROB, max_prob=MAX_PROB, per_game=3, allow_overlap=False,
-            games_file=None, bet_type="All bets", pays=pays)
+            games_file=None, bet_type="All bets", pays=pays, edges=False)
         try:
             pool, _, _ = build(args)
         except Exception:  # one league down never blocks the others

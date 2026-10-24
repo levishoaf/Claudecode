@@ -28,8 +28,9 @@ from nfl_edge.cli import _fmt_american, _slip_market, _slip_selection, _slip_tim
 from nfl_edge.cli import clock as _clock
 from nfl_edge.context import name_key
 from nfl_edge.odds import american_to_decimal, decimal_to_american
-from nfl_edge.picks import (FOOTBALL_TYPES, MONEY_MAKER_LEGS, worth_offer, worth_parlay,
-                            league_types, empty_type_note, fanduel_estimate)
+from nfl_edge.picks import (FOOTBALL_TYPES, MONEY_MAKER_LEGS, MULTI_LEGS, worth_it,
+                            worth_offer, worth_parlay, league_types, empty_type_note,
+                            fanduel_estimate, money_maker_parlays, multi_lays, single_min)
 
 W, H = 1180, 870
 PANEL_W = W - 2 * W * 0.08 - 90  # leaves turf visible on both sides
@@ -373,7 +374,7 @@ class App:
                 else bets.week_label(singles, parlays))
         tk.Label(head, text=f"{sport}  ·  {when}", bg=BG, fg=TEXT,
                  font=self.f["h2"]).pack(side="left")
-        order = "edges only, best first"
+        order = "edges first, then the likeliest bets"
         kind = getattr(args, "bet_type", "All bets")
         tk.Label(head, text=f"   {'' if kind == 'All bets' else kind + ' only, '}{order}"
                             "",
@@ -402,19 +403,35 @@ class App:
             ready = "included for all" in board.NOTES["injuries"]
             self.note(notes, board.NOTES["injuries"], None if ready else AMBER)
 
-        if self.tab not in ("singles", "multi", "leans", "injuries", "history"):
-            self.tab = "singles"
+        if self.tab not in ("edges", "leans", "eparlays", "singles", "parlays", "money", "multi",
+                            "injuries", "history"):
+            self.tab = "edges"
         tabs = tk.Frame(self.body, bg=BG)
         tabs.pack(fill="x", padx=16, pady=(10, 0))
+        # Two rows: the edge tabs (with Injuries and History), then the regular bets.
+        rows = [tk.Frame(tabs, bg=BG), tk.Frame(tabs, bg=BG)]
+        for r in rows:
+            r.pack(fill="x", anchor="w", pady=(0, 6))
         self.tab_labels, self.tab_lines = {}, {}
-        for key, text in (("singles", f"Edges ({len(singles)})"),
-                          ("multi", "Edge parlays" + (f" ({len(self.multi_now())})"
-                                                      if self.multi_now() is not None else "")),
+        money = getattr(args, "money_makers", [])
+
+        def later(kind):  # a tab built in the background: its count once built
+            found = self.bg_now(kind)
+            return f" ({len(found)})" if found is not None else ""
+        for key, text in (("edges", f"Edges ({len(getattr(args, 'edges_found', []))})"),
                           ("leans", f"Worth a look ({len(getattr(args, 'leans', []))})"),
+                          ("eparlays", "Edge parlays" + later("eparlays")),
+                          ("singles", f"Singles ({len(singles)})"),
+                          ("parlays", f"Parlays ({len(parlays)})"),
+                          ("money", f"Money Maker ({len(money)})"),
+                          ("multi", "Multi-Lays" + later("multi")),
                           ("injuries", f"Injuries ({len(self.injuries[1])})"),
                           ("history", f"History ({len(self.history_items())})")):
+            if key == "singles":  # the regular bets' row starts with its name
+                tk.Label(rows[1], text="Regular bets:", bg=BG, fg=FAINT,
+                         font=self.f["small"]).pack(side="left", padx=(0, 10))
             on = key == self.tab
-            tab = tk.Frame(tabs, bg=BG)
+            tab = tk.Frame(rows[key in ("singles", "parlays", "money", "multi")], bg=BG)
             tab.pack(side="left", padx=(0, 14))
             lbl = tk.Label(tab, text=text, bg=BG, fg=TEXT if on else MUTED, cursor="hand2",
                            font=self.f["bold"])
@@ -440,8 +457,10 @@ class App:
             return self.panes[key]
         args, singles, parlays, previous = self.render_args
         grid = self.panes[key] = tk.Frame(self.tab_host, bg=BG)
-        if key == "multi":  # every league's bets: the same whichever league is picked
-            self.multi_tab(grid)
+        if key in ("multi", "eparlays"):  # every league's: the same whichever is picked
+            self.bg_tab(grid, key)
+        elif key == "edges":
+            self.edges_tab(grid, getattr(args, "edges_found", []), previous)
         elif key == "value":
             self.value_tab(grid, getattr(args, "value_offers", None))
         elif key == "singles":
@@ -754,7 +773,7 @@ class App:
                           b.fair_prob, "lean:" + bets.label(b), price=b.fd_price, ev=b.ev,
                           extra=lines)
 
-    def singles_tab(self, parent, singles, previous) -> None:
+    def edges_tab(self, parent, singles, previous) -> None:
         self.edge_lead(parent)
         if not singles:
             kind = self.bet_type.get()
@@ -781,6 +800,40 @@ class App:
                           price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
                           extra=self.edge_lines(b) + (self.record_line(b) or []),
                           dot=self.TIER_COLORS.get(tier))
+
+    def singles_tab(self, parent, singles, previous) -> None:
+        if not singles:
+            tk.Label(parent, text=self.empty_text(
+                f"No bets at {single_min(self.sport.get()):.0%} or better here. Pick a bet type to see every "
+                "bet of that type."), bg=BG,
+                     fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
+            return
+        self.regular_note(parent)
+        self.thumbs_note(parent, [worth_it(b)[0] for b in singles])
+        table = self.list_table(parent, "#")
+        for i, b in enumerate(singles, 1):
+            title = _slip_selection(b) + {"Questionable": "  (Q)", board.NO_LINE: "  · no line yet",
+                                          "Did not practice": "  (DNP)"}.get(b.note, "")
+            old = previous.get(bets.label(b)) if previous else None
+            if previous and old is None:
+                title += "  · NEW"
+            elif old is not None and abs(old - b.fair_prob) >= 0.02:
+                title += f"  · was {old:.0%}"
+            on_fd = getattr(b, "on_fanduel", False)
+            tag = "CONFIRM LINE  ·  " if b.confirm_line else ""
+            tier = getattr(getattr(b, "insight", None), "tier", None)
+            self.list_row(table, str(i), title,
+                          f"{tag}{_slip_market(b)}  ·  {b.game}  ·  {_slip_time(b)}",
+                          b.fair_prob, bets.label(b),
+                          price=b.fd_price if on_fd else None, ev=b.ev if on_fd else None,
+                          extra=(self.record_line(b) or []) + self.odds_lines(b) or None,
+                          dot=self.TIER_COLORS.get(tier), worth=worth_it(b))
+
+    def regular_note(self, parent) -> None:
+        tk.Label(parent, text=("Regular bets: the likeliest bets, not edges. Most pay a little "
+                               "less than they're worth at FanDuel; 👍 marks the few that are "
+                               "edges."), bg=BG, fg=TEXT, font=self.f["small"], wraplength=820,
+                 justify="left").pack(anchor="w", padx=6, pady=(6, 0))
 
     def ask_odds_key(self) -> None:
         """Save an Odds API key (the-odds-api.com) so bets show real sportsbook prices."""
@@ -836,14 +889,15 @@ class App:
                           o["chance"], price=o["fanduel"], ev=o["ev"],
                           last=f"{o['ev']:+.1%}", extra=extra or None, worth=worth_offer(o))
 
-    MULTI_SECONDS = 5 * 60  # Multi-Lays are rebuilt at most this often
+    MULTI_SECONDS = 5 * 60  # background tabs are rebuilt at most this often
+    BG_NAMES = {"multi": "Multi-Lays", "eparlays": "Edge parlays"}
 
-    def multi_now(self):
-        """This session's Multi-Lays if built in the last few minutes for this payout, else
-        None."""
-        hit = getattr(self, "multi", None)
-        pays = self.multi_target()
-        if hit and hit[2] == pays and time.monotonic() - hit[0] < self.MULTI_SECONDS:
+    def bg_now(self, kind: str):
+        """A background tab's parlays if built in the last few minutes (Multi-Lays: for
+        this payout), else None."""
+        hit = getattr(self, "bg", {}).get(kind)
+        target = self.multi_target() if kind == "multi" else None
+        if hit and hit[2] == target and time.monotonic() - hit[0] < self.MULTI_SECONDS:
             return hit[1]
         return None
 
@@ -853,46 +907,60 @@ class App:
         except ValueError:
             return 4.0
 
-    def multi_tab(self, parent) -> None:
-        """Parlays mixing leagues; built in the background the first time it's opened."""
-        tk.Label(parent, text=(
-            f"Parlays built only from edges: {edges.PARLAY_LEGS[0]}-{edges.PARLAY_LEGS[1]} legs "
-            "from different games, any league, likeliest first. Every leg's edge adds up, but "
-            "a parlay wins less often than its legs. They're the same whichever league is "
-            "picked."),
-            bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
-            justify="left").pack(anchor="w", padx=6, pady=(6, 4))
-        found = self.multi_now()
+    def bg_tab(self, parent, kind: str) -> None:
+        """Multi-Lays or edge parlays: every league's, built in the background the first
+        time the tab is opened."""
+        if kind == "multi":
+            self.regular_note(parent)
+            text = (f"Parlays with legs from at least two leagues (NFL, College Football, UFC, "
+                    f"MLB, NBA): {MULTI_LEGS[0]}-{MULTI_LEGS[1]} legs from different games, "
+                    f"each paying at least ${self.multi_target() * 10:g} back on $10 (Pays $), "
+                    "likeliest first. They're the same whichever league is picked.")
+        else:
+            text = (f"Parlays built only from edges: {edges.PARLAY_LEGS[0]}-"
+                    f"{edges.PARLAY_LEGS[1]} legs from different games, any league, likeliest "
+                    "first. Every leg's edge adds up, but a parlay wins less often than its "
+                    "legs. They're the same whichever league is picked.")
+        tk.Label(parent, text=text, bg=BG, fg=MUTED, font=self.f["small"], wraplength=820,
+                 justify="left").pack(anchor="w", padx=6, pady=(6, 4))
+        found = self.bg_now(kind)
         if found is None:
-            tk.Label(parent, text="Finding edges in every league (about 20 seconds)...",
+            tk.Label(parent, text=f"Building {self.BG_NAMES[kind]} from every league (about "
+                                  "20 seconds)...",
                      bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
-            self.start_multi()
+            self.start_bg(kind)
             return
         if not found:
-            tk.Label(parent, text="No edge parlays right now: they need edges in at least "
-                                  "two different games.",
+            tk.Label(parent, text=("No Multi-Lays right now: fewer than two leagues have games."
+                                   if kind == "multi" else
+                                   "No edge parlays right now: they need edges in at least "
+                                   "two different games."),
                      bg=BG, fg=TEXT, font=self.f["body"]).pack(anchor="w", padx=6, pady=8)
             return
         self.parlays_tab(parent, found, 10, multi=True)
 
-    def start_multi(self) -> None:
-        if getattr(self, "multi_running", False):
+    def start_bg(self, kind: str) -> None:
+        running = self.__dict__.setdefault("bg_running", set())
+        if kind in running:
             return
-        self.multi_running = True
-        target = self.multi_target()
+        running.add(kind)
+        target = self.multi_target() if kind == "multi" else None
 
         def work():
             try:
-                found = edges.edge_parlays(bets.edge_pool(), 10)
+                if kind == "multi":
+                    found = multi_lays(bets.league_pools(), target, 10)
+                else:
+                    found = edges.edge_parlays(bets.edge_pool(), 10)
                 with self.ledger_lock:  # graded in Bet History like every other pick
                     ledger = tracker.load(self.ledger_path)
                     tracker.record_generated(ledger, bets.tracker_entries(
-                        [], found, "multi", date.today().year), edge=True)
+                        [], found, "multi", date.today().year), edge=kind == "eparlays")
                     tracker.save(ledger, self.ledger_path)
-                self.results.put(("multi", found, target))
+                self.results.put(("bg", kind, found, target))
             except Exception:
                 traceback.print_exc()
-                self.results.put(("multi", [], target))
+                self.results.put(("bg", kind, [], target))
 
         threading.Thread(target=work, daemon=True).start()
 
@@ -1142,7 +1210,9 @@ class App:
             ledger = tracker.load(self.ledger_path)
             if this_week:
                 tracker.record_generated(ledger, bets.tracker_entries(
-                    singles, parlays, args.sport, season), edge=True)
+                    getattr(args, "edges_found", []), [], args.sport, season), edge=True)
+                tracker.record_generated(ledger, bets.tracker_entries(
+                    singles, parlays, args.sport, season))
                 tracker.record_generated(ledger, bets.tracker_entries(
                     getattr(args, "leans", []), [], args.sport, season), lean=True)
             if not self.selftest:  # bets saved with Save / Save slip join the history
@@ -1638,8 +1708,15 @@ class App:
                 from nfl_edge import learn
 
                 learn.remember(tracker.all_entries(self.ledger))  # learn from graded picks
-                pool, singles, parlays = bets.build(args)  # the league's edges
-                args.money_makers = []
+                found, _, _ = bets.build(args)  # the league's edges (and args.leans)
+                args.edges_found = found
+                regular = argparse.Namespace(**{**vars(args), "edges": False})
+                pool, singles, parlays = bets.build(regular)  # the likeliest bets
+                # Money makers never lean on a Weak (red) leg.
+                args.money_makers = money_maker_parlays(
+                    [b for b in pool if getattr(b, "tier", "yellow") != "red"], 10,
+                    strong=hitrate.strong_leg_check(bets.season_for(date.today()))
+                    if args.sport == "nfl" else None)
                 args.hit_rates = self.hit_rates(
                     args, singles + [b for p in parlays + args.money_makers for b in p.legs])
                 injuries = (None, [], "UFC: a fighter who pulls out drops off the card when "
@@ -1711,17 +1788,18 @@ class App:
         except queue.Empty:
             self.root.after(150, self.poll)
             return
-        if item[0] == "multi":  # Multi-Lays finished building in the background
-            self.multi_running = False
-            self.multi = (time.monotonic(), item[1], item[2])
+        if item[0] == "bg":  # Multi-Lays or edge parlays finished in the background
+            _, kind, found, target = item
+            self.__dict__.setdefault("bg_running", set()).discard(kind)
+            self.__dict__.setdefault("bg", {})[kind] = (time.monotonic(), found, target)
             if getattr(self, "panes", None) is not None:
-                old = self.panes.pop("multi", None)
+                old = self.panes.pop(kind, None)
                 if old is not None:
                     old.destroy()
-                if "multi" in getattr(self, "tab_labels", {}):
-                    self.tab_labels["multi"].configure(text=f"Multi-Lays ({len(item[1])})")
-                if self.tab == "multi":
-                    self.pane("multi").pack(fill="both")
+                if kind in getattr(self, "tab_labels", {}):
+                    self.tab_labels[kind].configure(text=f"{self.BG_NAMES[kind]} ({len(found)})")
+                if self.tab == kind:
+                    self.pane(kind).pack(fill="both")
             self.root.after(150, self.poll)
             return
         self.build_btn.configure(text="Build bets")

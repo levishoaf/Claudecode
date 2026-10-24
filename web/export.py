@@ -18,11 +18,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 import bets as launcher  # noqa: E402  (leg records for grading)
 from nfl_edge import board, edges, hitrate, learn, tracker  # noqa: E402
-from nfl_edge.board import EASTERN, season_for  # noqa: E402
+from nfl_edge.board import EASTERN, cfb_board, nfl_board, season_for  # noqa: E402
 from nfl_edge.cli import _describe, _fmt_american, _slip_market, _slip_selection, clock  # noqa: E402
 from nfl_edge.odds import decimal_to_american  # noqa: E402
-from nfl_edge.picks import BET_TYPES, SURE_TYPES, UFC_TYPES, league_types  # noqa: E402
-from nfl_edge.picks import worth_it, worth_parlay  # noqa: E402
+from nfl_edge.picks import worth_it, worth_offer, worth_parlay  # noqa: E402,F401
+from nfl_edge.picks import (BET_TYPES, SURE_TYPES, UFC_TYPES, every_line_of, of_type,  # noqa: E402
+                            league_types, multi_lays, MULTI_LEGS, MONEY_MAKER_LEGS,
+                            fanduel_estimate, money_maker_parlays, payout_parlays,
+                            rank_singles, single_min, type_max_prob)
 
 LO, HI = launcher.MIN_PROB / 100, launcher.MAX_PROB / 100  # no chance limit: the likeliest bets
 PARLAY_PAYS = 4.0  # parlays pay at least 4x the wager: $40 on $10
@@ -150,6 +153,100 @@ def offers_for(sport, week=None):
     return OFFERS[key]
 
 
+def with_odds(bets, sport, week=None):
+    """Real odds on the board, when there's an Odds API key (see nfl_edge/realodds.py)."""
+    from nfl_edge import realodds
+
+    offers = offers_for(sport, week)
+    return realodds.apply(bets, sport, offers) if offers else bets
+
+
+def run(sport, week, label, ledger, this_week=False):
+    if sport == "ufc":
+        bets = with_odds(board.ufc_board(LO, HI, card=str(week)), sport)
+    elif sport == "mlb":  # week: a day as YYYYMMDD, or MLB_ALL_DAYS for the next 7 days
+        everyday = week == board.MLB_ALL_DAYS
+        when = None if everyday else datetime.strptime(str(week), "%Y%m%d").date()
+        full_mlb = with_odds(board.mlb_board(LO, HI, day=when, all_days=everyday,
+                                             every_line=True), sport)
+        bets = [b for b in full_mlb if b.market != "totals_runs"]
+    elif sport == "nba":  # the same days as MLB; spreads and totals only when picked
+        everyday = week == board.MLB_ALL_DAYS
+        when = None if everyday else datetime.strptime(str(week), "%Y%m%d").date()
+        full_nba = with_odds(board.nba_board(LO, HI, day=when, all_days=everyday,
+                                             every_line=True), sport)
+        bets = [b for b in full_nba if b.market == "h2h"]
+    else:
+        bets = with_odds(annotate(cfb_board(None, LO, HI, week=week) if sport == "ncaaf"
+                                  else nfl_board(None, LO, HI, week=week), sport), sport, week)
+    singles = rank_singles(bets, 30, single_min(sport), rank_by="prob", per_game=3)
+
+    def legs_pool(some):  # Strong legs when there are enough, never Weak ones
+        if any(getattr(b, "tier", None) for b in some):
+            from nfl_edge import insights
+
+            return insights.parlay_pool(some)
+        return some, ""
+    pool, pool_note = legs_pool(bets)
+    parlays = payout_parlays(pool, PARLAY_PAYS, 10)  # at least $40 back on $10
+    if this_week:  # only the current week's picks count as picks the builder made
+        tracker.record_generated(ledger, launcher.tracker_entries(
+            singles, parlays, sport, season_of(sport)))
+    def parlay(p):
+        return {"legs": [bet(b, sport) for b in p.legs], "prob": round(p.win_prob, 6),
+                "breakeven": be(p.win_prob), "worth": list(worth_parlay(p))}
+
+    def picks(singles, parlays, pool):
+        strong = (hitrate.strong_leg_check(season_for(datetime.now().date()))
+                  if sport == "nfl" else None)  # legs that keep winning come first
+        money = money_maker_parlays([b for b in pool if getattr(b, "tier", "") != "red"], 10,
+                                    strong=strong)
+        return {"singles": [bet(b, sport) for b in singles],
+                "parlays": [parlay(p) for p in parlays],
+                "money": [dict(parlay(p), back=round(fanduel_estimate(p), 4)) for p in money]}
+
+    out = {"label": label, "week": week, **picks(singles, parlays, bets),
+           "note": board.NOTES.get("injuries", "") if sport == "nfl" else "", "types": {},
+           "late": board.NOTES.get("late", "") if sport == "nfl" else "",
+           "poolNote": pool_note, "singleMin": single_min(sport),
+           "modelNote": board.NOTES.get({"ufc": "ufc_model", "mlb": "mlb_model",
+                                     "nba": "nba_model"}.get(sport, ""), ""),
+           "starters": board.NOTES.get("mlb_starters", "") if sport == "mlb" else ""}
+    # Every market, for bet types that aren't sure to be on FanDuel (marked to confirm).
+    full = with_odds(annotate(nfl_board(None, LO, HI, week=week, always_offered=False)
+                              if sport == "nfl" else [], sport), sport, week)
+    if sport == "mlb":  # totals only when picked: the line may differ on FanDuel
+        full = full_mlb
+    if sport == "nba":
+        full = full_nba
+    for kind in (league_types(sport) if sport in ("ufc", "mlb", "nba") else BET_TYPES):  # top 30 each
+        cap = type_max_prob(kind)
+        if cap is not None and sport == "nfl":  # likeliest lines within the odds limit
+            some = every_line_of(with_odds(annotate(nfl_board(None, LO, min(HI, cap), week=week,
+                                                              always_offered=False), sport),
+                                           sport, week), kind)
+        else:
+            some = (of_type(full, kind) if (sport, kind) in (("mlb", "Total runs"),
+                                                             ("nba", "Spread"),
+                                                             ("nba", "Total points"))
+                    else of_type(bets, kind) if kind in SURE_TYPES else every_line_of(full, kind))
+        if kind != "All bets" and some:
+            regular = payout_parlays(legs_pool(some)[0], PARLAY_PAYS, 10)
+            out["types"][kind] = picks(rank_singles(some, 30, rank_by="prob", per_game=3,
+                                                    every_line=True), regular, some)
+    if sport == "nfl":
+        try:
+            _, players, note = board.injury_report(week)
+            out["injuries"] = {"note": note, "players": [
+                {**p, "kickoff": p["kickoff"].astimezone(EASTERN).isoformat()
+                 if hasattr(p.get("kickoff"), "astimezone") else p.get("kickoff")}
+                for p in players]}
+        except Exception:
+            traceback.print_exc()
+            out["injuries"] = {"note": "Injury report unavailable.", "players": []}
+    return out
+
+
 def type_of(b):
     """The Bet type menu entry a bet falls under (picks.BET_TYPES)."""
     return next((k for k, markets in BET_TYPES.items() if markets
@@ -175,24 +272,6 @@ def edge_parlay(p):
 def lean_bet(b, sport):
     """A "worth a look" bet: like an edge, plus what it misses of the edge rule."""
     return dict(edge_bet(b, sport), why=edges.why_not_edge(b))
-
-
-def league_view(sport, week, label, found, injuries_week=None, leans=()):
-    """One Games-menu entry: its edges and its "worth a look" bets, each best first."""
-    out = {"label": label, "week": week, "singles": [edge_bet(b, sport) for b in found],
-           "leans": [lean_bet(b, sport) for b in leans],
-           "parlays": [], "money": [], "types": {}}
-    if sport == "nfl":
-        try:
-            _, players, note = board.injury_report(injuries_week)
-            out["injuries"] = {"note": note, "players": [
-                {**p, "kickoff": p["kickoff"].astimezone(EASTERN).isoformat()
-                 if hasattr(p.get("kickoff"), "astimezone") else p.get("kickoff")}
-                for p in players]}
-        except Exception:
-            traceback.print_exc()
-            out["injuries"] = {"note": "Injury report unavailable.", "players": []}
-    return out
 
 
 def league_edges(sport, week=None):
@@ -229,49 +308,96 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
               "nfl": [], "ncaaf": [], "ufc": [], "mlb": [], "nba": [], "betTypes": list(BET_TYPES),
               "ufcTypes": list(UFC_TYPES), "sureTypes": list(SURE_TYPES),
               "leagueTypes": {s: list(league_types(s)) for s in launcher.LEAGUES}}
-    found_all = []  # every league's current edges, for parlays
-    shown = []  # (league, edges, worth a look) logged as picks the builder made
+    # Edges and "worth a look" for the games FanDuel prices now: this NFL week and next,
+    # this college week, the next two UFC cards, the next 7 days of MLB and NBA.
+    found_all = []  # every league's current edges, for edge parlays
+    edge_map = {}  # (league, week) -> (edges, worth a look)
     weeks = board.nfl_weeks()
-    for i, (w, posted) in enumerate(weeks[:2]):  # FanDuel prices this week and next
-        found, leans = league_edges("nfl", w)
-        result["nfl"].append(league_view("nfl", w, f"Week {w}" + (" · this week" if i == 0
-                                                                  else ""), found, w, leans))
+    for i, (w, posted) in enumerate(weeks[:2]):
+        edge_map[("nfl", w)] = league_edges("nfl", w)
+    for w in board.cfb_weeks()[:1]:
+        edge_map[("ncaaf", w)] = league_edges("ncaaf", w)
+    cards = board.ufc_cards()
+    for eid, name, start in cards[:2]:
+        edge_map[("ufc", int(eid))] = league_edges("ufc", int(eid))
+    for sport in ("mlb", "nba"):
+        edge_map[(sport, board.MLB_ALL_DAYS)] = league_edges(sport)
+    for (sport, week), (found, leans) in edge_map.items():
         found_all += found
-        if i == 0:
-            shown.append(("nfl", found, leans))
-    for i, w in enumerate(board.cfb_weeks()[:1]):
-        found, leans = league_edges("ncaaf", w)
-        result["ncaaf"].append(league_view("ncaaf", w, f"Week {w} · this week", found,
-                                           leans=leans))
-        found_all += found
-        shown.append(("ncaaf", found, leans))
-    for i, (eid, name, start) in enumerate(board.ufc_cards()[:2]):
-        short = name.split(":", 1)[-1].strip()
-        found, leans = league_edges("ufc", int(eid))
-        result["ufc"].append(league_view("ufc", int(eid), f"{short} · "
-                                         f"{start.astimezone(EASTERN):%b} "
-                                         f"{start.astimezone(EASTERN).day}", found, leans=leans))
-        found_all += found
-        if i == 0:
-            shown.append(("ufc", found, leans))
-    for sport in ("mlb", "nba"):  # the next 7 days, then each day
-        found, leans = league_edges(sport)
-        found_all += found
-        shown.append((sport, found, leans))
-        result[sport].append(league_view(sport, board.MLB_ALL_DAYS, "Next 7 days", found,
-                                         leans=leans))
-        days = sorted({b.commence_time.astimezone(EASTERN).date() for b in found + leans})
-
-        def on(d, some):
-            return [b for b in some if b.commence_time.astimezone(EASTERN).date() == d]
-        for d in days:
-            result[sport].append(league_view(sport, int(f"{d:%Y%m%d}"), f"{d:%a %b} {d.day}",
-                                             on(d, found), leans=on(d, leans)))
-    for sport, found, leans in shown:
+        if (sport == "nfl" and weeks and week != weeks[0][0]) or \
+                (sport == "ufc" and cards and week != int(cards[0][0])):
+            continue  # only the current week's (or card's) picks are logged
         tracker.record_generated(ledger, launcher.tracker_entries(
             found, [], sport, season_of(sport)), edge=True)
         tracker.record_generated(ledger, launcher.tracker_entries(
             leans, [], sport, season_of(sport)), lean=True)
+
+    def with_edges(sport, entry):
+        """A Games-menu entry with its edges and "worth a look" bets added."""
+        week = entry["week"]
+        if sport in ("mlb", "nba") and week != board.MLB_ALL_DAYS:
+            day = datetime.strptime(str(week), "%Y%m%d").date()
+            found, leans = edge_map.get((sport, board.MLB_ALL_DAYS), ([], []))
+            found, leans = ([b for b in some if b.commence_time.astimezone(EASTERN).date() == day]
+                            for some in (found, leans))
+        else:
+            found, leans = edge_map.get((sport, week), ([], []))
+        entry["edges"] = [edge_bet(b, sport) for b in found]
+        entry["leans"] = [lean_bet(b, sport) for b in leans]
+        return entry
+
+    # The regular bets: the likeliest bets for every week, card and day (as before edges).
+    current = weeks[0][0] if weeks else None
+    for w, posted in weeks:
+        tag = "this week" if w == current else ("lines posted" if posted else "no lines yet")
+        try:
+            result["nfl"].append(with_edges("nfl", run("nfl", w, f"Week {w} · {tag}", ledger,
+                                                       w == current)))
+        except Exception:
+            traceback.print_exc()
+    for i, w in enumerate(board.cfb_weeks()):
+        try:
+            result["ncaaf"].append(with_edges("ncaaf", run(
+                "ncaaf", w, f"Week {w} · " + ("this week" if i == 0 else "upcoming"), ledger,
+                i == 0)))
+        except Exception:
+            traceback.print_exc()
+    for i, (eid, name, start) in enumerate(cards):
+        short = name.split(":", 1)[-1].strip()
+        try:
+            result["ufc"].append(with_edges("ufc", run(
+                "ufc", int(eid), f"{short} · {start.astimezone(EASTERN):%b} "
+                f"{start.astimezone(EASTERN).day}", ledger, i == 0)))
+        except Exception:
+            traceback.print_exc()
+    for sport, days_of in (("mlb", board.mlb_days), ("nba", board.nba_days)):
+        days = days_of()
+        for i, (d, lines) in enumerate(days):
+            try:
+                result[sport].append(with_edges(sport, run(
+                    sport, int(f"{d:%Y%m%d}"), f"{d:%a %b} {d.day}"
+                    + ("" if lines else " · no line yet"), ledger, i == 0)))
+            except Exception:
+                traceback.print_exc()
+        if days:
+            try:  # the NBA opens on the week: one night has only a few NBA bets
+                entry = with_edges(sport, run(sport, board.MLB_ALL_DAYS, "Next 7 days", ledger))
+                result[sport].insert(0, entry) if sport == "nba" else result[sport].append(entry)
+            except Exception:
+                traceback.print_exc()
+    try:  # Multi-Lays: parlays mixing leagues, the same whichever league is picked
+        found = multi_lays(launcher.league_pools(), PARLAY_PAYS, 10)
+        tracker.record_generated(ledger, launcher.tracker_entries(
+            [], found, "multi", datetime.now().year))
+        result["multi"] = [{"legs": [bet(b, b.league) for b in p.legs],
+                            "prob": round(p.win_prob, 6), "breakeven": be(p.win_prob),
+                            "worth": list(worth_parlay(p))}
+                           for p in found]
+        result["multiLegs"] = list(MULTI_LEGS)
+    except Exception:
+        traceback.print_exc()
+        result["multi"] = []
+    result["moneyLegs"] = MONEY_MAKER_LEGS
     try:  # parlays of edges only, any leagues: the same whichever league is picked
         parlays = edges.edge_parlays(found_all, 10)
         tracker.record_generated(ledger, launcher.tracker_entries(
@@ -341,6 +467,7 @@ def build_result(history: Path = HISTORY, placed: str | None = None,
                           "prob": leg.get("win_prob"), "type": tracker.leg_type_name(leg)}
                          for leg in e["legs"]]}
     result["history"] = [brief(e, "not placed") for e in ledger["generated"]]
+    result["singlesNote"] = tracker.singles_vs_parlays(ledger["generated"])
     result["edgeRecord"] = tracker.edge_record(ledger["generated"])
     result["leanRecord"] = tracker.edge_record(ledger["generated"], key="lean")
     result["leanRule"] = {"ev": edges.LEAN_MIN_EV, "prob": edges.LEAN_MIN_PROB}
@@ -358,7 +485,7 @@ def main():
     payload = json.dumps(result, default=str).replace("</", "<\\/")
     page = (ROOT / "web" / "template.html").read_text().replace("__DATA__", payload)
     Path(a.out).write_text(page)
-    print({s: [(x["label"], len(x["singles"])) for x in result[s]]
+    print({s: [(x["label"], len(x["edges"]), len(x["singles"])) for x in result[s]]
            for s in launcher.LEAGUES}, "edge parlays:", len(result["edgeParlays"]),
           "history:", len(result["history"]))
 

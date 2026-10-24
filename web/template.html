@@ -168,9 +168,13 @@ main { display: grid; gap: 14px; padding-block: 18px; }
       <label for="btype">Bet type <select id="btype"></select></label>
     </div>
     <nav class="tabs" role="tablist" aria-label="Section">
-      <button role="tab" id="tab-singles" data-tab="singles" aria-selected="true">Edges<span class="n" id="n-singles"></span></button>
-      <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Edge parlays<span class="n" id="n-parlays"></span></button>
+      <button role="tab" id="tab-edges" data-tab="edges" aria-selected="true">Edges<span class="n" id="n-edges"></span></button>
       <button role="tab" id="tab-leans" data-tab="leans" aria-selected="false">Worth a look<span class="n" id="n-leans"></span></button>
+      <button role="tab" id="tab-eparlays" data-tab="eparlays" aria-selected="false">Edge parlays<span class="n" id="n-eparlays"></span></button>
+      <button role="tab" id="tab-singles" data-tab="singles" aria-selected="false">Singles<span class="n" id="n-singles"></span></button>
+      <button role="tab" id="tab-parlays" data-tab="parlays" aria-selected="false">Parlays<span class="n" id="n-parlays"></span></button>
+      <button role="tab" id="tab-money" data-tab="money" aria-selected="false">Money Maker<span class="n" id="n-money"></span></button>
+      <button role="tab" id="tab-multi" data-tab="multi" aria-selected="false">Multi-Lays<span class="n" id="n-multi"></span></button>
       <button role="tab" id="tab-injuries" data-tab="injuries" aria-selected="false">Injuries<span class="n" id="n-injuries"></span></button>
       <button role="tab" id="tab-history" data-tab="history" aria-selected="false">History<span class="n" id="n-history"></span></button>
     </nav>
@@ -187,18 +191,18 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
-  const TABS = ["singles", "parlays", "leans", "injuries", "history"];
+  const TABS = ["edges", "leans", "eparlays", "singles", "parlays", "money", "multi", "injuries", "history"];
   const state = {
     sport: store.get("bb.sport", "nfl"),
     week: {},
-    tab: store.get("bb.tab", "singles"),
+    tab: store.get("bb.tab2", "edges"),
     betType: store.get("bb.type", "All bets"),
     injFilter: "all",
     injSearch: "",
     open: new Set()  // rows and dropdowns that are open, kept across redraws
   };
   if (!DATA[state.sport] || !DATA[state.sport].length) state.sport = "nfl";
-  if (!TABS.includes(state.tab)) state.tab = "singles";
+  if (!TABS.includes(state.tab)) state.tab = "edges";
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const pct = (p) => Math.round(p * 100) + "%";
@@ -225,13 +229,15 @@ main { display: grid; gap: 14px; padding-block: 18px; }
   function current() {
     const wk = weekData();
     if (state.betType === "All bets") return wk;
-    return { ...wk, singles: wk.singles.filter((b) => b.type === state.betType),
+    const t = (wk.types || {})[state.betType] || { singles: [], parlays: [], money: [] };
+    return { ...wk, singles: t.singles, parlays: t.parlays, money: t.money || [],
+      edges: (wk.edges || []).filter((b) => b.type === state.betType),
       leans: (wk.leans || []).filter((b) => b.type === state.betType) };
   }
   function typeOptions(wk) {
     const kinds = (DATA.leagueTypes || {})[state.sport] || DATA.betTypes || ["All bets"];
     return kinds.map((k) => {
-      const has = k === "All bets" || wk.singles.concat(wk.leans || []).some((b) => b.type === k);
+      const has = k === "All bets" || (wk.types || {})[k] || (wk.edges || []).concat(wk.leans || []).some((b) => b.type === k);
       return `<option value="${esc(k)}"${k === state.betType ? " selected" : ""}${has ? "" : " disabled"}>${esc(k + (has ? "" : " (none)"))}</option>`;
     }).join("");
   }
@@ -630,12 +636,34 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     const foot = RULE() + " An edge is an average: any one bet can lose, and about half of them will, but over many bets the edge is the profit. Prices move, so check FanDuel's price is still at or above the worst odds before you bet.";
     return `<details class="help" data-dd="help"${state.open.has("help") ? " open" : ""}><summary>What the numbers mean</summary><dl>${dl}</dl><p>${foot}</p></details>`;
   }
+  function regularHelp(wk) {
+    const fd = DATA.oddsNote && wk.singles.some((b) => b.fd);
+    const item = (k, v) => `<dt>${k}</dt><dd>${v}</dd>`;
+    let dl = item("Chance", `the chance the bet wins. <span class="c-good">Green</span> is 72% or more, <span class="c-warn">amber</span> under 62%.`);
+    dl += item("Odds", fd ? "FanDuel's price where FanDuel posts the bet, otherwise the worst price still worth taking" : "the worst price still worth taking at that chance");
+    dl += item("Pays", "what a $10 wager returns if it wins, stake included");
+    if (state.sport === "nfl" || state.sport === "ncaaf") {
+      dl += item(`<span class="dot" style="background:var(--good)"></span><span class="dot" style="background:var(--warn)"></span><span class="dot" style="background:var(--bad)"></span>`, "confidence tier: Strong, Mixed or Weak (open a bet to see why)");
+      dl += item("Won 4 of 5", "how often this exact bet won in games already played");
+      dl += item("Vs opponent", "the team's record against this week's opponent since 2024");
+      dl += item("⚠", "a warning: injury, QB change, travel or head-to-head");
+    }
+    dl += item(`<span class="tag warn" style="margin:0">Confirm line</span>`, "the model's line: check FanDuel has it before you bet");
+    dl += item(`<span class="tag warn" style="margin:0">Q</span> <span class="tag bad" style="margin:0">DNP</span>`, "questionable, or missed practice");
+    let foot;
+    if (fd) foot = "Bets with a FanDuel price show FanDuel's real price, and their chance is the true chance from every other sportsbook (each book's price with its cut taken out, sharp books counting most), so value is what $1 at FanDuel's price earns on average. Bets without a FanDuel price show break-even odds instead. Parlays priced at FanDuel multiply the legs' prices; FanDuel's slip may differ a little. Parlays have at most 3 legs: FanDuel's cut comes off every leg.";
+    else if (state.sport === "mlb") foot = "MLB chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines and run lines (FanDuel always offers the run line at 1.5). Total runs uses DraftKings' total, marked Confirm line.";
+    else if (state.sport === "nba") foot = "NBA chances are DraftKings' lines with the sportsbook's cut taken out (our model only fills in games marked No line yet), so a FanDuel price better than the worst odds has positive expected value. All bets shows moneylines, which FanDuel always offers. Spread and Total points use DraftKings' line, marked Confirm line: FanDuel's can sit half a point away. Games with no posted line yet have no spread or total.";
+    else if (state.sport === "ufc") foot = "UFC odds are break-even at the model's chance, not FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. UFC bets are each fight's moneyline and whether it goes the distance (all scheduled rounds). Parlay chances assume different fights are independent.";
+    else foot = "Odds are break-even, from public consensus lines and game logs, not FanDuel's prices: a FanDuel price better than the worst odds has positive expected value. All bets shows only moneylines and anytime touchdown scorers for starters, which are always on FanDuel. Other bet types come from the model at lines FanDuel may not offer, so they're marked Confirm line. Parlay chances assume legs from different games are independent.";
+    return `<details class="help" data-dd="help"${state.open.has("help") ? " open" : ""}><summary>What the numbers mean</summary><dl>${dl}</dl><p>${foot}</p></details>`;
+  }
   function notesHtml(wk) {
     const items = [];
     if (/no lines yet/.test(wk.label)) items.push(["alert", "No betting lines yet for this week. These come from the stats model alone, which is less reliable than market lines. They'll update once lines post."]);
     else if (wk.note) items.push(["", wk.note + "."]);
     if (wk.late) items.push(["alert", wk.late + "."]);
-    if (DATA.oddsNote && wk.singles.some((b) => b.fd)) items.push(["ok", DATA.oddsNote]);
+    if (DATA.oddsNote && wk.singles.concat(wk.edges || []).some((b) => b.fd)) items.push(["ok", DATA.oddsNote]);
     else if (wk.modelNote) items.push(["", wk.modelNote]);
     if (wk.starters) items.push(["", "Starters: " + wk.starters]);
     return items.length ? `<ul class="notes">${items.map(([c, t]) => `<li class="${c}">${esc(t)}</li>`).join("")}</ul>` : "";
@@ -649,15 +677,20 @@ main { display: grid; gap: 14px; padding-block: 18px; }
     $("btype").innerHTML = typeOptions(weekData());
     document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
     const n = (id, v) => { $(id).textContent = v === "" ? "" : String(v); };
-    n("n-singles", wk.singles.length);
-    n("n-parlays", (DATA.edgeParlays || []).length);
+    n("n-edges", (wk.edges || []).length);
     n("n-leans", (wk.leans || []).length);
+    n("n-eparlays", (DATA.edgeParlays || []).length);
+    n("n-singles", wk.singles.length);
+    n("n-parlays", wk.parlays.length);
+    n("n-money", (wk.money || []).length);
+    n("n-multi", (DATA.multi || []).length);
     n("n-injuries", wk.injuries ? wk.injuries.players.length : "");
     n("n-history", historyList().length);
 
-    let html = ["singles", "parlays", "leans"].includes(state.tab) ? notesHtml(wk) : "";
-    if (state.tab === "singles") html += `<p class="lead">${esc(RULE())} Best edge first.</p>` + edgeRecordHtml() + (wk.singles.length
-      ? `<div class="list">${edgeHead()}${wk.singles.map((b, i) => edgeRow(b, i)).join("")}</div>`
+    const edgeTabs = ["edges", "leans", "eparlays"], betTabs = ["singles", "parlays", "money", "multi"];
+    let html = edgeTabs.concat(betTabs).includes(state.tab) ? notesHtml(wk) : "";
+    if (state.tab === "edges") html += `<p class="lead">${esc(RULE())} Best edge first.</p>` + edgeRecordHtml() + ((wk.edges || []).length
+      ? `<div class="list">${edgeHead()}${wk.edges.map((b, i) => edgeRow(b, i)).join("")}</div>`
       : `<p class="empty">${esc(state.betType === "All bets" ? DATA.noneNote : `No ${state.betType.toLowerCase()} edges here right now.`)}</p>`);
     if (state.tab === "leans") {
       const lr = DATA.leanRule || { ev: 0.01, prob: 0.4 };
@@ -665,12 +698,29 @@ main { display: grid; gap: 14px; padding-block: 18px; }
         ? `<div class="list">${edgeHead()}${wk.leans.map((b, i) => edgeRow(b, i, true)).join("")}</div>`
         : `<p class="empty">Nothing worth a look right now: no FanDuel line here pays even ${signPct(lr.ev)} over what it's worth.</p>`);
     }
-    if (state.tab === "parlays") html += (DATA.edgeParlays || []).length
+    if (state.tab === "eparlays") html += (DATA.edgeParlays || []).length
       ? `<p class="lead">Parlays built only from edges: 2–3 legs from different games, any league, likeliest first. Every leg's edge adds up, but a parlay wins less often than its legs. They're the same whichever league is picked.</p><div class="list">${edgeHead()}${DATA.edgeParlays.map(edgeParlayRow).join("")}</div>`
       : `<p class="empty">No edge parlays right now: they need edges in at least two different games.</p>`;
+    const regularNote = `<p class="lead" style="color:var(--fg)">Regular bets: the likeliest bets, not edges. Most pay a little less than they're worth at FanDuel; 👍 marks the few that are edges.</p>`;
+    const fdParl = (list) => (list.some((p) => fdDecimal(p)) ? "Odds" : "Worst odds");
+    const singlesLead = regularNote + (state.betType === "All bets" ? `<p class="lead">Bets at ${pct(wk.singleMin || 0.7)} or better, likeliest first. Pick a bet type to see every bet of that type.</p>` : "");
+    const parlayLead = regularNote + (DATA.singlesNote ? `<p class="lead" style="color:var(--fg)">${esc(DATA.singlesNote)}</p>` : "");
+    if (state.tab === "singles") html += wk.singles.length
+      ? singlesLead + `<div class="list">${listHead(wk.singles.some((b) => b.fd) ? "Odds" : "Worst odds")}${wk.singles.map(singleRow).join("")}</div>`
+      : `<p class="empty">${esc(emptyNote(`No bets at ${pct(wk.singleMin || 0.7)} or better here. Pick a bet type to see every bet of that type.`))}</p>`;
+    if (state.tab === "parlays") html += wk.parlays.length
+      ? parlayLead + `<p class="lead">Each parlay pays at least $40 on a $10 wager, likeliest first.${wk.poolNote ? " " + esc(wk.poolNote) : ""}</p><div class="list">${listHead(fdParl(wk.parlays))}${wk.parlays.map((p, i) => parlayRow(p, i, "P")).join("")}</div>`
+      : `<p class="empty">${esc(emptyNote("Not enough games for a parlay this week."))}</p>`;
+    if (state.tab === "money") html += (wk.money || []).length
+      ? parlayLead + `<p class="lead">The likeliest parlays that at least double your $10 if they win, even at FanDuel's prices: ${(DATA.moneyLegs || [2, 3]).join("–")} legs from different games. Parlays whose every leg has won at least 75% of the time come first. No Weak legs, and no leg in more than two. Payouts marked ≈ are estimates; check the slip.</p><div class="list">${listHead(fdParl(wk.money))}${wk.money.map((p, i) => parlayRow(p, i, "M", true)).join("")}</div>`
+      : `<p class="empty">No money makers here: not enough games this week.</p>`;
+    if (state.tab === "multi") html += (DATA.multi || []).length
+      ? parlayLead + `<p class="lead">Parlays with legs from at least two leagues (NFL, college, UFC, MLB, NBA): ${(DATA.multiLegs || [2, 3]).join("–")} legs from different games, each paying at least $40 on $10, likeliest first. They're the same whichever league is picked.</p><div class="list">${listHead(fdParl(DATA.multi))}${DATA.multi.map((p, i) => parlayRow(p, i, "X")).join("")}</div>`
+      : `<p class="empty">No Multi-Lays right now: fewer than two leagues have games.</p>`;
     if (state.tab === "injuries") html += injuriesView(wk);
     if (state.tab === "history") html += historyView();
-    if (["singles", "parlays", "leans"].includes(state.tab)) html += helpHtml(wk);
+    if (edgeTabs.includes(state.tab)) html += helpHtml(wk);
+    if (betTabs.includes(state.tab)) html += regularHelp(wk);
     $("main").innerHTML = html;
   }
 
@@ -683,7 +733,7 @@ main { display: grid; gap: 14px; padding-block: 18px; }
       if (kinds && !kinds.includes(state.betType)) state.betType = "All bets";
       render();
     }
-    else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab", state.tab); render(); }
+    else if (t.dataset.tab) { state.tab = t.dataset.tab; store.set("bb.tab2", state.tab); render(); }
     else if (t.dataset.hclear) { state.hist = { ...HF }; render(); }
     else if (t.dataset.inj) { state.injFilter = t.dataset.inj; render(); }
   });
