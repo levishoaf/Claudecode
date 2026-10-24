@@ -48914,7 +48914,7 @@
    "win_prob": 0.6676,
    "odds": -201,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -48930,8 +48930,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -48976,7 +48976,7 @@
    "win_prob": 0.5884,
    "odds": -143,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401928047",
@@ -48991,8 +48991,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -49066,7 +49066,7 @@
    "win_prob": 0.5654,
    "odds": -130,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401930357",
@@ -49081,8 +49081,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -49279,7 +49279,7 @@
    "win_prob": 0.5101,
    "odds": -104,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401928047",
@@ -49295,8 +49295,8 @@
      "pick": "Colby Thicknesse ML",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Colby Thicknesse ML (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -49403,7 +49403,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911632",
@@ -49435,8 +49435,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401911640",
@@ -49640,8 +49640,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -49655,7 +49655,7 @@
    "win_prob": 0.2489,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911632",
@@ -49687,8 +49687,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401929495",
@@ -49877,8 +49877,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401911635",
@@ -50005,8 +50005,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401929495",
@@ -50278,8 +50278,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401908029",
@@ -51289,7 +51289,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911639",
@@ -51321,8 +51321,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401911638",
@@ -51401,8 +51401,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -51416,7 +51416,7 @@
    "win_prob": 0.2497,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911639",
@@ -51448,8 +51448,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401928047",
@@ -51465,8 +51465,8 @@
      "pick": "Colby Thicknesse ML",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Colby Thicknesse ML (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -51577,8 +51577,8 @@
      "pick": "Colby Thicknesse ML",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Colby Thicknesse ML (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -51656,7 +51656,7 @@
    "win_prob": 0.2471,
    "odds": 305,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911633",
@@ -51688,8 +51688,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401911634",
@@ -51798,8 +51798,8 @@
      "pick": "Colby Thicknesse ML",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Colby Thicknesse ML (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -51844,8 +51844,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401911638",
@@ -52820,8 +52820,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401908042",
@@ -55497,7 +55497,7 @@
    "win_prob": 0.7914,
    "odds": -379,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401930917",
@@ -55513,8 +55513,8 @@
      "pick": "Iasmin Lucindo ML",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Iasmin Lucindo ML (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55528,7 +55528,7 @@
    "win_prob": 0.6308,
    "odds": -171,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401930917",
@@ -55543,8 +55543,8 @@
      "pick": "Lucindo vs Caliari goes the distance",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Lucindo vs Caliari goes the distance (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55558,7 +55558,7 @@
    "win_prob": 0.6305,
    "odds": -171,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930916",
@@ -55574,8 +55574,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     }
    ],
    "week": 47
@@ -55589,7 +55589,7 @@
    "win_prob": 0.6103,
    "odds": -157,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401930915",
@@ -55605,8 +55605,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55620,7 +55620,7 @@
    "win_prob": 0.5977,
    "odds": -149,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401930916",
@@ -55635,8 +55635,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     }
    ],
    "week": 47
@@ -55650,7 +55650,7 @@
    "win_prob": 0.5739,
    "odds": -135,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930915",
@@ -55665,8 +55665,8 @@
      "pick": "Oki vs Santos doesn't go the distance",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Oki vs Santos doesn't go the distance (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55680,7 +55680,7 @@
    "win_prob": 0.2499,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911637",
@@ -55713,8 +55713,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401930915",
@@ -55730,8 +55730,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55776,8 +55776,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401928047",
@@ -55792,8 +55792,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -55838,8 +55838,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401911638",
@@ -55901,8 +55901,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     },
     {
      "game_id": "401911635",
@@ -55932,7 +55932,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930917",
@@ -55948,8 +55948,8 @@
      "pick": "Iasmin Lucindo ML",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Iasmin Lucindo ML (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     },
     {
      "game_id": "401930916",
@@ -55965,8 +55965,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401929495",
@@ -55996,7 +55996,7 @@
    "win_prob": 0.2485,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911637",
@@ -56029,8 +56029,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401930915",
@@ -56045,8 +56045,8 @@
      "pick": "Oki vs Santos doesn't go the distance",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Oki vs Santos doesn't go the distance (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56091,8 +56091,8 @@
      "pick": "Lucindo vs Caliari goes the distance",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Lucindo vs Caliari goes the distance (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     },
     {
      "game_id": "401930357",
@@ -56107,8 +56107,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56122,7 +56122,7 @@
    "win_prob": 0.2482,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911633",
@@ -56154,8 +56154,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401930357",
@@ -56170,8 +56170,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56218,8 +56218,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     },
     {
      "game_id": "401911634",
@@ -56311,7 +56311,7 @@
    "win_prob": 0.25,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_07_DAL_PHI",
@@ -56350,8 +56350,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401908029",
@@ -56496,8 +56496,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     },
     {
      "game_id": "401908042",
@@ -56529,7 +56529,7 @@
    "win_prob": 0.2482,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930916",
@@ -56547,8 +56547,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401930915",
@@ -56566,8 +56566,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     },
     {
      "game_id": "401908042",
@@ -56599,7 +56599,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911637",
@@ -56649,8 +56649,8 @@
      "pick": "Oki vs Santos doesn't go the distance",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Oki vs Santos doesn't go the distance (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56664,7 +56664,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930917",
@@ -56681,8 +56681,8 @@
      "pick": "Iasmin Lucindo ML",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Iasmin Lucindo ML (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     },
     {
      "game_id": "401930915",
@@ -56698,8 +56698,8 @@
      "pick": "Oki vs Santos doesn't go the distance",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Oki vs Santos doesn't go the distance (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Daniel Santos \u00b7 went the distance"
     },
     {
      "game_id": "401930357",
@@ -56715,8 +56715,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56730,7 +56730,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911639",
@@ -56765,8 +56765,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401911634",
@@ -56830,8 +56830,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401930357",
@@ -56847,8 +56847,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56895,8 +56895,8 @@
      "pick": "Lucindo vs Caliari goes the distance",
      "game": "Iasmin Lucindo vs Nicolle Caliari",
      "id": "401930917|Lucindo vs Caliari goes the distance (Iasmin Lucindo vs Nicolle Caliari)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Iasmin Lucindo \u00b7 went the distance"
     },
     {
      "game_id": "401930357",
@@ -56912,8 +56912,8 @@
      "pick": "Vagaev vs Malkoun goes the distance",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Vagaev vs Malkoun goes the distance (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -56927,7 +56927,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911633",
@@ -56960,8 +56960,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401930915",
@@ -56977,8 +56977,8 @@
      "pick": "Oki vs Santos doesn't go the distance",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Oki vs Santos doesn't go the distance (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -57026,8 +57026,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401911640",
@@ -57158,8 +57158,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401930915",
@@ -57176,8 +57176,8 @@
      "pick": "Daniel Santos ML",
      "game": "Bolaji Oki vs Daniel Santos",
      "id": "401930915|Daniel Santos ML (Bolaji Oki vs Daniel Santos)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Daniel Santos \u00b7 went the distance"
     }
    ],
    "week": 47
@@ -57191,7 +57191,7 @@
    "win_prob": 0.248,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401911639",
@@ -57226,8 +57226,8 @@
      "pick": "Noah Gugnon ML",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Noah Gugnon ML (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401911640",
@@ -57319,8 +57319,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ]
   },
@@ -57372,8 +57372,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401908029",
@@ -57715,8 +57715,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401908043",
@@ -57787,8 +57787,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401928047",
@@ -57806,8 +57806,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ]
   },
@@ -58647,8 +58647,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401908042",
@@ -58698,8 +58698,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401908044",
@@ -58750,7 +58750,7 @@
    "win_prob": 0.2475,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -58769,8 +58769,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401928047",
@@ -58788,8 +58788,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     },
     {
      "game_id": "401908042",
@@ -59693,8 +59693,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401908042",
@@ -59766,8 +59766,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401928047",
@@ -59785,8 +59785,8 @@
      "pick": "Thicknesse vs Chopurov goes the distance",
      "game": "Colby Thicknesse vs Asaf Chopurov",
      "id": "401928047|Thicknesse vs Chopurov goes the distance (Colby Thicknesse vs Asaf Chopurov)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Colby Thicknesse \u00b7 went the distance"
     }
    ]
   },
@@ -60733,7 +60733,7 @@
    "win_prob": 0.2495,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401930357",
@@ -60752,8 +60752,8 @@
      "pick": "Jacob Malkoun ML",
      "game": "Abubakar Vagaev vs Jacob Malkoun",
      "id": "401930357|Jacob Malkoun ML (Abubakar Vagaev vs Jacob Malkoun)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Abubakar Vagaev \u00b7 went the distance"
     },
     {
      "game_id": "401930916",
@@ -60771,8 +60771,8 @@
      "pick": "Steele vs Gugnon doesn't go the distance",
      "game": "Kody Steele vs Noah Gugnon",
      "id": "401930916|Steele vs Gugnon doesn't go the distance (Kody Steele vs Noah Gugnon)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Kody Steele \u00b7 finished in round 1"
     },
     {
      "game_id": "401908042",
@@ -61272,6 +61272,3292 @@
    ],
    "week": 7,
    "edge": true
+  },
+  {
+   "id": "parlay:2026_07_GB_DET|Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions) + 2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -340,
+     "stake": 100,
+     "win_prob": 0.6759,
+     "label": "Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "raw_prob": 0.6976,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jahmyr Gibbs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T16:25:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Jahmyr Gibbs Anytime TD",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Jahmyr Gibbs Anytime TD (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.6089,
+     "label": "Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Kendre Miller",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Kendre Miller 1+ Receptions",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons) + 2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_LA_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.665,
+     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "raw_prob": 0.6091,
+     "market_prob": 0.665,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Rams @ Las Vegas Raiders",
+     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_TB_CAR",
+     "odds": -180,
+     "stake": 100,
+     "win_prob": 0.6165,
+     "label": "Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "raw_prob": 0.5943,
+     "market_prob": 0.6165,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CAR",
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Carolina Panthers ML",
+     "game": "Tampa Bay Buccaneers @ Carolina Panthers",
+     "id": "2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2493,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -240,
+     "stake": 100,
+     "win_prob": 0.6727,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6719,
+     "market_prob": 0.6727,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.6089,
+     "label": "Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Kendre Miller",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Kendre Miller 1+ Receptions",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles) + 2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DAL_PHI",
+     "odds": -215,
+     "stake": 100,
+     "win_prob": 0.6723,
+     "label": "Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
+     "raw_prob": 0.6548,
+     "market_prob": 0.6723,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DAL",
+     "kickoff": "2026-10-27T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Cowboys ML",
+     "game": "Dallas Cowboys @ Philadelphia Eagles",
+     "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.6089,
+     "label": "Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Kendre Miller",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Kendre Miller 1+ Receptions",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_GB_DET|Detroit Lions ML (Green Bay Packers @ Detroit Lions) + 2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_LA_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.665,
+     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "raw_prob": 0.6091,
+     "market_prob": 0.665,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Rams @ Las Vegas Raiders",
+     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -172,
+     "stake": 100,
+     "win_prob": 0.6156,
+     "label": "Detroit Lions ML (Green Bay Packers @ Detroit Lions)",
+     "raw_prob": 0.6227,
+     "market_prob": 0.6156,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DET",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Detroit Lions ML (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_PIT_NO|Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.249,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_LA_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.665,
+     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "raw_prob": 0.6091,
+     "market_prob": 0.665,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Rams @ Las Vegas Raiders",
+     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -188,
+     "stake": 100,
+     "win_prob": 0.6147,
+     "label": "Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Tyler Shough",
+     "stat": "passing_tds",
+     "max": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Tyler Shough Under 1.5 Passing TDs",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_DAL_PHI|Tanner McKee Under 1.5 Passing TDs (Dallas Cowboys @ Philadelphia Eagles) + 2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2486,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_LA_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.665,
+     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "raw_prob": 0.6091,
+     "market_prob": 0.665,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Rams @ Las Vegas Raiders",
+     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_DAL_PHI",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.6125,
+     "label": "Tanner McKee Under 1.5 Passing TDs (Dallas Cowboys @ Philadelphia Eagles)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Tanner McKee",
+     "stat": "passing_tds",
+     "max": 1,
+     "kickoff": "2026-10-27T00:15:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Tanner McKee Under 1.5 Passing TDs",
+     "game": "Dallas Cowboys @ Philadelphia Eagles",
+     "id": "2026_07_DAL_PHI|Tanner McKee Under 1.5 Passing TDs (Dallas Cowboys @ Philadelphia Eagles)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_GB_DET|Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons) + 2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2485,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6605,
+     "label": "Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Jared Goff",
+     "stat": "passing_tds",
+     "min": 2,
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Jared Goff 2+ Passing TDs",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_TB_CAR",
+     "odds": -180,
+     "stake": 100,
+     "win_prob": 0.6165,
+     "label": "Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "raw_prob": 0.5943,
+     "market_prob": 0.6165,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CAR",
+     "kickoff": "2026-10-25T17:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Carolina Panthers ML",
+     "game": "Tampa Bay Buccaneers @ Carolina Panthers",
+     "id": "2026_07_TB_CAR|Carolina Panthers ML (Tampa Bay Buccaneers @ Carolina Panthers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_GB_DET|Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions) + 2026_07_PIT_NO|Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2481,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_GB_DET",
+     "odds": -230,
+     "stake": 100,
+     "win_prob": 0.6605,
+     "label": "Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Jared Goff",
+     "stat": "passing_tds",
+     "min": 2,
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Jared Goff 2+ Passing TDs",
+     "game": "Green Bay Packers @ Detroit Lions",
+     "id": "2026_07_GB_DET|Jared Goff 2+ Passing TDs (Green Bay Packers @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -188,
+     "stake": 100,
+     "win_prob": 0.6147,
+     "label": "Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Tyler Shough",
+     "stat": "passing_tds",
+     "max": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "PASSING TDS",
+     "pick": "Tyler Shough Under 1.5 Passing TDs",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Tyler Shough Under 1.5 Passing TDs (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders) + 2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints) + 2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-24T16:44:34+00:00",
+   "win_prob": 0.2478,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_LA_LV",
+     "odds": -210,
+     "stake": 100,
+     "win_prob": 0.665,
+     "label": "Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "raw_prob": 0.6091,
+     "market_prob": 0.665,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-10-25T20:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Rams @ Las Vegas Raiders",
+     "id": "2026_07_LA_LV|Los Angeles Rams ML (Los Angeles Rams @ Las Vegas Raiders)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.6089,
+     "label": "Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "fd_line": true,
+     "type": "player_stat",
+     "player": "Kendre Miller",
+     "stat": "receptions",
+     "min": 1,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "RECEPTIONS",
+     "pick": "Kendre Miller 1+ Receptions",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Kendre Miller 1+ Receptions (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_SF_ATL",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5821,
+     "label": "Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "raw_prob": 0.6279,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian McCaffrey",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-25T13:00:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian McCaffrey Anytime TD",
+     "game": "San Francisco 49ers @ Atlanta Falcons",
+     "id": "2026_07_SF_ATL|Christian McCaffrey Anytime TD (San Francisco 49ers @ Atlanta Falcons)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 7
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1812,
+   "odds": 452,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -160,
+     "stake": 100,
+     "win_prob": 0.6063,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.5174,
+     "market_prob": 0.6063,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T15:45:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856732|Texas ML (Ole Miss @ Texas) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1747,
+   "odds": 472,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856732",
+     "odds": -156,
+     "stake": 100,
+     "win_prob": 0.5973,
+     "label": "Texas ML (Ole Miss @ Texas)",
+     "raw_prob": 0.5881,
+     "market_prob": 0.5973,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Ole Miss @ Texas",
+     "id": "401856732|Texas ML (Ole Miss @ Texas)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401858500|USC ML (USC @ Wisconsin) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.164,
+   "odds": 510,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858500",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.5822,
+     "label": "USC ML (USC @ Wisconsin)",
+     "raw_prob": 0.5723,
+     "market_prob": 0.5822,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "USC",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "USC ML",
+     "game": "USC @ Wisconsin",
+     "id": "401858500|USC ML (USC @ Wisconsin)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856732|Texas ML (Ole Miss @ Texas) + 401856839|Kansas State ML (Kansas State @ Arizona State) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1632,
+   "odds": 513,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -160,
+     "stake": 100,
+     "win_prob": 0.6063,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.5174,
+     "market_prob": 0.6063,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T15:45:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856732",
+     "odds": -156,
+     "stake": 100,
+     "win_prob": 0.5973,
+     "label": "Texas ML (Ole Miss @ Texas)",
+     "raw_prob": 0.5881,
+     "market_prob": 0.5973,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Ole Miss @ Texas",
+     "id": "401856732|Texas ML (Ole Miss @ Texas)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401866446|Kent State ML (Akron @ Kent State) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1628,
+   "odds": 514,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866446",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.5806,
+     "label": "Kent State ML (Akron @ Kent State)",
+     "raw_prob": 0.5854,
+     "market_prob": 0.5806,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kent State",
+     "kickoff": "2026-10-24T13:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kent State ML",
+     "game": "Akron @ Kent State",
+     "id": "401866446|Kent State ML (Akron @ Kent State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401858276|Clemson ML (Virginia Tech @ Clemson) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1612,
+   "odds": 520,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858276",
+     "odds": -150,
+     "stake": 100,
+     "win_prob": 0.5783,
+     "label": "Clemson ML (Virginia Tech @ Clemson)",
+     "raw_prob": 0.5866,
+     "market_prob": 0.5783,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-10-24T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Virginia Tech @ Clemson",
+     "id": "401858276|Clemson ML (Virginia Tech @ Clemson)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401862811|UTSA ML (UTSA @ Tulane) + 401866448|Buffalo ML (Bowling Green @ Buffalo)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1567,
+   "odds": 538,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866448",
+     "odds": -166,
+     "stake": 100,
+     "win_prob": 0.6232,
+     "label": "Buffalo ML (Bowling Green @ Buffalo)",
+     "raw_prob": 0.5991,
+     "market_prob": 0.6232,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Buffalo",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo ML",
+     "game": "Bowling Green @ Buffalo",
+     "id": "401866448|Buffalo ML (Bowling Green @ Buffalo)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401862811",
+     "odds": -146,
+     "stake": 100,
+     "win_prob": 0.5686,
+     "label": "UTSA ML (UTSA @ Tulane)",
+     "raw_prob": 0.5574,
+     "market_prob": 0.5686,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "UTSA",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "UTSA ML",
+     "game": "UTSA @ Tulane",
+     "id": "401862811|UTSA ML (UTSA @ Tulane)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401858500|USC ML (USC @ Wisconsin)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1563,
+   "odds": 540,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -160,
+     "stake": 100,
+     "win_prob": 0.6063,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.5174,
+     "market_prob": 0.6063,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T15:45:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858500",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.5822,
+     "label": "USC ML (USC @ Wisconsin)",
+     "raw_prob": 0.5723,
+     "market_prob": 0.5822,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "USC",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "USC ML",
+     "game": "USC @ Wisconsin",
+     "id": "401858500|USC ML (USC @ Wisconsin)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401866446|Kent State ML (Akron @ Kent State)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1561,
+   "odds": 541,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -160,
+     "stake": 100,
+     "win_prob": 0.6063,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.5174,
+     "market_prob": 0.6063,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T15:45:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401866446",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.5806,
+     "label": "Kent State ML (Akron @ Kent State)",
+     "raw_prob": 0.5854,
+     "market_prob": 0.5806,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kent State",
+     "kickoff": "2026-10-24T13:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kent State ML",
+     "game": "Akron @ Kent State",
+     "id": "401866446|Kent State ML (Akron @ Kent State)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401856839|Kansas State ML (Kansas State @ Arizona State) + 401858273|Georgia Tech ML (Boston College @ Georgia Tech) + 401858276|Clemson ML (Virginia Tech @ Clemson)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.1557,
+   "odds": 542,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858273",
+     "odds": -182,
+     "stake": 100,
+     "win_prob": 0.63,
+     "label": "Georgia Tech ML (Boston College @ Georgia Tech)",
+     "raw_prob": 0.6828,
+     "market_prob": 0.63,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Georgia Tech",
+     "kickoff": "2026-10-24T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Georgia Tech ML",
+     "game": "Boston College @ Georgia Tech",
+     "id": "401858273|Georgia Tech ML (Boston College @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856839",
+     "odds": -160,
+     "stake": 100,
+     "win_prob": 0.6063,
+     "label": "Kansas State ML (Kansas State @ Arizona State)",
+     "raw_prob": 0.5174,
+     "market_prob": 0.6063,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-24T15:45:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Arizona State",
+     "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858276",
+     "odds": -150,
+     "stake": 100,
+     "win_prob": 0.5783,
+     "label": "Clemson ML (Virginia Tech @ Clemson)",
+     "raw_prob": 0.5866,
+     "market_prob": 0.5783,
+     "fd_line": true,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-10-24T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Virginia Tech @ Clemson",
+     "id": "401858276|Clemson ML (Virginia Tech @ Clemson)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401911632|Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev) + 401929495|Pico vs Keita doesn't go the distance (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401929495",
+     "odds": -112,
+     "stake": 100,
+     "win_prob": 0.5277,
+     "label": "Pico vs Keita doesn't go the distance (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5287,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Pico vs Keita doesn't go the distance",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Pico vs Keita doesn't go the distance (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911632",
+     "odds": -113,
+     "stake": 100,
+     "win_prob": 0.5009,
+     "label": "Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev)",
+     "raw_prob": 0.345,
+     "market_prob": 0.5009,
+     "fd_line": true,
+     "type": "fight",
+     "fighter": "Alexander Volkanovski",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkanovski ML",
+     "game": "Alexander Volkanovski vs Movsar Evloev",
+     "id": "401911632|Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev) + 401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev) + 401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911632",
+     "odds": -239,
+     "stake": 100,
+     "win_prob": 0.7054,
+     "label": "Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "raw_prob": 0.7049,
+     "type": "distance",
+     "yes": true,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Volkanovski vs Evloev goes the distance",
+     "game": "Alexander Volkanovski vs Movsar Evloev",
+     "id": "401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911635",
+     "odds": -173,
+     "stake": 100,
+     "win_prob": 0.6338,
+     "label": "Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "raw_prob": 0.6476,
+     "market_prob": 0.6476,
+     "type": "fight",
+     "fighter": "Alexander Volkov",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkov ML",
+     "game": "Alexander Volkov vs Rizvan Kuniev",
+     "id": "401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911637",
+     "odds": -144,
+     "stake": 100,
+     "win_prob": 0.59,
+     "label": "Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "raw_prob": 0.6033,
+     "market_prob": 0.6033,
+     "type": "fight",
+     "fighter": "Dominick Reyes",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Dominick Reyes ML",
+     "game": "Azamat Murzakanov vs Dominick Reyes",
+     "id": "401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston) + 401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev) + 401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.248,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911639",
+     "odds": -342,
+     "stake": 100,
+     "win_prob": 0.774,
+     "label": "Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.777,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Krylov vs Yakhyaev doesn't go the distance",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911638",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.6037,
+     "label": "Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "raw_prob": 0.5883,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Magomedov vs Rowston doesn't go the distance",
+     "game": "Abus Magomedov vs Cam Rowston",
+     "id": "401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401929495",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5633,
+     "label": "Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "fight",
+     "fighter": "Losene Keita",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Losene Keita ML",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev) + 401911634|Kavanagh vs Temirov doesn't go the distance (Lone'er Kavanagh vs Ramazan Temirov) + 401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2477,
+   "odds": 304,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911632",
+     "odds": -239,
+     "stake": 100,
+     "win_prob": 0.7054,
+     "label": "Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "raw_prob": 0.7049,
+     "type": "distance",
+     "yes": true,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Volkanovski vs Evloev goes the distance",
+     "game": "Alexander Volkanovski vs Movsar Evloev",
+     "id": "401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911639",
+     "odds": -233,
+     "stake": 100,
+     "win_prob": 0.7,
+     "label": "Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.7062,
+     "market_prob": 0.7062,
+     "type": "fight",
+     "fighter": "Abdul-Rakhman Yakhyaev",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Abdul-Rakhman Yakhyaev ML",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911634",
+     "odds": -114,
+     "stake": 100,
+     "win_prob": 0.5324,
+     "label": "Kavanagh vs Temirov doesn't go the distance (Lone'er Kavanagh vs Ramazan Temirov)",
+     "raw_prob": 0.5323,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Kavanagh vs Temirov doesn't go the distance",
+     "game": "Lone'er Kavanagh vs Ramazan Temirov",
+     "id": "401911634|Kavanagh vs Temirov doesn't go the distance (Lone'er Kavanagh vs Ramazan Temirov)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911632|Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev) + 401911637|Murzakanov vs Reyes doesn't go the distance (Azamat Murzakanov vs Dominick Reyes) + 401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2465,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911637",
+     "odds": -296,
+     "stake": 100,
+     "win_prob": 0.7472,
+     "label": "Murzakanov vs Reyes doesn't go the distance (Azamat Murzakanov vs Dominick Reyes)",
+     "raw_prob": 0.7525,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Murzakanov vs Reyes doesn't go the distance",
+     "game": "Azamat Murzakanov vs Dominick Reyes",
+     "id": "401911637|Murzakanov vs Reyes doesn't go the distance (Azamat Murzakanov vs Dominick Reyes)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911639",
+     "odds": -233,
+     "stake": 100,
+     "win_prob": 0.7,
+     "label": "Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.7062,
+     "market_prob": 0.7062,
+     "type": "fight",
+     "fighter": "Abdul-Rakhman Yakhyaev",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Abdul-Rakhman Yakhyaev ML",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911632",
+     "odds": -113,
+     "stake": 100,
+     "win_prob": 0.5009,
+     "label": "Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev)",
+     "raw_prob": 0.345,
+     "market_prob": 0.5009,
+     "fd_line": true,
+     "type": "fight",
+     "fighter": "Alexander Volkanovski",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkanovski ML",
+     "game": "Alexander Volkanovski vs Movsar Evloev",
+     "id": "401911632|Alexander Volkanovski ML (Alexander Volkanovski vs Movsar Evloev)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov) + 401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston) + 401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2465,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911639",
+     "odds": -342,
+     "stake": 100,
+     "win_prob": 0.774,
+     "label": "Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.777,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Krylov vs Yakhyaev doesn't go the distance",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911638",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.6037,
+     "label": "Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "raw_prob": 0.5883,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Magomedov vs Rowston doesn't go the distance",
+     "game": "Abus Magomedov vs Cam Rowston",
+     "id": "401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911634",
+     "odds": -128,
+     "stake": 100,
+     "win_prob": 0.5606,
+     "label": "Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "raw_prob": 0.565,
+     "market_prob": 0.565,
+     "type": "fight",
+     "fighter": "Ramazan Temirov",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ramazan Temirov ML",
+     "game": "Lone'er Kavanagh vs Ramazan Temirov",
+     "id": "401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911635|Volkov vs Kuniev doesn't go the distance (Alexander Volkov vs Rizvan Kuniev) + 401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev) + 401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2464,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911639",
+     "odds": -342,
+     "stake": 100,
+     "win_prob": 0.774,
+     "label": "Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.777,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Krylov vs Yakhyaev doesn't go the distance",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Krylov vs Yakhyaev doesn't go the distance (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911635",
+     "odds": -150,
+     "stake": 100,
+     "win_prob": 0.6007,
+     "label": "Volkov vs Kuniev doesn't go the distance (Alexander Volkov vs Rizvan Kuniev)",
+     "raw_prob": 0.5856,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Volkov vs Kuniev doesn't go the distance",
+     "game": "Alexander Volkov vs Rizvan Kuniev",
+     "id": "401911635|Volkov vs Kuniev doesn't go the distance (Alexander Volkov vs Rizvan Kuniev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401929495",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5633,
+     "label": "Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "fight",
+     "fighter": "Losene Keita",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Losene Keita ML",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev) + 401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes) + 401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2463,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911639",
+     "odds": -233,
+     "stake": 100,
+     "win_prob": 0.7,
+     "label": "Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "raw_prob": 0.7062,
+     "market_prob": 0.7062,
+     "type": "fight",
+     "fighter": "Abdul-Rakhman Yakhyaev",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Abdul-Rakhman Yakhyaev ML",
+     "game": "Nikita Krylov vs Abdul-Rakhman Yakhyaev",
+     "id": "401911639|Abdul-Rakhman Yakhyaev ML (Nikita Krylov vs Abdul-Rakhman Yakhyaev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911635",
+     "odds": -173,
+     "stake": 100,
+     "win_prob": 0.6338,
+     "label": "Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "raw_prob": 0.6476,
+     "market_prob": 0.6476,
+     "type": "fight",
+     "fighter": "Alexander Volkov",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkov ML",
+     "game": "Alexander Volkov vs Rizvan Kuniev",
+     "id": "401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911637",
+     "odds": -144,
+     "stake": 100,
+     "win_prob": 0.59,
+     "label": "Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "raw_prob": 0.6033,
+     "market_prob": 0.6033,
+     "type": "fight",
+     "fighter": "Dominick Reyes",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Dominick Reyes ML",
+     "game": "Azamat Murzakanov vs Dominick Reyes",
+     "id": "401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911633|Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili) + 401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev) + 401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2457,
+   "odds": 307,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911633",
+     "odds": -273,
+     "stake": 100,
+     "win_prob": 0.7319,
+     "label": "Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili)",
+     "raw_prob": 0.7385,
+     "type": "distance",
+     "yes": true,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Yan vs Dvalishvili goes the distance",
+     "game": "Petr Yan vs Merab Dvalishvili",
+     "id": "401911633|Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911635",
+     "odds": -173,
+     "stake": 100,
+     "win_prob": 0.6338,
+     "label": "Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "raw_prob": 0.6476,
+     "market_prob": 0.6476,
+     "type": "fight",
+     "fighter": "Alexander Volkov",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkov ML",
+     "game": "Alexander Volkov vs Rizvan Kuniev",
+     "id": "401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401929495",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5633,
+     "label": "Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "fight",
+     "fighter": "Losene Keita",
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Losene Keita ML",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "parlay:401911633|Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili) + 401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes) + 401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+   "kind": "parlay",
+   "sport": "ufc",
+   "season": 2026,
+   "created": "2026-10-24T16:45:03+00:00",
+   "win_prob": 0.2449,
+   "odds": 308,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911633",
+     "odds": -273,
+     "stake": 100,
+     "win_prob": 0.7319,
+     "label": "Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili)",
+     "raw_prob": 0.7385,
+     "type": "distance",
+     "yes": true,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Yan vs Dvalishvili goes the distance",
+     "game": "Petr Yan vs Merab Dvalishvili",
+     "id": "401911633|Yan vs Dvalishvili goes the distance (Petr Yan vs Merab Dvalishvili)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911638",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.6037,
+     "label": "Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "raw_prob": 0.5883,
+     "type": "distance",
+     "yes": false,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Magomedov vs Rowston doesn't go the distance",
+     "game": "Abus Magomedov vs Cam Rowston",
+     "id": "401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911637",
+     "odds": -144,
+     "stake": 100,
+     "win_prob": 0.59,
+     "label": "Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "raw_prob": 0.6033,
+     "market_prob": 0.6033,
+     "type": "fight",
+     "fighter": "Dominick Reyes",
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Dominick Reyes ML",
+     "game": "Azamat Murzakanov vs Dominick Reyes",
+     "id": "401911637|Dominick Reyes ML (Azamat Murzakanov vs Dominick Reyes)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 47
+  },
+  {
+   "id": "single:401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.8371,
+   "odds": -514,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909855",
+     "odds": -514,
+     "stake": 100,
+     "win_prob": 0.8371,
+     "label": "Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "market_prob": 0.8371,
+     "type": "moneyline",
+     "team": "Philadelphia 76ers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Philadelphia 76ers ML",
+     "game": "Milwaukee Bucks @ Philadelphia 76ers, Oct 24",
+     "id": "401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "single:401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.8223,
+   "odds": -463,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909858",
+     "odds": -463,
+     "stake": 100,
+     "win_prob": 0.8223,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "market_prob": 0.8223,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Dallas Mavericks, Oct 24",
+     "id": "401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "single:401909854|Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.8,
+   "odds": -400,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909854",
+     "odds": -400,
+     "stake": 100,
+     "win_prob": 0.8,
+     "label": "Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24)",
+     "market_prob": 0.8,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Brooklyn Nets @ Cleveland Cavaliers, Oct 24",
+     "id": "401909854|Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "single:401909859|Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.7958,
+   "odds": -390,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909859",
+     "odds": -390,
+     "stake": 100,
+     "win_prob": 0.7958,
+     "label": "Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+     "market_prob": 0.7958,
+     "type": "moneyline",
+     "team": "Denver Nuggets",
+     "kickoff": "2026-10-24T21:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Nuggets ML",
+     "game": "New Orleans Pelicans @ Denver Nuggets, Oct 24",
+     "id": "401909859|Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "single:401909860|Phoenix Suns ML (Golden State Warriors @ Phoenix Suns, Oct 24)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.7572,
+   "odds": -312,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909860",
+     "odds": -312,
+     "stake": 100,
+     "win_prob": 0.7572,
+     "label": "Phoenix Suns ML (Golden State Warriors @ Phoenix Suns, Oct 24)",
+     "market_prob": 0.7572,
+     "type": "moneyline",
+     "team": "Phoenix Suns",
+     "kickoff": "2026-10-24T22:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Phoenix Suns ML",
+     "game": "Golden State Warriors @ Phoenix Suns, Oct 24",
+     "id": "401909860|Phoenix Suns ML (Golden State Warriors @ Phoenix Suns, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24) + 401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2462,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909858",
+     "odds": -463,
+     "stake": 100,
+     "win_prob": 0.8223,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "market_prob": 0.8223,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Dallas Mavericks, Oct 24",
+     "id": "401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": -111,
+     "stake": 100,
+     "win_prob": 0.5261,
+     "label": "Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.5261,
+     "type": "moneyline",
+     "team": "Chicago Bulls",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bulls ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24) + 401909857|Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2447,
+   "odds": 309,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909856",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5108,
+     "label": "Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.5108,
+     "type": "moneyline",
+     "team": "Atlanta Hawks",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Atlanta Hawks ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": 111,
+     "stake": 100,
+     "win_prob": 0.4739,
+     "label": "Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.4739,
+     "type": "moneyline",
+     "team": "Washington Wizards",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Washington Wizards ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24) + 401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2436,
+   "odds": 310,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909855",
+     "odds": -514,
+     "stake": 100,
+     "win_prob": 0.8371,
+     "label": "Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "market_prob": 0.8371,
+     "type": "moneyline",
+     "team": "Philadelphia 76ers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Philadelphia 76ers ML",
+     "game": "Milwaukee Bucks @ Philadelphia 76ers, Oct 24",
+     "id": "401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909856",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5108,
+     "label": "Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.5108,
+     "type": "moneyline",
+     "team": "Atlanta Hawks",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Atlanta Hawks ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909854|Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24) + 401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2401,
+   "odds": 316,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909854",
+     "odds": -400,
+     "stake": 100,
+     "win_prob": 0.8,
+     "label": "Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24)",
+     "market_prob": 0.8,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Brooklyn Nets @ Cleveland Cavaliers, Oct 24",
+     "id": "401909854|Cleveland Cavaliers ML (Brooklyn Nets @ Cleveland Cavaliers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": -111,
+     "stake": 100,
+     "win_prob": 0.5261,
+     "label": "Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.5261,
+     "type": "moneyline",
+     "team": "Chicago Bulls",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bulls ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24) + 401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2397,
+   "odds": 317,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909858",
+     "odds": -463,
+     "stake": 100,
+     "win_prob": 0.8223,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "market_prob": 0.8223,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Dallas Mavericks, Oct 24",
+     "id": "401909858|San Antonio Spurs ML (San Antonio Spurs @ Dallas Mavericks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909856",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5108,
+     "label": "Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.5108,
+     "type": "moneyline",
+     "team": "Atlanta Hawks",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Atlanta Hawks ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24) + 401909859|Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.239,
+   "odds": 318,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909859",
+     "odds": -390,
+     "stake": 100,
+     "win_prob": 0.7958,
+     "label": "Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+     "market_prob": 0.7958,
+     "type": "moneyline",
+     "team": "Denver Nuggets",
+     "kickoff": "2026-10-24T21:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Nuggets ML",
+     "game": "New Orleans Pelicans @ Denver Nuggets, Oct 24",
+     "id": "401909859|Denver Nuggets ML (New Orleans Pelicans @ Denver Nuggets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": -111,
+     "stake": 100,
+     "win_prob": 0.5261,
+     "label": "Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.5261,
+     "type": "moneyline",
+     "team": "Chicago Bulls",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bulls ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909856|Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24) + 401909857|Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2352,
+   "odds": 325,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909856",
+     "odds": 104,
+     "stake": 100,
+     "win_prob": 0.4892,
+     "label": "Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.4892,
+     "type": "moneyline",
+     "team": "Houston Rockets",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Houston Rockets ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": 111,
+     "stake": 100,
+     "win_prob": 0.4739,
+     "label": "Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.4739,
+     "type": "moneyline",
+     "team": "Washington Wizards",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Washington Wizards ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Washington Wizards ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24) + 401909856|Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2342,
+   "odds": 327,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909855",
+     "odds": -514,
+     "stake": 100,
+     "win_prob": 0.8371,
+     "label": "Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "market_prob": 0.8371,
+     "type": "moneyline",
+     "team": "Philadelphia 76ers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Philadelphia 76ers ML",
+     "game": "Milwaukee Bucks @ Philadelphia 76ers, Oct 24",
+     "id": "401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Miami Heat",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami Heat ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Miami Heat ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909856",
+     "odds": 104,
+     "stake": 100,
+     "win_prob": 0.4892,
+     "label": "Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.4892,
+     "type": "moneyline",
+     "team": "Houston Rockets",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Houston Rockets ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Houston Rockets ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909853|Charlotte Hornets ML (Miami Heat @ Charlotte Hornets, Oct 24) + 401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2332,
+   "odds": 329,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909857",
+     "odds": -111,
+     "stake": 100,
+     "win_prob": 0.5261,
+     "label": "Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.5261,
+     "type": "moneyline",
+     "team": "Chicago Bulls",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bulls ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909853",
+     "odds": 129,
+     "stake": 100,
+     "win_prob": 0.4365,
+     "label": "Charlotte Hornets ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "market_prob": 0.4365,
+     "type": "moneyline",
+     "team": "Charlotte Hornets",
+     "kickoff": "2026-10-24T18:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Charlotte Hornets ML",
+     "game": "Miami Heat @ Charlotte Hornets, Oct 24",
+     "id": "401909853|Charlotte Hornets ML (Miami Heat @ Charlotte Hornets, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24) + 401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24) + 401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-24T16:45:05+00:00",
+   "win_prob": 0.2289,
+   "odds": 337,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909855",
+     "odds": -514,
+     "stake": 100,
+     "win_prob": 0.8371,
+     "label": "Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "market_prob": 0.8371,
+     "type": "moneyline",
+     "team": "Philadelphia 76ers",
+     "kickoff": "2026-10-24T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Philadelphia 76ers ML",
+     "game": "Milwaukee Bucks @ Philadelphia 76ers, Oct 24",
+     "id": "401909855|Philadelphia 76ers ML (Milwaukee Bucks @ Philadelphia 76ers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909857",
+     "odds": -111,
+     "stake": 100,
+     "win_prob": 0.5261,
+     "label": "Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "market_prob": 0.5261,
+     "type": "moneyline",
+     "team": "Chicago Bulls",
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Chicago Bulls ML",
+     "game": "Washington Wizards @ Chicago Bulls, Oct 24",
+     "id": "401909857|Chicago Bulls ML (Washington Wizards @ Chicago Bulls, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909856",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5108,
+     "label": "Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "market_prob": 0.5108,
+     "type": "moneyline",
+     "team": "Atlanta Hawks",
+     "kickoff": "2026-10-24T20:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Atlanta Hawks ML",
+     "game": "Houston Rockets @ Atlanta Hawks, Oct 24",
+     "id": "401909856|Atlanta Hawks ML (Houston Rockets @ Atlanta Hawks, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 1
+  },
+  {
+   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints) + 401908047|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -240,
+     "stake": 100,
+     "win_prob": 0.6727,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6719,
+     "market_prob": 0.6727,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -174,
+     "stake": 100,
+     "win_prob": 0.6275,
+     "label": "Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "raw_prob": 0.597,
+     "market_prob": 0.6275,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908047",
+     "odds": -144,
+     "stake": 100,
+     "win_prob": 0.5909,
+     "label": "Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-30T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 30",
+     "id": "401908047|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints) + 401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev) + 401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_PIT_NO",
+     "odds": -174,
+     "stake": 100,
+     "win_prob": 0.6275,
+     "label": "Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "raw_prob": 0.597,
+     "market_prob": 0.6275,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T13:30:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Pittsburgh Steelers @ New Orleans Saints",
+     "id": "2026_07_PIT_NO|Pittsburgh Steelers ML (Pittsburgh Steelers @ New Orleans Saints)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911632",
+     "odds": -239,
+     "stake": 100,
+     "win_prob": 0.7054,
+     "label": "Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "raw_prob": 0.7049,
+     "type": "distance",
+     "yes": true,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Volkanovski vs Evloev goes the distance",
+     "game": "Alexander Volkanovski vs Movsar Evloev",
+     "id": "401911632|Volkanovski vs Evloev goes the distance (Alexander Volkanovski vs Movsar Evloev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401929495",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5633,
+     "label": "Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "fight",
+     "fighter": "Losene Keita",
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Losene Keita ML",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26) + 401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev) + 401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911635",
+     "odds": -173,
+     "stake": 100,
+     "win_prob": 0.6338,
+     "label": "Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "raw_prob": 0.6476,
+     "market_prob": 0.6476,
+     "type": "fight",
+     "fighter": "Alexander Volkov",
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Alexander Volkov ML",
+     "game": "Alexander Volkov vs Rizvan Kuniev",
+     "id": "401911635|Alexander Volkov ML (Alexander Volkov vs Rizvan Kuniev)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401929495",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5633,
+     "label": "Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "fight",
+     "fighter": "Losene Keita",
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Losene Keita ML",
+     "game": "Aaron Pico vs Losene Keita",
+     "id": "401929495|Losene Keita ML (Aaron Pico vs Losene Keita)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908044",
+     "odds": -232,
+     "stake": 100,
+     "win_prob": 0.6984,
+     "label": "Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
+     "type": "run_line",
+     "team": "Milwaukee Brewers",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-26T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Milwaukee Brewers +1.5",
+     "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
+     "id": "401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26) + 401908047|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30) + 401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.2491,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401911638",
+     "odds": -152,
+     "stake": 100,
+     "win_prob": 0.6037,
+     "label": "Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "raw_prob": 0.5883,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T12:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Magomedov vs Rowston doesn't go the distance",
+     "game": "Abus Magomedov vs Cam Rowston",
+     "id": "401911638|Magomedov vs Rowston doesn't go the distance (Abus Magomedov vs Cam Rowston)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908044",
+     "odds": -232,
+     "stake": 100,
+     "win_prob": 0.6984,
+     "label": "Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
+     "type": "run_line",
+     "team": "Milwaukee Brewers",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-26T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Milwaukee Brewers +1.5",
+     "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
+     "id": "401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908047",
+     "odds": -144,
+     "stake": 100,
+     "win_prob": 0.5909,
+     "label": "Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-30T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 30",
+     "id": "401908047|Tampa Bay Rays +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals) + 401908043|Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24) + 401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.2491,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DEN_ARI",
+     "odds": -240,
+     "stake": 100,
+     "win_prob": 0.6727,
+     "label": "Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "raw_prob": 0.6719,
+     "market_prob": 0.6727,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DEN",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-25T20:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Denver Broncos ML",
+     "game": "Denver Broncos @ Arizona Cardinals",
+     "id": "2026_07_DEN_ARI|Denver Broncos ML (Denver Broncos @ Arizona Cardinals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911634",
+     "odds": -128,
+     "stake": 100,
+     "win_prob": 0.5606,
+     "label": "Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "raw_prob": 0.565,
+     "market_prob": 0.565,
+     "type": "fight",
+     "fighter": "Ramazan Temirov",
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ramazan Temirov ML",
+     "game": "Lone'er Kavanagh vs Ramazan Temirov",
+     "id": "401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908043",
+     "odds": -195,
+     "stake": 100,
+     "win_prob": 0.6607,
+     "label": "Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "type": "run_line",
+     "team": "Milwaukee Brewers",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Milwaukee Brewers +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 24",
+     "id": "401908043|Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles) + 401908043|Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24) + 401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-24T16:45:06+00:00",
+   "win_prob": 0.249,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_07_DAL_PHI",
+     "odds": -215,
+     "stake": 100,
+     "win_prob": 0.6723,
+     "label": "Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
+     "raw_prob": 0.6548,
+     "market_prob": 0.6723,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DAL",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-27T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Cowboys ML",
+     "game": "Dallas Cowboys @ Philadelphia Eagles",
+     "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401911634",
+     "odds": -128,
+     "stake": 100,
+     "win_prob": 0.5606,
+     "label": "Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "raw_prob": 0.565,
+     "market_prob": 0.565,
+     "type": "fight",
+     "fighter": "Ramazan Temirov",
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-24T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Ramazan Temirov ML",
+     "game": "Lone'er Kavanagh vs Ramazan Temirov",
+     "id": "401911634|Ramazan Temirov ML (Lone'er Kavanagh vs Ramazan Temirov)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908043",
+     "odds": -195,
+     "stake": 100,
+     "win_prob": 0.6607,
+     "label": "Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "type": "run_line",
+     "team": "Milwaukee Brewers",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-24T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Milwaukee Brewers +1.5",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 24",
+     "id": "401908043|Milwaukee Brewers +1.5 (Tampa Bay Rays @ Milwaukee Brewers, Oct 24)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
   }
  ],
  "saved": [
