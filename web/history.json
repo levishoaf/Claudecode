@@ -47092,7 +47092,7 @@
    "win_prob": 0.9159,
    "odds": -1089,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871094",
@@ -47109,8 +47109,8 @@
      "pick": "Troy ML",
      "game": "UL Monroe @ Troy",
      "id": "401871094|Troy ML (UL Monroe @ Troy)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UL Monroe 21 - Troy 14"
     }
    ],
    "week": 8
@@ -47252,7 +47252,7 @@
    "win_prob": 0.8666,
    "odds": -650,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -47269,8 +47269,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     }
    ],
    "week": 8
@@ -47284,7 +47284,7 @@
    "win_prob": 0.8433,
    "odds": -538,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858499",
@@ -47301,8 +47301,8 @@
      "pick": "UCLA ML",
      "game": "Michigan State @ UCLA",
      "id": "401858499|UCLA ML (Michigan State @ UCLA)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Michigan State 10 - UCLA 28"
     }
    ],
    "week": 8
@@ -47348,7 +47348,7 @@
    "win_prob": 0.8232,
    "odds": -466,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401871093",
@@ -47365,8 +47365,8 @@
      "pick": "Louisiana Tech ML",
      "game": "Old Dominion @ Louisiana Tech",
      "id": "401871093|Louisiana Tech ML (Old Dominion @ Louisiana Tech)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Old Dominion 0 - Louisiana Tech 26"
     }
    ],
    "week": 8
@@ -47380,7 +47380,7 @@
    "win_prob": 0.8136,
    "odds": -436,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401860906",
@@ -47397,8 +47397,8 @@
      "pick": "Texas State ML",
      "game": "Utah State @ Texas State",
      "id": "401860906|Texas State ML (Utah State @ Texas State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Utah State 17 - Texas State 20"
     }
    ],
    "week": 8
@@ -47604,7 +47604,7 @@
    "win_prob": 0.7348,
    "odds": -277,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856837",
@@ -47621,8 +47621,8 @@
      "pick": "Utah ML",
      "game": "Houston @ Utah",
      "id": "401856837|Utah ML (Houston @ Utah)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Houston 13 - Utah 21"
     }
    ],
    "week": 8
@@ -47636,7 +47636,7 @@
    "win_prob": 0.7279,
    "odds": -267,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856836",
@@ -47653,8 +47653,8 @@
      "pick": "Oklahoma State ML",
      "game": "Colorado @ Oklahoma State",
      "id": "401856836|Oklahoma State ML (Colorado @ Oklahoma State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Colorado 24 - Oklahoma State 57"
     }
    ],
    "week": 8
@@ -47764,7 +47764,7 @@
    "win_prob": 0.6824,
    "odds": -215,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401864527",
@@ -47781,8 +47781,8 @@
      "pick": "New Mexico ML",
      "game": "North Dakota State @ New Mexico",
      "id": "401864527|New Mexico ML (North Dakota State @ New Mexico)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "North Dakota State 16 - New Mexico 21"
     }
    ],
    "week": 8
@@ -47828,7 +47828,7 @@
    "win_prob": 0.6724,
    "odds": -205,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401866449",
@@ -47845,8 +47845,8 @@
      "pick": "Ohio ML",
      "game": "Eastern Michigan @ Ohio",
      "id": "401866449|Ohio ML (Eastern Michigan @ Ohio)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Eastern Michigan 20 - Ohio 24"
     }
    ],
    "week": 8
@@ -47956,7 +47956,7 @@
    "win_prob": 0.6673,
    "odds": -201,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858275",
@@ -47973,8 +47973,8 @@
      "pick": "North Carolina ML",
      "game": "Syracuse @ North Carolina",
      "id": "401858275|North Carolina ML (Syracuse @ North Carolina)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Syracuse 31 - North Carolina 30"
     }
    ],
    "week": 8
@@ -47988,7 +47988,7 @@
    "win_prob": 0.6561,
    "odds": -191,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401860907",
@@ -48005,8 +48005,8 @@
      "pick": "Boise State ML",
      "game": "Boise State @ Washington State",
      "id": "401860907|Boise State ML (Boise State @ Washington State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Boise State 31 - Washington State 10"
     }
    ],
    "week": 8
@@ -48052,7 +48052,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858270",
@@ -48105,8 +48105,8 @@
      "pick": "Nevada ML",
      "game": "San Jos\u00e9 State @ Nevada",
      "id": "401864528|Nevada ML (San Jos\u00e9 State @ Nevada)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "San Jos\u00e9 State 13 - Nevada 28"
     }
    ],
    "week": 8
@@ -48120,7 +48120,7 @@
    "win_prob": 0.2495,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858499",
@@ -48137,8 +48137,8 @@
      "pick": "UCLA ML",
      "game": "Michigan State @ UCLA",
      "id": "401858499|UCLA ML (Michigan State @ UCLA)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Michigan State 10 - UCLA 28"
     },
     {
      "game_id": "401862810",
@@ -48173,8 +48173,8 @@
      "pick": "Tulane ML",
      "game": "UTSA @ Tulane",
      "id": "401862811|Tulane ML (UTSA @ Tulane)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UTSA 42 - Tulane 19"
     }
    ],
    "week": 8
@@ -48188,7 +48188,7 @@
    "win_prob": 0.2491,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858274",
@@ -48223,8 +48223,8 @@
      "pick": "BYU ML",
      "game": "BYU @ UCF",
      "id": "401856835|BYU ML (BYU @ UCF)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BYU 31 - UCF 39"
     },
     {
      "game_id": "401856839",
@@ -48241,8 +48241,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -48392,7 +48392,7 @@
    "win_prob": 0.2479,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858274",
@@ -48427,8 +48427,8 @@
      "pick": "BYU ML",
      "game": "BYU @ UCF",
      "id": "401856835|BYU ML (BYU @ UCF)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BYU 31 - UCF 39"
     },
     {
      "game_id": "401866450",
@@ -48596,7 +48596,7 @@
    "win_prob": 0.2416,
    "odds": 314,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871094",
@@ -48613,8 +48613,8 @@
      "pick": "Troy ML",
      "game": "UL Monroe @ Troy",
      "id": "401871094|Troy ML (UL Monroe @ Troy)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UL Monroe 21 - Troy 14"
     },
     {
      "game_id": "401856839",
@@ -48631,8 +48631,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     },
     {
      "game_id": "401866450",
@@ -50449,7 +50449,7 @@
    "win_prob": 0.8013,
    "odds": -403,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856729",
@@ -50466,8 +50466,8 @@
      "pick": "Kentucky ML",
      "game": "Vanderbilt @ Kentucky",
      "id": "401856729|Kentucky ML (Vanderbilt @ Kentucky)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Vanderbilt 17 - Kentucky 34"
     }
    ],
    "week": 8
@@ -50481,7 +50481,7 @@
    "win_prob": 0.7649,
    "odds": -325,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856838",
@@ -50498,8 +50498,8 @@
      "pick": "Arizona ML",
      "game": "Iowa State @ Arizona",
      "id": "401856838|Arizona ML (Iowa State @ Arizona)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Iowa State 3 - Arizona 39"
     }
    ],
    "week": 8
@@ -50513,7 +50513,7 @@
    "win_prob": 0.6957,
    "odds": -229,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856835",
@@ -50530,8 +50530,8 @@
      "pick": "BYU ML",
      "game": "BYU @ UCF",
      "id": "401856835|BYU ML (BYU @ UCF)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "BYU 31 - UCF 39"
     }
    ],
    "week": 8
@@ -50577,7 +50577,7 @@
    "win_prob": 0.6818,
    "odds": -214,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401869967",
@@ -50594,8 +50594,8 @@
      "pick": "Louisiana ML",
      "game": "Louisiana @ Southern Miss",
      "id": "401869967|Louisiana ML (Louisiana @ Southern Miss)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Louisiana 31 - Southern Miss 35"
     }
    ],
    "week": 8
@@ -50609,7 +50609,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871094",
@@ -50626,8 +50626,8 @@
      "pick": "Troy ML",
      "game": "UL Monroe @ Troy",
      "id": "401871094|Troy ML (UL Monroe @ Troy)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UL Monroe 21 - Troy 14"
     },
     {
      "game_id": "401864526",
@@ -50662,8 +50662,8 @@
      "pick": "Tulane ML",
      "game": "UTSA @ Tulane",
      "id": "401862811|Tulane ML (UTSA @ Tulane)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UTSA 42 - Tulane 19"
     }
    ],
    "week": 8
@@ -50677,7 +50677,7 @@
    "win_prob": 0.2497,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871093",
@@ -50694,8 +50694,8 @@
      "pick": "Louisiana Tech ML",
      "game": "Old Dominion @ Louisiana Tech",
      "id": "401871093|Louisiana Tech ML (Old Dominion @ Louisiana Tech)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Old Dominion 0 - Louisiana Tech 26"
     },
     {
      "game_id": "401856839",
@@ -50712,8 +50712,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     },
     {
      "game_id": "401862810",
@@ -50745,7 +50745,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871094",
@@ -50762,8 +50762,8 @@
      "pick": "Troy ML",
      "game": "UL Monroe @ Troy",
      "id": "401871094|Troy ML (UL Monroe @ Troy)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UL Monroe 21 - Troy 14"
     },
     {
      "game_id": "401862810",
@@ -50798,8 +50798,8 @@
      "pick": "Nevada ML",
      "game": "San Jos\u00e9 State @ Nevada",
      "id": "401864528|Nevada ML (San Jos\u00e9 State @ Nevada)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "San Jos\u00e9 State 13 - Nevada 28"
     }
    ],
    "week": 8
@@ -50813,7 +50813,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401861965",
@@ -50866,8 +50866,8 @@
      "pick": "Tulane ML",
      "game": "UTSA @ Tulane",
      "id": "401862811|Tulane ML (UTSA @ Tulane)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UTSA 42 - Tulane 19"
     }
    ],
    "week": 8
@@ -50881,7 +50881,7 @@
    "win_prob": 0.2493,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -50898,8 +50898,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401862810",
@@ -50949,7 +50949,7 @@
    "win_prob": 0.2485,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401860906",
@@ -50966,8 +50966,8 @@
      "pick": "Texas State ML",
      "game": "Utah State @ Texas State",
      "id": "401860906|Texas State ML (Utah State @ Texas State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Utah State 17 - Texas State 20"
     },
     {
      "game_id": "401866447",
@@ -51002,8 +51002,8 @@
      "pick": "Nevada ML",
      "game": "San Jos\u00e9 State @ Nevada",
      "id": "401864528|Nevada ML (San Jos\u00e9 State @ Nevada)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "San Jos\u00e9 State 13 - Nevada 28"
     }
    ],
    "week": 8
@@ -52045,7 +52045,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856732",
@@ -52062,8 +52062,8 @@
      "pick": "Texas ML",
      "game": "Ole Miss @ Texas",
      "id": "401856732|Texas ML (Ole Miss @ Texas)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Ole Miss 27 - Texas 34"
     },
     {
      "game_id": "401858500",
@@ -52080,8 +52080,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -52095,7 +52095,7 @@
    "win_prob": 0.2488,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -52112,8 +52112,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401866448",
@@ -52163,7 +52163,7 @@
    "win_prob": 0.2478,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871069",
@@ -52198,8 +52198,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -52213,7 +52213,7 @@
    "win_prob": 0.2474,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866446",
@@ -52248,8 +52248,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -52263,7 +52263,7 @@
    "win_prob": 0.2472,
    "odds": 305,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -52280,8 +52280,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401864527",
@@ -52298,8 +52298,8 @@
      "pick": "New Mexico ML",
      "game": "North Dakota State @ New Mexico",
      "id": "401864527|New Mexico ML (North Dakota State @ New Mexico)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "North Dakota State 16 - New Mexico 21"
     },
     {
      "game_id": "401856732",
@@ -52316,8 +52316,8 @@
      "pick": "Texas ML",
      "game": "Ole Miss @ Texas",
      "id": "401856732|Texas ML (Ole Miss @ Texas)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Ole Miss 27 - Texas 34"
     }
    ],
    "week": 8
@@ -52331,7 +52331,7 @@
    "win_prob": 0.2467,
    "odds": 305,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858498",
@@ -52384,8 +52384,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -52399,7 +52399,7 @@
    "win_prob": 0.2456,
    "odds": 307,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -52416,8 +52416,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401864527",
@@ -52434,8 +52434,8 @@
      "pick": "New Mexico ML",
      "game": "North Dakota State @ New Mexico",
      "id": "401864527|New Mexico ML (North Dakota State @ New Mexico)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "North Dakota State 16 - New Mexico 21"
     },
     {
      "game_id": "401871069",
@@ -52535,7 +52535,7 @@
    "win_prob": 0.2426,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401861965",
@@ -52588,8 +52588,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -52872,7 +52872,7 @@
    "win_prob": 0.2497,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856836",
@@ -52889,8 +52889,8 @@
      "pick": "Oklahoma State ML",
      "game": "Colorado @ Oklahoma State",
      "id": "401856836|Oklahoma State ML (Colorado @ Oklahoma State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Colorado 24 - Oklahoma State 57"
     },
     {
      "game_id": "401864526",
@@ -52940,7 +52940,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401860907",
@@ -52957,8 +52957,8 @@
      "pick": "Boise State ML",
      "game": "Boise State @ Washington State",
      "id": "401860907|Boise State ML (Boise State @ Washington State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Boise State 31 - Washington State 10"
     },
     {
      "game_id": "401864526",
@@ -52993,8 +52993,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -53008,7 +53008,7 @@
    "win_prob": 0.2493,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401860906",
@@ -53025,8 +53025,8 @@
      "pick": "Texas State ML",
      "game": "Utah State @ Texas State",
      "id": "401860906|Texas State ML (Utah State @ Texas State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Utah State 17 - Texas State 20"
     },
     {
      "game_id": "401864526",
@@ -53061,8 +53061,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -53076,7 +53076,7 @@
    "win_prob": 0.2485,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856730",
@@ -53111,8 +53111,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -53126,7 +53126,7 @@
    "win_prob": 0.2478,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858499",
@@ -53143,8 +53143,8 @@
      "pick": "UCLA ML",
      "game": "Michigan State @ UCLA",
      "id": "401858499|UCLA ML (Michigan State @ UCLA)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Michigan State 10 - UCLA 28"
     },
     {
      "game_id": "401866448",
@@ -53194,7 +53194,7 @@
    "win_prob": 0.2396,
    "odds": 317,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858270",
@@ -53247,8 +53247,8 @@
      "pick": "Texas ML",
      "game": "Ole Miss @ Texas",
      "id": "401856732|Texas ML (Ole Miss @ Texas)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Ole Miss 27 - Texas 34"
     }
    ],
    "week": 8
@@ -53427,7 +53427,7 @@
    "win_prob": 0.6546,
    "odds": -190,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_DAL_PHI",
@@ -53445,8 +53445,8 @@
      "pick": "Dallas Cowboys ML",
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "DAL 38 - PHI 21"
     }
    ],
    "week": 7
@@ -53780,7 +53780,7 @@
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Javonte Williams Anytime TD (Dallas Cowboys @ Philadelphia Eagles)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -54989,7 +54989,7 @@
    "win_prob": 0.249,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856836",
@@ -55006,8 +55006,8 @@
      "pick": "Oklahoma State ML",
      "game": "Colorado @ Oklahoma State",
      "id": "401856836|Oklahoma State ML (Colorado @ Oklahoma State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Colorado 24 - Oklahoma State 57"
     },
     {
      "game_id": "401864526",
@@ -55193,7 +55193,7 @@
    "win_prob": 0.2485,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401866447",
@@ -55246,8 +55246,8 @@
      "pick": "Texas ML",
      "game": "Ole Miss @ Texas",
      "id": "401856732|Texas ML (Ole Miss @ Texas)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Ole Miss 27 - Texas 34"
     }
    ],
    "week": 8
@@ -55261,7 +55261,7 @@
    "win_prob": 0.2484,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401866447",
@@ -55314,8 +55314,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -58680,7 +58680,7 @@
    "win_prob": 0.2494,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401928047",
@@ -58717,8 +58717,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
      "id": "401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 10 - Tampa Bay Rays 1"
     },
     {
      "game_id": "401908043",
@@ -59310,7 +59310,7 @@
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Javonte Williams Anytime TD (Dallas Cowboys @ Philadelphia Eagles)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     }
    ],
    "week": 7
@@ -59446,7 +59446,7 @@
    "win_prob": 0.2465,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401856727",
@@ -59463,8 +59463,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401866448",
@@ -59514,7 +59514,7 @@
    "win_prob": 0.2463,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858498",
@@ -59567,8 +59567,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -59654,7 +59654,7 @@
    "win_prob": 0.2477,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_DAL_PHI",
@@ -59674,8 +59674,8 @@
      "pick": "Dallas Cowboys ML",
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "DAL 38 - PHI 21"
     },
     {
      "game_id": "401930916",
@@ -60161,7 +60161,7 @@
    "win_prob": 0.2498,
    "odds": 300,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401871094",
@@ -60178,8 +60178,8 @@
      "pick": "Troy ML",
      "game": "UL Monroe @ Troy",
      "id": "401871094|Troy ML (UL Monroe @ Troy)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "UL Monroe 21 - Troy 14"
     },
     {
      "game_id": "401866448",
@@ -60214,8 +60214,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -60229,7 +60229,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401856727",
@@ -60246,8 +60246,8 @@
      "pick": "Alabama ML",
      "game": "Texas A&M @ Alabama",
      "id": "401856727|Alabama ML (Texas A&M @ Alabama)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Texas A&M 20 - Alabama 31"
     },
     {
      "game_id": "401856730",
@@ -60282,8 +60282,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -60297,7 +60297,7 @@
    "win_prob": 0.2493,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401858499",
@@ -60314,8 +60314,8 @@
      "pick": "UCLA ML",
      "game": "Michigan State @ UCLA",
      "id": "401858499|UCLA ML (Michigan State @ UCLA)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Michigan State 10 - UCLA 28"
     },
     {
      "game_id": "401864526",
@@ -60501,7 +60501,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401861965",
@@ -60554,8 +60554,8 @@
      "pick": "USC ML",
      "game": "USC @ Wisconsin",
      "id": "401858500|USC ML (USC @ Wisconsin)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "USC 7 - Wisconsin 24"
     }
    ],
    "week": 8
@@ -60569,7 +60569,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401858499",
@@ -60586,8 +60586,8 @@
      "pick": "UCLA ML",
      "game": "Michigan State @ UCLA",
      "id": "401858499|UCLA ML (Michigan State @ UCLA)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Michigan State 10 - UCLA 28"
     },
     {
      "game_id": "401856730",
@@ -60622,8 +60622,8 @@
      "pick": "Kansas State ML",
      "game": "Kansas State @ Arizona State",
      "id": "401856839|Kansas State ML (Kansas State @ Arizona State)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Kansas State 17 - Arizona State 28"
     }
    ],
    "week": 8
@@ -61503,7 +61503,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "2026_07_DAL_PHI",
@@ -61522,8 +61522,8 @@
      "pick": "Dallas Cowboys ML",
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "DAL 38 - PHI 21"
     },
     {
      "game_id": "2026_07_PIT_NO",
@@ -61762,7 +61762,7 @@
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Tanner McKee Under 1.5 Passing TDs (Dallas Cowboys @ Philadelphia Eagles)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     },
     {
      "game_id": "2026_07_SF_ATL",
@@ -64387,8 +64387,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
      "id": "401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 10 - Tampa Bay Rays 1"
     },
     {
      "game_id": "401908047",
@@ -64606,7 +64606,7 @@
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Tanner McKee Under 1.5 Passing TDs (Dallas Cowboys @ Philadelphia Eagles)",
      "status": "pending",
-     "detail": ""
+     "detail": "player stats not posted yet"
     },
     {
      "game_id": "2026_07_SF_ATL",
@@ -67531,7 +67531,7 @@
    "win_prob": 0.7073,
    "odds": -242,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401908044",
@@ -67547,8 +67547,8 @@
      "pick": "Milwaukee Brewers +1.5",
      "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
      "id": "401908044|Milwaukee Brewers +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Milwaukee Brewers 10 - Tampa Bay Rays 1"
     }
    ],
    "week": 32
@@ -68337,8 +68337,8 @@
      "pick": "Dallas Cowboys ML",
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "DAL 38 - PHI 21"
     },
     {
      "game_id": "2026_07_KC_SEA",
@@ -70139,8 +70139,8 @@
      "pick": "Dallas Cowboys ML",
      "game": "Dallas Cowboys @ Philadelphia Eagles",
      "id": "2026_07_DAL_PHI|Dallas Cowboys ML (Dallas Cowboys @ Philadelphia Eagles)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "DAL 38 - PHI 21"
     },
     {
      "game_id": "2026_07_KC_SEA",
@@ -71008,7 +71008,7 @@
    "win_prob": 0.8579,
    "odds": -604,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909870",
@@ -71024,8 +71024,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     }
    ],
    "week": 1
@@ -71039,7 +71039,7 @@
    "win_prob": 0.7659,
    "odds": -327,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909873",
@@ -71055,8 +71055,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     }
    ],
    "week": 1
@@ -71070,7 +71070,7 @@
    "win_prob": 0.7335,
    "odds": -275,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909871",
@@ -71086,8 +71086,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     }
    ],
    "week": 1
@@ -71132,7 +71132,7 @@
    "win_prob": 0.6575,
    "odds": -192,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909874",
@@ -71148,8 +71148,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     }
    ],
    "week": 1
@@ -71163,7 +71163,7 @@
    "win_prob": 0.6038,
    "odds": -152,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909872",
@@ -71179,8 +71179,8 @@
      "pick": "Indiana Pacers ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Indiana Pacers ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     }
    ],
    "week": 1
@@ -71194,7 +71194,7 @@
    "win_prob": 0.2495,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909870",
@@ -71210,8 +71210,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     },
     {
      "game_id": "401909869",
@@ -71227,8 +71227,8 @@
      "pick": "Cleveland Cavaliers ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Cleveland Cavaliers ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     },
     {
      "game_id": "401909875",
@@ -71244,8 +71244,8 @@
      "pick": "Utah Jazz ML",
      "game": "Memphis Grizzlies @ Utah Jazz, Oct 26",
      "id": "401909875|Utah Jazz ML (Memphis Grizzlies @ Utah Jazz, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Memphis Grizzlies 110 - Utah Jazz 105"
     }
    ],
    "week": 1
@@ -71259,7 +71259,7 @@
    "win_prob": 0.2492,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909868",
@@ -71275,8 +71275,8 @@
      "pick": "Charlotte Hornets ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Charlotte Hornets ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     },
     {
      "game_id": "401909875",
@@ -71292,8 +71292,8 @@
      "pick": "Memphis Grizzlies ML",
      "game": "Memphis Grizzlies @ Utah Jazz, Oct 26",
      "id": "401909875|Memphis Grizzlies ML (Memphis Grizzlies @ Utah Jazz, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Memphis Grizzlies 110 - Utah Jazz 105"
     }
    ],
    "week": 1
@@ -71307,7 +71307,7 @@
    "win_prob": 0.2481,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909876",
@@ -71340,8 +71340,8 @@
      "pick": "Indiana Pacers ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Indiana Pacers ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     },
     {
      "game_id": "401909869",
@@ -71357,8 +71357,8 @@
      "pick": "Cleveland Cavaliers ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Cleveland Cavaliers ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     }
    ],
    "week": 1
@@ -71372,7 +71372,7 @@
    "win_prob": 0.2472,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909870",
@@ -71388,8 +71388,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     },
     {
      "game_id": "401909872",
@@ -71405,8 +71405,8 @@
      "pick": "Indiana Pacers ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Indiana Pacers ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     },
     {
      "game_id": "401909875",
@@ -71422,8 +71422,8 @@
      "pick": "Memphis Grizzlies ML",
      "game": "Memphis Grizzlies @ Utah Jazz, Oct 26",
      "id": "401909875|Memphis Grizzlies ML (Memphis Grizzlies @ Utah Jazz, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Memphis Grizzlies 110 - Utah Jazz 105"
     }
    ],
    "week": 1
@@ -71437,7 +71437,7 @@
    "win_prob": 0.2472,
    "odds": 305,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909871",
@@ -71453,8 +71453,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     },
     {
      "game_id": "401909876",
@@ -71487,8 +71487,8 @@
      "pick": "Washington Wizards ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Washington Wizards ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -71502,7 +71502,7 @@
    "win_prob": 0.2455,
    "odds": 307,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909872",
@@ -71518,8 +71518,8 @@
      "pick": "Indiana Pacers ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Indiana Pacers ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     },
     {
      "game_id": "401909869",
@@ -71535,8 +71535,8 @@
      "pick": "Minnesota Timberwolves ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Minnesota Timberwolves ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     }
    ],
    "week": 1
@@ -71550,7 +71550,7 @@
    "win_prob": 0.2454,
    "odds": 308,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909871",
@@ -71566,8 +71566,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     },
     {
      "game_id": "401909874",
@@ -71583,8 +71583,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     },
     {
      "game_id": "401909868",
@@ -71600,8 +71600,8 @@
      "pick": "Charlotte Hornets ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Charlotte Hornets ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -71615,7 +71615,7 @@
    "win_prob": 0.245,
    "odds": 308,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909871",
@@ -71631,8 +71631,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     },
     {
      "game_id": "401909874",
@@ -71648,8 +71648,8 @@
      "pick": "Atlanta Hawks ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Atlanta Hawks ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     }
    ],
    "week": 1
@@ -71696,8 +71696,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     },
     {
      "game_id": "401909868",
@@ -71713,8 +71713,8 @@
      "pick": "Charlotte Hornets ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Charlotte Hornets ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -71728,7 +71728,7 @@
    "win_prob": 0.2398,
    "odds": 317,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909873",
@@ -71744,8 +71744,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     },
     {
      "game_id": "401909874",
@@ -71761,8 +71761,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     },
     {
      "game_id": "401909875",
@@ -71778,8 +71778,8 @@
      "pick": "Memphis Grizzlies ML",
      "game": "Memphis Grizzlies @ Utah Jazz, Oct 26",
      "id": "401909875|Memphis Grizzlies ML (Memphis Grizzlies @ Utah Jazz, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Memphis Grizzlies 110 - Utah Jazz 105"
     }
    ],
    "week": 1
@@ -71793,7 +71793,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401928109",
@@ -71830,8 +71830,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
      "id": "401908044|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 10 - Tampa Bay Rays 1"
     },
     {
      "game_id": "401908047",
@@ -71863,7 +71863,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401928109",
@@ -71900,8 +71900,8 @@
      "pick": "Tampa Bay Rays +1.5",
      "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 26",
      "id": "401908044|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Milwaukee Brewers 10 - Tampa Bay Rays 1"
     },
     {
      "game_id": "401908048",
@@ -71933,7 +71933,7 @@
    "win_prob": 0.6164,
    "odds": -161,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909869",
@@ -71949,8 +71949,8 @@
      "pick": "Cleveland Cavaliers ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Cleveland Cavaliers ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     }
    ],
    "week": 1
@@ -71964,7 +71964,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909873",
@@ -71980,8 +71980,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     },
     {
      "game_id": "401909876",
@@ -72014,8 +72014,8 @@
      "pick": "Washington Wizards ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Washington Wizards ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -72029,7 +72029,7 @@
    "win_prob": 0.2489,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909873",
@@ -72045,8 +72045,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     },
     {
      "game_id": "401909872",
@@ -72062,8 +72062,8 @@
      "pick": "Indiana Pacers ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Indiana Pacers ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     },
     {
      "game_id": "401909868",
@@ -72079,8 +72079,8 @@
      "pick": "Charlotte Hornets ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Charlotte Hornets ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -72094,7 +72094,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909873",
@@ -72110,8 +72110,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     },
     {
      "game_id": "401909874",
@@ -72127,8 +72127,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     },
     {
      "game_id": "401909875",
@@ -72144,8 +72144,8 @@
      "pick": "Utah Jazz ML",
      "game": "Memphis Grizzlies @ Utah Jazz, Oct 26",
      "id": "401909875|Utah Jazz ML (Memphis Grizzlies @ Utah Jazz, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Memphis Grizzlies 110 - Utah Jazz 105"
     }
    ],
    "week": 1
@@ -72159,7 +72159,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909870",
@@ -72175,8 +72175,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     },
     {
      "game_id": "401909873",
@@ -72192,8 +72192,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Phoenix Suns @ Oklahoma City Thunder, Oct 26",
      "id": "401909873|Oklahoma City Thunder ML (Phoenix Suns @ Oklahoma City Thunder, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Phoenix Suns 114 - Oklahoma City Thunder 125"
     },
     {
      "game_id": "401909869",
@@ -72209,8 +72209,8 @@
      "pick": "Minnesota Timberwolves ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Minnesota Timberwolves ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     }
    ],
    "week": 1
@@ -72224,7 +72224,7 @@
    "win_prob": 0.2472,
    "odds": 305,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909870",
@@ -72240,8 +72240,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     },
     {
      "game_id": "401909874",
@@ -72257,8 +72257,8 @@
      "pick": "Houston Rockets ML",
      "game": "Atlanta Hawks @ Houston Rockets, Oct 26",
      "id": "401909874|Houston Rockets ML (Atlanta Hawks @ Houston Rockets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Atlanta Hawks 110 - Houston Rockets 120"
     },
     {
      "game_id": "401909868",
@@ -72274,8 +72274,8 @@
      "pick": "Washington Wizards ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Washington Wizards ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -72289,7 +72289,7 @@
    "win_prob": 0.2461,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909870",
@@ -72305,8 +72305,8 @@
      "pick": "Boston Celtics ML",
      "game": "Chicago Bulls @ Boston Celtics, Oct 26",
      "id": "401909870|Boston Celtics ML (Chicago Bulls @ Boston Celtics, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Chicago Bulls 99 - Boston Celtics 134"
     },
     {
      "game_id": "401909871",
@@ -72322,8 +72322,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     },
     {
      "game_id": "401909872",
@@ -72339,8 +72339,8 @@
      "pick": "Milwaukee Bucks ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Milwaukee Bucks ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     }
    ],
    "week": 1
@@ -72354,7 +72354,7 @@
    "win_prob": 0.2441,
    "odds": 310,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909869",
@@ -72370,8 +72370,8 @@
      "pick": "Cleveland Cavaliers ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Cleveland Cavaliers ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     },
     {
      "game_id": "401909872",
@@ -72387,8 +72387,8 @@
      "pick": "Milwaukee Bucks ML",
      "game": "Indiana Pacers @ Milwaukee Bucks, Oct 26",
      "id": "401909872|Milwaukee Bucks ML (Indiana Pacers @ Milwaukee Bucks, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Indiana Pacers 102 - Milwaukee Bucks 110"
     }
    ],
    "week": 1
@@ -72402,7 +72402,7 @@
    "win_prob": 0.2426,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909871",
@@ -72418,8 +72418,8 @@
      "pick": "Miami Heat ML",
      "game": "Dallas Mavericks @ Miami Heat, Oct 26",
      "id": "401909871|Miami Heat ML (Dallas Mavericks @ Miami Heat, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Dallas Mavericks 113 - Miami Heat 109"
     },
     {
      "game_id": "401909869",
@@ -72435,8 +72435,8 @@
      "pick": "Cleveland Cavaliers ML",
      "game": "Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26",
      "id": "401909869|Cleveland Cavaliers ML (Minnesota Timberwolves @ Cleveland Cavaliers, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Minnesota Timberwolves 125 - Cleveland Cavaliers 127"
     },
     {
      "game_id": "401909868",
@@ -72452,8 +72452,8 @@
      "pick": "Charlotte Hornets ML",
      "game": "Washington Wizards @ Charlotte Hornets, Oct 26",
      "id": "401909868|Charlotte Hornets ML (Washington Wizards @ Charlotte Hornets, Oct 26)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Washington Wizards 103 - Charlotte Hornets 110"
     }
    ],
    "week": 1
@@ -72515,6 +72515,2364 @@
      "win_prob": 0.5893,
      "label": "Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
      "market_prob": 0.5893,
+     "type": "moneyline",
+     "team": "Milwaukee Brewers",
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-31T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Milwaukee Brewers ML",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 31",
+     "id": "401908048|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "single:2026_08_TEN_CIN|Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.8443,
+   "odds": -542,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_TEN_CIN",
+     "odds": -650,
+     "stake": 100,
+     "win_prob": 0.8443,
+     "label": "Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+     "raw_prob": 0.8393,
+     "market_prob": 0.8443,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CIN",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Cincinnati Bengals ML",
+     "game": "Tennessee Titans @ Cincinnati Bengals",
+     "id": "2026_08_TEN_CIN|Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "single:2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.7892,
+   "odds": -374,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_IND_JAX",
+     "odds": -420,
+     "stake": 100,
+     "win_prob": 0.7892,
+     "label": "Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "raw_prob": 0.7783,
+     "market_prob": 0.7892,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Indianapolis Colts @ Jacksonville Jaguars",
+     "id": "2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "single:2026_08_NE_MIA|New England Patriots ML (New England Patriots @ Miami Dolphins)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.7778,
+   "odds": -350,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_NE_MIA",
+     "odds": -370,
+     "stake": 100,
+     "win_prob": 0.7778,
+     "label": "New England Patriots ML (New England Patriots @ Miami Dolphins)",
+     "raw_prob": 0.7703,
+     "market_prob": 0.7778,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "NE",
+     "kickoff": "2026-11-01T21:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "New England Patriots ML",
+     "game": "New England Patriots @ Miami Dolphins",
+     "id": "2026_08_NE_MIA|New England Patriots ML (New England Patriots @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "single:2026_08_LAC_LA|Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+   "kind": "single",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.7363,
+   "odds": -279,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_LAC_LA",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7363,
+     "label": "Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+     "raw_prob": 0.7224,
+     "market_prob": 0.7363,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-11-01T21:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Chargers @ Los Angeles Rams",
+     "id": "2026_08_LAC_LA|Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_CAR_GB|Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers) + 2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers) + 2026_08_LAC_LA|Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_LAC_LA",
+     "odds": -290,
+     "stake": 100,
+     "win_prob": 0.7363,
+     "label": "Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+     "raw_prob": 0.7224,
+     "market_prob": 0.7363,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "LA",
+     "kickoff": "2026-11-01T21:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Rams ML",
+     "game": "Los Angeles Chargers @ Los Angeles Rams",
+     "id": "2026_08_LAC_LA|Los Angeles Rams ML (Los Angeles Chargers @ Los Angeles Rams)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CLE_PIT",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6412,
+     "label": "Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "raw_prob": 0.6234,
+     "market_prob": 0.6412,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Cleveland Browns @ Pittsburgh Steelers",
+     "id": "2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -106,
+     "stake": 100,
+     "win_prob": 0.5155,
+     "label": "Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.5737,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian Watson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-29T20:15:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian Watson Anytime TD",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers) + 2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos) + 2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6468,
+     "label": "Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.6276,
+     "market_prob": 0.6468,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "GB",
+     "kickoff": "2026-10-30T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Green Bay Packers ML",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_MIN_DET",
+     "odds": -174,
+     "stake": 100,
+     "win_prob": 0.6181,
+     "label": "Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "raw_prob": 0.6003,
+     "market_prob": 0.6181,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DET",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Minnesota Vikings @ Detroit Lions",
+     "id": "2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_KC_DEN",
+     "odds": -155,
+     "stake": 100,
+     "win_prob": 0.6086,
+     "label": "Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "raw_prob": 0.6671,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kenneth Walker III",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Kenneth Walker III Anytime TD",
+     "game": "Kansas City Chiefs @ Denver Broncos",
+     "id": "2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers) + 2026_08_CHI_SEA|Seattle Seahawks ML (Chicago Bears @ Seattle Seahawks) + 2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2498,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6468,
+     "label": "Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.6276,
+     "market_prob": 0.6468,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "GB",
+     "kickoff": "2026-10-30T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Green Bay Packers ML",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CHI_SEA",
+     "odds": -176,
+     "stake": 100,
+     "win_prob": 0.6176,
+     "label": "Seattle Seahawks ML (Chicago Bears @ Seattle Seahawks)",
+     "raw_prob": 0.6054,
+     "market_prob": 0.6176,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "SEA",
+     "kickoff": "2026-11-03T01:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Seattle Seahawks ML",
+     "game": "Chicago Bears @ Seattle Seahawks",
+     "id": "2026_08_CHI_SEA|Seattle Seahawks ML (Chicago Bears @ Seattle Seahawks)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_KC_DEN",
+     "odds": -155,
+     "stake": 100,
+     "win_prob": 0.6086,
+     "label": "Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "raw_prob": 0.6671,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kenneth Walker III",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Kenneth Walker III Anytime TD",
+     "game": "Kansas City Chiefs @ Denver Broncos",
+     "id": "2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_BAL_BUF|James Cook Anytime TD (Baltimore Ravens @ Buffalo Bills) + 2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2497,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_BAL_BUF",
+     "odds": -107,
+     "stake": 100,
+     "win_prob": 0.518,
+     "label": "James Cook Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "raw_prob": 0.577,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "James Cook",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "James Cook Anytime TD",
+     "game": "Baltimore Ravens @ Buffalo Bills",
+     "id": "2026_08_BAL_BUF|James Cook Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_NE_MIA",
+     "odds": 113,
+     "stake": 100,
+     "win_prob": 0.4689,
+     "label": "Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "raw_prob": 0.5332,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Ollie Gordon II",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Ollie Gordon II Anytime TD",
+     "game": "New England Patriots @ Miami Dolphins",
+     "id": "2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_CHI_SEA|Jaxon Smith-Njigba Anytime TD (Chicago Bears @ Seattle Seahawks) + 2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers) + 2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2495,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_IND_JAX",
+     "odds": -420,
+     "stake": 100,
+     "win_prob": 0.7892,
+     "label": "Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "raw_prob": 0.7783,
+     "market_prob": 0.7892,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Indianapolis Colts @ Jacksonville Jaguars",
+     "id": "2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CLE_PIT",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6412,
+     "label": "Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "raw_prob": 0.6234,
+     "market_prob": 0.6412,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Cleveland Browns @ Pittsburgh Steelers",
+     "id": "2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CHI_SEA",
+     "odds": 109,
+     "stake": 100,
+     "win_prob": 0.4794,
+     "label": "Jaxon Smith-Njigba Anytime TD (Chicago Bears @ Seattle Seahawks)",
+     "raw_prob": 0.5408,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jaxon Smith-Njigba",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-02T20:15:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Jaxon Smith-Njigba Anytime TD",
+     "game": "Chicago Bears @ Seattle Seahawks",
+     "id": "2026_08_CHI_SEA|Jaxon Smith-Njigba Anytime TD (Chicago Bears @ Seattle Seahawks)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_BAL_BUF|Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills) + 2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars) + 2026_08_KC_DEN|Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.249,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_IND_JAX",
+     "odds": -420,
+     "stake": 100,
+     "win_prob": 0.7892,
+     "label": "Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "raw_prob": 0.7783,
+     "market_prob": 0.7892,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Indianapolis Colts @ Jacksonville Jaguars",
+     "id": "2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_BAL_BUF",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5819,
+     "label": "Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "raw_prob": 0.6385,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Baltimore Ravens @ Buffalo Bills",
+     "id": "2026_08_BAL_BUF|Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_KC_DEN",
+     "odds": -122,
+     "stake": 100,
+     "win_prob": 0.5265,
+     "label": "Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos)",
+     "raw_prob": 0.5319,
+     "market_prob": 0.5265,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "KC",
+     "kickoff": "2026-11-01T21:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas City Chiefs ML",
+     "game": "Kansas City Chiefs @ Denver Broncos",
+     "id": "2026_08_KC_DEN|Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_CAR_GB|Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers) + 2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.249,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -106,
+     "stake": 100,
+     "win_prob": 0.5155,
+     "label": "Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.5737,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Christian Watson",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-10-29T20:15:00-04:00",
+     "market": "ANYTIME TD",
+     "pick": "Christian Watson Anytime TD",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Christian Watson Anytime TD (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_NE_MIA",
+     "odds": 113,
+     "stake": 100,
+     "win_prob": 0.4689,
+     "label": "Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "raw_prob": 0.5332,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Ollie Gordon II",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Ollie Gordon II Anytime TD",
+     "game": "New England Patriots @ Miami Dolphins",
+     "id": "2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars) + 2026_08_KC_DEN|Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos) + 2026_08_MIN_DET|Jahmyr Gibbs Anytime TD (Minnesota Vikings @ Detroit Lions)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2489,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_IND_JAX",
+     "odds": -420,
+     "stake": 100,
+     "win_prob": 0.7892,
+     "label": "Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "raw_prob": 0.7783,
+     "market_prob": 0.7892,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "JAX",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville Jaguars ML",
+     "game": "Indianapolis Colts @ Jacksonville Jaguars",
+     "id": "2026_08_IND_JAX|Jacksonville Jaguars ML (Indianapolis Colts @ Jacksonville Jaguars)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_MIN_DET",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5815,
+     "label": "Jahmyr Gibbs Anytime TD (Minnesota Vikings @ Detroit Lions)",
+     "raw_prob": 0.6379,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Jahmyr Gibbs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Jahmyr Gibbs Anytime TD",
+     "game": "Minnesota Vikings @ Detroit Lions",
+     "id": "2026_08_MIN_DET|Jahmyr Gibbs Anytime TD (Minnesota Vikings @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_KC_DEN",
+     "odds": -122,
+     "stake": 100,
+     "win_prob": 0.5265,
+     "label": "Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos)",
+     "raw_prob": 0.5319,
+     "market_prob": 0.5265,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "KC",
+     "kickoff": "2026-11-01T21:25:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas City Chiefs ML",
+     "game": "Kansas City Chiefs @ Denver Broncos",
+     "id": "2026_08_KC_DEN|Kansas City Chiefs ML (Kansas City Chiefs @ Denver Broncos)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_BAL_BUF|Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills) + 2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers) + 2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2487,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6468,
+     "label": "Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.6276,
+     "market_prob": 0.6468,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "GB",
+     "kickoff": "2026-10-30T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Green Bay Packers ML",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CLE_PIT",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6412,
+     "label": "Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "raw_prob": 0.6234,
+     "market_prob": 0.6412,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Cleveland Browns @ Pittsburgh Steelers",
+     "id": "2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_BAL_BUF",
+     "odds": -139,
+     "stake": 100,
+     "win_prob": 0.5819,
+     "label": "Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "raw_prob": 0.6385,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Derrick Henry",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Derrick Henry Anytime TD",
+     "game": "Baltimore Ravens @ Buffalo Bills",
+     "id": "2026_08_BAL_BUF|Derrick Henry Anytime TD (Baltimore Ravens @ Buffalo Bills)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos) + 2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins) + 2026_08_TEN_CIN|Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-10-27T03:54:16+00:00",
+   "win_prob": 0.2485,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_TEN_CIN",
+     "odds": -650,
+     "stake": 100,
+     "win_prob": 0.8443,
+     "label": "Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+     "raw_prob": 0.8393,
+     "market_prob": 0.8443,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "CIN",
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Cincinnati Bengals ML",
+     "game": "Tennessee Titans @ Cincinnati Bengals",
+     "id": "2026_08_TEN_CIN|Cincinnati Bengals ML (Tennessee Titans @ Cincinnati Bengals)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_KC_DEN",
+     "odds": -155,
+     "stake": 100,
+     "win_prob": 0.6086,
+     "label": "Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "raw_prob": 0.6671,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Kenneth Walker III",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Kenneth Walker III Anytime TD",
+     "game": "Kansas City Chiefs @ Denver Broncos",
+     "id": "2026_08_KC_DEN|Kenneth Walker III Anytime TD (Kansas City Chiefs @ Denver Broncos)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_NE_MIA",
+     "odds": 113,
+     "stake": 100,
+     "win_prob": 0.4689,
+     "label": "Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "raw_prob": 0.5332,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Ollie Gordon II",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-01T16:25:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Ollie Gordon II Anytime TD",
+     "game": "New England Patriots @ Miami Dolphins",
+     "id": "2026_08_NE_MIA|Ollie Gordon II Anytime TD (New England Patriots @ Miami Dolphins)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 8
+  },
+  {
+   "id": "parlay:401864531|North Dakota State ML (UTEP @ North Dakota State) + 401871057|Jacksonville State ML (Jacksonville State @ New Mexico State) + 401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2499,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401864531",
+     "odds": -2262,
+     "stake": 100,
+     "win_prob": 0.9577,
+     "label": "North Dakota State ML (UTEP @ North Dakota State)",
+     "raw_prob": 0.9633,
+     "market_prob": 0.9633,
+     "type": "moneyline",
+     "team": "North Dakota State",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "North Dakota State ML",
+     "game": "UTEP @ North Dakota State",
+     "id": "401864531|North Dakota State ML (UTEP @ North Dakota State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871057",
+     "odds": -122,
+     "stake": 100,
+     "win_prob": 0.549,
+     "label": "Jacksonville State ML (Jacksonville State @ New Mexico State)",
+     "raw_prob": 0.5945,
+     "market_prob": 0.5945,
+     "type": "moneyline",
+     "team": "Jacksonville State",
+     "kickoff": "2026-10-28T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville State ML",
+     "game": "Jacksonville State @ New Mexico State",
+     "id": "401871057|Jacksonville State ML (Jacksonville State @ New Mexico State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871058",
+     "odds": -105,
+     "stake": 100,
+     "win_prob": 0.5112,
+     "label": "Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "raw_prob": 0.5609,
+     "market_prob": 0.5609,
+     "type": "moneyline",
+     "team": "Middle Tennessee",
+     "kickoff": "2026-10-28T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Middle Tennessee ML",
+     "game": "Kennesaw State @ Middle Tennessee",
+     "id": "401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401856737|Texas ML (Mississippi State @ Texas) + 401858502|Iowa ML (Wisconsin @ Iowa) + 401871096|Marshall ML (Marshall @ Old Dominion)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2498,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856737",
+     "odds": -999,
+     "stake": 100,
+     "win_prob": 0.909,
+     "label": "Texas ML (Mississippi State @ Texas)",
+     "raw_prob": 0.9177,
+     "market_prob": 0.9177,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-10-31T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Mississippi State @ Texas",
+     "id": "401856737|Texas ML (Mississippi State @ Texas)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858502",
+     "odds": -138,
+     "stake": 100,
+     "win_prob": 0.579,
+     "label": "Iowa ML (Wisconsin @ Iowa)",
+     "raw_prob": 0.6154,
+     "market_prob": 0.6154,
+     "type": "moneyline",
+     "team": "Iowa",
+     "kickoff": "2026-10-31T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Iowa ML",
+     "game": "Wisconsin @ Iowa",
+     "id": "401858502|Iowa ML (Wisconsin @ Iowa)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871096",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5106,
+     "label": "Marshall ML (Marshall @ Old Dominion)",
+     "raw_prob": 0.5602,
+     "market_prob": 0.5602,
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-31T13:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Marshall @ Old Dominion",
+     "id": "401871096|Marshall ML (Marshall @ Old Dominion)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401858501|Indiana ML (Minnesota @ Indiana) + 401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee) + 401871095|Southern Miss ML (Southern Miss @ UL Monroe)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2497,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858501",
+     "odds": -1152,
+     "stake": 100,
+     "win_prob": 0.9202,
+     "label": "Indiana ML (Minnesota @ Indiana)",
+     "raw_prob": 0.9286,
+     "market_prob": 0.9286,
+     "type": "moneyline",
+     "team": "Indiana",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Indiana ML",
+     "game": "Minnesota @ Indiana",
+     "id": "401858501|Indiana ML (Minnesota @ Indiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871095",
+     "odds": -133,
+     "stake": 100,
+     "win_prob": 0.5713,
+     "label": "Southern Miss ML (Southern Miss @ UL Monroe)",
+     "raw_prob": 0.6105,
+     "market_prob": 0.6105,
+     "type": "moneyline",
+     "team": "Southern Miss",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Southern Miss ML",
+     "game": "Southern Miss @ UL Monroe",
+     "id": "401871095|Southern Miss ML (Southern Miss @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871058",
+     "odds": -105,
+     "stake": 100,
+     "win_prob": 0.5112,
+     "label": "Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "raw_prob": 0.5609,
+     "market_prob": 0.5609,
+     "type": "moneyline",
+     "team": "Middle Tennessee",
+     "kickoff": "2026-10-28T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Middle Tennessee ML",
+     "game": "Kennesaw State @ Middle Tennessee",
+     "id": "401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401864531|North Dakota State ML (UTEP @ North Dakota State) + 401871057|Jacksonville State ML (Jacksonville State @ New Mexico State) + 401871096|Marshall ML (Marshall @ Old Dominion)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401864531",
+     "odds": -2262,
+     "stake": 100,
+     "win_prob": 0.9577,
+     "label": "North Dakota State ML (UTEP @ North Dakota State)",
+     "raw_prob": 0.9633,
+     "market_prob": 0.9633,
+     "type": "moneyline",
+     "team": "North Dakota State",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "North Dakota State ML",
+     "game": "UTEP @ North Dakota State",
+     "id": "401864531|North Dakota State ML (UTEP @ North Dakota State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871057",
+     "odds": -122,
+     "stake": 100,
+     "win_prob": 0.549,
+     "label": "Jacksonville State ML (Jacksonville State @ New Mexico State)",
+     "raw_prob": 0.5945,
+     "market_prob": 0.5945,
+     "type": "moneyline",
+     "team": "Jacksonville State",
+     "kickoff": "2026-10-28T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Jacksonville State ML",
+     "game": "Jacksonville State @ New Mexico State",
+     "id": "401871057|Jacksonville State ML (Jacksonville State @ New Mexico State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871096",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5106,
+     "label": "Marshall ML (Marshall @ Old Dominion)",
+     "raw_prob": 0.5602,
+     "market_prob": 0.5602,
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-31T13:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Marshall @ Old Dominion",
+     "id": "401871096|Marshall ML (Marshall @ Old Dominion)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401858282|Miami ML (Miami @ North Carolina) + 401858503|Illinois ML (Illinois @ Maryland) + 401858505|Oregon ML (Northwestern @ Oregon)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858282",
+     "odds": -676,
+     "stake": 100,
+     "win_prob": 0.8712,
+     "label": "Miami ML (Miami @ North Carolina)",
+     "raw_prob": 0.8603,
+     "market_prob": 0.8603,
+     "type": "moneyline",
+     "team": "Miami",
+     "kickoff": "2026-10-31T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Miami ML",
+     "game": "Miami @ North Carolina",
+     "id": "401858282|Miami ML (Miami @ North Carolina)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858505",
+     "odds": -143,
+     "stake": 100,
+     "win_prob": 0.5885,
+     "label": "Oregon ML (Northwestern @ Oregon)",
+     "raw_prob": 0.6213,
+     "market_prob": 0.6213,
+     "type": "moneyline",
+     "team": "Oregon",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oregon ML",
+     "game": "Northwestern @ Oregon",
+     "id": "401858505|Oregon ML (Northwestern @ Oregon)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858503",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Illinois ML (Illinois @ Maryland)",
+     "raw_prob": 0.5741,
+     "market_prob": 0.5741,
+     "type": "moneyline",
+     "team": "Illinois",
+     "kickoff": "2026-10-31T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Illinois ML",
+     "game": "Illinois @ Maryland",
+     "id": "401858503|Illinois ML (Illinois @ Maryland)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401856842|Texas Tech ML (Arizona @ Texas Tech) + 401858283|Louisville ML (Stanford @ Louisville) + 401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858283",
+     "odds": -1369,
+     "stake": 100,
+     "win_prob": 0.9319,
+     "label": "Louisville ML (Stanford @ Louisville)",
+     "raw_prob": 0.9395,
+     "market_prob": 0.9395,
+     "type": "moneyline",
+     "team": "Louisville",
+     "kickoff": "2026-10-31T15:15:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Louisville ML",
+     "game": "Stanford @ Louisville",
+     "id": "401858283|Louisville ML (Stanford @ Louisville)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856842",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5634,
+     "label": "Texas Tech ML (Arizona @ Texas Tech)",
+     "raw_prob": 0.6057,
+     "market_prob": 0.6057,
+     "type": "moneyline",
+     "team": "Texas Tech",
+     "kickoff": "2026-10-31T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas Tech ML",
+     "game": "Arizona @ Texas Tech",
+     "id": "401856842|Texas Tech ML (Arizona @ Texas Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871058",
+     "odds": -105,
+     "stake": 100,
+     "win_prob": 0.5112,
+     "label": "Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "raw_prob": 0.5609,
+     "market_prob": 0.5609,
+     "type": "moneyline",
+     "team": "Middle Tennessee",
+     "kickoff": "2026-10-28T19:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Middle Tennessee ML",
+     "game": "Kennesaw State @ Middle Tennessee",
+     "id": "401871058|Middle Tennessee ML (Kennesaw State @ Middle Tennessee)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401856843|BYU ML (Arizona State @ BYU) + 401856846|Kansas State ML (Kansas State @ Colorado) + 401858505|Oregon ML (Northwestern @ Oregon)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2492,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856843",
+     "odds": -696,
+     "stake": 100,
+     "win_prob": 0.8744,
+     "label": "BYU ML (Arizona State @ BYU)",
+     "raw_prob": 0.8649,
+     "market_prob": 0.8649,
+     "type": "moneyline",
+     "team": "BYU",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "BYU ML",
+     "game": "Arizona State @ BYU",
+     "id": "401856843|BYU ML (Arizona State @ BYU)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858505",
+     "odds": -143,
+     "stake": 100,
+     "win_prob": 0.5885,
+     "label": "Oregon ML (Northwestern @ Oregon)",
+     "raw_prob": 0.6213,
+     "market_prob": 0.6213,
+     "type": "moneyline",
+     "team": "Oregon",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Oregon ML",
+     "game": "Northwestern @ Oregon",
+     "id": "401858505|Oregon ML (Northwestern @ Oregon)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856846",
+     "odds": -109,
+     "stake": 100,
+     "win_prob": 0.5216,
+     "label": "Kansas State ML (Kansas State @ Colorado)",
+     "raw_prob": 0.572,
+     "market_prob": 0.572,
+     "type": "moneyline",
+     "team": "Kansas State",
+     "kickoff": "2026-10-31T14:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas State ML",
+     "game": "Kansas State @ Colorado",
+     "id": "401856846|Kansas State ML (Kansas State @ Colorado)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401858501|Indiana ML (Minnesota @ Indiana) + 401871095|Southern Miss ML (Southern Miss @ UL Monroe) + 401871096|Marshall ML (Marshall @ Old Dominion)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2491,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858501",
+     "odds": -1152,
+     "stake": 100,
+     "win_prob": 0.9202,
+     "label": "Indiana ML (Minnesota @ Indiana)",
+     "raw_prob": 0.9286,
+     "market_prob": 0.9286,
+     "type": "moneyline",
+     "team": "Indiana",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Indiana ML",
+     "game": "Minnesota @ Indiana",
+     "id": "401858501|Indiana ML (Minnesota @ Indiana)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871095",
+     "odds": -133,
+     "stake": 100,
+     "win_prob": 0.5713,
+     "label": "Southern Miss ML (Southern Miss @ UL Monroe)",
+     "raw_prob": 0.6105,
+     "market_prob": 0.6105,
+     "type": "moneyline",
+     "team": "Southern Miss",
+     "kickoff": "2026-10-31T15:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Southern Miss ML",
+     "game": "Southern Miss @ UL Monroe",
+     "id": "401871095|Southern Miss ML (Southern Miss @ UL Monroe)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401871096",
+     "odds": -104,
+     "stake": 100,
+     "win_prob": 0.5106,
+     "label": "Marshall ML (Marshall @ Old Dominion)",
+     "raw_prob": 0.5602,
+     "market_prob": 0.5602,
+     "type": "moneyline",
+     "team": "Marshall",
+     "kickoff": "2026-10-31T13:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Marshall ML",
+     "game": "Marshall @ Old Dominion",
+     "id": "401871096|Marshall ML (Marshall @ Old Dominion)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:401856737|Texas ML (Mississippi State @ Texas) + 401856842|Texas Tech ML (Arizona @ Texas Tech) + 401858503|Illinois ML (Illinois @ Maryland)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-10-27T03:54:40+00:00",
+   "win_prob": 0.2487,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856737",
+     "odds": -999,
+     "stake": 100,
+     "win_prob": 0.909,
+     "label": "Texas ML (Mississippi State @ Texas)",
+     "raw_prob": 0.9177,
+     "market_prob": 0.9177,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-10-31T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Mississippi State @ Texas",
+     "id": "401856737|Texas ML (Mississippi State @ Texas)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856842",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5634,
+     "label": "Texas Tech ML (Arizona @ Texas Tech)",
+     "raw_prob": 0.6057,
+     "market_prob": 0.6057,
+     "type": "moneyline",
+     "team": "Texas Tech",
+     "kickoff": "2026-10-31T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Texas Tech ML",
+     "game": "Arizona @ Texas Tech",
+     "id": "401856842|Texas Tech ML (Arizona @ Texas Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858503",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Illinois ML (Illinois @ Maryland)",
+     "raw_prob": 0.5741,
+     "market_prob": 0.5741,
+     "type": "moneyline",
+     "team": "Illinois",
+     "kickoff": "2026-10-31T12:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Illinois ML",
+     "game": "Illinois @ Maryland",
+     "id": "401858503|Illinois ML (Illinois @ Maryland)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "single:401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.9124,
+   "odds": -1042,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909879",
+     "odds": -1042,
+     "stake": 100,
+     "win_prob": 0.9124,
+     "label": "San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "market_prob": 0.9124,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "Sacramento Kings @ San Antonio Spurs, Oct 27",
+     "id": "401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "single:401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.8173,
+   "odds": -447,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909877",
+     "odds": -447,
+     "stake": 100,
+     "win_prob": 0.8173,
+     "label": "Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "market_prob": 0.8173,
+     "type": "moneyline",
+     "team": "Boston Celtics",
+     "kickoff": "2026-10-27T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Boston Celtics ML",
+     "game": "Brooklyn Nets @ Boston Celtics, Oct 27",
+     "id": "401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.231,
+   "odds": 333,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909880",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Los Angeles Lakers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Lakers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": 140,
+     "stake": 100,
+     "win_prob": 0.417,
+     "label": "Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.417,
+     "type": "moneyline",
+     "team": "Detroit Pistons",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Pistons ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909878|New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27) + 401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.2279,
+   "odds": 339,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909879",
+     "odds": -1042,
+     "stake": 100,
+     "win_prob": 0.9124,
+     "label": "San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "market_prob": 0.9124,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "Sacramento Kings @ San Antonio Spurs, Oct 27",
+     "id": "401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.583,
+     "label": "New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.583,
+     "type": "moneyline",
+     "team": "New York Knicks",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "New York Knicks ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909880",
+     "odds": 129,
+     "stake": 100,
+     "win_prob": 0.4365,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.4365,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27) + 401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.2104,
+   "odds": 375,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909879",
+     "odds": -1042,
+     "stake": 100,
+     "win_prob": 0.9124,
+     "label": "San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "market_prob": 0.9124,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "Sacramento Kings @ San Antonio Spurs, Oct 27",
+     "id": "401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909880",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Los Angeles Lakers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Lakers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": 140,
+     "stake": 100,
+     "win_prob": 0.417,
+     "label": "Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.417,
+     "type": "moneyline",
+     "team": "Detroit Pistons",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Pistons ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27) + 401909878|New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.2046,
+   "odds": 389,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909877",
+     "odds": -447,
+     "stake": 100,
+     "win_prob": 0.8173,
+     "label": "Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "market_prob": 0.8173,
+     "type": "moneyline",
+     "team": "Boston Celtics",
+     "kickoff": "2026-10-27T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Boston Celtics ML",
+     "game": "Brooklyn Nets @ Boston Celtics, Oct 27",
+     "id": "401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": -140,
+     "stake": 100,
+     "win_prob": 0.583,
+     "label": "New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.583,
+     "type": "moneyline",
+     "team": "New York Knicks",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "New York Knicks ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|New York Knicks ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909880",
+     "odds": 129,
+     "stake": 100,
+     "win_prob": 0.4365,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.4365,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27) + 401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.1904,
+   "odds": 425,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909877",
+     "odds": -447,
+     "stake": 100,
+     "win_prob": 0.8173,
+     "label": "Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "market_prob": 0.8173,
+     "type": "moneyline",
+     "team": "Boston Celtics",
+     "kickoff": "2026-10-27T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Boston Celtics ML",
+     "game": "Brooklyn Nets @ Boston Celtics, Oct 27",
+     "id": "401909877|Boston Celtics ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909880",
+     "odds": -129,
+     "stake": 100,
+     "win_prob": 0.5635,
+     "label": "Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.5635,
+     "type": "moneyline",
+     "team": "Los Angeles Lakers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Los Angeles Lakers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Los Angeles Lakers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": 140,
+     "stake": 100,
+     "win_prob": 0.417,
+     "label": "Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.417,
+     "type": "moneyline",
+     "team": "Detroit Pistons",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Pistons ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27) + 401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.1814,
+   "odds": 451,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909880",
+     "odds": 129,
+     "stake": 100,
+     "win_prob": 0.4365,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "market_prob": 0.4365,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-10-27T23:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Oct 27",
+     "id": "401909880|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909878",
+     "odds": 140,
+     "stake": 100,
+     "win_prob": 0.417,
+     "label": "Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "market_prob": 0.417,
+     "type": "moneyline",
+     "team": "Detroit Pistons",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Pistons ML",
+     "game": "Detroit Pistons @ New York Knicks, Oct 27",
+     "id": "401909878|Detroit Pistons ML (Detroit Pistons @ New York Knicks, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:401909877|Brooklyn Nets ML (Brooklyn Nets @ Boston Celtics, Oct 27) + 401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-10-27T03:54:47+00:00",
+   "win_prob": 0.1669,
+   "odds": 499,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909879",
+     "odds": -1042,
+     "stake": 100,
+     "win_prob": 0.9124,
+     "label": "San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "market_prob": 0.9124,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "Sacramento Kings @ San Antonio Spurs, Oct 27",
+     "id": "401909879|San Antonio Spurs ML (Sacramento Kings @ San Antonio Spurs, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909877",
+     "odds": 447,
+     "stake": 100,
+     "win_prob": 0.1827,
+     "label": "Brooklyn Nets ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "market_prob": 0.1827,
+     "type": "moneyline",
+     "team": "Brooklyn Nets",
+     "kickoff": "2026-10-27T19:30:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Brooklyn Nets ML",
+     "game": "Brooklyn Nets @ Boston Celtics, Oct 27",
+     "id": "401909877|Brooklyn Nets ML (Brooklyn Nets @ Boston Celtics, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 2
+  },
+  {
+   "id": "parlay:2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers) + 2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers) + 401908045|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2494,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6468,
+     "label": "Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.6276,
+     "market_prob": 0.6468,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "GB",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-30T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Green Bay Packers ML",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_CLE_PIT",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6412,
+     "label": "Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "raw_prob": 0.6234,
+     "market_prob": 0.6412,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Cleveland Browns @ Pittsburgh Steelers",
+     "id": "2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908045",
+     "odds": -151,
+     "stake": 100,
+     "win_prob": 0.6012,
+     "label": "Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 27",
+     "id": "401908045|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers) + 401908047|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30) + 401928109|Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2491,
+   "odds": 301,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CLE_PIT",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6412,
+     "label": "Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "raw_prob": 0.6234,
+     "market_prob": 0.6412,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "PIT",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Pittsburgh Steelers ML",
+     "game": "Cleveland Browns @ Pittsburgh Steelers",
+     "id": "2026_08_CLE_PIT|Pittsburgh Steelers ML (Cleveland Browns @ Pittsburgh Steelers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401928109",
+     "odds": -185,
+     "stake": 100,
+     "win_prob": 0.6495,
+     "label": "Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+     "raw_prob": 0.6209,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-31T17:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Erosa vs Lee doesn't go the distance",
+     "game": "Julian Erosa vs JeongYeong Lee",
+     "id": "401928109|Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908047",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5982,
+     "label": "Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "market_prob": 0.5982,
+     "type": "moneyline",
+     "team": "Milwaukee Brewers",
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-30T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Milwaukee Brewers ML",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 30",
+     "id": "401908047|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions) + 401908047|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30) + 401928108|Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_MIN_DET",
+     "odds": -174,
+     "stake": 100,
+     "win_prob": 0.6181,
+     "label": "Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "raw_prob": 0.6003,
+     "market_prob": 0.6181,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DET",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Minnesota Vikings @ Detroit Lions",
+     "id": "2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401928108",
+     "odds": -206,
+     "stake": 100,
+     "win_prob": 0.6729,
+     "label": "Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+     "raw_prob": 0.6561,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-31T17:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Bekoev vs Petroski doesn't go the distance",
+     "game": "Azamat Bekoev vs Andre Petroski",
+     "id": "401928108|Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908047",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5982,
+     "label": "Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "market_prob": 0.5982,
+     "type": "moneyline",
+     "team": "Milwaukee Brewers",
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-30T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Milwaukee Brewers ML",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 30",
+     "id": "401908047|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 30)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions) + 401908048|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31) + 401928108|Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_MIN_DET",
+     "odds": -174,
+     "stake": 100,
+     "win_prob": 0.6181,
+     "label": "Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "raw_prob": 0.6003,
+     "market_prob": 0.6181,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "DET",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Detroit Lions ML",
+     "game": "Minnesota Vikings @ Detroit Lions",
+     "id": "2026_08_MIN_DET|Detroit Lions ML (Minnesota Vikings @ Detroit Lions)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401928108",
+     "odds": -206,
+     "stake": 100,
+     "win_prob": 0.6729,
+     "label": "Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+     "raw_prob": 0.6561,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-31T17:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Bekoev vs Petroski doesn't go the distance",
+     "game": "Azamat Bekoev vs Andre Petroski",
+     "id": "401928108|Bekoev vs Petroski doesn't go the distance (Azamat Bekoev vs Andre Petroski)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908048",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5982,
+     "label": "Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
+     "market_prob": 0.5982,
+     "type": "moneyline",
+     "team": "Milwaukee Brewers",
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-31T20:00:00-04:00",
+     "market": "MONEYLINE",
+     "pick": "Milwaukee Brewers ML",
+     "game": "Tampa Bay Rays @ Milwaukee Brewers, Oct 31",
+     "id": "401908048|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_08_BAL_BUF|Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills) + 401908045|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27) + 401928109|Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2466,
+   "odds": 306,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_BAL_BUF",
+     "odds": -180,
+     "stake": 100,
+     "win_prob": 0.6313,
+     "label": "Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills)",
+     "raw_prob": 0.638,
+     "market_prob": 0.6313,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Baltimore Ravens @ Buffalo Bills",
+     "id": "2026_08_BAL_BUF|Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401928109",
+     "odds": -185,
+     "stake": 100,
+     "win_prob": 0.6495,
+     "label": "Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+     "raw_prob": 0.6209,
+     "type": "distance",
+     "yes": false,
+     "sport": "ufc",
+     "season": 2026,
+     "kickoff": "2026-10-31T17:00:00-04:00",
+     "market": "GO THE DISTANCE?",
+     "pick": "Erosa vs Lee doesn't go the distance",
+     "game": "Julian Erosa vs JeongYeong Lee",
+     "id": "401928109|Erosa vs Lee doesn't go the distance (Julian Erosa vs JeongYeong Lee)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908045",
+     "odds": -151,
+     "stake": 100,
+     "win_prob": 0.6012,
+     "label": "Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27)",
+     "type": "run_line",
+     "team": "Tampa Bay Rays",
+     "point": 1.5,
+     "sport": "mlb",
+     "season": 2026,
+     "kickoff": "2026-10-27T20:00:00-04:00",
+     "market": "RUN LINE",
+     "pick": "Tampa Bay Rays +1.5",
+     "game": "Milwaukee Brewers @ Tampa Bay Rays, Oct 27",
+     "id": "401908045|Tampa Bay Rays +1.5 (Milwaukee Brewers @ Tampa Bay Rays, Oct 27)",
+     "status": "pending",
+     "detail": ""
+    }
+   ]
+  },
+  {
+   "id": "parlay:2026_08_BAL_BUF|Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills) + 2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers) + 401908048|Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
+   "kind": "parlay",
+   "sport": "multi",
+   "season": 2026,
+   "created": "2026-10-27T03:54:49+00:00",
+   "win_prob": 0.2443,
+   "odds": 309,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_08_CAR_GB",
+     "odds": -198,
+     "stake": 100,
+     "win_prob": 0.6468,
+     "label": "Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "raw_prob": 0.6276,
+     "market_prob": 0.6468,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "GB",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-10-30T00:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Green Bay Packers ML",
+     "game": "Carolina Panthers @ Green Bay Packers",
+     "id": "2026_08_CAR_GB|Green Bay Packers ML (Carolina Panthers @ Green Bay Packers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_08_BAL_BUF",
+     "odds": -180,
+     "stake": 100,
+     "win_prob": 0.6313,
+     "label": "Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills)",
+     "raw_prob": 0.638,
+     "market_prob": 0.6313,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "sport": "nfl",
+     "season": 2026,
+     "kickoff": "2026-11-01T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Baltimore Ravens @ Buffalo Bills",
+     "id": "2026_08_BAL_BUF|Buffalo Bills ML (Baltimore Ravens @ Buffalo Bills)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401908048",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5982,
+     "label": "Milwaukee Brewers ML (Tampa Bay Rays @ Milwaukee Brewers, Oct 31)",
+     "market_prob": 0.5982,
      "type": "moneyline",
      "team": "Milwaukee Brewers",
      "sport": "mlb",
