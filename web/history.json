@@ -78262,7 +78262,7 @@
    "win_prob": 0.6447,
    "odds": -181,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909891",
@@ -78278,8 +78278,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Oklahoma City Thunder @ Dallas Mavericks, Oct 28",
      "id": "401909891|Oklahoma City Thunder ML (Oklahoma City Thunder @ Dallas Mavericks, Oct 28)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Oklahoma City Thunder 96 - Dallas Mavericks 120"
     }
    ],
    "week": 2
@@ -78293,7 +78293,7 @@
    "win_prob": 0.6447,
    "odds": -181,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909892",
@@ -78309,8 +78309,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ LA Clippers, Oct 28",
      "id": "401909892|Los Angeles Lakers ML (Los Angeles Lakers @ LA Clippers, Oct 28)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 103 - LA Clippers 87"
     }
    ],
    "week": 2
@@ -78482,7 +78482,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909887",
@@ -78515,8 +78515,8 @@
      "pick": "Dallas Mavericks ML",
      "game": "Oklahoma City Thunder @ Dallas Mavericks, Oct 28",
      "id": "401909891|Dallas Mavericks ML (Oklahoma City Thunder @ Dallas Mavericks, Oct 28)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Oklahoma City Thunder 96 - Dallas Mavericks 120"
     }
    ],
    "week": 2
@@ -78530,7 +78530,7 @@
    "win_prob": 0.2496,
    "odds": 301,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909887",
@@ -78563,8 +78563,8 @@
      "pick": "LA Clippers ML",
      "game": "Los Angeles Lakers @ LA Clippers, Oct 28",
      "id": "401909892|LA Clippers ML (Los Angeles Lakers @ LA Clippers, Oct 28)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Los Angeles Lakers 103 - LA Clippers 87"
     }
    ],
    "week": 2
@@ -78643,7 +78643,7 @@
    "win_prob": 0.2477,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909891",
@@ -78659,8 +78659,8 @@
      "pick": "Oklahoma City Thunder ML",
      "game": "Oklahoma City Thunder @ Dallas Mavericks, Oct 28",
      "id": "401909891|Oklahoma City Thunder ML (Oklahoma City Thunder @ Dallas Mavericks, Oct 28)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "lost",
+     "detail": "Oklahoma City Thunder 96 - Dallas Mavericks 120"
     },
     {
      "game_id": "401909892",
@@ -78676,8 +78676,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ LA Clippers, Oct 28",
      "id": "401909892|Los Angeles Lakers ML (Los Angeles Lakers @ LA Clippers, Oct 28)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 103 - LA Clippers 87"
     },
     {
      "game_id": "401909885",
@@ -79787,7 +79787,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909892",
@@ -79803,8 +79803,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ LA Clippers, Oct 28",
      "id": "401909892|Los Angeles Lakers ML (Los Angeles Lakers @ LA Clippers, Oct 28)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 103 - LA Clippers 87"
     },
     {
      "game_id": "401909889",
@@ -79852,7 +79852,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909892",
@@ -79868,8 +79868,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ LA Clippers, Oct 28",
      "id": "401909892|Los Angeles Lakers ML (Los Angeles Lakers @ LA Clippers, Oct 28)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 103 - LA Clippers 87"
     },
     {
      "game_id": "401909889",
