@@ -1,0 +1,328 @@
+{
+  "name": "Paper bets: top 30 singles, all markets (week 5, 2026)",
+  "saved": "2026-10-09",
+  "kind": "singles",
+  "season": 2026,
+  "week": 5,
+  "note": "Fake $100 bets. Only the Jaguars moneyline has a real price (-410); the other 29 use their break-even odds, so their profit is what a fair price would pay. All-30 parlay chance ~0.094% (1 in 1,060).",
+  "legs": [
+    {
+      "type": "team_total",
+      "game_id": "2026_05_BAL_ATL",
+      "team": "ATL",
+      "side": "Over",
+      "line": 15.5,
+      "odds": -400,
+      "label": "Falcons team total Over 15.5",
+      "stake": 100,
+      "win_prob": 0.8
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_CIN_MIA",
+      "team": "MIA",
+      "point": 17.5,
+      "odds": -399,
+      "label": "Dolphins +17.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.8
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_DEN_LAC",
+      "team": "LAC",
+      "side": "Over",
+      "line": 11.5,
+      "odds": -397,
+      "label": "Chargers team total Over 11.5",
+      "stake": 100,
+      "win_prob": 0.799
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_CIN_MIA",
+      "player": "Ja'Marr Chase",
+      "stat": "receptions",
+      "min": 4,
+      "odds": -396,
+      "label": "Ja'Marr Chase 4+ receptions",
+      "stake": 100,
+      "win_prob": 0.798
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_DET_ARI",
+      "player": "Trey McBride",
+      "stat": "receptions",
+      "min": 6,
+      "odds": -395,
+      "label": "Trey McBride 6+ receptions",
+      "stake": 100,
+      "win_prob": 0.798
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_DEN_LAC",
+      "team": "LAC",
+      "point": 14.5,
+      "odds": -394,
+      "label": "Chargers +14.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.798
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_IND_PIT",
+      "player": "Jaylen Warren",
+      "stat": "receptions",
+      "min": 2,
+      "odds": -394,
+      "label": "Jaylen Warren 2+ receptions",
+      "stake": 100,
+      "win_prob": 0.798
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_SF_SEA",
+      "team": "SEA",
+      "side": "Over",
+      "line": 16.5,
+      "odds": -394,
+      "label": "Seahawks team total Over 16.5",
+      "stake": 100,
+      "win_prob": 0.798
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_BAL_ATL",
+      "player": "Drake London",
+      "stat": "receiving_yards",
+      "min": 40,
+      "odds": -392,
+      "label": "Drake London 40+ receiving yds",
+      "stake": 100,
+      "win_prob": 0.797
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_HOU_TEN",
+      "team": "HOU",
+      "side": "Over",
+      "line": 14.5,
+      "odds": -391,
+      "label": "Texans team total Over 14.5",
+      "stake": 100,
+      "win_prob": 0.796
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_MIN_NO",
+      "team": "MIN",
+      "side": "Over",
+      "line": 14.5,
+      "odds": -391,
+      "label": "Vikings team total Over 14.5",
+      "stake": 100,
+      "win_prob": 0.796
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_IND_PIT",
+      "player": "Jonathan Taylor",
+      "stat": "rushing_yards",
+      "min": 40,
+      "odds": -390,
+      "label": "Jonathan Taylor 40+ rushing yds",
+      "stake": 100,
+      "win_prob": 0.796
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_CLE_NYJ",
+      "team": "NYJ",
+      "side": "Over",
+      "line": 13.5,
+      "odds": -387,
+      "label": "Jets team total Over 13.5",
+      "stake": 100,
+      "win_prob": 0.795
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_IND_PIT",
+      "team": "IND",
+      "point": 13.5,
+      "odds": -387,
+      "label": "Colts +13.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.795
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_PHI_JAX",
+      "team": "PHI",
+      "side": "Over",
+      "line": 9.5,
+      "odds": -383,
+      "label": "Eagles team total Over 9.5",
+      "stake": 100,
+      "win_prob": 0.793
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_CLE_NYJ",
+      "team": "CLE",
+      "point": 13.5,
+      "odds": -383,
+      "label": "Browns +13.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.793
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_MIN_NO",
+      "team": "NO",
+      "point": 13.5,
+      "odds": -378,
+      "label": "Saints +13.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.791
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_HOU_TEN",
+      "team": "TEN",
+      "point": 17.5,
+      "odds": -377,
+      "label": "Titans +17.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.79
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_BUF_LA",
+      "team": "BUF",
+      "side": "Over",
+      "line": 18.5,
+      "odds": -376,
+      "label": "Bills team total Over 18.5 (Mon)",
+      "stake": 100,
+      "win_prob": 0.79
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_CHI_GB",
+      "team": "GB",
+      "side": "Over",
+      "line": 14.5,
+      "odds": -376,
+      "label": "Packers team total Over 14.5",
+      "stake": 100,
+      "win_prob": 0.79
+    },
+    {
+      "type": "player_stat",
+      "game_id": "2026_05_BUF_LA",
+      "player": "Matthew Stafford",
+      "stat": "passing_yards",
+      "min": 200,
+      "odds": -375,
+      "label": "Matthew Stafford 200+ passing yds (Mon)",
+      "stake": 100,
+      "win_prob": 0.789
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_PHI_JAX",
+      "team": "PHI",
+      "point": 18.5,
+      "odds": -375,
+      "label": "Eagles +18.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.789
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_SF_SEA",
+      "team": "SF",
+      "point": 13.5,
+      "odds": -374,
+      "label": "49ers +13.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.789
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_DET_ARI",
+      "team": "ARI",
+      "side": "Over",
+      "line": 17.5,
+      "odds": -372,
+      "label": "Cardinals team total Over 17.5",
+      "stake": 100,
+      "win_prob": 0.788
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_NYG_WAS",
+      "team": "NYG",
+      "side": "Over",
+      "line": 11.5,
+      "odds": -370,
+      "label": "Giants team total Over 11.5",
+      "stake": 100,
+      "win_prob": 0.787
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_NYG_WAS",
+      "team": "WAS",
+      "side": "Over",
+      "line": 15.5,
+      "odds": -370,
+      "label": "Commanders team total Over 15.5",
+      "stake": 100,
+      "win_prob": 0.787
+    },
+    {
+      "type": "moneyline",
+      "game_id": "2026_05_PHI_JAX",
+      "team": "JAX",
+      "odds": -410,
+      "label": "Jaguars moneyline (real odds -410)",
+      "stake": 100,
+      "win_prob": 0.787
+    },
+    {
+      "type": "team_total",
+      "game_id": "2026_05_DET_ARI",
+      "team": "DET",
+      "side": "Over",
+      "line": 22.5,
+      "odds": -368,
+      "label": "Lions team total Over 22.5",
+      "stake": 100,
+      "win_prob": 0.786
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_BAL_ATL",
+      "team": "BAL",
+      "point": 13.5,
+      "odds": -367,
+      "label": "Ravens +13.5 (alt)",
+      "stake": 100,
+      "win_prob": 0.786
+    },
+    {
+      "type": "spread",
+      "game_id": "2026_05_BUF_LA",
+      "team": "BUF",
+      "point": 13.5,
+      "odds": -366,
+      "label": "Bills +13.5 (alt, Mon)",
+      "stake": 100,
+      "win_prob": 0.785
+    }
+  ]
+}
