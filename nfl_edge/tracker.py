@@ -1,0 +1,504 @@
+"""Track bets you placed and picks you didn't, and grade both after the games.
+
+A ledger is one JSON file:
+
+    {"placed": [entry, ...], "generated": [entry, ...]}
+
+An entry is a single or a parlay:
+
+    {"id", "kind": "single" | "parlay", "sport", "season", "created",
+     "win_prob", "odds", "stake", "status", "legs": [leg, ...]}
+
+Legs use the grader's format (nfl_edge/grade.py) plus "id", "kickoff",
+"status" and "detail". "generated" keeps every pick the builder showed for
+games in the coming week, as first shown (its chance at that moment), so the
+Not placed tab shows how the picks would have done. "status" is "pending"
+until every leg is settled, then "won", "lost" or "push".
+"""
+
+from __future__ import annotations
+
+import json
+from datetime import datetime, timedelta, timezone
+from math import prod
+from pathlib import Path
+
+from . import data
+from .grade import OLD_DNP, STATS_URL, college_games, grade_leg
+from .odds import american_to_decimal, decimal_to_american
+
+TRACK_DAYS = 8  # only picks for games this soon are logged as generated
+
+
+def leg_id(leg: dict) -> str:
+    return f"{leg['game_id']}|{leg['label']}"
+
+
+def entry_id(kind: str, legs: list[dict]) -> str:
+    return kind + ":" + " + ".join(sorted(leg_id(leg) for leg in legs))
+
+
+def make_entry(kind: str, legs: list[dict], win_prob: float, sport: str, season: int,
+               odds: int | None = None, stake: float = 100.0) -> dict:
+    legs = [dict(leg, id=leg_id(leg), status="pending", detail="") for leg in legs]
+    return {"id": entry_id(kind, legs), "kind": kind, "sport": sport, "season": season,
+            "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "win_prob": round(win_prob, 4),
+            "odds": odds if odds is not None else decimal_to_american(1 / win_prob),
+            "stake": stake, "status": "pending", "legs": legs}
+
+
+def load(path: Path) -> dict:
+    try:
+        ledger = json.loads(Path(path).read_text())
+    except (OSError, ValueError):
+        ledger = {}
+    ledger.setdefault("placed", [])
+    ledger.setdefault("generated", [])
+    ledger.setdefault("saved", [])
+    ledger.setdefault("checks", {})  # bet -> True (on FanDuel) / False (not on FanDuel)
+    return ledger
+
+
+def save(ledger: dict, path: Path) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(ledger, indent=1) + "\n")
+    tmp.replace(path)
+
+
+def soon(legs: list[dict], now: datetime | None = None) -> bool:
+    """Every leg kicks off within TRACK_DAYS (and isn't long past)."""
+    now = now or datetime.now(timezone.utc)
+    try:
+        times = [datetime.fromisoformat(leg["kickoff"]) for leg in legs]
+    except (KeyError, ValueError):
+        return False
+    return all(now - timedelta(days=1) < t < now + timedelta(days=TRACK_DAYS) for t in times)
+
+
+def fanduel_odds(legs: list[dict]) -> int | None:
+    """The bet's odds at FanDuel's prices (the legs' prices multiplied), if every leg has one."""
+    try:
+        return decimal_to_american(prod(american_to_decimal(leg["odds"]) for leg in legs))
+    except (KeyError, TypeError, ZeroDivisionError):
+        return None
+
+
+def record_generated(ledger: dict, entries: list[dict], now: datetime | None = None,
+                     edge: bool = False, lean: bool = False) -> int:
+    """Add picks not seen before (first appearance wins). Returns how many were added.
+    With `edge` (or `lean`, a "worth a look" bet), they're marked so, at FanDuel's odds;
+    a pending pick seen before that is now an edge gets marked too."""
+    known = {e["id"]: e for e in ledger["generated"]}
+    added = 0
+    tag = "edge" if edge else "lean" if lean else None
+    for e in entries:
+        if tag:
+            odds = fanduel_odds(e["legs"])
+            old = known.get(e["id"])
+            if old is not None and old["status"] == "pending" and odds is not None and \
+                    not old.get("edge") and not (tag == "lean" and old.get("lean")):
+                old.update({tag: True, "odds": odds})
+                if tag == "edge":
+                    old.pop("lean", None)
+            if odds is not None:
+                e.update({tag: True, "odds": odds})
+        if e["id"] not in known and soon(e["legs"], now):
+            ledger["generated"].append(e)
+            known[e["id"]] = e
+            added += 1
+    return added
+
+
+def place(ledger: dict, entry: dict, odds: int | None, stake: float) -> dict:
+    """Log a bet you placed, at the odds you got (break-even odds if blank)."""
+    placed = dict(entry, odds=odds if odds is not None else entry["odds"], stake=stake,
+                  created=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                  legs=[dict(leg) for leg in entry["legs"]])
+    ledger["placed"] = [e for e in ledger["placed"] if e["id"] != placed["id"]] + [placed]
+    return placed
+
+
+def remove_placed(ledger: dict, entry_id_: str) -> None:
+    ledger["placed"] = [e for e in ledger["placed"] if e["id"] != entry_id_]
+
+
+def combine(statuses: list[str]) -> str:
+    """A single's or parlay's result from its legs' results (pushed legs drop out)."""
+    if "lost" in statuses:
+        return "lost"
+    if "pending" in statuses:
+        return "pending"
+    if all(s == "push" for s in statuses):
+        return "push"
+    return "won"
+
+
+def profit(entry: dict) -> float:
+    if entry["status"] == "won":
+        dec = american_to_decimal(entry["odds"])
+        if entry["kind"] == "parlay":
+            # A pushed leg drops out of the parlay: take its share out of the price.
+            for leg in entry["legs"]:
+                if leg["status"] == "push":
+                    dec *= leg["win_prob"]
+        return entry["stake"] * (max(dec, 1.0) - 1)
+    if entry["status"] == "lost":
+        return -entry["stake"]
+    return 0.0
+
+
+HURT = ("Out", "Doubtful", "Questionable")
+
+
+def withdraw_injured(ledger: dict, statuses: dict[str, str] | None = None,
+                     now: datetime | None = None) -> int:
+    """Drop logged picks (never placed ones) with an NFL player who has since been listed
+    Out, Doubtful or Questionable, before his game starts: the board leaves such players
+    out, so a pick logged earlier in the week no longer counts. Returns how many."""
+    from .context import name_key
+
+    now = now or datetime.now(timezone.utc)
+
+    def upcoming_players(e):
+        return [leg for leg in e["legs"] if leg.get("player") and leg["status"] == "pending"
+                and leg.get("sport", e.get("sport")) == "nfl" and leg.get("kickoff")
+                and datetime.fromisoformat(leg["kickoff"]) > now]
+
+    todo = [e for e in ledger.get("generated", []) if upcoming_players(e)]
+    if not todo:
+        return 0
+    if statuses is None:
+        try:
+            from .fanduel import injury_statuses
+
+            statuses = injury_statuses(0)
+        except Exception:  # no injury news right now: keep everything
+            return 0
+    hurt = {e["id"] for e in todo
+            if any(statuses.get(name_key(leg["player"])) in HURT for leg in upcoming_players(e))}
+    ledger["generated"] = [e for e in ledger["generated"] if e["id"] not in hurt]
+    return len(hurt)
+
+
+def all_entries(ledger: dict) -> list[dict]:
+    return ledger["placed"] + ledger["generated"] + ledger.get("saved", [])
+
+
+def history(ledger: dict) -> list[tuple[str, dict]]:
+    """Every bet with where it came from: 'placed', 'not placed' or 'saved'.
+
+    A pick you placed shows once, as placed."""
+    placed = {e["id"] for e in ledger["placed"]}
+    out = [("placed", e) for e in ledger["placed"]]
+    out += [("not placed", e) for e in ledger["generated"] if e["id"] not in placed]
+    out += [("saved", e) for e in ledger.get("saved", []) if e["id"] not in placed]
+    return out
+
+
+def first_kickoff(e: dict) -> str:
+    return min((leg.get("kickoff") or "9999") for leg in e["legs"])
+
+
+def kickoffs(sport: str, season: int, games_source: str | None = None) -> dict[str, tuple]:
+    """{game_id: (kickoff ISO time, 'Away @ Home')} for one season."""
+    if sport == "ufc":
+        from .ufc import fights_by_id
+
+        return {i: (b["date"].replace("Z", "+00:00"), f"{b['a_name']} vs {b['b_name']}")
+                for i, b in fights_by_id(season).items()}
+    if sport == "mlb":
+        from . import mlb
+
+        return {g["id"]: (g["date"].replace("Z", "+00:00"),
+                          f"{g['away_name']} @ {g['home_name']}, {mlb.us_date(g):%b} "
+                          f"{mlb.us_date(g).day}") for g in mlb.season(season)}
+    if sport == "nba":
+        from . import nba
+
+        return {g["id"]: (g["date"].replace("Z", "+00:00"),
+                          f"{g['away_name']} @ {g['home_name']}, {nba.us_date(g):%b} "
+                          f"{nba.us_date(g).day}") for g in nba.season(season)}
+    if sport == "ncaaf":
+        from . import cfb
+
+        return {r["game_id"]: (r["start_date"].replace("Z", "+00:00"),
+                               f"{r['away_team']} @ {r['home_team']}")
+                for r in cfb.load_schedule(season, games_source, current_season=season)}
+    from .board import ABBR_NAME, EASTERN
+
+    out = {}
+    for g in data.games(games_source):
+        if g["season"] == str(season) and g.get("gameday"):
+            hh, mm = (g.get("gametime") or "13:00").split(":")[:2]
+            when = datetime.fromisoformat(g["gameday"]).replace(hour=int(hh), minute=int(mm),
+                                                                tzinfo=EASTERN)
+            out[g["game_id"]] = (when.isoformat(), f"{ABBR_NAME.get(g['away_team'], g['away_team'])}"
+                                                   f" @ {ABBR_NAME.get(g['home_team'], g['home_team'])}")
+    return out
+
+
+def game_weeks(sport: str, season: int, games_source: str | None = None) -> dict[str, int]:
+    """{game_id: week} for one season."""
+    if sport == "ufc":
+        from .ufc import card_numbers
+
+        return card_numbers(season)
+    if sport == "mlb":
+        from .mlb import game_weeks as mlb_weeks
+
+        return mlb_weeks(season)
+    if sport == "nba":
+        from .nba import game_weeks as nba_weeks
+
+        return nba_weeks(season)
+    if sport == "ncaaf":
+        from . import cfb
+
+        return {r["game_id"]: int(r["week"])
+                for r in cfb.load_schedule(season, games_source, current_season=season)
+                if r.get("week")}
+    return {g["game_id"]: int(g["week"]) for g in data.games(games_source)
+            if g["season"] == str(season) and g.get("week")}
+
+
+def annotate_weeks(ledger: dict, games_source: str | None = None) -> None:
+    """Give every entry a "week" (its first leg's), for grouping the history."""
+    weeks: dict[tuple, dict] = {}
+    for e in all_entries(ledger):
+        if e.get("week") or e["sport"] == "multi":  # Multi-Lays mix leagues' weeks
+            continue
+        key = (e["sport"], e["season"])
+        if key not in weeks:
+            try:
+                weeks[key] = game_weeks(*key, games_source)
+            except data.DataError:
+                weeks[key] = {}
+        found = [weeks[key].get(leg["game_id"]) for leg in e["legs"]]
+        found = [w for w in found if w]
+        if found:
+            e["week"] = min(found)
+
+
+def import_saved(ledger: dict, paths, games_source: str | None = None) -> int:
+    """Add bets saved as files (bets/*.json, the grader's format) to ledger["saved"].
+
+    A "kind": "singles" file becomes one single per leg; any other file is one
+    parlay. Returns how many entries were added."""
+    known = {e["id"] for e in ledger["saved"]}
+    times: dict[tuple, dict] = {}
+    added = 0
+    for path in paths:
+        try:
+            bet = json.loads(Path(path).read_text())
+            sport, season = bet.get("sport", "nfl"), int(bet["season"])
+            if (sport, season) not in times:
+                times[(sport, season)] = kickoffs(sport, season, games_source)
+        except (OSError, ValueError, KeyError, data.DataError):
+            continue
+        legs = []
+        for leg in bet["legs"]:
+            when, game = times[(sport, season)].get(leg["game_id"], ("", ""))
+            legs.append(dict(leg, kickoff=when, game=game, pick=leg["label"],
+                             win_prob=leg.get("win_prob") or 0.5))
+        groups = [("single", [leg]) for leg in legs] if bet.get("kind") == "singles" \
+            else [("parlay", legs)]
+        for kind, group in groups:
+            if kind == "single":
+                prob, odds = group[0]["win_prob"], group[0].get("odds")
+            else:
+                prob = bet.get("estimated_win_prob")
+                if not prob:
+                    prob = 1.0
+                    for leg in group:
+                        prob *= leg["win_prob"]
+                odds = bet.get("odds")
+            entry = make_entry(kind, group, prob, sport, season, odds=odds,
+                               stake=group[0].get("stake", 100) if kind == "single" else 100)
+            entry["source"] = bet.get("name", Path(path).stem)
+            if entry["id"] not in known:
+                ledger["saved"].append(entry)
+                known.add(entry["id"])
+                added += 1
+    return added
+
+
+def regrade(ledger: dict, games_source: str | None = None) -> int:
+    """Grade every unsettled leg whose game has kicked off. Returns legs newly settled."""
+    now = datetime.now(timezone.utc)
+    # A player who didn't play was once graded a loss; FanDuel refunds those, so look again.
+    entries = [e for e in all_entries(ledger) if e["status"] == "pending"
+               or any(leg.get("detail") == OLD_DNP for leg in e["legs"])]
+    todo = [(e, leg) for e in entries for leg in e["legs"]
+            if (leg["status"] == "pending" or leg.get("detail") == OLD_DNP)
+            and (not leg.get("kickoff")
+                 or datetime.fromisoformat(leg["kickoff"]) < now - timedelta(hours=2))]
+    if not todo:
+        return 0
+    games: dict[tuple, dict] = {}
+    stats: dict[int, list] = {}
+    settled = 0
+    for e, leg in todo:
+        sport, season = leg.get("sport", e["sport"]), leg.get("season", e["season"])  # Multi-Lays
+        key = (sport, season)
+        try:
+            if key not in games:
+                if sport == "ufc":
+                    from .ufc import fights_by_id
+
+                    games[key] = fights_by_id(season)
+                elif sport == "mlb":
+                    from .mlb import games_by_id
+
+                    games[key] = games_by_id(season)
+                elif sport == "nba":
+                    from .nba import games_by_id as nba_games
+
+                    games[key] = nba_games(season)
+                else:
+                    games[key] = (college_games(season, games_source)
+                                  if sport == "ncaaf"
+                                  else {g["game_id"]: g for g in data.games(games_source)})
+            if leg["type"] in ("passing_tds", "player_stat") and sport == "nba":
+                from .nba import box_stats
+
+                stats[("nba", leg["game_id"])] = box_stats(leg["game_id"])
+            elif leg["type"] in ("passing_tds", "player_stat") and season not in stats:
+                try:
+                    stats[season] = data.read_csv(STATS_URL.format(season=season),
+                                                  max_age=1800)
+                except data.DataError:
+                    stats[season] = []
+        except data.DataError:
+            continue
+        rows = (stats.get(("nba", leg["game_id"]), []) if sport == "nba"
+                else stats.get(season, []))
+        status, detail = grade_leg(leg, games[key], rows)
+        leg["detail"] = detail
+        if status != "pending":
+            leg["status"] = status
+            settled += 1
+    for e in entries:
+        e["status"] = combine([leg["status"] for leg in e["legs"]])
+    return settled
+
+
+def summary(entries: list[dict], money: bool) -> str:
+    """'7-3-1 · profit +$84.20 on $1,100' or 'Hit 7 of 10 settled (70%) · predicted 74%'."""
+    done = [e for e in entries if e["status"] != "pending"]
+    won = sum(e["status"] == "won" for e in done)
+    lost = sum(e["status"] == "lost" for e in done)
+    pushed = len(done) - won - lost
+    pending = len(entries) - len(done)
+    tail = f" · {pending} pending" if pending else ""
+    if not done:
+        return f"No results yet{tail}"
+    if money:
+        net = sum(profit(e) for e in done)
+        staked = sum(e["stake"] for e in done)
+        record = f"{won}-{lost}" + (f"-{pushed}" if pushed else "")
+        return f"Record {record} · profit {'+' if net >= 0 else '-'}${abs(net):,.2f} on ${staked:,.0f}{tail}"
+    decided = [e for e in done if e["status"] != "push"]
+    rate = won / len(decided) if decided else 0
+    expected = sum(e["win_prob"] for e in decided) / len(decided) if decided else 0
+    return (f"Hit {won} of {len(decided)} ({rate:.0%}) · the builder expected "
+            f"{expected:.0%}{tail}")
+
+
+GAME_TOTALS = "Game totals"
+
+
+def leg_team(leg: dict, sport: str, player_team=lambda name: None) -> str | None:
+    """The team a bet is on, by full name (for grouping Bet History): the picked team
+    for moneylines, spreads and team totals, the player's team for props
+    (`player_team(name)` gives it), GAME_TOTALS for a game total, None if unknown."""
+    from .stats import TEAM_ABBR
+
+    names = {v: k for k, v in TEAM_ABBR.items()} if sport == "nfl" else {}
+    kind = leg.get("type")
+    if kind == "total":
+        return GAME_TOTALS
+    if kind == "fight":
+        return leg.get("fighter")
+    if kind == "distance":
+        return "Fight distance"
+    if kind == "player_stat":
+        team = player_team(leg.get("player", ""))
+    else:
+        team = leg.get("team")
+    if not team:
+        return None
+    return names.get(team, team)
+
+
+LEG_TYPES = {"moneyline": "Moneyline", "spread": "Spread", "total": "Total points",
+             "team_total": "Team totals", "fight": "Moneyline", "distance": "Fight distance",
+             "run_line": "Run line"}
+STAT_TYPES = {"receiving_yards": "Receiving yards", "receptions": "Receptions",
+              "rushing_yards": "Rushing yards", "passing_yards": "Passing yards",
+              "passing_tds": "Passing TDs", "rushing_tds+receiving_tds": "Anytime TD",
+              "points": "Points", "rebounds": "Rebounds", "assists": "Assists",
+              "threes": "Threes"}
+
+
+def leg_type_name(leg: dict) -> str:
+    """A leg's bet type as the Bet type menu names it, e.g. 'Receptions'."""
+    if leg.get("type") == "player_stat":
+        return STAT_TYPES.get(leg.get("stat", ""), "Other props")
+    return LEG_TYPES.get(leg.get("type", ""), "Other")
+
+
+def entry_types(e: dict) -> set[str]:
+    """The bet types in a single or parlay (a parlay can mix several)."""
+    return {leg_type_name(leg) for leg in e.get("legs", [])}
+
+
+# Bets FanDuel lists exactly as shown (UFC: every fight's "go the distance?" too).
+ALWAYS_OFFERED = {"Moneyline", "Anytime TD", "Fight distance", "Run line"}  # MLB: always 1.5
+
+
+def model_line(e: dict) -> bool:
+    """True if the bet has a leg on a line the model made up (a spread, total, team
+    total or "X+" prop): FanDuel may not have offered that exact line, so it isn't
+    counted in the record. Moneylines and anytime TDs always exist as shown, and so does
+    any leg priced at FanDuel's own line (`fd_line`, every edge)."""
+    if e.get("legs") and all(leg.get("fd_line") for leg in e["legs"]):
+        return False
+    return not entry_types(e) <= ALWAYS_OFFERED
+
+
+def edge_record(entries: list[dict], wager: float = 10.0, key: str = "edge") -> dict:
+    """How the edges (or with key "lean", the "worth a look" bets) have done: {'won',
+    'lost', 'push', 'pending', 'profit' on `wager` each at FanDuel's odds, 'expected'
+    win rate}."""
+    edges = [e for e in entries if e.get(key)]
+    done = [e for e in edges if e["status"] in ("won", "lost")]
+    return {"won": sum(e["status"] == "won" for e in done),
+            "lost": sum(e["status"] == "lost" for e in done),
+            "push": sum(e["status"] == "push" for e in edges),
+            "pending": sum(e["status"] == "pending" for e in edges),
+            "profit": round(sum(profit(dict(e, stake=wager)) for e in done), 2),
+            "expected": round(sum(e["win_prob"] for e in done) / len(done), 4) if done else None}
+
+
+def singles_vs_parlays(entries: list[dict]) -> str | None:
+    """'Singles have won 62% of the time and parlays 17%' from settled picks on lines
+    FanDuel offers, or None before there are enough of both."""
+    rates = {}
+    for kind in ("single", "parlay"):
+        done = [e for e in entries if (e.get("kind") == "single") == (kind == "single")
+                and e.get("status") in ("won", "lost") and not model_line(e)]
+        if len(done) < 20:
+            return None
+        rates[kind] = sum(e["status"] == "won" for e in done) / len(done)
+    return (f"Singles have won {rates['single']:.0%} of the time and parlays "
+            f"{rates['parlay']:.0%}: for more winning bets, bet singles.")
+
+
+def counted(items: list[tuple[str, dict]], model_lines: bool = False) -> list[tuple[str, dict]]:
+    """Bet History entries that count in the record: everything placed, plus the
+    builder's picks on lines FanDuel offers (all picks with `model_lines`)."""
+    return [(src, e) for src, e in items
+            if model_lines or src == "placed" or not model_line(e)]
