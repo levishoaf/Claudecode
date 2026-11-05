@@ -96254,7 +96254,7 @@
    "win_prob": 0.836,
    "odds": -510,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909933",
@@ -96270,8 +96270,8 @@
      "pick": "San Antonio Spurs ML",
      "game": "Dallas Mavericks @ San Antonio Spurs, Nov 4",
      "id": "401909933|San Antonio Spurs ML (Dallas Mavericks @ San Antonio Spurs, Nov 4)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Dallas Mavericks 111 - San Antonio Spurs 112"
     }
    ],
    "week": 3
@@ -96285,7 +96285,7 @@
    "win_prob": 0.7266,
    "odds": -266,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909934",
@@ -96301,8 +96301,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ Sacramento Kings, Nov 4",
      "id": "401909934|Los Angeles Lakers ML (Los Angeles Lakers @ Sacramento Kings, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 116 - Sacramento Kings 103"
     }
    ],
    "week": 3
@@ -96728,7 +96728,7 @@
    "win_prob": 0.2487,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909934",
@@ -96744,8 +96744,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ Sacramento Kings, Nov 4",
      "id": "401909934|Los Angeles Lakers ML (Los Angeles Lakers @ Sacramento Kings, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 116 - Sacramento Kings 103"
     },
     {
      "game_id": "401909923",
@@ -96778,8 +96778,8 @@
      "pick": "LA Clippers ML",
      "game": "Miami Heat @ LA Clippers, Nov 4",
      "id": "401909935|LA Clippers ML (Miami Heat @ LA Clippers, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Miami Heat 117 - LA Clippers 116"
     }
    ],
    "week": 3
@@ -97053,7 +97053,7 @@
    "win_prob": 0.2458,
    "odds": 307,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909928",
@@ -97103,8 +97103,8 @@
      "pick": "LA Clippers ML",
      "game": "Miami Heat @ LA Clippers, Nov 4",
      "id": "401909935|LA Clippers ML (Miami Heat @ LA Clippers, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Miami Heat 117 - LA Clippers 116"
     }
    ],
    "week": 3
@@ -99640,7 +99640,7 @@
    "win_prob": 0.6571,
    "odds": -192,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909935",
@@ -99656,8 +99656,8 @@
      "pick": "Miami Heat ML",
      "game": "Miami Heat @ LA Clippers, Nov 4",
      "id": "401909935|Miami Heat ML (Miami Heat @ LA Clippers, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Miami Heat 117 - LA Clippers 116"
     }
    ],
    "week": 3
@@ -99832,7 +99832,7 @@
    "win_prob": 0.249,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909928",
@@ -99865,8 +99865,8 @@
      "pick": "Miami Heat ML",
      "game": "Miami Heat @ LA Clippers, Nov 4",
      "id": "401909935|Miami Heat ML (Miami Heat @ LA Clippers, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Miami Heat 117 - LA Clippers 116"
     },
     {
      "game_id": "401909931",
@@ -100027,7 +100027,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909934",
@@ -100043,8 +100043,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ Sacramento Kings, Nov 4",
      "id": "401909934|Los Angeles Lakers ML (Los Angeles Lakers @ Sacramento Kings, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 116 - Sacramento Kings 103"
     },
     {
      "game_id": "401909924",
@@ -100092,7 +100092,7 @@
    "win_prob": 0.2483,
    "odds": 303,
    "stake": 100.0,
-   "status": "pending",
+   "status": "won",
    "legs": [
     {
      "game_id": "401909934",
@@ -100108,8 +100108,8 @@
      "pick": "Los Angeles Lakers ML",
      "game": "Los Angeles Lakers @ Sacramento Kings, Nov 4",
      "id": "401909934|Los Angeles Lakers ML (Los Angeles Lakers @ Sacramento Kings, Nov 4)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Los Angeles Lakers 116 - Sacramento Kings 103"
     },
     {
      "game_id": "401909933",
@@ -100125,8 +100125,8 @@
      "pick": "San Antonio Spurs ML",
      "game": "Dallas Mavericks @ San Antonio Spurs, Nov 4",
      "id": "401909933|San Antonio Spurs ML (Dallas Mavericks @ San Antonio Spurs, Nov 4)",
-     "status": "pending",
-     "detail": "not final yet"
+     "status": "won",
+     "detail": "Dallas Mavericks 111 - San Antonio Spurs 112"
     },
     {
      "game_id": "401909925",
@@ -101906,6 +101906,377 @@
      "pick": "Miami Heat ML",
      "game": "Miami Heat @ Golden State Warriors, Nov 5",
      "id": "401909937|Miami Heat ML (Miami Heat @ Golden State Warriors, Nov 5)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401856743|Texas ML (Texas @ Missouri) + 401858285|Clemson ML (Clemson @ Syracuse) + 401858287|Louisville ML (Louisville @ Georgia Tech)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-11-05T13:55:13+00:00",
+   "win_prob": 0.25,
+   "odds": 300,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858287",
+     "odds": -708,
+     "stake": 100,
+     "win_prob": 0.8762,
+     "label": "Louisville ML (Louisville @ Georgia Tech)",
+     "raw_prob": 0.8511,
+     "market_prob": 0.8511,
+     "type": "moneyline",
+     "team": "Louisville",
+     "kickoff": "2026-11-07T19:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Louisville ML",
+     "game": "Louisville @ Georgia Tech",
+     "id": "401858287|Louisville ML (Louisville @ Georgia Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401856743",
+     "odds": -116,
+     "stake": 100,
+     "win_prob": 0.5362,
+     "label": "Texas ML (Texas @ Missouri)",
+     "raw_prob": 0.5687,
+     "market_prob": 0.5687,
+     "type": "moneyline",
+     "team": "Texas",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Texas ML",
+     "game": "Texas @ Missouri",
+     "id": "401856743|Texas ML (Texas @ Missouri)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858285",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Clemson ML (Clemson @ Syracuse)",
+     "raw_prob": 0.5546,
+     "market_prob": 0.5546,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Clemson @ Syracuse",
+     "id": "401858285|Clemson ML (Clemson @ Syracuse)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 10
+  },
+  {
+   "id": "parlay:401858285|Clemson ML (Clemson @ Syracuse) + 401860913|Fresno State ML (Fresno State @ Utah State) + 401862821|North Texas ML (Rice @ North Texas)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-11-05T13:55:13+00:00",
+   "win_prob": 0.242,
+   "odds": 313,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401862821",
+     "odds": -750,
+     "stake": 100,
+     "win_prob": 0.8824,
+     "label": "North Texas ML (Rice @ North Texas)",
+     "raw_prob": 0.8921,
+     "market_prob": 0.8921,
+     "type": "moneyline",
+     "team": "North Texas",
+     "kickoff": "2026-11-07T16:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "North Texas ML",
+     "game": "Rice @ North Texas",
+     "id": "401862821|North Texas ML (Rice @ North Texas)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860913",
+     "odds": -112,
+     "stake": 100,
+     "win_prob": 0.5272,
+     "label": "Fresno State ML (Fresno State @ Utah State)",
+     "raw_prob": 0.5587,
+     "market_prob": 0.5587,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-11-07T21:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ Utah State",
+     "id": "401860913|Fresno State ML (Fresno State @ Utah State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858285",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Clemson ML (Clemson @ Syracuse)",
+     "raw_prob": 0.5546,
+     "market_prob": 0.5546,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Clemson @ Syracuse",
+     "id": "401858285|Clemson ML (Clemson @ Syracuse)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 10
+  },
+  {
+   "id": "parlay:401858285|Clemson ML (Clemson @ Syracuse) + 401860911|Boise State ML (Boise State @ Colorado State) + 401860913|Fresno State ML (Fresno State @ Utah State)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-11-05T13:55:13+00:00",
+   "win_prob": 0.2418,
+   "odds": 314,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401860911",
+     "odds": -749,
+     "stake": 100,
+     "win_prob": 0.8822,
+     "label": "Boise State ML (Boise State @ Colorado State)",
+     "raw_prob": 0.8898,
+     "market_prob": 0.8898,
+     "type": "moneyline",
+     "team": "Boise State",
+     "kickoff": "2026-11-07T18:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Boise State ML",
+     "game": "Boise State @ Colorado State",
+     "id": "401860911|Boise State ML (Boise State @ Colorado State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860913",
+     "odds": -112,
+     "stake": 100,
+     "win_prob": 0.5272,
+     "label": "Fresno State ML (Fresno State @ Utah State)",
+     "raw_prob": 0.5587,
+     "market_prob": 0.5587,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-11-07T21:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ Utah State",
+     "id": "401860913|Fresno State ML (Fresno State @ Utah State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858285",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Clemson ML (Clemson @ Syracuse)",
+     "raw_prob": 0.5546,
+     "market_prob": 0.5546,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Clemson @ Syracuse",
+     "id": "401858285|Clemson ML (Clemson @ Syracuse)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 10
+  },
+  {
+   "id": "parlay:401858285|Clemson ML (Clemson @ Syracuse) + 401858517|Wisconsin ML (Rutgers @ Wisconsin) + 401860913|Fresno State ML (Fresno State @ Utah State)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-11-05T13:55:13+00:00",
+   "win_prob": 0.2416,
+   "odds": 314,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401858517",
+     "odds": -747,
+     "stake": 100,
+     "win_prob": 0.8819,
+     "label": "Wisconsin ML (Rutgers @ Wisconsin)",
+     "raw_prob": 0.8871,
+     "market_prob": 0.8871,
+     "type": "moneyline",
+     "team": "Wisconsin",
+     "kickoff": "2026-11-07T16:15:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Wisconsin ML",
+     "game": "Rutgers @ Wisconsin",
+     "id": "401858517|Wisconsin ML (Rutgers @ Wisconsin)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860913",
+     "odds": -112,
+     "stake": 100,
+     "win_prob": 0.5272,
+     "label": "Fresno State ML (Fresno State @ Utah State)",
+     "raw_prob": 0.5587,
+     "market_prob": 0.5587,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-11-07T21:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ Utah State",
+     "id": "401860913|Fresno State ML (Fresno State @ Utah State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858285",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Clemson ML (Clemson @ Syracuse)",
+     "raw_prob": 0.5546,
+     "market_prob": 0.5546,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Clemson @ Syracuse",
+     "id": "401858285|Clemson ML (Clemson @ Syracuse)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 10
+  },
+  {
+   "id": "parlay:401856856|Texas Tech ML (West Virginia @ Texas Tech) + 401858285|Clemson ML (Clemson @ Syracuse) + 401860913|Fresno State ML (Fresno State @ Utah State)",
+   "kind": "parlay",
+   "sport": "ncaaf",
+   "season": 2026,
+   "created": "2026-11-05T13:55:13+00:00",
+   "win_prob": 0.2416,
+   "odds": 314,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401856856",
+     "odds": -747,
+     "stake": 100,
+     "win_prob": 0.8819,
+     "label": "Texas Tech ML (West Virginia @ Texas Tech)",
+     "raw_prob": 0.887,
+     "market_prob": 0.887,
+     "type": "moneyline",
+     "team": "Texas Tech",
+     "kickoff": "2026-11-07T21:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Texas Tech ML",
+     "game": "West Virginia @ Texas Tech",
+     "id": "401856856|Texas Tech ML (West Virginia @ Texas Tech)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401860913",
+     "odds": -112,
+     "stake": 100,
+     "win_prob": 0.5272,
+     "label": "Fresno State ML (Fresno State @ Utah State)",
+     "raw_prob": 0.5587,
+     "market_prob": 0.5587,
+     "type": "moneyline",
+     "team": "Fresno State",
+     "kickoff": "2026-11-07T21:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Fresno State ML",
+     "game": "Fresno State @ Utah State",
+     "id": "401860913|Fresno State ML (Fresno State @ Utah State)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401858285",
+     "odds": -110,
+     "stake": 100,
+     "win_prob": 0.5236,
+     "label": "Clemson ML (Clemson @ Syracuse)",
+     "raw_prob": 0.5546,
+     "market_prob": 0.5546,
+     "type": "moneyline",
+     "team": "Clemson",
+     "kickoff": "2026-11-07T12:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Clemson ML",
+     "game": "Clemson @ Syracuse",
+     "id": "401858285|Clemson ML (Clemson @ Syracuse)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 10
+  },
+  {
+   "id": "single:401909937|Golden State Warriors ML (Miami Heat @ Golden State Warriors, Nov 5)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-05T13:55:18+00:00",
+   "win_prob": 0.7088,
+   "odds": -243,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909937",
+     "odds": -243,
+     "stake": 100,
+     "win_prob": 0.7088,
+     "label": "Golden State Warriors ML (Miami Heat @ Golden State Warriors, Nov 5)",
+     "market_prob": 0.7088,
+     "type": "moneyline",
+     "team": "Golden State Warriors",
+     "kickoff": "2026-11-05T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Golden State Warriors ML",
+     "game": "Miami Heat @ Golden State Warriors, Nov 5",
+     "id": "401909937|Golden State Warriors ML (Miami Heat @ Golden State Warriors, Nov 5)",
      "status": "pending",
      "detail": ""
     }
