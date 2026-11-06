@@ -88108,7 +88108,7 @@
      "game": "James Madison @ Southern Miss",
      "id": "401869964|James Madison ML (James Madison @ Southern Miss)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     }
    ],
    "week": 10
@@ -88692,7 +88692,7 @@
      "game": "James Madison @ Southern Miss",
      "id": "401869964|James Madison ML (James Madison @ Southern Miss)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401858291",
@@ -92936,7 +92936,7 @@
      "game": "James Madison @ Southern Miss",
      "id": "401869964|James Madison ML (James Madison @ Southern Miss)",
      "status": "pending",
-     "detail": ""
+     "detail": "not final yet"
     },
     {
      "game_id": "401856743",
@@ -95511,7 +95511,7 @@
    "win_prob": 0.2473,
    "odds": 304,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_09_LV_SF",
@@ -95550,8 +95550,8 @@
      "pick": "Baltimore Ravens ML",
      "game": "Jacksonville Jaguars @ Baltimore Ravens",
      "id": "2026_09_JAX_BAL|Baltimore Ravens ML (Jacksonville Jaguars @ Baltimore Ravens)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "JAX 33 - BAL 10"
     },
     {
      "game_id": "2026_09_LA_WAS",
@@ -97242,7 +97242,7 @@
    "win_prob": 0.2465,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_09_HOU_LAC",
@@ -97285,8 +97285,8 @@
      "pick": "Baltimore Ravens ML",
      "game": "Jacksonville Jaguars @ Baltimore Ravens",
      "id": "2026_09_JAX_BAL|Baltimore Ravens ML (Jacksonville Jaguars @ Baltimore Ravens)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "JAX 33 - BAL 10"
     },
     {
      "game_id": "401928118",
@@ -97319,7 +97319,7 @@
    "win_prob": 0.2428,
    "odds": 312,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_09_CIN_ATL",
@@ -97362,8 +97362,8 @@
      "pick": "Baltimore Ravens ML",
      "game": "Jacksonville Jaguars @ Baltimore Ravens",
      "id": "2026_09_JAX_BAL|Baltimore Ravens ML (Jacksonville Jaguars @ Baltimore Ravens)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "JAX 33 - BAL 10"
     },
     {
      "game_id": "401928118",
@@ -100930,7 +100930,7 @@
    "win_prob": 0.2463,
    "odds": 306,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "2026_09_LA_WAS",
@@ -100969,8 +100969,8 @@
      "pick": "Baltimore Ravens ML",
      "game": "Jacksonville Jaguars @ Baltimore Ravens",
      "id": "2026_09_JAX_BAL|Baltimore Ravens ML (Jacksonville Jaguars @ Baltimore Ravens)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "JAX 33 - BAL 10"
     },
     {
      "game_id": "2026_09_GB_NE",
@@ -101777,7 +101777,7 @@
    "win_prob": 0.2485,
    "odds": 302,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909937",
@@ -101810,8 +101810,8 @@
      "pick": "Orlando Magic ML",
      "game": "Orlando Magic @ Phoenix Suns, Nov 5",
      "id": "401909936|Orlando Magic ML (Orlando Magic @ Phoenix Suns, Nov 5)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Orlando Magic 104 - Phoenix Suns 117"
     }
    ],
    "week": 3
@@ -101841,8 +101841,8 @@
      "pick": "Phoenix Suns ML",
      "game": "Orlando Magic @ Phoenix Suns, Nov 5",
      "id": "401909936|Phoenix Suns ML (Orlando Magic @ Phoenix Suns, Nov 5)",
-     "status": "pending",
-     "detail": ""
+     "status": "won",
+     "detail": "Orlando Magic 104 - Phoenix Suns 117"
     },
     {
      "game_id": "401909937",
@@ -101873,7 +101873,7 @@
    "win_prob": 0.1905,
    "odds": 425,
    "stake": 100.0,
-   "status": "pending",
+   "status": "lost",
    "legs": [
     {
      "game_id": "401909936",
@@ -101889,8 +101889,8 @@
      "pick": "Orlando Magic ML",
      "game": "Orlando Magic @ Phoenix Suns, Nov 5",
      "id": "401909936|Orlando Magic ML (Orlando Magic @ Phoenix Suns, Nov 5)",
-     "status": "pending",
-     "detail": ""
+     "status": "lost",
+     "detail": "Orlando Magic 104 - Phoenix Suns 117"
     },
     {
      "game_id": "401909937",
@@ -102277,6 +102277,840 @@
      "pick": "Golden State Warriors ML",
      "game": "Miami Heat @ Golden State Warriors, Nov 5",
      "id": "401909937|Golden State Warriors ML (Miami Heat @ Golden State Warriors, Nov 5)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:2026_09_BUF_MIN|Buffalo Bills ML (Buffalo Bills @ Minnesota Vikings) + 2026_09_LA_WAS|Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders) + 2026_09_LV_SF|San Francisco 49ers ML (Las Vegas Raiders @ San Francisco 49ers)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-11-06T04:53:32+00:00",
+   "win_prob": 0.2486,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_09_LV_SF",
+     "odds": -650,
+     "stake": 100,
+     "win_prob": 0.8437,
+     "label": "San Francisco 49ers ML (Las Vegas Raiders @ San Francisco 49ers)",
+     "raw_prob": 0.8038,
+     "market_prob": 0.8437,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "SF",
+     "kickoff": "2026-11-08T21:05:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "San Francisco 49ers ML",
+     "game": "Las Vegas Raiders @ San Francisco 49ers",
+     "id": "2026_09_LV_SF|San Francisco 49ers ML (Las Vegas Raiders @ San Francisco 49ers)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_09_BUF_MIN",
+     "odds": -138,
+     "stake": 100,
+     "win_prob": 0.5634,
+     "label": "Buffalo Bills ML (Buffalo Bills @ Minnesota Vikings)",
+     "raw_prob": 0.6011,
+     "market_prob": 0.5634,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "BUF",
+     "kickoff": "2026-11-10T01:15:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Buffalo Bills ML",
+     "game": "Buffalo Bills @ Minnesota Vikings",
+     "id": "2026_09_BUF_MIN|Buffalo Bills ML (Buffalo Bills @ Minnesota Vikings)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_09_LA_WAS",
+     "odds": 100,
+     "stake": 100,
+     "win_prob": 0.4989,
+     "label": "Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders)",
+     "raw_prob": 0.5523,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Stefon Diggs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-08T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Stefon Diggs Anytime TD",
+     "game": "Los Angeles Rams @ Washington Commanders",
+     "id": "2026_09_LA_WAS|Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "parlay:2026_09_DAL_IND|Javonte Williams Anytime TD (Dallas Cowboys @ Indianapolis Colts) + 2026_09_LA_WAS|Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders) + 2026_09_NYJ_KC|Kansas City Chiefs ML (New York Jets @ Kansas City Chiefs)",
+   "kind": "parlay",
+   "sport": "nfl",
+   "season": 2026,
+   "created": "2026-11-06T04:53:32+00:00",
+   "win_prob": 0.2484,
+   "odds": 303,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "2026_09_NYJ_KC",
+     "odds": -520,
+     "stake": 100,
+     "win_prob": 0.8333,
+     "label": "Kansas City Chiefs ML (New York Jets @ Kansas City Chiefs)",
+     "raw_prob": 0.8225,
+     "market_prob": 0.8333,
+     "fd_line": true,
+     "tier": "yellow",
+     "type": "moneyline",
+     "team": "KC",
+     "kickoff": "2026-11-08T18:00:00+00:00",
+     "market": "MONEYLINE",
+     "pick": "Kansas City Chiefs ML",
+     "game": "New York Jets @ Kansas City Chiefs",
+     "id": "2026_09_NYJ_KC|Kansas City Chiefs ML (New York Jets @ Kansas City Chiefs)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_09_DAL_IND",
+     "odds": -133,
+     "stake": 100,
+     "win_prob": 0.57,
+     "label": "Javonte Williams Anytime TD (Dallas Cowboys @ Indianapolis Colts)",
+     "raw_prob": 0.6227,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Javonte Williams",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-08T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Javonte Williams Anytime TD",
+     "game": "Dallas Cowboys @ Indianapolis Colts",
+     "id": "2026_09_DAL_IND|Javonte Williams Anytime TD (Dallas Cowboys @ Indianapolis Colts)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "2026_09_LA_WAS",
+     "odds": 100,
+     "stake": 100,
+     "win_prob": 0.4989,
+     "label": "Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders)",
+     "raw_prob": 0.5523,
+     "tier": "yellow",
+     "type": "player_stat",
+     "player": "Stefon Diggs",
+     "stat": "rushing_tds+receiving_tds",
+     "min": 1,
+     "kickoff": "2026-11-08T13:00:00-05:00",
+     "market": "ANYTIME TD",
+     "pick": "Stefon Diggs Anytime TD",
+     "game": "Los Angeles Rams @ Washington Commanders",
+     "id": "2026_09_LA_WAS|Stefon Diggs Anytime TD (Los Angeles Rams @ Washington Commanders)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 9
+  },
+  {
+   "id": "single:401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.8703,
+   "odds": -671,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909295",
+     "odds": -671,
+     "stake": 100,
+     "win_prob": 0.8703,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "market_prob": 0.8703,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Sacramento Kings, Nov 6",
+     "id": "401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "single:401909287|Atlanta Hawks ML (Washington Wizards @ Atlanta Hawks, Nov 6)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.7932,
+   "odds": -384,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909287",
+     "odds": -384,
+     "stake": 100,
+     "win_prob": 0.7932,
+     "label": "Atlanta Hawks ML (Washington Wizards @ Atlanta Hawks, Nov 6)",
+     "market_prob": 0.7932,
+     "type": "moneyline",
+     "team": "Atlanta Hawks",
+     "kickoff": "2026-11-06T19:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Atlanta Hawks ML",
+     "game": "Washington Wizards @ Atlanta Hawks, Nov 6",
+     "id": "401909287|Atlanta Hawks ML (Washington Wizards @ Atlanta Hawks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "single:401909288|Boston Celtics ML (Boston Celtics @ Charlotte Hornets, Nov 6)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.7445,
+   "odds": -291,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909288",
+     "odds": -291,
+     "stake": 100,
+     "win_prob": 0.7445,
+     "label": "Boston Celtics ML (Boston Celtics @ Charlotte Hornets, Nov 6)",
+     "market_prob": 0.7445,
+     "type": "moneyline",
+     "team": "Boston Celtics",
+     "kickoff": "2026-11-06T19:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Boston Celtics ML",
+     "game": "Boston Celtics @ Charlotte Hornets, Nov 6",
+     "id": "401909288|Boston Celtics ML (Boston Celtics @ Charlotte Hornets, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "single:401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.696,
+   "odds": -229,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909292",
+     "odds": -229,
+     "stake": 100,
+     "win_prob": 0.696,
+     "label": "Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "market_prob": 0.696,
+     "type": "moneyline",
+     "team": "Toronto Raptors",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Toronto Raptors ML",
+     "game": "Toronto Raptors @ Milwaukee Bucks, Nov 6",
+     "id": "401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "single:401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+   "kind": "single",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.6882,
+   "odds": -221,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909290",
+     "odds": -221,
+     "stake": 100,
+     "win_prob": 0.6882,
+     "label": "Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "market_prob": 0.6882,
+     "type": "moneyline",
+     "team": "Dallas Mavericks",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Mavericks ML",
+     "game": "Utah Jazz @ Dallas Mavericks, Nov 6",
+     "id": "401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6) + 401909291|Memphis Grizzlies ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909290",
+     "odds": -221,
+     "stake": 100,
+     "win_prob": 0.6882,
+     "label": "Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "market_prob": 0.6882,
+     "type": "moneyline",
+     "team": "Dallas Mavericks",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Mavericks ML",
+     "game": "Utah Jazz @ Dallas Mavericks, Nov 6",
+     "id": "401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909291",
+     "odds": 149,
+     "stake": 100,
+     "win_prob": 0.4019,
+     "label": "Memphis Grizzlies ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "market_prob": 0.4019,
+     "type": "moneyline",
+     "team": "Memphis Grizzlies",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Memphis Grizzlies ML",
+     "game": "Oklahoma City Thunder @ Memphis Grizzlies, Nov 6",
+     "id": "401909291|Memphis Grizzlies ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6) + 401909293|New Orleans Pelicans ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2488,
+   "odds": 302,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909290",
+     "odds": -221,
+     "stake": 100,
+     "win_prob": 0.6882,
+     "label": "Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "market_prob": 0.6882,
+     "type": "moneyline",
+     "team": "Dallas Mavericks",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Mavericks ML",
+     "game": "Utah Jazz @ Dallas Mavericks, Nov 6",
+     "id": "401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909293",
+     "odds": 149,
+     "stake": 100,
+     "win_prob": 0.4019,
+     "label": "New Orleans Pelicans ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "market_prob": 0.4019,
+     "type": "moneyline",
+     "team": "New Orleans Pelicans",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "New Orleans Pelicans ML",
+     "game": "Minnesota Timberwolves @ New Orleans Pelicans, Nov 6",
+     "id": "401909293|New Orleans Pelicans ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6) + 401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6) + 401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2467,
+   "odds": 305,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909295",
+     "odds": -671,
+     "stake": 100,
+     "win_prob": 0.8703,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "market_prob": 0.8703,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Sacramento Kings, Nov 6",
+     "id": "401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909292",
+     "odds": -229,
+     "stake": 100,
+     "win_prob": 0.696,
+     "label": "Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "market_prob": 0.696,
+     "type": "moneyline",
+     "team": "Toronto Raptors",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Toronto Raptors ML",
+     "game": "Toronto Raptors @ Milwaukee Bucks, Nov 6",
+     "id": "401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909289",
+     "odds": 120,
+     "stake": 100,
+     "win_prob": 0.4544,
+     "label": "Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "market_prob": 0.4544,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-11-06T19:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Philadelphia 76ers @ Cleveland Cavaliers, Nov 6",
+     "id": "401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6) + 401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6) + 401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2436,
+   "odds": 311,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909295",
+     "odds": -671,
+     "stake": 100,
+     "win_prob": 0.8703,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "market_prob": 0.8703,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Sacramento Kings, Nov 6",
+     "id": "401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909290",
+     "odds": -221,
+     "stake": 100,
+     "win_prob": 0.6882,
+     "label": "Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "market_prob": 0.6882,
+     "type": "moneyline",
+     "team": "Dallas Mavericks",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Dallas Mavericks ML",
+     "game": "Utah Jazz @ Dallas Mavericks, Nov 6",
+     "id": "401909290|Dallas Mavericks ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909289",
+     "odds": 120,
+     "stake": 100,
+     "win_prob": 0.4544,
+     "label": "Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "market_prob": 0.4544,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-11-06T19:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Philadelphia 76ers @ Cleveland Cavaliers, Nov 6",
+     "id": "401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6) + 401909291|Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2432,
+   "odds": 311,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909291",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5981,
+     "label": "Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "market_prob": 0.5981,
+     "type": "moneyline",
+     "team": "Oklahoma City Thunder",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Oklahoma City Thunder ML",
+     "game": "Oklahoma City Thunder @ Memphis Grizzlies, Nov 6",
+     "id": "401909291|Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909289",
+     "odds": 120,
+     "stake": 100,
+     "win_prob": 0.4544,
+     "label": "Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "market_prob": 0.4544,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-11-06T19:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Philadelphia 76ers @ Cleveland Cavaliers, Nov 6",
+     "id": "401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6) + 401909293|Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2432,
+   "odds": 311,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909293",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5981,
+     "label": "Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "market_prob": 0.5981,
+     "type": "moneyline",
+     "team": "Minnesota Timberwolves",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota Timberwolves ML",
+     "game": "Minnesota Timberwolves @ New Orleans Pelicans, Nov 6",
+     "id": "401909293|Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909289",
+     "odds": 120,
+     "stake": 100,
+     "win_prob": 0.4544,
+     "label": "Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "market_prob": 0.4544,
+     "type": "moneyline",
+     "team": "Cleveland Cavaliers",
+     "kickoff": "2026-11-06T19:30:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Cleveland Cavaliers ML",
+     "game": "Philadelphia 76ers @ Cleveland Cavaliers, Nov 6",
+     "id": "401909289|Cleveland Cavaliers ML (Philadelphia 76ers @ Cleveland Cavaliers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909290|Utah Jazz ML (Utah Jazz @ Dallas Mavericks, Nov 6) + 401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2428,
+   "odds": 312,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909295",
+     "odds": -671,
+     "stake": 100,
+     "win_prob": 0.8703,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "market_prob": 0.8703,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Sacramento Kings, Nov 6",
+     "id": "401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909290",
+     "odds": 221,
+     "stake": 100,
+     "win_prob": 0.3118,
+     "label": "Utah Jazz ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "market_prob": 0.3118,
+     "type": "moneyline",
+     "team": "Utah Jazz",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Utah Jazz ML",
+     "game": "Utah Jazz @ Dallas Mavericks, Nov 6",
+     "id": "401909290|Utah Jazz ML (Utah Jazz @ Dallas Mavericks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6) + 401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6) + 401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.242,
+   "odds": 313,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909295",
+     "odds": -671,
+     "stake": 100,
+     "win_prob": 0.8703,
+     "label": "San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "market_prob": 0.8703,
+     "type": "moneyline",
+     "team": "San Antonio Spurs",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "San Antonio Spurs ML",
+     "game": "San Antonio Spurs @ Sacramento Kings, Nov 6",
+     "id": "401909295|San Antonio Spurs ML (San Antonio Spurs @ Sacramento Kings, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909292",
+     "odds": -229,
+     "stake": 100,
+     "win_prob": 0.696,
+     "label": "Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "market_prob": 0.696,
+     "type": "moneyline",
+     "team": "Toronto Raptors",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Toronto Raptors ML",
+     "game": "Toronto Raptors @ Milwaukee Bucks, Nov 6",
+     "id": "401909292|Toronto Raptors ML (Toronto Raptors @ Milwaukee Bucks, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909294",
+     "odds": 124,
+     "stake": 100,
+     "win_prob": 0.4466,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+     "market_prob": 0.4466,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Nov 6",
+     "id": "401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909291|Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6) + 401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2387,
+   "odds": 319,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909291",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5981,
+     "label": "Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "market_prob": 0.5981,
+     "type": "moneyline",
+     "team": "Oklahoma City Thunder",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Oklahoma City Thunder ML",
+     "game": "Oklahoma City Thunder @ Memphis Grizzlies, Nov 6",
+     "id": "401909291|Oklahoma City Thunder ML (Oklahoma City Thunder @ Memphis Grizzlies, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909294",
+     "odds": 124,
+     "stake": 100,
+     "win_prob": 0.4466,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+     "market_prob": 0.4466,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Nov 6",
+     "id": "401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    }
+   ],
+   "week": 3
+  },
+  {
+   "id": "parlay:401909293|Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6) + 401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+   "kind": "parlay",
+   "sport": "nba",
+   "season": 2026,
+   "created": "2026-11-06T04:53:56+00:00",
+   "win_prob": 0.2387,
+   "odds": 319,
+   "stake": 100.0,
+   "status": "pending",
+   "legs": [
+    {
+     "game_id": "401909293",
+     "odds": -149,
+     "stake": 100,
+     "win_prob": 0.5981,
+     "label": "Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "market_prob": 0.5981,
+     "type": "moneyline",
+     "team": "Minnesota Timberwolves",
+     "kickoff": "2026-11-06T20:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Minnesota Timberwolves ML",
+     "game": "Minnesota Timberwolves @ New Orleans Pelicans, Nov 6",
+     "id": "401909293|Minnesota Timberwolves ML (Minnesota Timberwolves @ New Orleans Pelicans, Nov 6)",
+     "status": "pending",
+     "detail": ""
+    },
+    {
+     "game_id": "401909294",
+     "odds": 124,
+     "stake": 100,
+     "win_prob": 0.4466,
+     "label": "Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
+     "market_prob": 0.4466,
+     "type": "moneyline",
+     "team": "Portland Trail Blazers",
+     "kickoff": "2026-11-06T22:00:00-05:00",
+     "market": "MONEYLINE",
+     "pick": "Portland Trail Blazers ML",
+     "game": "Portland Trail Blazers @ Los Angeles Lakers, Nov 6",
+     "id": "401909294|Portland Trail Blazers ML (Portland Trail Blazers @ Los Angeles Lakers, Nov 6)",
      "status": "pending",
      "detail": ""
     }
