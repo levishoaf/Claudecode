@@ -1,0 +1,82 @@
+{
+ "seasons": [
+  2023,
+  2024,
+  2025
+ ],
+ "tested": [
+  "nfl:moneyline",
+  "nfl:prop:passing_tds",
+  "nfl:prop:passing_yards",
+  "nfl:prop:receiving_yards",
+  "nfl:prop:receptions",
+  "nfl:prop:rushing_tds+receiving_tds",
+  "nfl:prop:rushing_yards"
+ ],
+ "groups": {
+  "nfl:prop:passing_tds": {
+   "weights": {
+    "record": 0.1654,
+    "trend": 0.0945,
+    "comfy": 0.1179,
+    "matchup": -0.0394,
+    "home": 0.1818,
+    "short_week": 0.0819,
+    "travel": 0.302,
+    "qb_change": 0.143,
+    "wind": -0.1131,
+    "cold": 0.0166
+   },
+   "up": true,
+   "down": false
+  },
+  "nfl:prop:receiving_yards": {
+   "weights": {
+    "record": 0.2501,
+    "trend": 0.4498,
+    "comfy": 0.0387,
+    "matchup": 0.045,
+    "home": -0.0092,
+    "short_week": -0.0184,
+    "travel": -0.0682,
+    "qb_change": 0.0246,
+    "wind": -0.0642,
+    "cold": -0.1037
+   },
+   "up": false,
+   "down": true
+  },
+  "nfl:prop:receptions": {
+   "weights": {
+    "record": -0.0225,
+    "trend": 0.3073,
+    "comfy": 0.2496,
+    "matchup": 0.1274,
+    "home": -0.0064,
+    "short_week": 0.1405,
+    "travel": 0.025,
+    "qb_change": 0.044,
+    "wind": -0.1754,
+    "cold": -0.0171
+   },
+   "up": false,
+   "down": true
+  },
+  "nfl:prop:rushing_yards": {
+   "weights": {
+    "record": 0.0714,
+    "trend": 0.6397,
+    "comfy": 0.1715,
+    "matchup": 0.2188,
+    "home": -0.0155,
+    "short_week": 0.0127,
+    "travel": 0.0262,
+    "qb_change": -0.2331,
+    "wind": 0.1288,
+    "cold": 0.0571
+   },
+   "up": true,
+   "down": true
+  }
+ }
+}
